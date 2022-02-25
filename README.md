@@ -16,7 +16,7 @@ package.
 ## Pre-requisites and installation instructions
 
 SpectriPy requires a running Python conda environment containing minimally the matchms package.
-Following installation instructions are taken from https://github.com/matchms/matchms
+Following installation instructions are taken from https://github.com/matchms/matchms.
 
 Prerequisites:
 
@@ -26,15 +26,12 @@ Anaconda
 
 Install matchms from Anaconda Cloud with
 
-<code>
-  # install matchms in a new virtual environment to avoid dependency clashes
-  
-  conda create --name matchms python=3.8
-  
-  conda activate matchms
-  
-  conda install --channel nlesc --channel bioconda --channel conda-forge matchms
-</code>
+```
+# install matchms in a new virtual environment to avoid dependency clashes  
+conda create --name matchms python=3.8  
+conda activate matchms  
+conda install --channel nlesc --channel bioconda --channel conda-forge matchms
+```
 
 
 ## Concepts and examples
