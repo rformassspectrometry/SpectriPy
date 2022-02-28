@@ -1,0 +1,95 @@
+---
+title: "SpectriPy"
+package: SpectriPy
+output:
+  BiocStyle::html_document:
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{SpectriPy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative }
+  %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{Spectra,BiocStyle,msdata,SpectriPy}
+bibliography: references.bib
+---
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+```
+
+**Package**: `r BiocStyle::Biocpkg("SpectriPy")`<br />
+**Authors**: `r packageDescription("SpectriPy")[["Author"]] `<br />
+**Compiled**: `r date()`
+
+
+# Introduction
+
+# Conversion of Spectra
+
+```{r}
+# load required libraries
+library(Spectra)
+library(reticulate)
+library(magrittr)
+library(SpectriPy)
+
+# create example spectra
+spd <- DataFrame(
+  msLevel = c(2L, 2L, 2L),
+  polarity = c(1L, 1L, 1L),
+  id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
+  name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
+
+## Assign m/z and intensity values.
+spd$mz <- list(
+  c(109.2, 124.2, 124.5, 170.16, 170.52),
+  c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16),
+  c(56.0494, 69.0447, 83.0603, 109.0395, 110.0712,
+    111.0551, 123.0429, 138.0662, 195.0876))
+spd$intensity <- list(
+  c(3.407, 47.494, 3.094, 100.0, 13.240),
+  c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643),
+  c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
+
+sps <- Spectra(spd)
+
+# load conda environment with matchms and import
+use_condaenv("matchms")
+matchms <- import("matchms")
+
+# test conversion
+pyspecs <- convertRSpectraToPySpectrum(sps)
+rspecs <- convertPySpectrumToRSpectra(pyspecs)
+```
+
+# Perform similarity within Python
+
+```{r}
+# import similarity functions
+similarity <- import("matchms.similarity")
+
+# perform comparison and copy results to python for read out
+py$result <- matchms$calculate_scores(references = r_to_py(pyspecs),
+                                      queries = r_to_py(pyspecs),
+                                      similarity_function = similarity$CosineGreedy(tolerance = 0.005),
+                                      is_symmetric = TRUE)
+
+# run python script extract similarity
+py_run_string("score = []")
+py_run_string("for x,y,z in result:
+                    score.append(z['score'])")
+
+score <- matrix(unlist(py$score), nrow=py$result$n_rows, ncol=py$result$n_cols)
+score
+```
+
+```{r}
+# run python script to extract matches
+py_run_string("matches = []")
+py_run_string("for x,y,z in result:
+                    matches.append(z['matches'])")
+
+matches <- matrix(unlist(py$matches), nrow=py$result$n_rows, ncol=py$result$n_cols)
+matches
+```
+
