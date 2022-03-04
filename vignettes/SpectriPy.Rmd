@@ -9,8 +9,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative }
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{Spectra,BiocStyle,msdata,SpectriPy}
-bibliography: references.bib
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy}
 ---
 
 ```{r style, echo = FALSE, results = 'asis'}
@@ -26,7 +25,7 @@ BiocStyle::markdown()
 
 # Conversion of Spectra
 
-```{r}
+```{r, eval = FALSE}
 # load required libraries
 library(Spectra)
 library(reticulate)
@@ -62,15 +61,15 @@ pyspecs <- convertRSpectraToPySpectrum(sps)
 rspecs <- convertPySpectrumToRSpectra(pyspecs)
 ```
 
-# Perform similarity within Python
+# Perform similarity using reticulate with R objects
 
-```{r}
+```{r, eval = FALSE}
 # import similarity functions
 similarity <- import("matchms.similarity")
 
 # perform comparison and copy results to python for read out
-py$result <- matchms$calculate_scores(references = r_to_py(pyspecs),
-                                      queries = r_to_py(pyspecs),
+py$result <- matchms$calculate_scores(references = pyspecs,
+                                      queries = pyspecs ,
                                       similarity_function = similarity$CosineGreedy(tolerance = 0.005),
                                       is_symmetric = TRUE)
 
@@ -81,9 +80,7 @@ py_run_string("for x,y,z in result:
 
 score <- matrix(unlist(py$score), nrow=py$result$n_rows, ncol=py$result$n_cols)
 score
-```
 
-```{r}
 # run python script to extract matches
 py_run_string("matches = []")
 py_run_string("for x,y,z in result:
@@ -93,3 +90,32 @@ matches <- matrix(unlist(py$matches), nrow=py$result$n_rows, ncol=py$result$n_co
 matches
 ```
 
+# Perform similarity using reticulate directly in Python
+
+```{r, eval = FALSE}
+py$references <- pyspecs
+py$queries <- pyspecs
+
+py_run_string("from matchms import calculate_scores
+from matchms.similarity import CosineGreedy
+result = calculate_scores(references=references,
+                          queries=queries,
+                          similarity_function=CosineGreedy(tolerance = 0.005),
+                          is_symmetric=True)")
+
+# run python script extract similarity
+py_run_string("score = []")
+py_run_string("for x,y,z in result:
+                    score.append(z['score'])")
+
+score <- matrix(unlist(py$score), nrow=py$result$n_rows, ncol=py$result$n_cols)
+score
+
+# run python script to extract matches
+py_run_string("matches = []")
+py_run_string("for x,y,z in result:
+                    matches.append(z['matches'])")
+
+matches <- matrix(unlist(py$matches), nrow=py$result$n_rows, ncol=py$result$n_cols)
+matches
+```

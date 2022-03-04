@@ -1,19 +1,23 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.0.1
-Authors@R: c(
-    person(given = "Johannes", family = "Rainer",
-           email = "Johannes.Rainer@eurac.edu",
-           role = "cre",
-           comment = c(ORCID = "0000-0002-6977-7147")),
-    person(given = "Michael", family = "Witting",
-           role = c("aut"),
-           email = "michael.witting@helmholtz-muenchen.de",
-           comment = c(ORCID = "0000-0002-1462-4426")),
-    person(given = "Carolin", family = "Huber",
-           role = "aut"),
-    person(given = "Helge", family = "Hecht",
-           role = "aut"))
+Version: 0.0.2
+Authors@R:
+    c(person(given = "Michael", family = "Witting",
+             role = c("aut"),
+             email = "michael.witting@helmholtz-muenchen.de",
+             comment = c(ORCID = "0000-0002-1462-4426")),
+      person(given = "Johannes", family = "Rainer",
+             email = "Johannes.Rainer@eurac.edu",
+             role = c("aut", "cre"),
+             comment = c(ORCID = "0000-0002-6977-7147")),
+      person(given = "Carolin", family = "Huber",
+             email = "",
+             role = c("aut"),
+             comment = c(ORCID = "")),
+      person(given = "Helge", family = "Hecht",
+             email = "",
+             role = c("aut"),
+             comment = c(ORCID = "")))
 Description: The SpectriPy package allows to integrate Python-based MS analysis
     code with the Spectra package. Spectra objects can be converted into python
     objects.
@@ -22,7 +26,11 @@ Depends:
 Imports:
     Spectra,
     basilisk,
-    reticulate
+    reticulate,
+    IRanges,
+    S4Vectors,
+    BiocParallel,
+    methods
 Suggests:
     testthat,
     knitr,
@@ -35,5 +43,6 @@ URL: https://github.com/RforMassSpectrometry/SpectriPy
 biocViews: Infrastructure, Metabolomics, MassSpectrometry
 Encoding: UTF-8
 StagedInstall: no
+SystemRequirements: python (>= 2.7)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
