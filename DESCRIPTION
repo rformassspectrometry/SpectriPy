@@ -1,12 +1,41 @@
 Package: SpectriPy
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Title: Enabling use of Python matchms, Spec2Vec and MS2DeepScore in R
+Version: 0.0.1
+Description: 
+    What the package does (one paragraph).
+Authors@R:
+    c(person(given = "Michael", family = "Witting",
+             role = c("aut"),
+             email = "michael.witting@helmholtz-muenchen.de",
+             comment = c(ORCID = "0000-0002-1462-4426")),
+      person(given = "Johannes", family = "Rainer",
+             email = "Johannes.Rainer@eurac.edu",
+             role = c("aut", "cre"),
+             comment = c(ORCID = "0000-0002-6977-7147")),
+      person(given = "Carolin", family = "Huber",
+             email = "",
+             role = c("aut"),
+             comment = c(ORCID = "")),
+      person(given = "Helge", family = "Hecht",
+             email = "",
+             role = c("aut"),
+             comment = c(ORCID = "")))
+Depends:
+    R (>= 4.0.0)
+Imports:
+    BiocGenerics,
+    Spectra (>= 1.5.7),
+    reticulate
+Suggests:
+    testthat,
+    knitr,
+    msdata,
+    BiocStyle,
+    rmarkdown
+License: Artistic-2.0
+VignetteBuilder: knitr
+BugReports: https://github.com/RforMassSpectrometry/MetaboAnnotation/issues
+URL: https://github.com/RforMassSpectrometry/MetaboAnnotation
+biocViews: Infrastructure, Metabolomics, MassSpectrometry
+Roxygen: list(markdown=TRUE)
 RoxygenNote: 7.1.2
