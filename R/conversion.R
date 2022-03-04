@@ -29,18 +29,27 @@ convertPySpectrumToRSpectra <- function(x, reference = import("matchms")) {
   }
 }
 
-# function to convert an R Spectra to a Python Spectrum
-.rspec_to_pyspec <- function(x, reference = import("matchms")) {
+#' function to convert a single element R Spectra to a Python matchms Spectrum
+#'
+#' @param x `Spectra` **of length 1!**.
+#'
+#' @param ref
+#'
+#' @importFrom reticulate import
+#'
+#' @author Michael Witting
+#'
+#' @noRd
+.rspec_to_pyspec <- function(x, ref = import("matchms")) {
+    ## isolate all metadata and convert to list, rename list according to
+    ## Python matchms
+    slist <- as.list(spectraData(x))
+    names(slist)[which(names(slist) == "precursorMz")] <- "precursor_mz"
 
-  # isolate all metadata and convert to list, rename list according to Python matchms
-  spectraData_list <- as.list(spectraData(x))
-  names(spectraData_list)[which(names(spectraData_list) == "precursorMz")] <- "precursor_mz"
-
-  # create python spectrum
-  reference$Spectrum(mz = np_array(x$mz[[1]]),
-                     intensities = np_array(x$intensity[[1]]),
-                     metadata = r_to_py(spectraData_list))
-
+    ## create python spectrum
+    ref$Spectrum(mz = np_array(x$mz[[1]]),
+                 intensities = np_array(x$intensity[[1]]),
+                 metadata = r_to_py(slist))
 }
 
 # function to convert a Python Spectrum to an R Spectra

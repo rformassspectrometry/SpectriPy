@@ -2,3 +2,9 @@
 
 export(convertPySpectrumToRSpectra)
 export(convertRSpectraToPySpectrum)
+export(test)
+importFrom(basilisk,BasiliskEnvironment)
+importFrom(basilisk,basiliskRun)
+importFrom(basilisk,basiliskStart)
+importFrom(basilisk,basiliskStop)
+importFrom(reticulate,import)
