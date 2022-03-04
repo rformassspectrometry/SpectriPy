@@ -2,3 +2,4 @@
 
 export(convertPySpectrumToRSpectra)
 export(convertRSpectraToPySpectrum)
+importMethodsFrom(reticulate,import)
