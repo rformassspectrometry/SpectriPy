@@ -17,11 +17,36 @@ test_that("spectraVariableMapping works", {
     expect_true(length(res) > 0)
 })
 
-test_that(".rspec_to_pyspec works", {
+test_that("rspec_to_pyspec works", {
+    cl <- basiliskStart(SpectriPy:::matchms_env)
+    basiliskRun(cl, function(x) {
+        res <- rspec_to_pyspec(x)
+        expect_true(is(res, "python.builtin.list"))
+        expect_equal(length(res), length(x))
+        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
+        expect_equal(rtime(x)[1], py_to_r(res[0]$metadata$retention_time))
+    }, x = sps)
+
+    basiliskRun(cl, function(x) {
+        x$new_col <- c(9, 3, 1)
+        res <- rspec_to_pyspec(x, mapping = c(rtime = "retention_time",
+                                              new_col = "new_col"))
+        expect_true(is(res, "python.builtin.list"))
+        expect_equal(length(res), length(x))
+        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
+        expect_equal(rtime(x)[1], py_to_r(res[0]$metadata$retention_time))
+        expect_equal(x$new_col[1], py_to_r(res[0]$metadata$new_col))
+    }, x = sps)
+
+    basiliskStop(cl)
+})
+
+
+test_that(".single_rspec_to_pyspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)
     vars <- spectraVariableMapping()
     basiliskRun(cl, function(x) {
-        res <- .rspec_to_pyspec(sps[1L], vars)
+        res <- .single_rspec_to_pyspec(sps[1L], vars)
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
         expect_equal(sort(names(res$metadata)), sort(unname(vars)))
         expect_equal(as.numeric(res$peaks$intensities),
@@ -29,7 +54,7 @@ test_that(".rspec_to_pyspec works", {
     }, x = sps)
     ## No metadata
     basiliskRun(cl, function(x) {
-        res <- .rspec_to_pyspec(sps[1L], character())
+        res <- .single_rspec_to_pyspec(sps[1L], character())
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
         expect_equal(sort(names(res$metadata)), character())
         expect_equal(as.numeric(res$peaks$intensities),
@@ -37,10 +62,57 @@ test_that(".rspec_to_pyspec works", {
     }, x = sps)
     ## Only msLevel
     basiliskRun(cl, function(x) {
-        res <- .rspec_to_pyspec(sps[1L], c(msLevel = "msLevel"))
+        res <- .single_rspec_to_pyspec(sps[1L], c(msLevel = "msLevel"))
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
         expect_equal(sort(names(res$metadata)), "mslevel")
     }, x = sps)
     basiliskStop(cl)
+})
 
+test_that(".single_pyspec_to_rspec works", {
+    cl <- basiliskStart(SpectriPy:::matchms_env)
+    vars <- spectraVariableMapping()
+
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(mz(res), mz(sps[1L]))
+    expect_equal(intensity(res), intensity(sps[1L]))
+    expect_equal(rtime(res), rtime(sps[1L]))
+    expect_equal(msLevel(res), msLevel(sps[1L]))
+
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[2L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(mz(res), mz(sps[2L]))
+    expect_equal(intensity(res), intensity(sps[2L]))
+    expect_equal(rtime(res), rtime(sps[2L]))
+    expect_equal(msLevel(res), msLevel(sps[2L]))
+
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[3L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(mz(res), mz(sps[3L]))
+    expect_equal(intensity(res), intensity(sps[3L]))
+    expect_equal(rtime(res), rtime(sps[3L]))
+    expect_equal(msLevel(res), msLevel(sps[3L]))
+
+    ## Request single spectra variable
+    vars <- c(rtime = "retention_time")
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(rtime(res), rtime(sps[1L]))
+    expect_true(is.na(msLevel(res)))
+
+    ## Request spectra variables that don't exist.
+    vars <- c(rtime = "retention_time", other_col = "other_col", b = "b")
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(rtime(res), rtime(sps[1L]))
+    expect_true(is.na(msLevel(res)))
+
+    ## Request spectra variables that don't exist.
+    vars <- c(other_col = "other_col", b = "b")
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_true(is.na(rtime(res)))
+    expect_true(is.na(msLevel(res)))
+    basiliskStop(cl)
 })
