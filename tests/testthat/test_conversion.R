@@ -41,6 +41,33 @@ test_that("rspec_to_pyspec works", {
     basiliskStop(cl)
 })
 
+test_that("pyspec_to_rspec works", {
+    cl <- basiliskStart(SpectriPy:::matchms_env)
+    basiliskRun(cl, function(x) {
+        p <- rspec_to_pyspec(x)
+        res <- pyspec_to_rspec(p, mapping = spectraVariableMapping())
+        expect_true(is(res, "Spectra"))
+        expect_equal(spectraData(x), spectraData(res))
+    }, x = sps)
+
+    ## Map only selected values back.
+    basiliskRun(cl, function(x) {
+        p <- rspec_to_pyspec(x)
+        res <- pyspec_to_rspec(p, mapping = c(rtime = "retention_time",
+                                              what = "not_exists"))
+        expect_true(is(res, "Spectra"))
+        expect_equal(mz(x), mz(res))
+        expect_equal(rtime(x), rtime(res))
+        expect_equal(intensity(x), intensity(res))
+        expect_true(all(is.na(msLevel(res))))
+    }, x = sps)
+
+    ## errors
+    expect_error(pyspec_to_rspec(5), "Python list")
+
+    basiliskStop(cl)
+})
+
 
 test_that(".single_rspec_to_pyspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)

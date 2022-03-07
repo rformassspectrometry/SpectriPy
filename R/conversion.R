@@ -26,6 +26,9 @@
 #' The function returns a named vector that can be directly used as parameter
 #' `mapping` in the `rspec_to_pyspec` and `pyspec_to_rspec` functions.
 #'
+#' @param .check Optionally disable input parameter checking. Input parameter
+#'     checking should only disabled for very good reasons.
+#'
 #' @param BPPARAM Optional parallel processing setup.
 #'
 #' @param mapping Named `character` providing the spectra variable names
@@ -38,7 +41,7 @@
 #' @param reference Optional reference to Python environment `matchms`.
 #'
 #' @param x For `rspec_to_pyspec`: `Spectra` object. For `pyspec_to_rspec`:
-#'     matchms Spectrum object.
+#'     an Python list of matchms Spectrum objects.
 #'
 #' @param ... ignored.
 #'
@@ -89,10 +92,15 @@ setMethod("spectraVariableMapping", "missing", function(object, ...) {
 #' @export
 rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
                             reference = import("matchms"),
-                            BPPARAM = SerialParam()) {
+                            BPPARAM = SerialParam(), .check = TRUE) {
+    if (.check && !is(x, "Spectra"))
+        stop("'x' should be a Spectra object.")
     plist <- spectrapply(x, .single_rspec_to_pyspec, spectraVariables = mapping,
                          BPPARAM = BPPARAM)
     r_to_py(unname(plist))
+}
+
+.validate_spectrum_list <- function(x) {
 }
 
 #' @rdname rspec_to_pyspec
@@ -100,19 +108,16 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #' @export
 pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
                             reference = import("matchms"),
-                            BPPARAM = SerialParam()) {
-
-  # convert Python array to R list
-  x <- py_to_r(x)
-
-  # differentiate if x is a single spectrum or multiple spectra
-  if(length(x) == 1) {
-    #convert single spectrum to spectra
-    return(.single_pyspec_to_rspec(x))
-  } else {
-    spectra_list <- bplapply(x, .single_pyspec_to_rspec, BPPARAM = BPPARAM)
-    return(do.call(c, spectra_list))
-  }
+                            BPPARAM = SerialParam(), .check = TRUE) {
+    if (!is(x, "python.builtin.list"))
+        stop("'x' is expected to be a Python list.")
+    x <- py_to_r(x)
+    if (.check && !all(vapply(x, function(z)
+        is(z, "matchms.Spectrum.Spectrum"), logical(1))))
+        stop("'x' is expected to be a Python list of matchms Spectrum objects.")
+    spectra_list <- bplapply(x, .single_pyspec_to_rspec,
+                             spectraVariables = mapping, BPPARAM = BPPARAM)
+    do.call(concatenateSpectra, spectra_list)
 }
 
 #' @description

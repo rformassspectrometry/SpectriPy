@@ -12,14 +12,16 @@ rspec_to_pyspec(
   x,
   mapping = spectraVariableMapping(),
   reference = import("matchms"),
-  BPPARAM = SerialParam()
+  BPPARAM = SerialParam(),
+  .check = TRUE
 )
 
 pyspec_to_rspec(
   x,
   mapping = spectraVariableMapping(),
   reference = import("matchms"),
-  BPPARAM = SerialParam()
+  BPPARAM = SerialParam(),
+  .check = TRUE
 )
 }
 \arguments{
@@ -28,7 +30,7 @@ pyspec_to_rspec(
 \item{...}{ignored.}
 
 \item{x}{For \code{rspec_to_pyspec}: \code{Spectra} object. For \code{pyspec_to_rspec}:
-matchms Spectrum object.}
+an Python list of matchms Spectrum objects.}
 
 \item{mapping}{Named \code{character} providing the spectra variable names
 (metadata) to convert. Names are expected to be the spectr variable names
@@ -38,6 +40,9 @@ fields. See description above for more details.}
 \item{reference}{Optional reference to Python environment \code{matchms}.}
 
 \item{BPPARAM}{Optional parallel processing setup.}
+
+\item{.check}{Optionally disable input parameter checking. Input parameter
+checking should only disabled for very good reasons.}
 }
 \value{
 For \code{rspec_to_pyspec}: Python array of Spectrum objects, same
