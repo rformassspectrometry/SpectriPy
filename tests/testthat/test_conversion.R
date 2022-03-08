@@ -86,7 +86,6 @@ test_that("pyspec_to_rspec works", {
     basiliskStop(cl)
 })
 
-
 test_that(".single_rspec_to_pyspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)
     vars <- spectraVariableMapping()
@@ -114,30 +113,27 @@ test_that(".single_rspec_to_pyspec works", {
     basiliskStop(cl)
 })
 
-test_that(".single_pyspec_to_rspec works", {
+with_parameters_test_that(".single_pyspec_to_rspec works with parameters", {
     cl <- basiliskStart(SpectriPy:::matchms_env)
     vars <- spectraVariableMapping()
 
-    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[index])
     res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
-    expect_equal(mz(res), mz(sps[1L]))
-    expect_equal(intensity(res), intensity(sps[1L]))
-    expect_equal(rtime(res), rtime(sps[1L]))
-    expect_equal(msLevel(res), msLevel(sps[1L]))
+    expect_equal(mz(res), mz(sps[index]))
+    expect_equal(intensity(res), intensity(sps[index]))
+    expect_equal(rtime(res), rtime(sps[index]))
+    expect_equal(msLevel(res), msLevel(sps[index]))
 
-    p <- SpectriPy:::.single_rspec_to_pyspec(sps[2L])
-    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
-    expect_equal(mz(res), mz(sps[2L]))
-    expect_equal(intensity(res), intensity(sps[2L]))
-    expect_equal(rtime(res), rtime(sps[2L]))
-    expect_equal(msLevel(res), msLevel(sps[2L]))
+    basiliskStop(cl)
+}, cases(
+       first = list(index = 1L),
+       second = list(index = 2L),
+       third = list(index = 3L)
+   ))
 
-    p <- SpectriPy:::.single_rspec_to_pyspec(sps[3L])
-    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
-    expect_equal(mz(res), mz(sps[3L]))
-    expect_equal(intensity(res), intensity(sps[3L]))
-    expect_equal(rtime(res), rtime(sps[3L]))
-    expect_equal(msLevel(res), msLevel(sps[3L]))
+test_that(".single_pyspec_to_rspec works", {
+    cl <- basiliskStart(SpectriPy:::matchms_env)
+    vars <- spectraVariableMapping()
 
     ## Request single spectra variable
     vars <- c(rtime = "retention_time")
