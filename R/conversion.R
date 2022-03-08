@@ -89,6 +89,8 @@ setMethod("spectraVariableMapping", "missing", function(object, ...) {
 
 #' @rdname rspec_to_pyspec
 #'
+#' @importFrom methods is
+#'
 #' @export
 rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
                             reference = import("matchms"),
@@ -100,10 +102,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
     r_to_py(unname(plist))
 }
 
-.validate_spectrum_list <- function(x) {
-}
-
 #' @rdname rspec_to_pyspec
+#'
+#' @importFrom Spectra concatenateSpectra
 #'
 #' @export
 pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
@@ -154,6 +155,9 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
                                     reference = import("matchms")) {
     if (length(spectraVariables)) {
         slist <- as.list(spectraData(x, columns = names(spectraVariables)))
+        ## ## Seems matchms.Spectrum does not support NA retention times?
+        ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
+        ##     slist$rtime <- 0
         names(slist) <- spectraVariables
         reference$Spectrum(mz = np_array(mz(x)[[1L]]),
                            intensities = np_array(intensity(x)[[1L]]),
@@ -190,11 +194,15 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 .single_pyspec_to_rspec <- function(x,
                                     spectraVariables = spectraVariableMapping(),
                                     reference = import("matchms")) {
-    slist <- x$metadata
-    vars <- spectraVariables[spectraVariables %in% names(slist)]
-    if (length(vars))
-        spd <- DataFrame(lapply(vars, function(z) slist[z]))
-    else
+    plist <- x$metadata
+    vars <- spectraVariables[spectraVariables %in% names(plist)]
+    if (length(vars)) {
+        rlist <- lapply(vars, function(z) plist[z])
+        ## Drop NULL variables.
+        spd <- DataFrame(rlist[lengths(rlist) > 0])
+        if (!nrow(spd))
+            spd <- DataFrame(msLevel = NA_integer_)
+    } else
         spd <- DataFrame(msLevel = NA_integer_)
     spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
     spd$intensity <- NumericList(as.numeric(x$peaks$intensities),

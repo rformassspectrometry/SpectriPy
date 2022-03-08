@@ -38,6 +38,16 @@ test_that("rspec_to_pyspec works", {
         expect_equal(x$new_col[1], py_to_r(res[0]$metadata$new_col))
     }, x = sps)
 
+    basiliskRun(cl, function(x) {
+        x$rtime <- NULL
+        res <- rspec_to_pyspec(x)
+        expect_true(is(res, "python.builtin.list"))
+        expect_equal(length(res), length(x))
+        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
+        ## Seems NA for rtime is changed to NULL in Spectrum
+        expect_equal(py_to_r(res[0]$metadata$retention_time), NULL)
+    }, x = sps)
+
     basiliskStop(cl)
 })
 
@@ -62,6 +72,14 @@ test_that("pyspec_to_rspec works", {
         expect_true(all(is.na(msLevel(res))))
     }, x = sps)
 
+    basiliskRun(cl, function(x) {
+        x$rtime <- NULL
+        p <- rspec_to_pyspec(x)
+        res <- pyspec_to_rspec(p)
+        expect_equal(mz(x), mz(res))
+        expect_equal(rtime(x), rtime(res))
+        expect_equal(intensity(x), intensity(res))
+    }, x = sps)
     ## errors
     expect_error(pyspec_to_rspec(5), "Python list")
 
