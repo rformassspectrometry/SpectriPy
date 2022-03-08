@@ -19,7 +19,6 @@ rspec_to_pyspec(
 pyspec_to_rspec(
   x,
   mapping = spectraVariableMapping(),
-  reference = import("matchms"),
   BPPARAM = SerialParam(),
   .check = TRUE
 )

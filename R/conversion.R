@@ -98,7 +98,7 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
     if (.check && !is(x, "Spectra"))
         stop("'x' should be a Spectra object.")
     plist <- spectrapply(x, .single_rspec_to_pyspec, spectraVariables = mapping,
-                         BPPARAM = BPPARAM)
+                         reference = reference, BPPARAM = BPPARAM)
     r_to_py(unname(plist))
 }
 
@@ -108,7 +108,6 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @export
 pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
-                            reference = import("matchms"),
                             BPPARAM = SerialParam(), .check = TRUE) {
     if (!is(x, "python.builtin.list"))
         stop("'x' is expected to be a Python list.")
@@ -191,24 +190,23 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' @importMethodsFrom Spectra Spectra
 #'
 #' @noRd
-.single_pyspec_to_rspec <- function(x,
-                                    spectraVariables = spectraVariableMapping(),
-                                    reference = import("matchms")) {
-    plist <- x$metadata
-    vars <- spectraVariables[spectraVariables %in% names(plist)]
-    if (length(vars)) {
-        rlist <- lapply(vars, function(z) plist[z])
-        ## Drop NULL variables.
-        spd <- DataFrame(rlist[lengths(rlist) > 0])
-        if (!nrow(spd))
+.single_pyspec_to_rspec <-
+    function(x, spectraVariables = spectraVariableMapping()) {
+        plist <- x$metadata
+        vars <- spectraVariables[spectraVariables %in% names(plist)]
+        if (length(vars)) {
+            rlist <- lapply(vars, function(z) plist[z])
+            ## Drop NULL variables.
+            spd <- DataFrame(rlist[lengths(rlist) > 0])
+            if (!nrow(spd))
+                spd <- DataFrame(msLevel = NA_integer_)
+        } else
             spd <- DataFrame(msLevel = NA_integer_)
-    } else
-        spd <- DataFrame(msLevel = NA_integer_)
-    spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
-    spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
-                                 compress = FALSE)
-    Spectra(spd)
-}
+        spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
+        spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
+                                     compress = FALSE)
+        Spectra(spd)
+    }
 
 #' Extract all spectraData and all mz and intensity values, give them to
 #' Python to create an array of Spectrum. Could be faster because loop is
