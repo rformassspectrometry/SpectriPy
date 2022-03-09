@@ -93,5 +93,5 @@ compareSpectriPy <- function(x,
     # generate r matrix 
     score <- matrix(unlist(py$res), nrow=py$result$n_rows, ncol=py$result$n_cols)
     
-    return(scores)
+    return(score)
 }
