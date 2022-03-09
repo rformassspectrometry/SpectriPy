@@ -42,7 +42,7 @@ compareSpectriPy <- function(x,
                              mz_power=0,
                              intensity_power=1,
                              ignore_peaks_above_precursor= FALSE,
-                             output="scores"){
+                             output="score"){
     
     # calculate half of the matrix if only one spectra object applied
     if(is.null(y)){
