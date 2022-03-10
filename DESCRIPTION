@@ -17,9 +17,9 @@ Authors@R:
              role = c("aut"),
              comment = c(ORCID = "")),
       person(given = "Helge", family = "Hecht",
-             email = "",
+             email = "helge.hecht@recetox.muni.cz",
              role = c("aut"),
-             comment = c(ORCID = "")))
+             comment = c(ORCID = "0000-0001-6744-996X")))
 Depends:
     R (>= 4.0.0)
 Imports:
