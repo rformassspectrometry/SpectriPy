@@ -1,5 +1,5 @@
 ---
-title: "SpectriPy"
+title: "Integrating `Spectra` with Python's `matchms` package"
 package: SpectriPy
 output:
   BiocStyle::html_document:
@@ -9,8 +9,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative }
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{Spectra,BiocStyle,msdata,SpectriPy}
-bibliography: references.bib
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,basilisk}
 ---
 
 ```{r style, echo = FALSE, results = 'asis'}
@@ -24,19 +23,50 @@ BiocStyle::markdown()
 
 # Introduction
 
-# Conversion of Spectra
+The `SpectriPy` package allows integration of Python MS packages into a
+`Spectra`-based MS analysis in `R`. Python functionality is wrapped into R
+functions allowing a seamless integration of the functionality of Python's
+`matchms` package into `R`. In addition, functions to convert between R's
+`Spectra` objects and Python's `matchms` spectrum objects are available to the
+advanced user or developer.
+
+# Installation
+
+The package requires a python environment to be available and can be installed
+with the `BiocManager` R package using the command
+`BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
+packages are installed automatically on demand.
+
+# Spectra similarity calculations using `matchms`
+
+
+
+# Advanced use and internals
+
+For advanced users or developers, the `rspec_to_pyspec` and `pyspec_to_rspec`
+functions are available that enable conversion between MS data representations
+in `R` and Python (i.e. between the `Spectra` object and the Python `matchms`
+Spectrum object). To use these functions the `reticulate` package needs to be
+installed along with a Python environment and the `matchms` Python package.
+
+To illustrate their use we initialize below the Python environment that is
+bundled using the `r BiocStyle::Biocpkg("basilisk")` package within `SpectriPy`.
+
+```{r setup-basilisk}
+library(SpectriPy)
+library(basilisk)
+cl <- basiliskStart(SpectriPy:::matchms_env)
+```
+
+We next create a simple `Spectra` object representing fragment spectra for some
+small compounds.
 
 ```{r}
-# load required libraries
 library(Spectra)
-library(reticulate)
-library(magrittr)
-library(SpectriPy)
 
 # create example spectra
 spd <- DataFrame(
   msLevel = c(2L, 2L, 2L),
-  polarity = c(1L, 1L, 1L),
   id = c("HMDB0000001", "HMDB0000001", "HMDB0001847"),
   name = c("1-Methylhistidine", "1-Methylhistidine", "Caffeine"))
 
@@ -52,72 +82,84 @@ spd$intensity <- list(
   c(0.459, 2.585, 2.446, 0.508, 8.968, 0.524, 0.974, 100.0, 40.994))
 
 sps <- Spectra(spd)
-
-# load conda environment with matchms and import
-use_condaenv("matchms")
-matchms <- import("matchms")
-
-# test conversion
-pyspecs <- convertRSpectraToPySpectrum(sps)
-rspecs <- convertPySpectrumToRSpectra(pyspecs)
 ```
 
-# Perform similarity using reticulate with R objects
+We next convert the `Spectra` to a `matchms` Spectrum object.
 
 ```{r}
-# import similarity functions
-similarity <- import("matchms.similarity")
-
-# perform comparison and copy results to python for read out
-py$result <- matchms$calculate_scores(references = pyspecs,
-                                      queries = pyspecs ,
-                                      similarity_function = similarity$CosineGreedy(tolerance = 0.005),
-                                      is_symmetric = TRUE)
-
-# run python script extract similarity
-py_run_string("score = []")
-py_run_string("for x,y,z in result:
-                    score.append(z['score'])")
-
-score <- matrix(unlist(py$score), nrow=py$result$n_rows, ncol=py$result$n_cols)
-score
-
-# run python script to extract matches
-py_run_string("matches = []")
-py_run_string("for x,y,z in result:
-                    matches.append(z['matches'])")
-
-matches <- matrix(unlist(py$matches), nrow=py$result$n_rows, ncol=py$result$n_cols)
-matches
+pysps <- rspec_to_pyspec(sps)
+pysps
 ```
 
-# Perform similarity using reticulate directly in Python
+As a result we got now a Python list with 3 Spectrum objects containing the peak
+data of `sps` as well as a reduced set of the available spectra variables in
+`sps`. Which spectra variables get copied to Python can be defined with the
+`mapping` parameter of `rspec_to_pyspec`. The default is to convert all
+variables defined by `spectraVariableMapping()`, but additional variables along
+with their respective names in the Python Spectrum object can be defined
+too. Below we list the pre-selected spectra variables that are converted by
+default.
 
 ```{r}
-py$references <- pyspecs
-py$queries <- pyspecs
-
-py_run_string("from matchms import calculate_scores
-from matchms.similarity import CosineGreedy
-result = calculate_scores(references=references,
-                          queries=queries,
-                          similarity_function=CosineGreedy(tolerance = 0.005),
-                          is_symmetric=True)")
-
-# run python script extract similarity
-py_run_string("score = []")
-py_run_string("for x,y,z in result:
-                    score.append(z['score'])")
-
-score <- matrix(unlist(py$score), nrow=py$result$n_rows, ncol=py$result$n_cols)
-score
-
-# run python script to extract matches
-py_run_string("matches = []")
-py_run_string("for x,y,z in result:
-                    matches.append(z['matches'])")
-
-matches <- matrix(unlist(py$matches), nrow=py$result$n_rows, ncol=py$result$n_cols)
-matches
+spectraVariableMapping()
 ```
 
+With our `Spectra` data converted to Python, we could directly call all routines
+from the `matchms` package using the `reticulate` R package. Below we normalize
+the intensities of the 3 spectra using the from `normalize_intensities`
+functions from the `matchms.filtering` Python package. We thus need to import
+first the functionality from that package and can then directly call the
+function on the objects.
+
+```{r}
+library(reticulate)
+filters <- import("matchms.filtering")
+
+res <- vector("list", length(pysps))
+for (i in (seq_along(pysps) - 1))
+    res[[i + 1]] <- filters$normalize_intensities(pysps[i])
+res <- r_to_py(res)
+res
+```
+
+We can now convert the list of Python Spectrum objects back to R with
+`pyspec_to_rspec`:
+
+```{r}
+sps_r <- pyspec_to_rspec(res)
+#' The normalized intensities
+intensity(sps_r)
+#' The original intensities
+intensity(sps)
+```
+
+Intensity values have now been normalized to values between 0 and 1.
+
+Note however that, it would be much better (and likely more efficient) to
+directly use a Python function on the list of Spectrum objects instead of the
+mixed R and Python code used in the example above. Below we define a simple
+python script that iterates over the spectra in python and performs the
+normalization.
+
+```{r}
+py_script <- paste0("from matchms.filtering import normalize_intensities\n",
+                    "for i in range(len(pysps)):\n",
+                    "    pysps[i] = normalize_intensities(pysps[i])\n")
+py$pysps <- pysps
+py_run_string(py_script)
+
+tmp <- pyspec_to_rspec(pysps)
+intensity(tmp)
+```
+
+At very last we need also to stop the Python environment created by `basilisk`.
+
+```{r}
+basiliskStop(cl)
+```
+
+# Session information
+
+```{r}
+sessionInfo()
+```
