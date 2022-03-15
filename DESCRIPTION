@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.0.2
+Version: 0.1.0
 Authors@R:
     c(person(given = "Michael", family = "Witting",
              role = c("aut"),
@@ -30,6 +30,7 @@ Imports:
     IRanges,
     S4Vectors,
     BiocParallel,
+    ProtGenerics,
     methods
 Suggests:
     testthat,
