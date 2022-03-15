@@ -39,6 +39,107 @@ packages are installed automatically on demand.
 
 # Spectra similarity calculations using `matchms`
 
+The `SpectriPy` package provides the `compareSpectriPy` function that allows to
+perform spectra similarity calculations using the scoring functions from the
+`matchms` Python package. Below all currently supported scoring
+functions are listed along with the *parameter* class that allows selecting and
+configuring the algorithm in the `compareSpectriPy` function. Additional
+functions will be added in future.
+
+- [*CosineGreedy*](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineGreedy.html):
+  `CosineGreedyParam`.
+- [*CosineHungarian*](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html):
+  `CosineHungarianParam`.
+- [*ModifiedCosineParam*](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html):
+  `ModifiedCosineParam`.
+
+We next create some simple example spectra and subsequently use the
+`compareSpectriPy` function to calculate pairwise similarities between these.
+
+```{r, message = FALSE}
+library(Spectra)
+library(SpectriPy)
+
+## Create a Spectra object with two MS2 spectra for Caffeine.
+caf <- DataFrame(
+    msLevel = c(2L, 2L),
+    name = "Caffeine",
+    precursorMz = c(195.0877, 195.0877)
+)
+caf$intensity <- list(
+    c(340.0, 416, 2580, 412),
+    c(388.0, 3270, 85, 54, 10111))
+caf$mz <- list(
+    c(135.0432, 138.0632, 163.0375, 195.0880),
+    c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864))
+caf <- Spectra(caf)
+
+## Create a Spectra object with two MS2 spectra for 1-Methylhistidine
+mhd <- DataFrame(
+    msLevel = c(2L, 2L),
+    precursorMz = c(170.0924, 170.0924),
+    id = c("HMDB0000001", "HMDB0000001"),
+    name = c("1-Methylhistidine", "1-Methylhistidine"))
+mhd$mz <- list(
+    c(109.2, 124.2, 124.5, 170.16, 170.52),
+    c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
+mhd$intensity <- list(
+    c(3.407, 47.494, 3.094, 100.0, 13.240),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
+mhd <- Spectra(mhd)
+```
+
+We first calculate pairwise similarities between all spectra defined above and
+those of caffeine using `Spectra`'s built-in `compareSpectra` function.
+
+```{r}
+all <- c(caf, mhd)
+res_r <- compareSpectra(all, caf)
+res_r
+```
+
+Thus, `compareSpectra` returned the pairwise similarity scores (by default
+calculated using the normalized dot-product function) between all spectra in
+`all` (rows) and all spectra in `caf` (columns). `compareSpectriPy` works
+similar, with the difference that we need to specify and configure the
+similarity function (from `matchms`) using a dedicated parameter object. Below
+we calculate the similarity using the *CosineGreedy* function changing the
+`tolerance` to a value of `0.05` (instead of the default `0.1`).
+
+```{r}
+res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
+res
+```
+
+As a result `compareSpectriPy` returns also a numeric matrix of similarities.
+Note also that the first `compareSpectriPy` call takes usually a little longer
+because the Python setup has to be initialized.
+
+Next we use the *ModifiedCosine* algorithm that considers also differences
+between the spectra's precursor m/z in the calculation.
+
+```{r}
+res <- compareSpectriPy(all, caf, param = ModifiedCosineParam())
+res
+```
+
+Note however that this similarity score requires that for all spectra precursor
+m/z values are available, otherwise an error will be thrown. Thus, we should
+always ensure to remove spectra without precursor m/z values prior to similarity
+scoring with this similarity method. Below we remove the precursor m/z from one
+of our input spectra and then show how the `Spectra` object could be subsetted
+to *valid* spectra for this method.
+
+```{r}
+## Remove precursor m/z from the 3rd spectrum
+all$precursorMz[3] <- NA
+
+## Filter the input spectra removing those with missing precursor.
+all <- all[!is.na(precursorMz(all))]
+
+compareSpectriPy(all, caf, param = ModifiedCosineParam())
+```
+
 
 
 # Advanced use and internals

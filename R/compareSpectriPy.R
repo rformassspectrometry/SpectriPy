@@ -37,17 +37,14 @@
 #'   mass-shift is applied. The mass shift is simply the difference in
 #'   precursor-m/z between the two spectra.
 #'
-#' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
-#'   quantifying the similarity between two mass spectra. The score is
-#'   calculated by finding best possible matches between peaks of two spectra.
-#'   Two peaks are considered a potential match if their m/z ratios lie within
-#'   the given `tolerance` once a mass-shift is applied. The mass shift is the
-#'   difference in precursor-m/z between the two spectra.
-#'
 #' @param x A [Spectra()] object.
 #'
-#' @param y A [Spectra()] object to compare against. If missing spectra
-#'   similarities are calculated between all spectr in `x`.
+#' @param y A [Spectra()] object to compare against. If missing, spectra
+#'   similarities are calculated between all spectra in `x`.
+#'
+#' @param param one of parameter classes listed above (such as
+#'   `CosineGreedyParam`) defining the similarity scoring function in python
+#'   and its parameters.
 #'
 #' @param tolerance `numeric(1)`: tolerated differences in peaks' m/z. Peaks
 #'   with m/z differences `<= tolerance` are considered matching.
@@ -59,8 +56,7 @@
 #' @param intensityPower `numeric(1)`: the power to raise intensity to in the
 #'   cosine function. The default is 1.
 #'
-#' @param ignorePeaksAbovePrecursor `logical(1)`: if `TRUE` (the default), peaks
-#'   with m/z values larger then the precursor m/z are ignored.
+#' @param ... ignored.
 #'
 #' @return `compareSpectriPy` returns a `numeric` matrix with the scores,
 #'   number of rows being equal to `length(x)` and number of columns equal to
@@ -76,6 +72,44 @@
 #' @importFrom reticulate py_run_string
 #'
 #' @examples
+#'
+#' library(Spectra)
+#' ## Create some example Spectra.
+#' DF <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+#'     precursorMz = c(195.0877, 195.0877, 170.0924)
+#' )
+#' DF$intensity <- list(
+#'     c(340.0, 416, 2580, 412),
+#'     c(388.0, 3270, 85, 54, 10111),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240))
+#' DF$mz <- list(
+#'     c(135.0432, 138.0632, 163.0375, 195.0880),
+#'     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52))
+#' sps <- Spectra(DF)
+#'
+#' ## Calculate pairwise similarity beween all spectra within sps with
+#' ## matchms' CosineGreedy algorithm
+#' ## Note: the first compareSpectriPy will take longer because the Python
+#' ## environment needs to be set up.
+#' res <- compareSpectriPy(sps, param = CosineGreedyParam())
+#' res
+#'
+#' ## Next we calculate similarities for all spectra against the first one
+#' res <- compareSpectriPy(sps, sps[1], param = CosineGreedyParam())
+#'
+#' ## Calculate pairwise similarity of all spectra in sps with matchms'
+#' ## ModifiedCosine algorithm
+#' res <- compareSpectriPy(sps, param = ModifiedCosineParam())
+#' res
+#'
+#' ## Note that the ModifiedCosine method requires the precursor m/z to be
+#' ## known for all input spectra. Thus, it is advisable to remove spectra
+#' ## without precursor m/z before using this algorithm.
+#' sps <- sps[!is.na(precursorMz(sps))]
+#' compareSpectriPy(sps, param = ModifiedCosineParam())
 NULL
 
 setGeneric("compareSpectriPy", function(x, y, param, ...)
@@ -156,7 +190,21 @@ ModifiedCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
 
 #' @rdname compareSpectriPy
 #'
-#' @export
+#' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
+#'   quantifying the similarity between two mass spectra. The score is
+#'   calculated by finding best possible matches between peaks of two spectra.
+#'   Two peaks are considered a potential match if their m/z ratios lie within
+#'   the given `tolerance` once a mass-shift is applied. The mass shift is the
+#'   difference in precursor-m/z between the two spectra.
+#'
+#' @param ignorePeaksAbovePrecursor `logical(1)`: if `TRUE` (the default), peaks
+#'   with m/z values larger then the precursor m/z are ignored.
+#'
+#' NOTE: the NeutralLossesCosine function is not yet part of an official
+#' release! We will export this function and the related similarity score
+#' once it is (i.e. in `matchms` > 0.14.0
+#'
+#' @noRd
 NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
                                      intensityPower = 1.0,
                                      ignorePeaksAbovePrecursor = TRUE) {
@@ -166,21 +214,23 @@ NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
         ignorePeaksAbovePrecursor = as.logical(ignorePeaksAbovePrecursor))
 }
 
-## #' @rdname compareSpectriPy
-## #'
-## #' @exportMethod compareSpectriPy
-## setMethod(
-##     "compareSpectriPy",
-##     signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedyParam"),
-##     function(x, y, param, ...) {
-##         ## Simply pass things along.
-##     })
-## setMethod(
-##     "compareSpectriPy",
-##     signature = c(x = "Spectra", y = "missing", param = "CosineGreedyParam"),
-##     function(x, y, param, ...) {
-##         ## Simply pass things along setting y = NULL.
-##     })
+#' @rdname compareSpectriPy
+#'
+#' @exportMethod compareSpectriPy
+setMethod(
+    "compareSpectriPy",
+    signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedyParam"),
+    function(x, y, param, ...) {
+        .compare_spectra_python(x, y, param)
+    })
+
+#' @rdname compareSpectriPy
+setMethod(
+    "compareSpectriPy",
+    signature = c(x = "Spectra", y = "missing", param = "CosineGreedyParam"),
+    function(x, y, param, ...) {
+        .compare_spectra_python(x, y = NULL, param)
+    })
 
 #' helper function to extract cosine parameter settings for similarity functions
 #' based on cosine.
@@ -240,9 +290,14 @@ setMethod(
 #'
 #' @param param Parameter object.
 #'
+#' @param score `character(1)` defining which value should be returned from the
+#'     Python call.
+#'
 #' @return a `numeric` `matrix` nrow being length of `x`, nrow length `y`.
 #'
-#' @importFrom basilisk basiliskStart basiliskRun
+#' @importFrom basilisk basiliskStart basiliskRun basiliskStop
+#'
+#' @importFrom reticulate py
 #'
 #' @noRd
 #'
@@ -257,13 +312,14 @@ setMethod(
 
     basiliskRun(cl, function(x, y, param) {
         ref <- import("matchms")
+        vars <- c(precursorMz = "precursor_mz")
         is_symmetric <- "False"
-        py$py_x <- rspec_to_pyspec(x, reference = ref)
+        py$py_x <- rspec_to_pyspec(x, reference = ref, mapping = vars)
         if (is.null(y)) {
             py$py_y <- py$py_x
             is_symmetric <- "True"
         } else
-            py$py_y <- rspec_to_pyspec(y, reference = ref)
+            py$py_y <- rspec_to_pyspec(y, reference = ref, mapping = vars)
         com <- python_command(param, is_symmetric = is_symmetric)
         ## Run the command. Result is in py$res
         py_run_string(com)

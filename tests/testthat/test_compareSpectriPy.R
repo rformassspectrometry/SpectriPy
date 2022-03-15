@@ -120,3 +120,33 @@ test_that(".compare_spectra_python works", {
     expect_true(nrow(res) == 0)
     expect_true(ncol(res) == length(all))
 })
+
+test_that("compareSpectriPy works", {
+    all <- c(caf, mhd)
+    res <- compareSpectriPy(all, param = CosineGreedyParam())
+    expect_true(is.numeric(res))
+    expect_true(nrow(res) == length(all))
+    expect_true(ncol(res) == length(all))
+    expect_equal(diag(res), c(1, 1, 1, 1))
+
+    res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
+    expect_true(is.numeric(res))
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
+    expect_true(all(res == 0))
+
+    ## Add tests after matchms > 0.14.0
+    ## res <- compareSpectriPy(all, all, param = NeutralLossesCosineParam())
+
+    ## ModifiedCosine with and without precursor m/z
+    res <- compareSpectriPy(all, all, param = ModifiedCosineParam())
+    expect_true(nrow(res) == length(all))
+    expect_true(ncol(res) == length(all))
+    expect_true(all(res > 0))
+    expect_equal(diag(res), c(1, 1, 1, 1))
+
+    all_mod <- all
+    all_mod$precursorMz[3] <- NA_real_
+    expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosineParam()),
+                 "Expect precursor to be positive")
+})

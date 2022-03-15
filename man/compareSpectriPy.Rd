@@ -5,7 +5,8 @@
 \alias{CosineGreedyParam}
 \alias{CosineHungarianParam}
 \alias{ModifiedCosineParam}
-\alias{NeutralLossesCosineParam}
+\alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
+\alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
 \title{Spectra similarity calculations using matchms}
 \usage{
 CosineGreedyParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
@@ -14,12 +15,9 @@ CosineHungarianParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
 
 ModifiedCosineParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
 
-NeutralLossesCosineParam(
-  tolerance = 0.1,
-  mzPower = 0,
-  intensityPower = 1,
-  ignorePeaksAbovePrecursor = TRUE
-)
+\S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
+
+\S4method{compareSpectriPy}{Spectra,missing,CosineGreedyParam}(x, y, param, ...)
 }
 \arguments{
 \item{tolerance}{\code{numeric(1)}: tolerated differences in peaks' m/z. Peaks
@@ -32,13 +30,16 @@ not depend on the m/z ratios.}
 \item{intensityPower}{\code{numeric(1)}: the power to raise intensity to in the
 cosine function. The default is 1.}
 
-\item{ignorePeaksAbovePrecursor}{\code{logical(1)}: if \code{TRUE} (the default), peaks
-with m/z values larger then the precursor m/z are ignored.}
-
 \item{x}{A \code{\link[=Spectra]{Spectra()}} object.}
 
-\item{y}{A \code{\link[=Spectra]{Spectra()}} object to compare against. If missing spectra
-similarities are calculated between all spectr in \code{x}.}
+\item{y}{A \code{\link[=Spectra]{Spectra()}} object to compare against. If missing, spectra
+similarities are calculated between all spectra in \code{x}.}
+
+\item{param}{one of parameter classes listed above (such as
+\code{CosineGreedyParam}) defining the similarity scoring function in python
+and its parameters.}
+
+\item{...}{ignored.}
 }
 \value{
 \code{compareSpectriPy} returns a \code{numeric} matrix with the scores,
@@ -76,13 +77,47 @@ considered a potential match if their m/z ratios lie within the given
 \code{tolerance}, or if their m/z ratios lie within the tolerance once a
 mass-shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-\item \code{NeutralLossesCosineParam}: The neutral losses cosine score aims at
-quantifying the similarity between two mass spectra. The score is
-calculated by finding best possible matches between peaks of two spectra.
-Two peaks are considered a potential match if their m/z ratios lie within
-the given \code{tolerance} once a mass-shift is applied. The mass shift is the
-difference in precursor-m/z between the two spectra.
 }
+}
+\examples{
+
+library(Spectra)
+## Create some example Spectra.
+DF <- DataFrame(
+    msLevel = c(2L, 2L, 2L),
+    name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+    precursorMz = c(195.0877, 195.0877, 170.0924)
+)
+DF$intensity <- list(
+    c(340.0, 416, 2580, 412),
+    c(388.0, 3270, 85, 54, 10111),
+    c(3.407, 47.494, 3.094, 100.0, 13.240))
+DF$mz <- list(
+    c(135.0432, 138.0632, 163.0375, 195.0880),
+    c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+    c(109.2, 124.2, 124.5, 170.16, 170.52))
+sps <- Spectra(DF)
+
+## Calculate pairwise similarity beween all spectra within sps with
+## matchms' CosineGreedy algorithm
+## Note: the first compareSpectriPy will take longer because the Python
+## environment needs to be set up.
+res <- compareSpectriPy(sps, param = CosineGreedyParam())
+res
+
+## Next we calculate similarities for all spectra against the first one
+res <- compareSpectriPy(sps, sps[1], param = CosineGreedyParam())
+
+## Calculate pairwise similarity of all spectra in sps with matchms'
+## ModifiedCosine algorithm
+res <- compareSpectriPy(sps, param = ModifiedCosineParam())
+res
+
+## Note that the ModifiedCosine method requires the precursor m/z to be
+## known for all input spectra. Thus, it is advisable to remove spectra
+## without precursor m/z before using this algorithm.
+sps <- sps[!is.na(precursorMz(sps))]
+compareSpectriPy(sps, param = ModifiedCosineParam())
 }
 \seealso{
 \code{\link[=compareSpectra]{compareSpectra()}} in the \code{Spectra} package for pure R
