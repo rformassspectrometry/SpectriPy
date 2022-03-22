@@ -123,12 +123,12 @@ res <- compareSpectriPy(all, caf, param = ModifiedCosineParam())
 res
 ```
 
-Note however that this similarity score requires that for all spectra precursor
-m/z values are available, otherwise an error will be thrown. Thus, we should
-always ensure to remove spectra without precursor m/z values prior to similarity
-scoring with this similarity method. Below we remove the precursor m/z from one
-of our input spectra and then show how the `Spectra` object could be subsetted
-to *valid* spectra for this method.
+Note that for this calculation all spectra precursor m/z values need to be
+available, otherwise an error will be thrown. Thus, we should always ensure to
+remove spectra without precursor m/z values prior to similarity scoring with
+this similarity method. Below we remove the precursor m/z from one of our input
+spectra and then show how the `Spectra` object could be subsetted to *valid*
+spectra for this method.
 
 ```{r}
 ## Remove precursor m/z from the 3rd spectrum
