@@ -24,7 +24,7 @@ Description: The SpectriPy package allows to integrate Python-based MS analysis
 Depends:
     R (>= 4.1.0)
 Imports:
-    Spectra,
+    Spectra (>= 1.5.8),
     basilisk,
     reticulate,
     IRanges,
