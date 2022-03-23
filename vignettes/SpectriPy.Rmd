@@ -7,7 +7,8 @@ output:
 vignette: >
   %\VignetteIndexEntry{SpectriPy}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative }
+  %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative}
+  %\VignettePackage{SpectriPy}
   %\VignetteEncoding{UTF-8}
   %\VignetteDepends{Spectra,BiocStyle,SpectriPy,basilisk}
 ---
@@ -16,7 +17,6 @@ vignette: >
 BiocStyle::markdown()
 ```
 
-**Package**: `r BiocStyle::Biocpkg("SpectriPy")`<br />
 **Authors**: `r packageDescription("SpectriPy")[["Author"]] `<br />
 **Compiled**: `r date()`
 

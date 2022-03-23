@@ -19,8 +19,9 @@ Authors@R:
              role = c("aut"),
              comment = c(ORCID = "0000-0001-6744-996X")))
 Description: The SpectriPy package allows to integrate Python-based MS analysis
-    code with the Spectra package. Spectra objects can be converted into python
-    objects.
+    code with the Spectra package. Spectra objects can be converted into
+    Python's matchms Spectrum objects. In addition, SpectriPy integrates the
+    similarity scoring functions from the matchms package into R.
 Depends:
     R (>= 4.1.0)
 Imports:
