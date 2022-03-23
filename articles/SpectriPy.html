@@ -111,6 +111,293 @@ installed with the <code>BiocManager</code> R package using the command
 <code>BiocManager::install("RforMassSpectrometry/SpectriPy")</code>. All
 required python packages are installed automatically on demand.</p>
 </div>
+<div class="section level2">
+<h2 id="spectra-similarity-calculations-using-matchms">Spectra similarity calculations using <code>matchms</code><a class="anchor" aria-label="anchor" href="#spectra-similarity-calculations-using-matchms"></a>
+</h2>
+<p>The <code>SpectriPy</code> package provides the
+<code>compareSpectriPy</code> function that allows to perform spectra
+similarity calculations using the scoring functions from the
+<code>matchms</code> Python package. Below all currently supported
+scoring functions are listed along with the <em>parameter</em> class
+that allows selecting and configuring the algorithm in the
+<code>compareSpectriPy</code> function. Additional functions will be
+added in future.</p>
+<ul>
+<li>
+<a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineGreedy.html" class="external-link"><em>CosineGreedy</em></a>:
+<code>CosineGreedyParam</code>.</li>
+<li>
+<a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html" class="external-link"><em>CosineHungarian</em></a>:
+<code>CosineHungarianParam</code>.</li>
+<li>
+<a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html" class="external-link"><em>ModifiedCosineParam</em></a>:
+<code>ModifiedCosineParam</code>.</li>
+</ul>
+<p>We next create some simple example spectra and subsequently use the
+<code>compareSpectriPy</code> function to calculate pairwise
+similarities between these.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span>
+
+<span class="co">## Create a Spectra object with two MS2 spectra for Caffeine.</span>
+<span class="va">caf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/DataFrame-class.html" class="external-link">DataFrame</a></span><span class="op">(</span>
+    msLevel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>,
+    name <span class="op">=</span> <span class="st">"Caffeine"</span>,
+    precursorMz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">195.0877</span>, <span class="fl">195.0877</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="va">caf</span><span class="op">$</span><span class="va">intensity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">340.0</span>, <span class="fl">416</span>, <span class="fl">2580</span>, <span class="fl">412</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">388.0</span>, <span class="fl">3270</span>, <span class="fl">85</span>, <span class="fl">54</span>, <span class="fl">10111</span><span class="op">)</span><span class="op">)</span>
+<span class="va">caf</span><span class="op">$</span><span class="va">mz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">135.0432</span>, <span class="fl">138.0632</span>, <span class="fl">163.0375</span>, <span class="fl">195.0880</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">110.0710</span>, <span class="fl">138.0655</span>, <span class="fl">138.1057</span>, <span class="fl">138.1742</span>, <span class="fl">195.0864</span><span class="op">)</span><span class="op">)</span>
+<span class="va">caf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">caf</span><span class="op">)</span>
+
+<span class="co">## Create a Spectra object with two MS2 spectra for 1-Methylhistidine</span>
+<span class="va">mhd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/DataFrame-class.html" class="external-link">DataFrame</a></span><span class="op">(</span>
+    msLevel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>,
+    precursorMz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">170.0924</span>, <span class="fl">170.0924</span><span class="op">)</span>,
+    id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HMDB0000001"</span>, <span class="st">"HMDB0000001"</span><span class="op">)</span>,
+    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1-Methylhistidine"</span>, <span class="st">"1-Methylhistidine"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mhd</span><span class="op">$</span><span class="va">mz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">109.2</span>, <span class="fl">124.2</span>, <span class="fl">124.5</span>, <span class="fl">170.16</span>, <span class="fl">170.52</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">83.1</span>, <span class="fl">96.12</span>, <span class="fl">97.14</span>, <span class="fl">109.14</span>, <span class="fl">124.08</span>, <span class="fl">125.1</span>, <span class="fl">170.16</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mhd</span><span class="op">$</span><span class="va">intensity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.407</span>, <span class="fl">47.494</span>, <span class="fl">3.094</span>, <span class="fl">100.0</span>, <span class="fl">13.240</span><span class="op">)</span>,
+    <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.685</span>, <span class="fl">4.381</span>, <span class="fl">3.022</span>, <span class="fl">16.708</span>, <span class="fl">100.0</span>, <span class="fl">4.565</span>, <span class="fl">40.643</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mhd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">mhd</span><span class="op">)</span></code></pre></div>
+<p>We first calculate pairwise similarities between all spectra defined
+above and those of caffeine using <code>Spectra</code>’s built-in
+<code>compareSpectra</code> function.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="va">caf</span>, <span class="va">mhd</span><span class="op">)</span>
+<span class="va">res_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span><span class="op">)</span>
+<span class="va">res_r</span></code></pre></div>
+<pre><code><span class="co">##           [,1]      [,2]</span>
+<span class="co">## [1,] 1.0000000 0.1973448</span>
+<span class="co">## [2,] 0.1973448 1.0000000</span>
+<span class="co">## [3,] 0.0000000 0.0000000</span>
+<span class="co">## [4,] 0.0000000 0.0000000</span></code></pre>
+<p>Thus, <code>compareSpectra</code> returned the pairwise similarity
+scores (by default calculated using the normalized dot-product function)
+between all spectra in <code>all</code> (rows) and all spectra in
+<code>caf</code> (columns). <code>compareSpectriPy</code> works similar,
+with the difference that we need to specify and configure the similarity
+function (from <code>matchms</code>) using a dedicated parameter object.
+Below we calculate the similarity using the <em>CosineGreedy</em>
+function changing the <code>tolerance</code> to a value of
+<code>0.05</code> (instead of the default <code>0.1</code>).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">CosineGreedyParam</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>
+<span class="va">res</span></code></pre></div>
+<pre><code><span class="co">##           [,1]      [,2]</span>
+<span class="co">## [1,] 1.0000000 0.1948181</span>
+<span class="co">## [2,] 0.1948181 1.0000000</span>
+<span class="co">## [3,] 0.0000000 0.0000000</span>
+<span class="co">## [4,] 0.0000000 0.0000000</span></code></pre>
+<p>As a result <code>compareSpectriPy</code> returns also a numeric
+matrix of similarities. Note also that the first
+<code>compareSpectriPy</code> call takes usually a little longer because
+the Python setup has to be initialized.</p>
+<p>Next we use the <em>ModifiedCosine</em> algorithm that considers also
+differences between the spectra’s precursor m/z in the calculation.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="va">res</span></code></pre></div>
+<pre><code><span class="co">##            [,1]      [,2]</span>
+<span class="co">## [1,] 1.00000000 0.1948181</span>
+<span class="co">## [2,] 0.19481813 1.0000000</span>
+<span class="co">## [3,] 0.13841831 0.8520549</span>
+<span class="co">## [4,] 0.05724816 0.3523997</span></code></pre>
+<p>Note that for this calculation all spectra precursor m/z values need
+to be available, otherwise an error will be thrown. Thus, we should
+always ensure to remove spectra without precursor m/z values prior to
+similarity scoring with this similarity method. Below we remove the
+precursor m/z from one of our input spectra and then show how the
+<code>Spectra</code> object could be subsetted to <em>valid</em> spectra
+for this method.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Remove precursor m/z from the 3rd spectrum</span>
+<span class="va">all</span><span class="op">$</span><span class="va">precursorMz</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>
+
+<span class="co">## Filter the input spectra removing those with missing precursor.</span>
+<span class="va">all</span> <span class="op">&lt;-</span> <span class="va">all</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">all</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
+
+<span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##            [,1]      [,2]</span>
+<span class="co">## [1,] 1.00000000 0.1948181</span>
+<span class="co">## [2,] 0.19481813 1.0000000</span>
+<span class="co">## [3,] 0.05724816 0.3523997</span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="advanced-use-and-internals">Advanced use and internals<a class="anchor" aria-label="anchor" href="#advanced-use-and-internals"></a>
+</h2>
+<p>For advanced users or developers, the <code>rspec_to_pyspec</code>
+and <code>pyspec_to_rspec</code> functions are available that enable
+conversion between MS data representations in <code>R</code> and Python
+(i.e. between the <code>Spectra</code> object and the Python
+<code>matchms</code> Spectrum object). To use these functions the
+<code>reticulate</code> package needs to be installed along with a
+Python environment and the <code>matchms</code> Python package.</p>
+<p>To illustrate their use we initialize below the Python environment
+that is bundled using the <em><a href="https://bioconductor.org/packages/3.14/basilisk" class="external-link">basilisk</a></em>
+package within <code>SpectriPy</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">basilisk</span><span class="op">)</span>
+<span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/basilisk/man/basiliskStart.html" class="external-link">basiliskStart</a></span><span class="op">(</span><span class="fu">SpectriPy</span><span class="fu">:::</span><span class="va">matchms_env</span><span class="op">)</span></code></pre></div>
+<p>We next create a simple <code>Spectra</code> object representing
+fragment spectra for some small compounds.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span>
+
+<span class="co"># create example spectra</span>
+<span class="va">spd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/DataFrame-class.html" class="external-link">DataFrame</a></span><span class="op">(</span>
+  msLevel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>,
+  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HMDB0000001"</span>, <span class="st">"HMDB0000001"</span>, <span class="st">"HMDB0001847"</span><span class="op">)</span>,
+  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1-Methylhistidine"</span>, <span class="st">"1-Methylhistidine"</span>, <span class="st">"Caffeine"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co">## Assign m/z and intensity values.</span>
+<span class="va">spd</span><span class="op">$</span><span class="va">mz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">109.2</span>, <span class="fl">124.2</span>, <span class="fl">124.5</span>, <span class="fl">170.16</span>, <span class="fl">170.52</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">83.1</span>, <span class="fl">96.12</span>, <span class="fl">97.14</span>, <span class="fl">109.14</span>, <span class="fl">124.08</span>, <span class="fl">125.1</span>, <span class="fl">170.16</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">56.0494</span>, <span class="fl">69.0447</span>, <span class="fl">83.0603</span>, <span class="fl">109.0395</span>, <span class="fl">110.0712</span>,
+    <span class="fl">111.0551</span>, <span class="fl">123.0429</span>, <span class="fl">138.0662</span>, <span class="fl">195.0876</span><span class="op">)</span><span class="op">)</span>
+<span class="va">spd</span><span class="op">$</span><span class="va">intensity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.407</span>, <span class="fl">47.494</span>, <span class="fl">3.094</span>, <span class="fl">100.0</span>, <span class="fl">13.240</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.685</span>, <span class="fl">4.381</span>, <span class="fl">3.022</span>, <span class="fl">16.708</span>, <span class="fl">100.0</span>, <span class="fl">4.565</span>, <span class="fl">40.643</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></code></pre></div>
+<p>We next convert the <code>Spectra</code> to a <code>matchms</code>
+Spectrum object.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pysps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">rspec_to_pyspec</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span>
+<span class="va">pysps</span></code></pre></div>
+<pre><code><span class="co">## [&lt;matchms.Spectrum.Spectrum&gt;, &lt;matchms.Spectrum.Spectrum&gt;, &lt;matchms.Spectrum.Spectrum&gt;]</span></code></pre>
+<p>As a result we got now a Python list with 3 Spectrum objects
+containing the peak data of <code>sps</code> as well as a reduced set of
+the available spectra variables in <code>sps</code>. Which spectra
+variables get copied to Python can be defined with the
+<code>mapping</code> parameter of <code>rspec_to_pyspec</code>. The
+default is to convert all variables defined by
+<code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>, but additional variables along
+with their respective names in the Python Spectrum object can be defined
+too. Below we list the pre-selected spectra variables that are converted
+by default.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##                  precursorMz           precursorIntensity </span>
+<span class="co">##               "precursor_mz"        "precursor_intensity" </span>
+<span class="co">##              precursorCharge                        rtime </span>
+<span class="co">##                     "charge"             "retention_time" </span>
+<span class="co">##              collisionEnergy      isolationWindowTargetMz </span>
+<span class="co">##           "collision_energy" "isolation_window_target_mz" </span>
+<span class="co">##                      msLevel </span>
+<span class="co">##                   "ms_level"</span></code></pre>
+<p>With our <code>Spectra</code> data converted to Python, we could
+directly call all routines from the <code>matchms</code> package using
+the <code>reticulate</code> R package. Below we normalize the
+intensities of the 3 spectra using the from
+<code>normalize_intensities</code> functions from the
+<code>matchms.filtering</code> Python package. We thus need to import
+first the functionality from that package and can then directly call the
+function on the objects.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span>
+<span class="va">filters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"matchms.filtering"</span><span class="op">)</span>
+
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pysps</span><span class="op">)</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">pysps</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">res</span><span class="op">[[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">filters</span><span class="op">$</span><span class="fu">normalize_intensities</span><span class="op">(</span><span class="va">pysps</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
+<span class="va">res</span></code></pre></div>
+<pre><code><span class="co">## [&lt;matchms.Spectrum.Spectrum&gt;, &lt;matchms.Spectrum.Spectrum&gt;, &lt;matchms.Spectrum.Spectrum&gt;]</span></code></pre>
+<p>We can now convert the list of Python Spectrum objects back to R with
+<code>pyspec_to_rspec</code>:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sps_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
+<span class="co">#' The normalized intensities</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">sps_r</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## NumericList of length 3</span>
+<span class="co">## [[1]] 0.03407 0.47494 0.03094 1 0.1324</span>
+<span class="co">## [[2]] 0.06685 0.04381 0.03022 0.16708 1 0.04565 0.40643</span>
+<span class="co">## [[3]] 0.00459 0.02585 0.02446 0.00508 0.08968 0.00524 0.00974 1 0.40994</span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#' The original intensities</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## NumericList of length 3</span>
+<span class="co">## [[1]] 3.407 47.494 3.094 100 13.24</span>
+<span class="co">## [[2]] 6.685 4.381 3.022 16.708 100 4.565 40.643</span>
+<span class="co">## [[3]] 0.459 2.585 2.446 0.508 8.968 0.524 0.974 100 40.994</span></code></pre>
+<p>Intensity values have now been normalized to values between 0 and
+1.</p>
+<p>Note however that, it would be much better (and likely more
+efficient) to directly use a Python function on the list of Spectrum
+objects instead of the mixed R and Python code used in the example
+above. Below we define a simple python script that iterates over the
+spectra in python and performs the normalization.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">py_script</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"from matchms.filtering import normalize_intensities\n"</span>,
+                    <span class="st">"for i in range(len(pysps)):\n"</span>,
+                    <span class="st">"    pysps[i] = normalize_intensities(pysps[i])\n"</span><span class="op">)</span>
+<span class="va">py</span><span class="op">$</span><span class="va">pysps</span> <span class="op">&lt;-</span> <span class="va">pysps</span>
+<span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_run.html" class="external-link">py_run_string</a></span><span class="op">(</span><span class="va">py_script</span><span class="op">)</span>
+
+<span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec</a></span><span class="op">(</span><span class="va">pysps</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## NumericList of length 3</span>
+<span class="co">## [[1]] 0.03407 0.47494 0.03094 1 0.1324</span>
+<span class="co">## [[2]] 0.06685 0.04381 0.03022 0.16708 1 0.04565 0.40643</span>
+<span class="co">## [[3]] 0.00459 0.02585 0.02446 0.00508 0.08968 0.00524 0.00974 1 0.40994</span></code></pre>
+<p>At very last we need also to stop the Python environment created by
+<code>basilisk</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/basilisk/man/basiliskStart.html" class="external-link">basiliskStop</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</h2>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## R version 4.1.3 (2022-03-10)</span>
+<span class="co">## Platform: x86_64-apple-darwin17.0 (64-bit)</span>
+<span class="co">## Running under: macOS Big Sur/Monterey 10.16</span>
+<span class="co">## </span>
+<span class="co">## Matrix products: default</span>
+<span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib</span>
+<span class="co">## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib</span>
+<span class="co">## </span>
+<span class="co">## locale:</span>
+<span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span>
+<span class="co">## </span>
+<span class="co">## attached base packages:</span>
+<span class="co">## [1] graphics stats4   stats    utils    methods  base    </span>
+<span class="co">## </span>
+<span class="co">## other attached packages:</span>
+<span class="co">## [1] reticulate_1.24     basilisk_1.6.0      SpectriPy_0.1.0    </span>
+<span class="co">## [4] Spectra_1.5.13      ProtGenerics_1.27.2 BiocParallel_1.28.3</span>
+<span class="co">## [7] S4Vectors_0.32.3    BiocGenerics_0.40.0 BiocStyle_2.22.0   </span>
+<span class="co">## </span>
+<span class="co">## loaded via a namespace (and not attached):</span>
+<span class="co">##  [1] Rcpp_1.0.8.3         bslib_0.3.1          compiler_4.1.3      </span>
+<span class="co">##  [4] BiocManager_1.30.16  jquerylib_0.1.4      basilisk.utils_1.6.0</span>
+<span class="co">##  [7] tools_4.1.3          grDevices_4.1.3      digest_0.6.29       </span>
+<span class="co">## [10] lattice_0.20-45      jsonlite_1.8.0       evaluate_0.15       </span>
+<span class="co">## [13] memoise_2.0.1        clue_0.3-60          png_0.1-7           </span>
+<span class="co">## [16] rlang_1.0.2          Matrix_1.4-0         dir.expiry_1.2.0    </span>
+<span class="co">## [19] cli_3.2.0            filelock_1.0.2       yaml_2.3.5          </span>
+<span class="co">## [22] parallel_4.1.3       pkgdown_2.0.2        xfun_0.30           </span>
+<span class="co">## [25] fastmap_1.1.0        stringr_1.4.0        knitr_1.37          </span>
+<span class="co">## [28] cluster_2.1.2        desc_1.4.1           fs_1.5.2            </span>
+<span class="co">## [31] sass_0.4.0           systemfonts_1.0.4    IRanges_2.28.0      </span>
+<span class="co">## [34] MsCoreUtils_1.7.4    grid_4.1.3           rprojroot_2.0.2     </span>
+<span class="co">## [37] here_1.0.1           R6_2.5.1             textshaping_0.3.6   </span>
+<span class="co">## [40] rmarkdown_2.13       bookdown_0.25        purrr_0.3.4         </span>
+<span class="co">## [43] magrittr_2.0.2       htmltools_0.5.2      MASS_7.3-55         </span>
+<span class="co">## [46] ragg_1.2.2           stringi_1.7.6        cachem_1.0.6</span></code></pre>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
