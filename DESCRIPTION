@@ -38,6 +38,8 @@ Suggests:
     BiocStyle,
     rmarkdown,
     patrick
+Remotes:
+    RforMassSpectrometry/Spectra
 License: Artistic-2.0
 VignetteBuilder: knitr
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues
