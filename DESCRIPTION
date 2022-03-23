@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.0.2
+Version: 0.1.0
 Authors@R:
     c(person(given = "Michael", family = "Witting",
              role = c("aut"),
@@ -11,9 +11,9 @@ Authors@R:
              role = c("aut", "cre"),
              comment = c(ORCID = "0000-0002-6977-7147")),
       person(given = "Carolin", family = "Huber",
-             email = "",
+             email = "Carolin-elisabeth.huber@ufz.de",
              role = c("aut"),
-             comment = c(ORCID = "")),
+             comment = c(ORCID = "0000-0002-9355-8948")),
       person(given = "Helge", family = "Hecht",
              email = "helge.hecht@recetox.muni.cz",
              role = c("aut"),
@@ -24,12 +24,13 @@ Description: The SpectriPy package allows to integrate Python-based MS analysis
 Depends:
     R (>= 4.1.0)
 Imports:
-    Spectra,
+    Spectra (>= 1.5.8),
     basilisk,
     reticulate,
     IRanges,
     S4Vectors,
     BiocParallel,
+    ProtGenerics,
     methods
 Suggests:
     testthat,
