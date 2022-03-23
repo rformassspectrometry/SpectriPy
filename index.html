@@ -72,19 +72,17 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="interface-for-rs-spectra-package-with-python">Interface for R’s <code>Spectra</code> package with Python<a class="anchor" aria-label="anchor" href="#interface-for-rs-spectra-package-with-python"></a>
+<div class="page-header"><h1 id="integrating-spectra-with-pythons-matchms-package">Integrating <a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link"><code>Spectra</code></a>
+with Python’s <code>matchms</code> package<a class="anchor" aria-label="anchor" href="#integrating-spectra-with-pythons-matchms-package"></a>
 </h1></div>
 
-<p>This repository provides example code to convert/transfer MS-related
-data between R and Python. Final goal is to develop an R package that
-allows to efficiently integrate python packages for MS analysis with the
-<code>Spectra</code> package. The <code>SpectriPy</code> package allows
-to use functionality of the <code>matchms</code> Python packages
-directly in R and in addition exports also the low level functions to
-convert between R <code>Spectra</code> objects and Python
-<code>matchms</code> Spectrum objects that enable advanced users or
-developers to integrate additional Python functionality into R
-<em>via</em> the <code>reticulate</code> R package.</p>
+<p>The <code>SpectriPy</code> package allows integration of Python MS
+packages into a <code>Spectra</code>-based MS analysis in
+<code>R</code>. Python functionality is wrapped into R functions
+allowing a seamless integration of the functionality of Python’s <a href="https://github.com/matchms/" class="external-link"><code>matchms</code></a> package into
+<code>R</code>. In addition, functions to convert between R’s
+<code>Spectra</code> objects and Python’s <code>matchms</code> spectrum
+objects are available to the advanced user or developer.</p>
 <div class="section level2">
 <h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
 </h2>
@@ -109,7 +107,7 @@ package is independent of the system’s Python environment.</p>
 <div class="section level2">
 <h2 id="concepts-and-examples">Concepts and examples<a class="anchor" aria-label="anchor" href="#concepts-and-examples"></a>
 </h2>
-<p>See the package’s vignette.</p>
+<p>See the package’s <a href="https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html" class="external-link">vignette</a>.</p>
 </div>
 </div>
   </div>
