@@ -32,31 +32,31 @@ test_that("param constructors work", {
     expect_error(CosineGreedyParam(intensityPower = c(1, 2)), "length 1")
     expect_error(NeutralLossesCosineParam(
         ignorePeaksAbovePrecursor = c(TRUE, FALSE)), "length 1")
-
-    res <- CosineGreedyParam(tolerance = 5)
-    expect_s4_class(res, "CosineGreedyParam")
-    expect_equal(res@tolerance, 5)
-
-    res <- CosineHungarianParam(intensityPower = 1.3)
-    expect_s4_class(res, "CosineHungarianParam")
-    expect_equal(res@intensityPower, 1.3)
-
-    res <- ModifiedCosineParam(mzPower = 4.3)
-    expect_s4_class(res, "ModifiedCosineParam")
-    expect_equal(res@mzPower, 4.3)
-
-    res <- NeutralLossesCosineParam(ignorePeaksAbovePrecursor = FALSE)
-    expect_s4_class(res, "NeutralLossesCosineParam")
-    expect_false(res@ignorePeaksAbovePrecursor)
 })
 
-test_that(".fun_name works", {
-    a <- CosineHungarianParam()
-    expect_equal(.fun_name(a), "CosineHungarian")
-    expect_equal(.fun_name(CosineGreedyParam()), "CosineGreedy")
-    expect_equal(.fun_name(ModifiedCosineParam()), "ModifiedCosine")
-    expect_equal(.fun_name(NeutralLossesCosineParam()), "NeutralLossesCosine")
-})
+with_parameters_test_that("Parameter class constructors work (parameterized)", {
+    res <- do.call(param, args)
+    expect_s4_class(res, class_name)
+    for (name in names(args)) {
+        expect_equal(slot(res, name), args[[name]])
+    }
+}, cases(
+    list(param = CosineGreedyParam, args = list(tolerance = 5), class_name = "CosineGreedyParam"),
+    list(param = CosineHungarianParam, args = list(intensityPower = 1.3), class_name = "CosineHungarianParam"),
+    list(param = ModifiedCosineParam, args = list(mzPower = 4.3), class_name = "ModifiedCosineParam"),
+    list(param = NeutralLossesCosineParam, args = list(ignorePeaksAbovePrecursor = FALSE), class_name = "NeutralLossesCosineParam")
+))
+
+with_parameters_test_that(".fun name works parameterized", {
+    a <- param()
+    expect_equal(.fun_name(a), method_name)
+    expect_equal(.fun_name(param()), method_name)
+}, cases(
+    list(param = CosineGreedyParam, method_name = "CosineGreedy"),
+    list(param = CosineHungarianParam, method_name = "CosineHungarian"),
+    list(param = ModifiedCosineParam, method_name = "ModifiedCosine"),
+    list(param = NeutralLossesCosineParam, method_name = "NeutralLossesCosine")
+))
 
 test_that("python_command and .cosine_param_string work", {
     a <- ModifiedCosineParam(tolerance = 0.9)
