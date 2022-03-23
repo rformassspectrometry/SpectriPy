@@ -1,27 +1,26 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
 Version: 0.1.0
-Authors@R:
-    c(person(given = "Michael", family = "Witting",
-             role = c("aut"),
-             email = "michael.witting@helmholtz-muenchen.de",
-             comment = c(ORCID = "0000-0002-1462-4426")),
-      person(given = "Johannes", family = "Rainer",
-             email = "Johannes.Rainer@eurac.edu",
-             role = c("aut", "cre"),
-             comment = c(ORCID = "0000-0002-6977-7147")),
-      person(given = "Carolin", family = "Huber",
-             email = "Carolin-elisabeth.huber@ufz.de",
-             role = c("aut"),
-             comment = c(ORCID = "0000-0002-9355-8948")),
-      person(given = "Helge", family = "Hecht",
-             email = "helge.hecht@recetox.muni.cz",
-             role = c("aut"),
-             comment = c(ORCID = "0000-0001-6744-996X")))
 Description: The SpectriPy package allows to integrate Python-based MS analysis
     code with the Spectra package. Spectra objects can be converted into
     Python's matchms Spectrum objects. In addition, SpectriPy integrates the
     similarity scoring functions from the matchms package into R.
+Authors@R: c(person(given = "Michael", family = "Witting",
+                    role = c("aut"),
+                    email = "michael.witting@helmholtz-muenchen.de",
+                    comment = c(ORCID = "0000-0002-1462-4426")),
+             person(given = "Johannes", family = "Rainer",
+                    email = "Johannes.Rainer@eurac.edu",
+                    role = c("aut", "cre"),
+                    comment = c(ORCID = "0000-0002-6977-7147")),
+             person(given = "Carolin", family = "Huber",
+                    email = "Carolin-elisabeth.huber@ufz.de",
+                    role = c("aut"),
+                    comment = c(ORCID = "0000-0002-9355-8948")),
+             person(given = "Helge", family = "Hecht",
+                    email = "helge.hecht@recetox.muni.cz",
+                    role = c("aut"),
+                    comment = c(ORCID = "0000-0001-6744-996X")))
 Depends:
     R (>= 4.1.0)
 Imports:
