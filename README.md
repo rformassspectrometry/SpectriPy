@@ -19,6 +19,10 @@ spectrum objects are available to the advanced user or developer.
 - Helge Hecht
 - Johannes Rainer
 
+## Contributions
+
+Please the *R for Mass Spectrometry* [code of conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#code-of-conduct) and [contribution guidelines](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#contributions).
+
 
 ## Pre-requisites and installation instructions
 
