@@ -12,17 +12,6 @@ functions allowing a seamless integration of the functionality of Python's
 functions to convert between R's `Spectra` objects and Python's `matchms`
 spectrum objects are available to the advanced user or developer.
 
-## Contributors
-
-- Carolin Huber
-- Michael Witting
-- Helge Hecht
-- Johannes Rainer
-
-## Contributions
-
-Please the *R for Mass Spectrometry* [code of conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#code-of-conduct) and [contribution guidelines](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#contributions).
-
 
 ## Pre-requisites and installation instructions
 
