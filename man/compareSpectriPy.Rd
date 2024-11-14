@@ -8,8 +8,6 @@
 \alias{NeutralLossesCosineParam}
 \alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
 \alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
-\alias{Ms2DeepScoreParam}
-\alias{compareSpectriPy,Spectra,Spectra,Ms2DeepScoreParam-method}
 \title{Spectra similarity calculations using matchms}
 \usage{
 CosineGreedyParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
@@ -28,10 +26,6 @@ NeutralLossesCosineParam(
 \S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
 
 \S4method{compareSpectriPy}{Spectra,missing,CosineGreedyParam}(x, y, param, ...)
-
-Ms2DeepScoreParam(modelFile = character())
-
-\S4method{compareSpectriPy}{Spectra,Spectra,Ms2DeepScoreParam}(x, y, param, ...)
 }
 \arguments{
 \item{tolerance}{\code{numeric(1)}: tolerated differences in peaks' m/z. Peaks

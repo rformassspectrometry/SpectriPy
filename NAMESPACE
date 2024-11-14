@@ -3,7 +3,6 @@
 export(CosineGreedyParam)
 export(CosineHungarianParam)
 export(ModifiedCosineParam)
-export(Ms2DeepScoreParam)
 export(NeutralLossesCosineParam)
 export(compareSpectriPy)
 export(pyspec_to_rspec)

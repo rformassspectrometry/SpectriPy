@@ -2,8 +2,7 @@
 
 ## Changes in 0.2.0
 
-- Use *matchms* version 0.27.0.
-- Add *ms2deepscore* version 2.0.0.
+- Use *matchms* version 0.28.2.
 
 # SpectriPy 0.1
 
