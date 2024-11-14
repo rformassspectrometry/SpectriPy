@@ -1,30 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/SpectriPy.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compareSpectriPy.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rspec_to_pyspec.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/404.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/articles/index.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/authors.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/index.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/news/index.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/index.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/rspec_to_pyspec.html</loc></url>
 </urlset>
+
