@@ -5,6 +5,7 @@
 \alias{CosineGreedyParam}
 \alias{CosineHungarianParam}
 \alias{ModifiedCosineParam}
+\alias{NeutralLossesCosineParam}
 \alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
 \alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
 \title{Spectra similarity calculations using matchms}
@@ -14,6 +15,13 @@ CosineGreedyParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
 CosineHungarianParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
 
 ModifiedCosineParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
+
+NeutralLossesCosineParam(
+  tolerance = 0.1,
+  mzPower = 0,
+  intensityPower = 1,
+  ignorePeaksAbovePrecursor = TRUE
+)
 
 \S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
 
@@ -30,6 +38,10 @@ not depend on the m/z ratios.}
 \item{intensityPower}{\code{numeric(1)}: the power to raise intensity to in the
 cosine function. The default is 1.}
 
+\item{ignorePeaksAbovePrecursor}{For \code{NeutralLossesCosineParam()}:
+\code{logical(1)}: if \code{TRUE} (the default), peaks with m/z values larger than
+the precursor m/z are ignored.}
+
 \item{x}{A \code{\link[=Spectra]{Spectra()}} object.}
 
 \item{y}{A \code{\link[=Spectra]{Spectra()}} object to compare against. If missing, spectra
@@ -42,12 +54,12 @@ and its parameters.}
 \item{...}{ignored.}
 }
 \value{
-\code{compareSpectriPy} returns a \code{numeric} matrix with the scores,
+\code{compareSpectriPy()} returns a \code{numeric} matrix with the scores,
 number of rows being equal to \code{length(x)} and number of columns equal to
 \code{length(y)}.
 }
 \description{
-The \code{compareSpectriPy} function allows to calculate spectral similarity
+The \code{compareSpectriPy()} function allows to calculate spectral similarity
 scores using the \verb{calculate_scores module} of the python
 \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html}{matchms.similarity package}
 package.
@@ -77,6 +89,12 @@ considered a potential match if their m/z ratios lie within the given
 \code{tolerance}, or if their m/z ratios lie within the tolerance once a
 mass-shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
+\item \code{NeutralLossesCosineParam}: The neutral losses cosine score aims at
+quantifying the similarity between two mass spectra. The score is
+calculated by finding best possible matches between peaks of two spectra.
+Two peaks are considered a potential match if their m/z ratios lie within
+the given \code{tolerance} once a mass-shift is applied. The mass shift is the
+difference in precursor-m/z between the two spectra.
 }
 }
 \examples{

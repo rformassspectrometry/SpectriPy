@@ -28,12 +28,12 @@ pyspec_to_rspec(
 
 \item{...}{ignored.}
 
-\item{x}{For \code{rspec_to_pyspec}: \code{Spectra} object. For \code{pyspec_to_rspec}:
-an Python list of matchms Spectrum objects.}
+\item{x}{For \code{rspec_to_pyspec()}: \code{Spectra} object. For \code{pyspec_to_rspec()}:
+a Python list of matchms Spectrum objects.}
 
 \item{mapping}{Named \code{character} providing the spectra variable names
-(metadata) to convert. Names are expected to be the spectr variable names
-and values the corresponding names of the Python Spectrum metadata
+(metadata) to convert. Names are expected to be the spectra variable
+names and values the corresponding names of the Python Spectrum metadata
 fields. See description above for more details.}
 
 \item{reference}{Optional reference to Python environment \code{matchms}.}
@@ -44,18 +44,18 @@ fields. See description above for more details.}
 checking should only disabled for very good reasons.}
 }
 \value{
-For \code{rspec_to_pyspec}: Python array of Spectrum objects, same
-length than \code{x}. Fpr \code{pyspec_to_rspec}: \code{\link[=Spectra]{Spectra()}} with the converted
-spectra. For \code{spectraVariableMapping}: named \code{character} vector with
+For \code{rspec_to_pyspec()}: Python array of Spectrum objects, same
+length than \code{x}. For \code{pyspec_to_rspec()}: \code{\link[=Spectra]{Spectra()}} with the converted
+spectra. For \code{spectraVariableMapping()}: named \code{character} vector with
 names being \code{Spectra} variable names and values the corresponding names
 in \code{matchms}.
 }
 \description{
-The \code{rspec_to_pyspec} and \code{pyspec_to_rspec} functions allow to convert
+The \code{rspec_to_pyspec()} and \code{pyspec_to_rspec()} functions allow to convert
 R \code{\link[=Spectra]{Spectra()}} objects into \href{https://github.com/matchms/matchms}{matchms}
 Python \code{Spectrum} objects. These functions are designed for
 \strong{advanced users or developers} who want/need to integrate Python/matchms
-functionality into R using \code{reticulate}. All other users should use the
+functionality into R using \emph{reticulate}. All other users should use the
 dedicated R functions within this package that take care of running the
 Python code in the correct Python environment.
 
@@ -68,10 +68,10 @@ variables and the values the corresponding names in the Python's Spectrum
 metadata. See the output of the \code{spectraVariableMapping()} function for the
 default variables and the mapping of the names.
 
-The \code{spectraVariableMapping} function provides a default mapping of some
+The \code{spectraVariableMapping()} function provides a default mapping of some
 core \code{Spectra} variables based on this \href{https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv}{definition in matchms}.
 The function returns a named vector that can be directly used as parameter
-\code{mapping} in the \code{rspec_to_pyspec} and \code{pyspec_to_rspec} functions.
+\code{mapping} in the \code{rspec_to_pyspec()} and \code{pyspec_to_rspec()} functions.
 }
 \examples{
 

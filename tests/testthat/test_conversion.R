@@ -90,7 +90,7 @@ test_that(".single_rspec_to_pyspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)
     vars <- spectraVariableMapping()
     basiliskRun(cl, function(x) {
-        res <- .single_rspec_to_pyspec(sps[1L], vars)
+        res <- SpectriPy:::.single_rspec_to_pyspec(sps[1L], vars)
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
         expect_equal(sort(names(res$metadata)), sort(unname(vars)))
         expect_equal(as.numeric(res$peaks$intensities),
@@ -98,7 +98,7 @@ test_that(".single_rspec_to_pyspec works", {
     }, x = sps)
     ## No metadata
     basiliskRun(cl, function(x) {
-        res <- .single_rspec_to_pyspec(sps[1L], character())
+        res <- SpectriPy:::.single_rspec_to_pyspec(sps[1L], character())
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
         expect_equal(sort(names(res$metadata)), character())
         expect_equal(as.numeric(res$peaks$intensities),
@@ -106,30 +106,40 @@ test_that(".single_rspec_to_pyspec works", {
     }, x = sps)
     ## Only msLevel
     basiliskRun(cl, function(x) {
-        res <- .single_rspec_to_pyspec(sps[1L], c(msLevel = "msLevel"))
+        res <- SpectriPy:::.single_rspec_to_pyspec(sps[1L], c(msLevel = "msLevel"))
         expect_equal(class(res)[1L], "matchms.Spectrum.Spectrum")
-        expect_equal(sort(names(res$metadata)), "mslevel")
+        expect_equal(sort(names(res$metadata)), "ms_level")
     }, x = sps)
     basiliskStop(cl)
 })
 
-with_parameters_test_that(".single_pyspec_to_rspec works with parameters", {
+test_that(".single_pyspec_to_rspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)
     vars <- spectraVariableMapping()
 
-    p <- SpectriPy:::.single_rspec_to_pyspec(sps[index])
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[1L])
     res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
-    expect_equal(mz(res), mz(sps[index]))
-    expect_equal(intensity(res), intensity(sps[index]))
-    expect_equal(rtime(res), rtime(sps[index]))
-    expect_equal(msLevel(res), msLevel(sps[index]))
+    expect_equal(mz(res), mz(sps[1L]))
+    expect_equal(intensity(res), intensity(sps[1L]))
+    expect_equal(rtime(res), rtime(sps[1L]))
+    expect_equal(msLevel(res), msLevel(sps[1L]))
+
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[2L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(mz(res), mz(sps[2L]))
+    expect_equal(intensity(res), intensity(sps[2L]))
+    expect_equal(rtime(res), rtime(sps[2L]))
+    expect_equal(msLevel(res), msLevel(sps[2L]))
+
+    p <- SpectriPy:::.single_rspec_to_pyspec(sps[3L])
+    res <- SpectriPy:::.single_pyspec_to_rspec(p, vars)
+    expect_equal(mz(res), mz(sps[3L]))
+    expect_equal(intensity(res), intensity(sps[3L]))
+    expect_equal(rtime(res), rtime(sps[3L]))
+    expect_equal(msLevel(res), msLevel(sps[3L]))
 
     basiliskStop(cl)
-}, cases(
-       first = list(index = 1L),
-       second = list(index = 2L),
-       third = list(index = 3L)
-   ))
+})
 
 test_that(".single_pyspec_to_rspec works", {
     cl <- basiliskStart(SpectriPy:::matchms_env)

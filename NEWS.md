@@ -1,3 +1,9 @@
+# SpectriPy 0.2
+
+## Changes in 0.2.0
+
+- Use *matchms* version 0.28.2.
+
 # SpectriPy 0.1
 
 ## Changes in 0.1.1

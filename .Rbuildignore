@@ -1,7 +1,7 @@
 .editorconfig
 README.md
 local_data/*
-
+man/figures/*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .travis.yml
