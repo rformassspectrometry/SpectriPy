@@ -4,7 +4,7 @@
 #'
 #' @description
 #'
-#' The `compareSpectriPy` function allows to calculate spectral similarity
+#' The `compareSpectriPy()` function allows to calculate spectral similarity
 #' scores using the `calculate_scores module` of the python
 #' [matchms.similarity package](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html)
 #' package.
@@ -37,6 +37,13 @@
 #'   mass-shift is applied. The mass shift is simply the difference in
 #'   precursor-m/z between the two spectra.
 #'
+#' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
+#'   quantifying the similarity between two mass spectra. The score is
+#'   calculated by finding best possible matches between peaks of two spectra.
+#'   Two peaks are considered a potential match if their m/z ratios lie within
+#'   the given `tolerance` once a mass-shift is applied. The mass shift is the
+#'   difference in precursor-m/z between the two spectra.
+#'
 #' @param x A [Spectra()] object.
 #'
 #' @param y A [Spectra()] object to compare against. If missing, spectra
@@ -53,12 +60,16 @@
 #'   function. The default is 0, in which case the peak intensity products will
 #'   not depend on the m/z ratios.
 #'
+#' @param ignorePeaksAbovePrecursor For `NeutralLossesCosineParam()`:
+#'   `logical(1)`: if `TRUE` (the default), peaks with m/z values larger than
+#'   the precursor m/z are ignored.
+#'
 #' @param intensityPower `numeric(1)`: the power to raise intensity to in the
 #'   cosine function. The default is 1.
 #'
 #' @param ... ignored.
 #'
-#' @return `compareSpectriPy` returns a `numeric` matrix with the scores,
+#' @return `compareSpectriPy()` returns a `numeric` matrix with the scores,
 #'   number of rows being equal to `length(x)` and number of columns equal to
 #'   `length(y)`.
 #'
@@ -190,21 +201,7 @@ ModifiedCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
 
 #' @rdname compareSpectriPy
 #'
-#' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
-#'   quantifying the similarity between two mass spectra. The score is
-#'   calculated by finding best possible matches between peaks of two spectra.
-#'   Two peaks are considered a potential match if their m/z ratios lie within
-#'   the given `tolerance` once a mass-shift is applied. The mass shift is the
-#'   difference in precursor-m/z between the two spectra.
-#'
-#' @param ignorePeaksAbovePrecursor `logical(1)`: if `TRUE` (the default), peaks
-#'   with m/z values larger then the precursor m/z are ignored.
-#'
-#' NOTE: the NeutralLossesCosine function is not yet part of an official
-#' release! We will export this function and the related similarity score
-#' once it is (i.e. in `matchms` > 0.14.0
-#'
-#' @noRd
+#' @export
 NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
                                      intensityPower = 1.0,
                                      ignorePeaksAbovePrecursor = TRUE) {
@@ -264,7 +261,8 @@ setMethod(
                "from matchms.similarity import ", FUN, "\n",
                "res = matchms.calculate_scores(", input_param,
                ", ", FUN, "(", .cosine_param_string(object), "), ",
-               "is_symmetric=", is_symmetric, ")")
+               "is_symmetric=", is_symmetric, ")\n",
+               "sim = res.scores.to_array()[\"", FUN, "_score\"]\n")
     })
 setMethod(
     "python_command",
@@ -278,7 +276,8 @@ setMethod(
                "ignore_peaks_above_precursor=",
                ifelse(object@ignorePeaksAbovePrecursor,
                       yes = "True", no = "False"),
-               "), is_symmetric=", is_symmetric, ")")
+               "), is_symmetric=", is_symmetric, ")\n",
+               "sim = res.scores.to_array()[\"", FUN, "_score\"]\n")
     })
 
 #' internal function to calculate similarities with python's matchms. `Spectra`
@@ -290,7 +289,7 @@ setMethod(
 #'
 #' @param param Parameter object.
 #'
-#' @param score `character(1)` defining which value should be returned from the
+#' @param value `character(1)` defining which value should be returned from the
 #'     Python call.
 #'
 #' @return a `numeric` `matrix` nrow being length of `x`, nrow length `y`.
@@ -323,11 +322,99 @@ setMethod(
         com <- python_command(param, is_symmetric = is_symmetric)
         ## Run the command. Result is in py$res
         py_run_string(com)
-        ## Collect the results.
-        py_run_string(
-            paste0("sim = []\n",
-                   "for x,y,z in res:\n  sim.append(z['", value, "'])"))
-        matrix(unlist(py$sim, use.names = FALSE),
-               nrow = length(x), byrow = TRUE)
+        ## Collect the results
+        return(py$sim)
+        ## py_run_string(
+        ##     paste0("sim = []\n",
+        ##            "for x,y,z in res:\n  sim.append(z['", value, "'])"))
+        ## matrix(unlist(py$sim, use.names = FALSE),
+        ##        nrow = length(x), byrow = TRUE)
     }, x = x, y = y, param = param)
 }
+
+################################################################################
+##
+##    ms2deepscore
+##
+################################################################################
+
+#' @importClassesFrom ProtGenerics Param
+#'
+#' @noRd
+setClass("Ms2DeepScoreParam",
+         contains = "Param",
+         slots = c(
+             modelFile = "character"
+         ),
+         prototype = prototype(
+             modelFile = character()
+         ),
+         validity = function(object) {
+             msg <- NULL
+             if (length(object@modelFile) > 0) {
+                 if (length(object@modelFile) != 1)
+                     msg <- c("'modelFile' has to be of length 1.")
+                 if (!file.exists(object@modelFile[1L]))
+                     msg <- c(msg, "file \"", object@modelFile,
+                              "\" does not exist.")
+             }
+             msg
+         })
+
+#' @rdname compareSpectriPy
+#'
+#' @export
+Ms2DeepScoreParam <- function(modelFile = character()) {
+    new("Ms2DeepScoreParam", modelFile = modelFile)
+}
+
+#' @rdname compareSpectriPy
+#'
+setMethod(
+    "compareSpectriPy",
+    signature = c(x = "Spectra", y = "Spectra", param = "Ms2DeepScoreParam"),
+    function(x, y, param, ...) {
+        if (!length(x) || (!length(y) & !is.null(y)))
+            return(matrix(NA_real_, ncol = length(y), nrow = length(x)))
+        if (!length(param@modelFile))
+            stop("No model file was specified.", call. = FALSE)
+
+        cl <- basiliskStart(matchms_env)
+        on.exit(basiliskStop(cl))
+
+        basiliskRun(cl, function(x, y, param) {
+            ref <- import("matchms")
+            vars <- c(precursorMz = "precursor_mz")
+            py$py_x <- rspec_to_pyspec(x, reference = ref, mapping = vars)
+            if (is.null(y)) {
+                py$py_y <- py$py_x
+                is_symmetric <- "True"
+            } else
+                py$py_y <- rspec_to_pyspec(y, reference = ref, mapping = vars)
+            com <- paste0("import matchms\nimport ms2deepscore\n",
+                          "from ms2deepscore import MS2DeepScore\n",
+                          "from ms2deepscore.models import load_model\n",
+                          "model = load_model(\"", param@modelFile, "\")\n",
+                          "res = similarity_measure.matrix(py_x, py_y)\n")
+            py_run_string(com)
+            matrix(py$res)
+            ## Collect the results.
+            ## py_run_string(
+            ##     paste0("sim = []\n",
+            ##            "for x,y,z in res:\n  sim.append(z['", value, "'])"))
+            ## matrix(unlist(py$sim, use.names = FALSE),
+            ##        nrow = length(x), byrow = TRUE)
+        }, x = x, y = y, param = param)
+    })
+
+## from matchms import calculate_scores
+## from matchms.importing import load_from_msp
+## from ms2deepscore import MS2DeepScore
+## from ms2deepscore.models import load_model
+
+## model = load_model("load model file")
+## similarity_measure = MS2DeepScore(model)
+## scores_mat = similarity_measure.matrix(
+## matchms_spectrum1,
+## matchms_spectrum2
+## )

@@ -21,28 +21,31 @@ BiocStyle::markdown()
 
 # Introduction
 
-The `SpectriPy` package allows integration of Python MS packages into a
-`Spectra`-based MS analysis in `R`. Python functionality is wrapped into R
+The *SpectriPy* package allows integration of Python MS packages into a
+*Spectra*-based MS analysis in *R*. Python functionality is wrapped into R
 functions allowing a seamless integration of the functionality of Python's
-`matchms` package into `R`. In addition, functions to convert between R's
-`Spectra` objects and Python's `matchms` spectrum objects are available to the
-advanced user or developer.
+*matchms* package into R. In addition, functions to convert between R's
+`Spectra` objects and Python's *matchms* spectrum objects are available to the
+advanced user or developer enabling to create custom functions or workflows on
+`Spectra` objects in Python and executing them in R using the *reticulate* R package.
 
 # Installation
 
 The package requires a python environment to be available and can be installed
-with the `BiocManager` R package using the command
+with the *BiocManager* R package using the command
 `BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
-packages are installed automatically on demand.
+libraries are installed automatically on demand. Note that first installation
+or first invocation of specific functions might take long because of this
+installation process.
 
 # Spectra similarity calculations using `matchms`
 
-The `SpectriPy` package provides the `compareSpectriPy` function that allows to
-perform spectra similarity calculations using the scoring functions from the
-`matchms` Python package. Below all currently supported scoring
-functions are listed along with the *parameter* class that allows selecting and
-configuring the algorithm in the `compareSpectriPy` function. Additional
-functions will be added in future.
+The *SpectriPy* package provides the `compareSpectriPy()` function that allows
+to perform spectra similarity calculations using the scoring functions from the
+*matchms* Python package. Below all currently supported scoring functions are
+listed along with the *parameter* class that allows selecting and configuring
+the algorithm in the `compareSpectriPy()` function. Additional functions will be
+added in future.
 
 - [*CosineGreedy*](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineGreedy.html):
   `CosineGreedyParam`.
@@ -52,7 +55,7 @@ functions will be added in future.
   `ModifiedCosineParam`.
 
 We next create some simple example spectra and subsequently use the
-`compareSpectriPy` function to calculate pairwise similarities between these.
+`compareSpectriPy()` function to calculate pairwise similarities between these.
 
 ```{r, message = FALSE}
 library(Spectra)
@@ -88,7 +91,7 @@ mhd <- Spectra(mhd)
 ```
 
 We first calculate pairwise similarities between all spectra defined above and
-those of caffeine using `Spectra`'s built-in `compareSpectra` function.
+those of caffeine using *Spectra*'s built-in `compareSpectra()` function.
 
 ```{r}
 all <- c(caf, mhd)
@@ -96,11 +99,11 @@ res_r <- compareSpectra(all, caf)
 res_r
 ```
 
-Thus, `compareSpectra` returned the pairwise similarity scores (by default
+Thus, `compareSpectra()` returned the pairwise similarity scores (by default
 calculated using the normalized dot-product function) between all spectra in
-`all` (rows) and all spectra in `caf` (columns). `compareSpectriPy` works
+`all` (rows) and all spectra in `caf` (columns). `compareSpectriPy()` works
 similar, with the difference that we need to specify and configure the
-similarity function (from `matchms`) using a dedicated parameter object. Below
+similarity function (from *matchms*) using a dedicated parameter object. Below
 we calculate the similarity using the *CosineGreedy* function changing the
 `tolerance` to a value of `0.05` (instead of the default `0.1`).
 

@@ -41,22 +41,27 @@ with_parameters_test_that("Parameter class constructors work (parameterized)", {
         expect_equal(slot(res, name), args[[name]])
     }
 }, cases(
-    list(param = CosineGreedyParam, args = list(tolerance = 5), class_name = "CosineGreedyParam"),
-    list(param = CosineHungarianParam, args = list(intensityPower = 1.3), class_name = "CosineHungarianParam"),
-    list(param = ModifiedCosineParam, args = list(mzPower = 4.3), class_name = "ModifiedCosineParam"),
-    list(param = NeutralLossesCosineParam, args = list(ignorePeaksAbovePrecursor = FALSE), class_name = "NeutralLossesCosineParam")
-))
+       list(param = CosineGreedyParam, args = list(tolerance = 5),
+            class_name = "CosineGreedyParam"),
+       list(param = CosineHungarianParam, args = list(intensityPower = 1.3),
+            class_name = "CosineHungarianParam"),
+       list(param = ModifiedCosineParam, args = list(mzPower = 4.3),
+            class_name = "ModifiedCosineParam"),
+       list(param = NeutralLossesCosineParam,
+            args = list(ignorePeaksAbovePrecursor = FALSE),
+            class_name = "NeutralLossesCosineParam")
+   ))
 
 with_parameters_test_that(".fun name works parameterized", {
     a <- param()
     expect_equal(.fun_name(a), method_name)
     expect_equal(.fun_name(param()), method_name)
 }, cases(
-    list(param = CosineGreedyParam, method_name = "CosineGreedy"),
-    list(param = CosineHungarianParam, method_name = "CosineHungarian"),
-    list(param = ModifiedCosineParam, method_name = "ModifiedCosine"),
-    list(param = NeutralLossesCosineParam, method_name = "NeutralLossesCosine")
-))
+       list(param = CosineGreedyParam, method_name = "CosineGreedy"),
+       list(param = CosineHungarianParam, method_name = "CosineHungarian"),
+       list(param = ModifiedCosineParam, method_name = "ModifiedCosine"),
+       list(param = NeutralLossesCosineParam, method_name = "NeutralLossesCosine")
+   ))
 
 test_that("python_command and .cosine_param_string work", {
     a <- ModifiedCosineParam(tolerance = 0.9)
@@ -89,9 +94,43 @@ test_that("python_command and .cosine_param_string work", {
     expect_match(res, "ignore_peaks_above_precursor=True")
 })
 
+test_that("python commands evaluation", {
+    p <- CosineGreedyParam(tolerance = 0.05)
+    pstring <- SpectriPy:::python_command(p)
+    ## Invoce basilisk
+    cl <- basiliskStart(matchms_env)
+    py$py_x <- rspec_to_pyspec(caf, reference = import("matchms"),
+                               mapping = c(precursorMz = "precursor_mz"))
+    py$py_y <- rspec_to_pyspec(caf, reference = import("matchms"),
+                               mapping = c(precursorMz = "precursor_mz"))
+    py_run_string(pstring)
+    ## Convert to similarity array
+    py_run_string("sim = res.scores.to_array()")
+    py$sim["CosineGreedy_score"]
+
+    p <- CosineHungarianParam()
+    pstring <- SpectriPy:::python_command(p)
+    py_run_string(pstring)
+    py_run_string("sim = res.scores.to_array()")
+    py$sim["CosineHungarian_score"]
+
+    p <- ModifiedCosineParam()
+    pstring <- SpectriPy:::python_command(p)
+    py_run_string(pstring)
+    py_run_string("sim = res.scores.to_array()")
+    py$sim["ModifiedCosine_score"]
+
+    p <- SpectriPy:::NeutralLossesCosineParam()
+    pstring <- SpectriPy:::python_command(p)
+    py_run_string(pstring)
+    py_run_string("sim = res.scores.to_array()[\"NeutralLossesCosine_score\"]")
+
+    basiliskStop(cl)
+})
+
 test_that(".compare_spectra_python works", {
     all <- c(caf, mhd)
-    res <- .compare_spectra_python(all, caf, CosineGreedyParam())
+    res <- SpectriPy:::.compare_spectra_python(all, caf, CosineGreedyParam())
     expect_true(nrow(res) == 4)
     expect_true(ncol(res) == 2)
 
@@ -149,4 +188,25 @@ test_that("compareSpectriPy works", {
     all_mod$precursorMz[3] <- NA_real_
     expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosineParam()),
                  "Expect precursor to be positive")
+})
+
+test_that("Ms2DeepScoreParam works", {
+    res <- Ms2DeepScoreParam()
+    expect_s4_class(res, "Ms2DeepScoreParam")
+    expect_equal(res@modelFile, character())
+
+    expect_error(Ms2DeepScoreParam("some file"), "does not exist")
+    expect_error(Ms2DeepScoreParam(c("a", "b")), "length 1")
+})
+
+test_that("compareSpectriPy,Ms2DeepScoreParam works", {
+    res <- compareSpectriPy(Spectra(), Spectra(), Ms2DeepScoreParam())
+    expect_true(is.matrix(res))
+    expect_true(ncol(res) == 0)
+    expect_true(nrow(res) == 0)
+
+    all <- c(caf, mhd)
+    expect_error(compareSpectriPy(all, all, Ms2DeepScireParam()), "No model")
+    ## TODO implement.
+
 })

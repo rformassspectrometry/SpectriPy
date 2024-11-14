@@ -4,11 +4,11 @@
 #'
 #' @description
 #'
-#' The `rspec_to_pyspec` and `pyspec_to_rspec` functions allow to convert
+#' The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to convert
 #' R [Spectra()] objects into [matchms](https://github.com/matchms/matchms)
 #' Python `Spectrum` objects. These functions are designed for
 #' **advanced users or developers** who want/need to integrate Python/matchms
-#' functionality into R using `reticulate`. All other users should use the
+#' functionality into R using *reticulate*. All other users should use the
 #' dedicated R functions within this package that take care of running the
 #' Python code in the correct Python environment.
 #'
@@ -21,10 +21,10 @@
 #' metadata. See the output of the `spectraVariableMapping()` function for the
 #' default variables and the mapping of the names.
 #'
-#' The `spectraVariableMapping` function provides a default mapping of some
+#' The `spectraVariableMapping()` function provides a default mapping of some
 #' core `Spectra` variables based on this [definition in matchms](https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv).
 #' The function returns a named vector that can be directly used as parameter
-#' `mapping` in the `rspec_to_pyspec` and `pyspec_to_rspec` functions.
+#' `mapping` in the `rspec_to_pyspec()` and `pyspec_to_rspec()` functions.
 #'
 #' @param .check Optionally disable input parameter checking. Input parameter
 #'     checking should only disabled for very good reasons.
@@ -32,22 +32,22 @@
 #' @param BPPARAM Optional parallel processing setup.
 #'
 #' @param mapping Named `character` providing the spectra variable names
-#'     (metadata) to convert. Names are expected to be the spectr variable names
-#'     and values the corresponding names of the Python Spectrum metadata
+#'     (metadata) to convert. Names are expected to be the spectra variable
+#'     names and values the corresponding names of the Python Spectrum metadata
 #'     fields. See description above for more details.
 #'
 #' @param object ignored.
 #'
 #' @param reference Optional reference to Python environment `matchms`.
 #'
-#' @param x For `rspec_to_pyspec`: `Spectra` object. For `pyspec_to_rspec`:
-#'     an Python list of matchms Spectrum objects.
+#' @param x For `rspec_to_pyspec()`: `Spectra` object. For `pyspec_to_rspec()`:
+#'     a Python list of matchms Spectrum objects.
 #'
 #' @param ... ignored.
 #'
-#' @return For `rspec_to_pyspec`: Python array of Spectrum objects, same
-#'     length than `x`. Fpr `pyspec_to_rspec`: [Spectra()] with the converted
-#'     spectra. For `spectraVariableMapping`: named `character` vector with
+#' @return For `rspec_to_pyspec()`: Python array of Spectrum objects, same
+#'     length than `x`. For `pyspec_to_rspec()`: [Spectra()] with the converted
+#'     spectra. For `spectraVariableMapping()`: named `character` vector with
 #'     names being `Spectra` variable names and values the corresponding names
 #'     in `matchms`.
 #'
