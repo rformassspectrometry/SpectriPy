@@ -1,5 +1,4 @@
 library(testthat)
-library(patrick)
 library(Spectra)
 library(SpectriPy)
 library(reticulate)
