@@ -12,8 +12,7 @@ functions allowing a seamless integration of the functionality of Python's
 functions to convert between R's `Spectra` objects and Python's `matchms`
 spectrum objects are available to the advanced user or developer.
 
-
-## Pre-requisites and installation instructions
+## Installation and system requirements
 
 `SpectriPy` uses [`basilisk`](https://bioconductor.org/packages/basilisk) to
 ensure all required python packages are installed and available (in the correct
@@ -31,6 +30,13 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 See the package's
 [vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html).
 
+
+## Developments notes
+
+- TODO explain how package is structured
+- TODO explain where the code is
+- TODO mention coding style
+- TODO mention some things that could/should be implemented
 
 # Contributions
 
