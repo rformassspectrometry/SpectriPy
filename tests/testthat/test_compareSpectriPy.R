@@ -103,7 +103,7 @@ test_that("python_command and .cosine_param_string work", {
 test_that("python commands evaluation", {
     p <- CosineGreedyParam(tolerance = 0.05)
     pstring <- SpectriPy:::python_command(p)
-    ## Invoce basilisk
+    ## Invoke basilisk
     cl <- basiliskStart(matchms_env)
     py$py_x <- rspec_to_pyspec(caf, reference = import("matchms"),
                                mapping = c(precursorMz = "precursor_mz"))
@@ -175,6 +175,7 @@ test_that("compareSpectriPy works", {
     expect_equal(diag(res_all), c(1, 1, 1, 1))
 
     ## Test python call. LLLLLLL
+    ## cl <- basiliskStart(SpectriPy:::matchms_env)
     ## p <- CosineGreedyParam()
     ## cmd <- SpectriPy:::python_command(p)
     ## py$py_x <- rspec_to_pyspec(caf, mapping = c(precursorMz = "precursor_mz"))
@@ -182,9 +183,20 @@ test_that("compareSpectriPy works", {
     ## strng <- paste0("import matchms\n",
     ##                 "from matchms.similarity import CosineGreedy\n",
     ##                 "res = matchms.calculate_scores(py_x, py_y, CosineGreedy(), is_symmetric = False)\n")
-    ## py_run_string(cmd)
+    ## py_run_string(strng)
+    ## basiliskStop(cl)
     ## res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
-    ## WHY is this not working???
+    ## WHY is this not working??? Seems to be some python issue, maybe a bug
+    ## in CosineGreedy?
+    ##
+    ## WORKS res <- compareSpectriPy(caf, caf, param = CosineGreedyParam())
+    ## WORKS res <- compareSpectriPy(mhd, mhd, param = CosineGreedyParam())
+    ## NOT res <- compareSpectriPy(mhd, caf, param = CosineGreedyParam())
+    ## NOT res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
+    ## Maybe the issue is with spectra without any similarity (score = 0) and
+    ## having a result matrix with more than 1 column or row.
+    ## Seems to be the case:
+    res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam(tolerance = 10))
 
     res <- compareSpectriPy(caf[1L], mhd[1L], param = CosineGreedyParam())
     expect_true(is.numeric(res))
