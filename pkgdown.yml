@@ -3,7 +3,7 @@ pkgdown: 2.1.1.9000
 pkgdown_sha: 6615322cb2ce15b1effcecf894123c88fa10b9c9
 articles:
   SpectriPy: SpectriPy.html
-last_built: 2025-01-16T12:35Z
+last_built: 2025-01-17T08:59Z
 urls:
   reference: https://rformassspectrometry.github.io/SpectriPy/reference
   article: https://rformassspectrometry.github.io/SpectriPy/articles
