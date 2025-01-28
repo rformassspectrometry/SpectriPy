@@ -143,6 +143,8 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @importMethodsFrom Spectra spectraData
 #'
+#' @importMethodsFrom Spectra peaksData
+#'
 #' @importMethodsFrom Spectra mz
 #'
 #' @importMethodsFrom Spectra intensity
@@ -153,17 +155,18 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 .single_rspec_to_pyspec <- function(x,
                                     spectraVariables = spectraVariableMapping(),
                                     reference = import("matchms")) {
+    pks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
     if (length(spectraVariables)) {
         slist <- as.list(spectraData(x, columns = names(spectraVariables)))
         ## ## Seems matchms.Spectrum does not support NA retention times?
         ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
         ##     slist$rtime <- 0
         names(slist) <- spectraVariables
-        reference$Spectrum(mz = np_array(mz(x)[[1L]]),
-                           intensities = np_array(intensity(x)[[1L]]),
+        reference$Spectrum(mz = np_array(pks[, 1L]),
+                           intensities = np_array(pks[, 2L]),
                            metadata = r_to_py(slist))
-    } else reference$Spectrum(mz = np_array(mz(x)[[1L]]),
-                              intensities = np_array(intensity(x)[[1L]]))
+    } else reference$Spectrum(mz = np_array(pks[, 1L]),
+                              intensities = np_array(pks[, 2L]))
 }
 
 #' @description
