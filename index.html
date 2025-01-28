@@ -50,11 +50,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="integrating-spectra-with-pythons-matchms-package">Integrating <a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link"><code>Spectra</code></a> with Python’s <code>matchms</code> package<a class="anchor" aria-label="anchor" href="#integrating-spectra-with-pythons-matchms-package"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="integrating-spectra-with-pythons-matchms-library">Integrating <a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link"><em>Spectra</em></a> with Python’s <em>matchms</em> library<a class="anchor" aria-label="anchor" href="#integrating-spectra-with-pythons-matchms-library"></a>
 </h1>
 </div>
 <p><a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a> <a href="https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc" class="external-link"><img src="https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg" alt="R-CMD-check-bioc"></a> <a href="https://codecov.io/gh/rformassspectrometry/SpectriPy" class="external-link"><img src="https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP" alt="codecov"></a> <a href="https://opensource.org/licenses/Artistic-2.0" class="external-link"><img src="https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg" alt="license"></a></p>
-<p>The <code>SpectriPy</code> package allows integration of Python MS packages into a <code>Spectra</code>-based MS analysis in <code>R</code>. Python functionality is wrapped into R functions allowing a seamless integration of the functionality of Python’s <a href="https://github.com/matchms/" class="external-link"><code>matchms</code></a> package into <code>R</code>. In addition, functions to convert between R’s <code>Spectra</code> objects and Python’s <code>matchms</code> spectrum objects are available to the advanced user or developer enabling to create custom functions or workflows on <code>Spectra</code> objects in Python and executing them in R using the reticulate R package.</p>
+<p>The <em>SpectriPy</em> package allows integration of Python MS packages into a <a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link"><em>Spectra</em></a>-based MS analysis in R. Python functionality is wrapped into R functions allowing a seamless integration of the functionality of Python’s <a href="https://github.com/matchms/" class="external-link"><em>matchms</em></a> library into R. In addition, functions to convert between R’s <code><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra::Spectra</a></code> objects and Python’s <code>matchms.Spectrum</code> objects are available to the advanced user or developer enabling to create custom functions or workflows on <code>Spectra</code> objects in Python and executing them in R using the reticulate R package.</p>
 </div>
 <div class="section level1">
 <h1 id="setup-spectripy-for-first-time-users">Setup SpectriPy for first time users<a class="anchor" aria-label="anchor" href="#setup-spectripy-for-first-time-users"></a>
@@ -139,25 +139,28 @@
 <p>The current release of Bioconductor is version 3.20; it works with R version 4.4.0. Users of older R and Bioconductor must update their installation to take advantage of new features and to access packages that have been added to Bioconductor since the last release.</p>
 <p>The development version of Bioconductor is version 3.21; it works with R version 4.5.0. More recent ‘devel’ versions of R (if available) will be supported during the next Bioconductor release cycle.</p>
 <p>Once R has been installed, get the latest version of Bioconductor by starting R and entering the following commands.</p>
-<p>It may be possible to change the Bioconductor version of an existing installation; see the ‘Changing version’ section of the BiocManager vignette.</p>
-<p>Details, including instructions to install additional packages and to update, find, and troubleshoot are provided below. A devel version of Bioconductor is available. There are good reasons for using BiocManager::install() for managing Bioconductor resources.</p>
-<pre><code><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<p>It may be possible to change the Bioconductor version of an existing installation; see the <em>Changing version</em> section of the BiocManager vignette.</p>
+<p>Details, including instructions to install additional packages and to update, find, and troubleshoot are provided below. A devel version of Bioconductor is available. There are good reasons for using <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> for managing Bioconductor resources.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span></code></pre>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="installing-spectripy">Installing SpectriPy<a class="anchor" aria-label="anchor" href="#installing-spectripy"></a>
 </h3>
-<p><code>SpectriPy</code> uses <a href="https://bioconductor.org/packages/basilisk" class="external-link"><code>basilisk</code></a> to ensure all required python packages are installed and available (in the correct version) on each system. <code>basilisk</code> installs a self-contained conda environment, thus, the <code>SpectriPy</code> package is independent of the system’s Python environment.</p>
+<p><em>SpectriPy</em> uses <a href="https://bioconductor.org/packages/basilisk" class="external-link"><em>basilisk</em></a> to ensure all required python packages are installed and available (in the correct version) on each system. <em>basilisk</em> installs a self-contained conda environment, thus, the <em>SpectriPy</em> package is independent of the system’s Python environment.</p>
 <p>To install the package use</p>
-<pre><code><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/SpectriPy"</span><span class="op">)</span></span></code></pre>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/SpectriPy"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="check-installation-completed">Check installation completed<a class="anchor" aria-label="anchor" href="#check-installation-completed"></a>
 </h3>
 <p>The status of installation can be easily checked by starting R and entering the following commands.</p>
-<p>This command loads the <code>SpectriPy</code> package, if correct installed.</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre>
+<p>This command loads the <em>SpectriPy</em> package, if correct installed.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -167,7 +170,7 @@
 <div class="section level3">
 <h3 id="installing-spectra">Installing Spectra<a class="anchor" aria-label="anchor" href="#installing-spectra"></a>
 </h3>
-<p>To install the <a href="https://rformassspectrometry.github.io/Spectra/" class="external-link">Spectra</a> package use following command. This package is needed, as the <code>SpectriPy</code> package allows integration of Python MS packages into a <code>Spectra</code>-based MS analysis in <code>R</code>.</p>
+<p>To install the <a href="https://rformassspectrometry.github.io/Spectra/" class="external-link">Spectra</a> package use following command. This package is needed, as the <em>SpectriPy</em> package allows integration of Python MS packages into a <em>Spectra</em>-based MS analysis in R.</p>
 <pre><code><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/Spectra"</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -184,7 +187,8 @@
 <a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html" class="external-link"><em>ModifiedCosineParam</em></a>: <code>ModifiedCosineParam</code>.</li>
 </ul>
 <p>We next create some simple example spectra and subsequently use the <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> function to calculate pairwise similarities between these.</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Create a Spectra object with two MS2 spectra for Caffeine.</span></span>
@@ -213,48 +217,42 @@
 <span><span class="va">mhd</span><span class="op">$</span><span class="va">intensity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.407</span>, <span class="fl">47.494</span>, <span class="fl">3.094</span>, <span class="fl">100.0</span>, <span class="fl">13.240</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.685</span>, <span class="fl">4.381</span>, <span class="fl">3.022</span>, <span class="fl">16.708</span>, <span class="fl">100.0</span>, <span class="fl">4.565</span>, <span class="fl">40.643</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">mhd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">mhd</span><span class="op">)</span></span></code></pre>
-<p>We first calculate pairwise similarities between all spectra defined above and those of caffeine using <em>Spectra</em>’s built-in <code>compareSpectra()</code> function.</p>
-<pre><code><span><span class="va">all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">caf</span>, <span class="va">mhd</span><span class="op">)</span></span>
+<span><span class="va">mhd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">mhd</span><span class="op">)</span></span></code></pre></div>
+<p>We first calculate pairwise similarities between all spectra defined above and those of caffeine using <em>Spectra</em>’s built-in <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra()</a></code> function.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">caf</span>, <span class="va">mhd</span><span class="op">)</span></span>
 <span><span class="va">res_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span><span class="op">)</span></span>
-<span><span class="va">res_r</span></span></code></pre>
-<p>Thus, <code>compareSpectra()</code> returned the pairwise similarity scores (by default calculated using the normalized dot-product function) between all spectra in <code>all</code> (rows) and all spectra in <code>caf</code> (columns). <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> works similar, with the difference that we need to specify and configure the similarity function (from <em>matchms</em>) using a dedicated parameter object. Below we calculate the similarity using the <em>CosineGreedy</em> function changing the <code>tolerance</code> to a value of <code>0.05</code> (instead of the default <code>0.1</code>).</p>
-<pre><code><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">CosineGreedyParam</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">res</span></span></code></pre>
-<p>As a result <code>compareSpectriPy</code> returns also a numeric matrix of similarities. Note also that the first <code>compareSpectriPy</code> call takes usually a little longer because the Python setup has to be initialized.</p>
+<span><span class="va">res_r</span></span></code></pre></div>
+<p>Thus, <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra()</a></code> returned the pairwise similarity scores (by default calculated using the normalized dot-product function) between all spectra in <code>all</code> (rows) and all spectra in <code>caf</code> (columns). <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> works similar, with the difference that we need to specify and configure the similarity function (from <em>matchms</em>) using a dedicated parameter object. Below we calculate the similarity using the <em>CosineGreedy</em> function changing the <code>tolerance</code> to a value of <code>0.05</code> (instead of the default <code>0.1</code>).</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">CosineGreedyParam</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
+<p>As a result <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> returns also a numeric matrix of similarities. Note also that the first <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> call takes usually a little longer because the Python setup has to be initialized.</p>
 <p>Next we use the <em>ModifiedCosine</em> algorithm that considers also differences between the spectra’s precursor m/z in the calculation.</p>
-<pre><code><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">res</span></span></code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
 <p>Note that for this calculation all spectra precursor m/z values need to be available, otherwise an error will be thrown. Thus, we should always ensure to remove spectra without precursor m/z values prior to similarity scoring with this similarity method. Below we remove the precursor m/z from one of our input spectra and then show how the <code>Spectra</code> object could be subsetted to <em>valid</em> spectra for this method.</p>
-<pre><code><span><span class="co">## Remove precursor m/z from the 3rd spectrum</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Remove precursor m/z from the 3rd spectrum</span></span>
 <span><span class="va">all</span><span class="op">$</span><span class="va">precursorMz</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span></span>
 <span><span class="co">## Filter the input spectra removing those with missing precursor.</span></span>
 <span><span class="va">all</span> <span class="op">&lt;-</span> <span class="va">all</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">all</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<span><span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
 <div class="section level1">
-<h1 id="concepts-and-examples">Concepts and examples<a class="anchor" aria-label="anchor" href="#concepts-and-examples"></a>
+<h1 id="development-notes">Development notes<a class="anchor" aria-label="anchor" href="#development-notes"></a>
 </h1>
-<p>See the package’s <a href="https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html">vignette</a>.</p>
-</div>
-<div class="section level1">
-<h1 id="developments-notes">Developments notes<a class="anchor" aria-label="anchor" href="#developments-notes"></a>
-</h1>
-<ul>
-<li>TODO explain how package is structured</li>
-<li>TODO explain where the code is</li>
-<li>TODO mention coding style</li>
-<li>TODO mention some things that could/should be implemented</li>
-</ul>
+<p>See <a href="devnotes.html">devnotes</a>.</p>
 </div>
 <div class="section level1">
 <h1 id="contributions">Contributions<a class="anchor" aria-label="anchor" href="#contributions"></a>
 </h1>
-<p>Contributions are highly welcome and should follow the <a href="https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#contributions" class="external-link">contribution guidelines</a>. Also, please check the coding style guidelines in the <a href="https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html" class="external-link">RforMassSpectrometry vignette</a>.</p>
+<p>Contributions are highly welcome and should follow the <a href="https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#contributions" class="external-link">contribution guidelines</a>. General information on the package structure and some helpful pointers are given in the <a href="devnotes.html">Development notes</a> document. Also, please check the <a href="https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#coding-style" class="external-link">coding style guidelines</a> and importantly, follow our <a href="https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#code-of-conduct" class="external-link">code of conduct</a>.</p>
 </div>
 
   </main><aside class="col-md-3"><div class="links">

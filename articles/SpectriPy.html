@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (links[i].hostname != window.location.hostname)
       links[i].target = '_blank';
 });
-</script><p><strong>Compiled</strong>: Fri Jan 17 08:59:18 2025</p>
+</script><p><strong>Compiled</strong>: Tue Jan 28 07:40:49 2025</p>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -93,7 +93,9 @@ installed with the <em>BiocManager</em> R package using the command
 <code>BiocManager::install("RforMassSpectrometry/SpectriPy")</code>. All
 required python libraries are installed automatically on demand. Note
 that first installation or first invocation of specific functions might
-take long because of this installation process.</p>
+take long because of this installation process. The <em>BiocManager</em>
+package, if not already available, could be installed with
+<code>install.packages("BiocManager")</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="spectra-similarity-calculations-using-matchms">Spectra similarity calculations using <code>matchms</code><a class="anchor" aria-label="anchor" href="#spectra-similarity-calculations-using-matchms"></a>
@@ -181,10 +183,10 @@ value of <code>0.05</code> (instead of the default
 <span><span class="co">## [2,] 0.1948181 1.0000000</span></span>
 <span><span class="co">## [3,] 0.0000000 0.0000000</span></span>
 <span><span class="co">## [4,] 0.0000000 0.0000000</span></span></code></pre>
-<p>As a result <code>compareSpectriPy</code> returns also a numeric
+<p>As a result <code><a href="../reference/compareSpectriPy.html">compareSpectriPy()</a></code> returns also a numeric
 matrix of similarities. Note also that the first
-<code>compareSpectriPy</code> call takes usually a little longer because
-the Python setup has to be initialized.</p>
+<code><a href="../reference/compareSpectriPy.html">compareSpectriPy()</a></code> call takes usually a little longer
+because the Python setup has to be initialized.</p>
 <p>Next we use the <em>ModifiedCosine</em> algorithm that considers also
 differences between the spectra’s precursor m/z in the calculation.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -218,16 +220,16 @@ for this method.</p>
 <div class="section level2">
 <h2 id="advanced-use-and-internals">Advanced use and internals<a class="anchor" aria-label="anchor" href="#advanced-use-and-internals"></a>
 </h2>
-<p>For advanced users or developers, the <code>rspec_to_pyspec</code>
-and <code>pyspec_to_rspec</code> functions are available that enable
-conversion between MS data representations in <code>R</code> and Python
-(i.e. between the <code>Spectra</code> object and the Python
-<code>matchms</code> Spectrum object). To use these functions the
-<code>reticulate</code> package needs to be installed along with a
-Python environment and the <code>matchms</code> Python package.</p>
+<p>For advanced users or developers, the <code><a href="../reference/rspec_to_pyspec.html">rspec_to_pyspec()</a></code>
+and <code><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec()</a></code> functions are available that enable
+conversion between MS data representations in R and Python (i.e. between
+the <code><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra::Spectra</a></code> object and the Python
+<code>matchms.Spectrum</code> object). To use these functions the
+<em>reticulate</em> R package needs to be installed along with a Python
+environment and the <em>matchms</em> Python package.</p>
 <p>To illustrate their use we initialize below the Python environment
 that is bundled using the <em><a href="https://bioconductor.org/packages/3.20/basilisk" class="external-link">basilisk</a></em>
-package within <code>SpectriPy</code>.</p>
+package within <em>SpectriPy</em>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">basilisk</span><span class="op">)</span></span></code></pre></div>
@@ -257,8 +259,8 @@ fragment spectra for some small compounds.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.459</span>, <span class="fl">2.585</span>, <span class="fl">2.446</span>, <span class="fl">0.508</span>, <span class="fl">8.968</span>, <span class="fl">0.524</span>, <span class="fl">0.974</span>, <span class="fl">100.0</span>, <span class="fl">40.994</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></code></pre></div>
-<p>We next convert the <code>Spectra</code> to a <code>matchms</code>
-Spectrum object.</p>
+<p>We next convert the <code>Spectra</code> to a
+<code>matchms.Spectrum</code> object.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pysps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">rspec_to_pyspec</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></span>
 <span><span class="va">pysps</span></span></code></pre></div>
@@ -285,12 +287,11 @@ by default.</p>
 <span><span class="co">##                   "ms_level"</span></span></code></pre>
 <p>With our <code>Spectra</code> data converted to Python, we could
 directly call all routines from the <code>matchms</code> package using
-the <code>reticulate</code> R package. Below we normalize the
-intensities of the 3 spectra using the from
-<code>normalize_intensities</code> functions from the
-<code>matchms.filtering</code> Python package. We thus need to import
-first the functionality from that package and can then directly call the
-function on the objects.</p>
+the <em>reticulate</em> R package. Below we normalize the intensities of
+the 3 spectra using the <code>normalize_intensities()</code> function
+from the <em>matchms.filtering</em> library. We thus need to first
+import the functionality from that package and can then call the
+function directly on the (Python) objects.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
 <span><span class="va">filters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"matchms.filtering"</span><span class="op">)</span></span>
@@ -301,8 +302,8 @@ function on the objects.</p>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="va">res</span></span></code></pre></div>
 <pre><code><span><span class="co">## [Spectrum(precursor m/z=nan, 5 fragments between 109.2 and 170.5), Spectrum(precursor m/z=nan, 7 fragments between 83.1 and 170.2), Spectrum(precursor m/z=nan, 9 fragments between 56.0 and 195.1)]</span></span></code></pre>
-<p>We can now convert the list of Python Spectrum objects back to R with
-<code>pyspec_to_rspec</code>:</p>
+<p>We can now convert the list of Python <code>matchms.Spectrum</code>
+objects back to R with <code><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec()</a></code>:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sps_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="co">#' The normalized intensities</span></span>
@@ -338,8 +339,8 @@ spectra in python and performs the normalization.</p>
 <span><span class="co">## [[1]] 0.03407 0.47494 0.03094 1 0.1324</span></span>
 <span><span class="co">## [[2]] 0.06685 0.04381 0.03022 0.16708 1 0.04565 0.40643</span></span>
 <span><span class="co">## [[3]] 0.00459 0.02585 0.02446 0.00508 0.08968 0.00524 0.00974 1 0.40994</span></span></code></pre>
-<p>At very last we need also to stop the Python environment created by
-<code>basilisk</code>.</p>
+<p>At very last we need also to stop the Python environment enabled by
+<em>basilisk</em>.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/basilisk/man/basiliskStart.html" class="external-link">basiliskStop</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -377,15 +378,15 @@ spectra in python and performs the normalization.</p>
 <span><span class="co">## [7] BiocGenerics_0.52.0 BiocStyle_2.34.0   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] Matrix_1.7-1           jsonlite_1.8.9         compiler_4.4.2        </span></span>
+<span><span class="co">##  [1] Matrix_1.7-2           jsonlite_1.8.9         compiler_4.4.2        </span></span>
 <span><span class="co">##  [4] BiocManager_1.30.25    filelock_1.0.3         Rcpp_1.0.14           </span></span>
 <span><span class="co">##  [7] parallel_4.4.2         cluster_2.1.8          jquerylib_0.1.4       </span></span>
-<span><span class="co">## [10] png_0.1-8              systemfonts_1.1.0      IRanges_2.40.1        </span></span>
-<span><span class="co">## [13] textshaping_0.4.1      yaml_2.3.10            fastmap_1.2.0         </span></span>
+<span><span class="co">## [10] png_0.1-8              systemfonts_1.2.1      IRanges_2.40.1        </span></span>
+<span><span class="co">## [13] textshaping_1.0.0      yaml_2.3.10            fastmap_1.2.0         </span></span>
 <span><span class="co">## [16] lattice_0.22-6         R6_2.5.1               ProtGenerics_1.38.0   </span></span>
 <span><span class="co">## [19] knitr_1.49             htmlwidgets_1.6.4      MASS_7.3-64           </span></span>
 <span><span class="co">## [22] bookdown_0.42          desc_1.4.3             bslib_0.8.0           </span></span>
-<span><span class="co">## [25] rlang_1.1.4            dir.expiry_1.14.0      cachem_1.1.0          </span></span>
+<span><span class="co">## [25] rlang_1.1.5            dir.expiry_1.14.0      cachem_1.1.0          </span></span>
 <span><span class="co">## [28] xfun_0.50              fs_1.6.5               MsCoreUtils_1.18.0    </span></span>
 <span><span class="co">## [31] sass_0.4.9             cli_3.6.3              withr_3.0.2           </span></span>
 <span><span class="co">## [34] pkgdown_2.1.1.9000     grid_4.4.2             digest_0.6.37         </span></span>
