@@ -5,8 +5,9 @@
 #' @description
 #'
 #' The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to convert
-#' R [Spectra()] objects into [matchms](https://github.com/matchms/matchms)
-#' Python `Spectrum` objects. These functions are designed for
+#' R [Spectra::Spectra()] objects into
+#' [matchms](https://github.com/matchms/matchms) Python `matchms.Spectrum`
+#' objects. These functions are designed for
 #' **advanced users or developers** who want/need to integrate Python/matchms
 #' functionality into R using *reticulate*. All other users should use the
 #' dedicated R functions within this package that take care of running the
@@ -46,10 +47,10 @@
 #' @param ... ignored.
 #'
 #' @return For `rspec_to_pyspec()`: Python array of Spectrum objects, same
-#'     length than `x`. For `pyspec_to_rspec()`: [Spectra()] with the converted
-#'     spectra. For `spectraVariableMapping()`: named `character` vector with
-#'     names being `Spectra` variable names and values the corresponding names
-#'     in `matchms`.
+#'     length than `x`. For `pyspec_to_rspec()`: [Spectra::Spectra()] with the
+#'     converted spectra. For `spectraVariableMapping()`: named `character`
+#'     vector with names being `Spectra` variable names and values the
+#'     corresponding names in `matchms`.
 #'
 #' @author Michael Witting, Johannes Rainer
 #'
