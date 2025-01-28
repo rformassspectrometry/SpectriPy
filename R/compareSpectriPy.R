@@ -44,10 +44,10 @@
 #'   the given `tolerance` once a mass-shift is applied. The mass shift is the
 #'   difference in precursor-m/z between the two spectra.
 #'
-#' @param x A [Spectra()] object.
+#' @param x A [Spectra::Spectra()] object.
 #'
-#' @param y A [Spectra()] object to compare against. If missing, spectra
-#'   similarities are calculated between all spectra in `x`.
+#' @param y A [Spectra::Spectra()] object to compare against. If missing,
+#'   spectra similarities are calculated between all spectra in `x`.
 #'
 #' @param param one of parameter classes listed above (such as
 #'   `CosineGreedyParam`) defining the similarity scoring function in python
@@ -75,7 +75,7 @@
 #'
 #' @author Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht
 #'
-#' @seealso [compareSpectra()] in the `Spectra` package for pure R
+#' @seealso [Spectra::compareSpectra()] in the `Spectra` package for pure R
 #'     implementations of spectra similarity calculations.
 #'
 #' @export

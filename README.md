@@ -1,23 +1,24 @@
-# Integrating [`Spectra`](https://github.com/RforMassSpectrometry/Spectra) with Python's `matchms` package
+# Integrating [*Spectra*](https://github.com/RforMassSpectrometry/Spectra) with Python's *matchms* library
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check-bioc](https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc)
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
 
-The `SpectriPy` package allows integration of Python MS packages into a
-`Spectra`-based MS analysis in `R`. Python functionality is wrapped into R
-functions allowing a seamless integration of the functionality of Python's
-[`matchms`](https://github.com/matchms/) package into `R`. In addition,
-functions to convert between R's `Spectra` objects and Python's `matchms`
-spectrum objects are available to the advanced user or developer enabling to
-create custom functions or workflows on `Spectra` objects in Python and
-executing them in R using the reticulate R package.
+The *SpectriPy* package allows integration of Python MS packages into a
+[*Spectra*](https://github.com/RforMassSpectrometry/Spectra)-based MS analysis
+in R. Python functionality is wrapped into R functions allowing a seamless
+integration of the functionality of Python's
+[*matchms*](https://github.com/matchms/) library into R. In addition, functions
+to convert between R's `Spectra::Spectra` objects and Python's
+`matchms.Spectrum` objects are available to the advanced user or developer
+enabling to create custom functions or workflows on `Spectra` objects in Python
+and executing them in R using the reticulate R package.
 
 # Setup SpectriPy for first time users
 
 Instructions to install R and RStudio for the first time are described below,
-from source 
+from source
 [https://rstudio-education.github.io/hopr/packages2.html](https://rstudio-education.github.io/hopr/packages2.html).
 
 ## Installing R and RStudio
@@ -82,7 +83,7 @@ guides the process by grouping each set of source files with documentation or
 README files that explain how to install on your system.
 
 > **32-bit Versus 64-bit**
-> 
+>
 > R comes in both 32-bit and 64-bit versions. Which should you use? In most
 > cases, it won’t matter. Both versions use 32-bit integers, which means they
 > compute numbers to the same numerical precision. The difference occurs in the
@@ -107,11 +108,11 @@ if they were hackers in a movie from the 1980s. Now almost everyone uses R with
 an application called RStudio, and I recommend that you do, too.
 
 > **R and UNIX**
-> 
+>
 > You can still run R in a UNIX or BASH window by typing the command:
-> 
+>
 > `R`
-> 
+>
 > which opens an R interpreter. You can then do your work and close the
 > interpreter by running q() when you are finished.
 
@@ -129,7 +130,7 @@ instructions that follow. Once you’ve installed RStudio, you can open it like
 any other program on your computer—usually by clicking an icon on your desktop.
 
 > **The R GUIs**
-> 
+>
 > Windows and Mac users usually do not program from a terminal window, so the
 > Windows and Mac downloads for R come with a simple program that opens a
 > terminal-like window for you to run R code in. This is what opens when you
@@ -150,7 +151,7 @@ become useful throughout the course of this book.  The RStudio IDE for R.
 Figure 1: The RStudio IDE for R.
 
 > **Do I still need to download R?**
-> 
+>
 > Even if you use RStudio, you’ll still need to download R to your
 > computer. RStudio helps you use the version of R that lives on your computer,
 > but it doesn’t come with a version of R on its own.
@@ -177,18 +178,18 @@ The development version of Bioconductor is version 3.21; it works with R version
 4.5.0. More recent ‘devel’ versions of R (if available) will be supported during
 the next Bioconductor release cycle.
 
- Once R has been installed, get the latest version of Bioconductor by starting R
- and entering the following commands.
+Once R has been installed, get the latest version of Bioconductor by starting R
+and entering the following commands.
 
 It may be possible to change the Bioconductor version of an existing
-installation; see the ‘Changing version’ section of the BiocManager vignette.
+installation; see the *Changing version* section of the BiocManager vignette.
 
 Details, including instructions to install additional packages and to update,
 find, and troubleshoot are provided below. A devel version of Bioconductor is
-available. There are good reasons for using BiocManager::install() for managing
-Bioconductor resources.
+available. There are good reasons for using `BiocManager::install()` for
+managing Bioconductor resources.
 
-```
+```r
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.20")
@@ -196,14 +197,14 @@ BiocManager::install(version = "3.20")
 
 ### Installing SpectriPy
 
-`SpectriPy` uses [`basilisk`](https://bioconductor.org/packages/basilisk) to
+*SpectriPy* uses [*basilisk*](https://bioconductor.org/packages/basilisk) to
 ensure all required python packages are installed and available (in the correct
-version) on each system. `basilisk` installs a self-contained conda environment,
-thus, the `SpectriPy` package is independent of the system's Python environment.
+version) on each system. *basilisk* installs a self-contained conda environment,
+thus, the *SpectriPy* package is independent of the system's Python environment.
 
 To install the package use
 
-```
+```r
 BiocManager::install("RforMassSpectrometry/SpectriPy")
 ```
 
@@ -212,11 +213,12 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 The status of installation can be easily checked by starting R and entering the
 following commands.
 
-This command loads the `SpectriPy` package, if correct installed.
+This command loads the *SpectriPy* package, if correct installed.
 
-```
+```r
 library(SpectriPy)
 ```
+
 
 ## Small coding example
 
@@ -227,9 +229,9 @@ package’s vignette, from source
 ### Installing Spectra
 
 To install the [Spectra](https://rformassspectrometry.github.io/Spectra/)
-package use following command. This package is needed, as the `SpectriPy`
-package allows integration of Python MS packages into a `Spectra`-based MS
-analysis in `R`.
+package use following command. This package is needed, as the *SpectriPy*
+package allows integration of Python MS packages into a *Spectra*-based MS
+analysis in R.
 
 ```
 BiocManager::install("RforMassSpectrometry/Spectra")
@@ -254,7 +256,7 @@ added in future.
 We next create some simple example spectra and subsequently use the
 `compareSpectriPy()` function to calculate pairwise similarities between these.
 
-```
+```r
 library(Spectra)
 library(SpectriPy)
 
@@ -290,7 +292,7 @@ mhd <- Spectra(mhd)
 We first calculate pairwise similarities between all spectra defined above and
 those of caffeine using *Spectra*'s built-in `compareSpectra()` function.
 
-```
+```r
 all <- c(caf, mhd)
 res_r <- compareSpectra(all, caf)
 res_r
@@ -304,19 +306,19 @@ similarity function (from *matchms*) using a dedicated parameter object. Below
 we calculate the similarity using the *CosineGreedy* function changing the
 `tolerance` to a value of `0.05` (instead of the default `0.1`).
 
-```
+```r
 res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
 res
 ```
 
-As a result `compareSpectriPy` returns also a numeric matrix of similarities.
-Note also that the first `compareSpectriPy` call takes usually a little longer
+As a result `compareSpectriPy()` returns also a numeric matrix of similarities.
+Note also that the first `compareSpectriPy()` call takes usually a little longer
 because the Python setup has to be initialized.
 
 Next we use the *ModifiedCosine* algorithm that considers also differences
 between the spectra's precursor m/z in the calculation.
 
-```
+```r
 res <- compareSpectriPy(all, caf, param = ModifiedCosineParam())
 res
 ```
@@ -328,7 +330,7 @@ this similarity method. Below we remove the precursor m/z from one of our input
 spectra and then show how the `Spectra` object could be subsetted to *valid*
 spectra for this method.
 
-```
+```r
 ## Remove precursor m/z from the 3rd spectrum
 all$precursorMz[3] <- NA
 
@@ -338,21 +340,19 @@ all <- all[!is.na(precursorMz(all))]
 compareSpectriPy(all, caf, param = ModifiedCosineParam())
 ```
 
-# Concepts and examples
 
-See the package's
-[vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html).
+# Development notes
 
-# Developments notes
+See [devnotes](devnotes.md).
 
-- TODO explain how package is structured
-- TODO explain where the code is
-- TODO mention coding style
-- TODO mention some things that could/should be implemented
 
 # Contributions
 
 Contributions are highly welcome and should follow the [contribution
 guidelines](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#contributions).
-Also, please check the coding style guidelines in the [RforMassSpectrometry
-vignette](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html).
+General information on the package structure and some helpful pointers are given
+in the [Development notes](devnotes.md) document. Also, please check the
+[coding style
+guidelines](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#coding-style)
+and importantly, follow our [code of
+conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#code-of-conduct).

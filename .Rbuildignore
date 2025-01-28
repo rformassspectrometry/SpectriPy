@@ -9,3 +9,4 @@ man/figures/*
 _pkgdown.yml
 .BBSoptions
 ^\.vscode
+devnotes.md
