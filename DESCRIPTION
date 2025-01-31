@@ -20,7 +20,11 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Helge", family = "Hecht",
                     email = "helge.hecht@recetox.muni.cz",
                     role = c("aut"),
-                    comment = c(ORCID = "0000-0001-6744-996X")))
+                    comment = c(ORCID = "0000-0001-6744-996X")),
+             person(given = "Marilyn", family = "De Graeve",
+                    email = "marilyn.degraeve@eurac.edu",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0001-6916-401X"))		    )
 Depends:
     R (>= 4.1.0)
 Imports:
