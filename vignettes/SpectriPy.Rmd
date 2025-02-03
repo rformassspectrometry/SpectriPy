@@ -33,13 +33,13 @@ package.
 
 # Installation
 
+If the *BiocManager* package is not already available, please install it with `install.packages("BiocManager")`.
 The package requires a python environment to be available and can be installed
 with the *BiocManager* R package using the command
-`BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
-libraries are installed automatically on demand. Note that first installation
-or first invocation of specific functions might take long because of this
-installation process. The *BiocManager* package, if not already available, could
-be installed with `install.packages("BiocManager")`.
+`BiocManager::install(c("remotes","RforMassSpectrometry/SpectriPy")`. 
+All required python libraries are installed automatically on demand. 
+Note that first installation or first invocation of specific functions might 
+take long because of this installation process.
 
 
 # Spectra similarity calculations using `matchms`
