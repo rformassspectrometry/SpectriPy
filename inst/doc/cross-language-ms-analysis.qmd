@@ -132,6 +132,28 @@ r.pest_ms2_py
 
 ```
 
+Object translation is at present not perfect - as an alternative approach we
+extract the data from the `Spectra` object as base R data types and process
+these in Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+pd <- as.list(peaksData(pest_ms2))
+precursor_mz <- precursorMz(pest_ms2)
+```
+
+We should be able to access these variables directly from Python - could these
+be used to create an e.g. `spectrum_utils.MsmsSpectrum` directly in Python?
+Note: each element in the `list` `pd` is a numerical `matrix` (`array`) with two
+columns, the first with the *m/z*, the second with the intensity
+values. Question is also which other *spectra variables* (metadata) is required
+or supported by *spectrum_utils*.
+
+```{python}
+r.pd[0]
+r.precursor_mz[0]
+```
+
 
 # General observations
 
