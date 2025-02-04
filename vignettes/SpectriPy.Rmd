@@ -33,13 +33,19 @@ package.
 
 # Installation
 
+If the *BiocManager* package is not already available, 
+please install it with `install.packages("BiocManager")`
+
+To install the development version of *SpectriPy* from GitHub, please install the 
+*remotes* package with `install.packages("remotes").
+
 The package requires a python environment to be available and can be installed
 with the *BiocManager* R package using the command
-`BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
-libraries are installed automatically on demand. Note that first installation
-or first invocation of specific functions might take long because of this
-installation process. The *BiocManager* package, if not already available, could
-be installed with `install.packages("BiocManager")`.
+`BiocManager::install("RforMassSpectrometry/SpectriPy")`. This will install the
+latest version of the package from GitHub.
+All required python libraries are installed automatically on demand. 
+Note that first installation or first invocation of specific functions might 
+take long because of this installation process.
 
 
 # Spectra similarity calculations using `matchms`
@@ -110,6 +116,9 @@ similar, with the difference that we need to specify and configure the
 similarity function (from *matchms*) using a dedicated parameter object. Below
 we calculate the similarity using the *CosineGreedy* function changing the
 `tolerance` to a value of `0.05` (instead of the default `0.1`).
+
+Executing the following step will automatically download and install conda mini 
+forge to manage Python package dependencies.
 
 ```{r}
 res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
