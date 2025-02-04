@@ -42,10 +42,10 @@ cosine function. The default is 1.}
 \code{logical(1)}: if \code{TRUE} (the default), peaks with m/z values larger than
 the precursor m/z are ignored.}
 
-\item{x}{A \code{\link[=Spectra]{Spectra()}} object.}
+\item{x}{A \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object.}
 
-\item{y}{A \code{\link[=Spectra]{Spectra()}} object to compare against. If missing, spectra
-similarities are calculated between all spectra in \code{x}.}
+\item{y}{A \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object to compare against. If missing,
+spectra similarities are calculated between all spectra in \code{x}.}
 
 \item{param}{one of parameter classes listed above (such as
 \code{CosineGreedyParam}) defining the similarity scoring function in python
@@ -138,7 +138,7 @@ sps <- sps[!is.na(precursorMz(sps))]
 compareSpectriPy(sps, param = ModifiedCosineParam())
 }
 \seealso{
-\code{\link[=compareSpectra]{compareSpectra()}} in the \code{Spectra} package for pure R
+\code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \code{Spectra} package for pure R
 implementations of spectra similarity calculations.
 }
 \author{

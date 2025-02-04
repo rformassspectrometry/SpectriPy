@@ -1,0 +1,166 @@
+---
+title: "Cross-language MS data analysis"
+authors: "<add your name>, Johannes Rainer"
+date: last-modified
+format:
+    html:
+        code-fold: true
+        code-overflow: wrap
+        code-tools: true
+        graphics: yes
+        toc: true
+        toc-location: left-body
+        toc-title: "Outline"
+
+---
+
+
+# Introduction
+
+In this document we:
+- illustrate how R and Python code can be used for MS data analysis
+
+# Installation instructions
+
+System requirements:
+
+- A python installation with an environment containing a set of libraries.
+- editor: RStudio will make life easy as it has built-in support for quarto
+  documents. For other editors it might be required to switch between R and
+  python *mode* (see below).
+
+## R package installation
+
+- Install Bioconductor's *BiocManager* package from CRAN:
+  `install.packages("BiocManager")`
+- Install all required R/Bioconductor packages:
+
+```
+BiocManager::install(c("Spectra", "msdata", "AnnotationHub", "CompoundDb"))
+```
+
+## Python library installation
+
+- Install *miniconda*
+- Create a new environment with required python libraries: `conda create -c
+  bioconda -c conda-forge -n matchms matchms=0.28.2 spectrum_utils`
+- Define and export a system variable `RETICULATE_PYTHON` that points to the
+  folder where this environment is installed. Alternatively, it is also possible
+  to define this in a *.Rprofile* file in the user's home folder by adding
+  e.g. a line `Sys.setenv("RETICULATE_PYTHON" = "~/miniconda/envs/matchms/bin")`
+  to that file.
+
+# Use case 1
+
+- load mzML file (DIA).
+- clean spectra.
+
+Load required R packages.
+
+```{r}
+#| warning: false
+
+#' R MS packages
+library(Spectra)
+library(msdata)
+
+#' libraries for integration with Python; in interactive mode, use
+#' `repl_python()` to start a Python shell to execute the Python code
+#' blocks and return to R using `exit`
+library(reticulate)
+
+#' To translate between R and Python MS data classes
+library(SpectriPy)
+
+#' To retrieve data from Bioconductor's AnnotationHub
+library(AnnotationHub)
+```
+
+Load a test data set with LC-MS/MS DDA data of a pesticide mix provided by the
+*matchms* library.
+
+```{r}
+fl <- system.file("TripleTOF-SWATH/PestMix1_DDA.mzML", package = "msdata")
+pest_dda <- Spectra(fl)
+pest_dda$msLevel |>
+    table()
+```
+
+Load a public reference from Bioconductor's *AnnotationHub*: MassBank release
+2023.11:
+
+```{r}
+#' Load MassBank release 2023.11 from AnnotationHub
+ah <- AnnotationHub()
+mbank <- ah[["AH116166"]]
+mbank
+
+#' Get the full data as a `Spectra` object
+mbank <- Spectra(mbank)
+mbank
+```
+
+Load required python libraries. Note: if the IDE/editor does not directly
+support quarto documents (i.e. switches from R to Python session when moving to
+the respective code chunk), the `repl_python()` function needs to be called in
+the R session. This changes to the Python session. Type `quit` or `exit` in the
+Python session to change back to R.
+
+```{python}
+import matchms
+import spectrum_utils
+```
+
+Next we extract the MS2 spectra from the `pest_dda` data set and *translate* the
+`Spectra` to Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+system.time(
+    pest_ms2_py <- rspec_to_pyspec(pest_ms2)
+)
+pest_ms2_py
+```
+
+The translation is not very efficient at present - so we need to work on that
+(later). Seems the variable lives in R, so to access it we need to append the
+`r.` to the variable name (check, is this required? can we have the variable in
+python?).
+
+```{python}
+r.pest_ms2_py
+
+```
+
+Object translation is at present not perfect - as an alternative approach we
+extract the data from the `Spectra` object as base R data types and process
+these in Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+pd <- as.list(peaksData(pest_ms2))
+precursor_mz <- precursorMz(pest_ms2)
+```
+
+We should be able to access these variables directly from Python - could these
+be used to create an e.g. `spectrum_utils.MsmsSpectrum` directly in Python?
+Note: each element in the `list` `pd` is a numerical `matrix` (`array`) with two
+columns, the first with the *m/z*, the second with the intensity
+values. Question is also which other *spectra variables* (metadata) is required
+or supported by *spectrum_utils*.
+
+```{python}
+r.pd[0]
+r.precursor_mz[0]
+```
+
+
+# General observations
+
+- Setup of R and python environments might be tricky as it seems to involve
+  manual setup steps (please correct and add information/code how to do it
+  properly/semi-automatically).
+- Does this setup work with dockerized R? *basilisk* might be a better
+  alternative then?
+- Limitations of the approach: *translation* of data classes is not very
+  efficient.

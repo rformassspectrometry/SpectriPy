@@ -27,7 +27,9 @@ functions allowing a seamless integration of the functionality of Python's
 *matchms* package into R. In addition, functions to convert between R's
 `Spectra` objects and Python's *matchms* spectrum objects are available to the
 advanced user or developer enabling to create custom functions or workflows on
-`Spectra` objects in Python and executing them in R using the *reticulate* R package.
+`Spectra` objects in Python and executing them in R using the *reticulate* R
+package.
+
 
 # Installation
 
@@ -36,7 +38,9 @@ with the *BiocManager* R package using the command
 `BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
 libraries are installed automatically on demand. Note that first installation
 or first invocation of specific functions might take long because of this
-installation process.
+installation process. The *BiocManager* package, if not already available, could
+be installed with `install.packages("BiocManager")`.
+
 
 # Spectra similarity calculations using `matchms`
 
@@ -112,8 +116,8 @@ res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
 res
 ```
 
-As a result `compareSpectriPy` returns also a numeric matrix of similarities.
-Note also that the first `compareSpectriPy` call takes usually a little longer
+As a result `compareSpectriPy()` returns also a numeric matrix of similarities.
+Note also that the first `compareSpectriPy()` call takes usually a little longer
 because the Python setup has to be initialized.
 
 Next we use the *ModifiedCosine* algorithm that considers also differences
@@ -151,17 +155,17 @@ compareSpectriPy(all, caf, param = ModifiedCosineParam())
 ```
 
 
-
 # Advanced use and internals
 
-For advanced users or developers, the `rspec_to_pyspec` and `pyspec_to_rspec`
-functions are available that enable conversion between MS data representations
-in `R` and Python (i.e. between the `Spectra` object and the Python `matchms`
-Spectrum object). To use these functions the `reticulate` package needs to be
-installed along with a Python environment and the `matchms` Python package.
+For advanced users or developers, the `rspec_to_pyspec()` and
+`pyspec_to_rspec()` functions are available that enable conversion between MS
+data representations in R and Python (i.e. between the `Spectra::Spectra` object
+and the Python `matchms.Spectrum` object). To use these functions the
+*reticulate* R package needs to be installed along with a Python environment and
+the *matchms* Python package.
 
 To illustrate their use we initialize below the Python environment that is
-bundled using the `r BiocStyle::Biocpkg("basilisk")` package within `SpectriPy`.
+bundled using the `r BiocStyle::Biocpkg("basilisk")` package within *SpectriPy*.
 
 ```{r setup-basilisk}
 library(SpectriPy)
@@ -195,7 +199,7 @@ spd$intensity <- list(
 sps <- Spectra(spd)
 ```
 
-We next convert the `Spectra` to a `matchms` Spectrum object.
+We next convert the `Spectra` to a `matchms.Spectrum` object.
 
 ```{r}
 pysps <- rspec_to_pyspec(sps)
@@ -216,11 +220,11 @@ spectraVariableMapping()
 ```
 
 With our `Spectra` data converted to Python, we could directly call all routines
-from the `matchms` package using the `reticulate` R package. Below we normalize
-the intensities of the 3 spectra using the from `normalize_intensities`
-functions from the `matchms.filtering` Python package. We thus need to import
-first the functionality from that package and can then directly call the
-function on the objects.
+from the `matchms` package using the *reticulate* R package. Below we normalize
+the intensities of the 3 spectra using the `normalize_intensities()` function
+from the *matchms.filtering* library. We thus need to first import the
+functionality from that package and can then call the function directly on the
+(Python) objects.
 
 ```{r}
 library(reticulate)
@@ -233,8 +237,8 @@ res <- r_to_py(res)
 res
 ```
 
-We can now convert the list of Python Spectrum objects back to R with
-`pyspec_to_rspec`:
+We can now convert the list of Python `matchms.Spectrum` objects back to R with
+`pyspec_to_rspec()`:
 
 ```{r}
 sps_r <- pyspec_to_rspec(res)
@@ -263,7 +267,7 @@ tmp <- pyspec_to_rspec(pysps)
 intensity(tmp)
 ```
 
-At very last we need also to stop the Python environment created by `basilisk`.
+At very last we need also to stop the Python environment enabled by *basilisk*.
 
 ```{r}
 basiliskStop(cl)
