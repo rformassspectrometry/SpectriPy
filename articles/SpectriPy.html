@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (links[i].hostname != window.location.hostname)
       links[i].target = '_blank';
 });
-</script><p><strong>Compiled</strong>: Tue Feb 4 14:49:40 2025</p>
+</script><p><strong>Compiled</strong>: Tue Feb 4 21:18:01 2025</p>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -88,14 +88,18 @@ package.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>If the <em>BiocManager</em> package is not already available, please
+install it with <code>install.packages("BiocManager")</code></p>
+<p>To install the development version of <em>SpectriPy</em> from GitHub,
+please install the <em>remotes</em> package with
+`install.packages(“remotes”).</p>
 <p>The package requires a python environment to be available and can be
 installed with the <em>BiocManager</em> R package using the command
-<code>BiocManager::install("RforMassSpectrometry/SpectriPy")</code>. All
+<code>BiocManager::install("RforMassSpectrometry/SpectriPy")</code>.
+This will install the latest version of the package from GitHub. All
 required python libraries are installed automatically on demand. Note
 that first installation or first invocation of specific functions might
-take long because of this installation process. The <em>BiocManager</em>
-package, if not already available, could be installed with
-<code>install.packages("BiocManager")</code>.</p>
+take long because of this installation process.</p>
 </div>
 <div class="section level2">
 <h2 id="spectra-similarity-calculations-using-matchms">Spectra similarity calculations using <code>matchms</code><a class="anchor" aria-label="anchor" href="#spectra-similarity-calculations-using-matchms"></a>
@@ -175,6 +179,8 @@ object. Below we calculate the similarity using the
 <em>CosineGreedy</em> function changing the <code>tolerance</code> to a
 value of <code>0.05</code> (instead of the default
 <code>0.1</code>).</p>
+<p>Executing the following step will automatically download and install
+conda mini forge to manage Python package dependencies.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">CosineGreedyParam</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">res</span></span></code></pre></div>
