@@ -132,8 +132,7 @@ A third example is the *CosineHungarian* algorithm, also a similarity function
 from *matchms*. This algorithm calculates the *cosine similarity score* as with
 `CosineGreedyParam`, but using the Hungarian algorithm to find the best matching
 peaks between the compared spectra. The algorithm can be configured with
-parameters `tolerance`, `mzPower` and `intensityPower` (see parameter
-description for more details).
+parameters `tolerance`, `mzPower` and `intensityPower` (see parameter description for more details).
 
 ```{r}
 res <- compareSpectriPy(all, caf, param = CosineHungarianParam())
