@@ -44,6 +44,10 @@
 #'   the given `tolerance` once a mass-shift is applied. The mass shift is the
 #'   difference in precursor-m/z between the two spectra.
 #'
+#' - `FingerprintSimilarityParam`: Calculate similarity between molecules based 
+#'   on their fingerprints. For this similarity measure to work, fingerprints 
+#'   are expected to be derived by running *add_fingerprint()*.
+#'
 #' @param x A [Spectra::Spectra()] object.
 #'
 #' @param y A [Spectra::Spectra()] object to compare against. If missing,
@@ -73,10 +77,11 @@
 #'   number of rows being equal to `length(x)` and number of columns equal to
 #'   `length(y)`.
 #'
-#' @author Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht
+#' @author Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht,
+#'   Marilyn De Graeve
 #'
-#' @seealso [Spectra::compareSpectra()] in the `Spectra` package for pure R
-#'     implementations of spectra similarity calculations.
+#' @seealso [Spectra::compareSpectra()] in the *Spectra* package for pure R
+#'   implementations of spectra similarity calculations.
 #'
 #' @export
 #'
@@ -209,6 +214,16 @@ NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
         mzPower = as.numeric(mzPower),
         intensityPower = as.numeric(intensityPower),
         ignorePeaksAbovePrecursor = as.logical(ignorePeaksAbovePrecursor))
+}
+
+#' @rdname compareSpectriPy
+#'
+#' @export
+FingerprintSimilarityParam <- function(tolerance = 0.1, mzPower = 0.0,
+                                 intensityPower = 1.0) {
+    new("FingerprintSimilarityParam", tolerance = as.numeric(tolerance),
+        mzPower = as.numeric(mzPower),
+        intensityPower = as.numeric(intensityPower))
 }
 
 #' @rdname compareSpectriPy

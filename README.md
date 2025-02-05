@@ -202,7 +202,15 @@ ensure all required python packages are installed and available (in the correct
 version) on each system. *basilisk* installs a self-contained conda environment,
 thus, the *SpectriPy* package is independent of the system's Python environment.
 
-To install the package use
+Since *SpectriPy* is currently still in development, you will need the *remotes*
+package to install it from GitHub. If you do not have the *remotes* package yet,
+you can install it using the following command:
+
+```r
+install.packages("remotes")
+```
+
+To install the *SpectriPi* package use
 
 ```r
 BiocManager::install("RforMassSpectrometry/SpectriPy")
