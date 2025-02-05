@@ -319,13 +319,8 @@ setMethod(
 
   ## Convert R spectra to Python.
   py_x <- r_to_py(x)
-  if (is.null(y)) {
-    py_y <- py_x
-    is_symmetric <- TRUE
-  } else {
-    py_y <- r_to_py(y)
-    is_symmetric <- FALSE
-  }
+  py_y <- if (!is.null(y)) r_to_py(y) else py_x
+  is_symmetric <- is.null(y)
 
   ## Determine which type of matchms similarity to compute.
   sim_functions <- list(
