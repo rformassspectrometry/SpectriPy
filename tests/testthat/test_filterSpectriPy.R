@@ -11,70 +11,70 @@ caf$mz <- list(
     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864))
 caf <- Spectra(caf)
 
-## select_by_intensityParam
-test_that("select_by_intensityParam constructor works", {
+## select_by_intensity
+test_that("select_by_intensity constructor works", {
     ## errors
-    expect_error(select_by_intensityParam(intensity_from = c(1.2, 1.5)), "length 1")
-    expect_error(select_by_intensityParam(intensity_from = -1.2), "length 1")
-    expect_error(select_by_intensityParam(intensity_to = c(1, 2)), "length 1")
-    expect_error(select_by_intensityParam(intensity_to = c(1, 2)), "length 1")
-    expect_error(select_by_intensityParam(foo = 1), "unused argument")
+    expect_error(select_by_intensity(intensity_from = c(1.2, 1.5)), "length 1")
+    expect_error(select_by_intensity(intensity_from = -1.2), "length 1")
+    expect_error(select_by_intensity(intensity_to = c(1, 2)), "length 1")
+    expect_error(select_by_intensity(intensity_to = c(1, 2)), "length 1")
+    expect_error(select_by_intensity(foo = 1), "unused argument")
     
-    res <- select_by_intensityParam(intensity_from = 5, intensity_to = 20)
-    expect_s4_class(res, "select_by_intensityParam")
+    res <- select_by_intensity(intensity_from = 5, intensity_to = 20)
+    expect_s4_class(res, "select_by_intensity")
     expect_equal(res@intensity_from, 5)
     expect_equal(res@intensity_to, 20)
 })
 
-## select_by_mzParam
-test_that("select_by_mzParam constructor works", {
+## select_by_mz
+test_that("select_by_mz constructor works", {
     ## errors
-    expect_error(select_by_mzParam(mz_from = c(1.2, 1.5)), "length 1")
-    expect_error(select_by_mzParam(mz_from = -1.2), "length 1")
-    expect_error(select_by_mzParam(mz_to = c(1, 2)), "length 1")
-    expect_error(select_by_mzParam(mz_to = c(1, 2)), "length 1")
-    expect_error(select_by_mzParam(foo = 1), "unused argument")
+    expect_error(select_by_mz(mz_from = c(1.2, 1.5)), "length 1")
+    expect_error(select_by_mz(mz_from = -1.2), "length 1")
+    expect_error(select_by_mz(mz_to = c(1, 2)), "length 1")
+    expect_error(select_by_mz(mz_to = c(1, 2)), "length 1")
+    expect_error(select_by_mz(foo = 1), "unused argument")
     
-    res <- select_by_mzParam(mz_from = 0, mz_to = 400)
-    expect_s4_class(res, "select_by_mzParam")
+    res <- select_by_mz(mz_from = 0, mz_to = 400)
+    expect_s4_class(res, "select_by_mz")
     expect_equal(res@mz_from, 0)
     expect_equal(res@mz_to, 400)
 })
 
 ## remove_peaks_around_precursor_mz
-test_that("remove_peaks_around_precursor_mzParam constructor works", {
+test_that("remove_peaks_around_precursor_mz constructor works", {
     ## errors
-    expect_error(remove_peaks_around_precursor_mzParam(mz_tolerance = c(1.2, 1.5)), "length 1")
-    expect_error(remove_peaks_around_precursor_mzParam(mz_tolerance = -1.2), "length 1")
-    expect_error(remove_peaks_around_precursor_mzParam(foo = 1), "unused argument")
+    expect_error(remove_peaks_around_precursor_mz(mz_tolerance = c(1.2, 1.5)), "length 1")
+    expect_error(remove_peaks_around_precursor_mz(mz_tolerance = -1.2), "length 1")
+    expect_error(remove_peaks_around_precursor_mz(foo = 1), "unused argument")
     
-    res <- remove_peaks_around_precursor_mzParam(mz_tolerance = 17)
-    expect_s4_class(res, "remove_peaks_around_precursor_mzParam")
+    res <- remove_peaks_around_precursor_mz(mz_tolerance = 17)
+    expect_s4_class(res, "remove_peaks_around_precursor_mz")
     expect_equal(res@mz_tolerance, 17)
 })
 
-test_that("normalize_intensitiesParam constructor works", {
+test_that("normalize_intensities constructor works", {
     ## errors
-    expect_error(normalize_intensitiesParam(foo = 1), "unused argument")
+    expect_error(normalize_intensities(foo = 1), "unused argument")
     
-    res <- normalize_intensitiesParam()
-    expect_s4_class(res, "normalize_intensitiesParam")
+    res <- normalize_intensities()
+    expect_s4_class(res, "normalize_intensities")
 })
 
 test_that(".fun name works parameterized", {
-    a <- select_by_intensityParam()
+    a <- select_by_intensity()
     expect_equal(SpectriPy:::.fun_name(a), "select_by_intensity")
-    a <- select_by_mzParam()
+    a <- select_by_mz()
     expect_equal(SpectriPy:::.fun_name(a), "select_by_mz")
-    a <- remove_peaks_around_precursor_mzParam()
+    a <- remove_peaks_around_precursor_mz()
     expect_equal(SpectriPy:::.fun_name(a), "remove_peaks_around_precursor_mz")
-    a <- normalize_intensitiesParam()
+    a <- normalize_intensities()
     expect_equal(SpectriPy:::.fun_name(a), "normalize_intensities")
 })
 
 test_that("python_command and ...._param_string work", {
     ## select_by_intensity
-    a <- select_by_intensityParam(intensity_from = 0, intensity_to = 100)
+    a <- select_by_intensity(intensity_from = 0, intensity_to = 100)
     res <- .select_by_intensity_param_string(a)
     expect_equal(res, "intensity_from=0, intensity_to=100")
     res <- python_command(a)
@@ -86,7 +86,7 @@ test_that("python_command and ...._param_string work", {
     expect_match(res, "m=0, intensity_to=100) for s in py_x]\n")
     
     ## select_by_mz
-    a <- select_by_mzParam(mz_from = 0, mz_to = 400)
+    a <- select_by_mz(mz_from = 0, mz_to = 400)
     res <- .select_by_mz_param_string(a)
     expect_equal(res, "mz_from=0, mz_to=400")
     res <- python_command(a)
@@ -97,8 +97,8 @@ test_that("python_command and ...._param_string work", {
     res <- python_command(a, "py_x")
     expect_match(res, "m=0, mz_to=400) for s in py_x]\n")
     
-    ## remove_peaks_around_precursor_mzParam
-    a <- remove_peaks_around_precursor_mzParam(mz_tolerance = 17)
+    ## remove_peaks_around_precursor_mz
+    a <- remove_peaks_around_precursor_mz(mz_tolerance = 17)
     res <- .remove_peaks_around_precursor_mz_param_string(a)
     expect_equal(res, "mz_tolerance=17")
     res <- python_command(a)
@@ -109,8 +109,8 @@ test_that("python_command and ...._param_string work", {
     res <- python_command(a, "py_x")
     expect_match(res, "mz_tolerance=17) for s in py_x]\n")
     
-    ## normalize_intensitiesParam
-    a <- normalize_intensitiesParam()
+    ## normalize_intensities
+    a <- normalize_intensities()
     res <- .normalize_intensities_param_string(a)
     expect_equal(res, character())
     res <- python_command(a)
@@ -129,7 +129,7 @@ test_that("python commands evaluation", {
     cl <- basiliskStart(matchms_env)
     
     ## select_by_intensity
-    p <- select_by_intensityParam(intensity_from = 1000, intensity_to = 20000)
+    p <- select_by_intensity(intensity_from = 1000, intensity_to = 20000)
     pstring <- SpectriPy:::python_command(p)
     py$py_spectrum_in <- rspec_to_pyspec(caf, reference = import("matchms"),
         mapping = vars)
@@ -142,7 +142,7 @@ test_that("python commands evaluation", {
     expect_equal(intensity(res)[[2]], c(3270, 10111), tolerance = 1e-04)
     
     ## select_by_mz
-    p <- select_by_mzParam(mz_from = 0, mz_to = 150)
+    p <- select_by_mz(mz_from = 0, mz_to = 150)
     pstring <- SpectriPy:::python_command(p)
     py$py_spectrum_in <- rspec_to_pyspec(caf, reference = import("matchms"),
         mapping = vars)
@@ -155,7 +155,7 @@ test_that("python commands evaluation", {
     expect_equal(mz(res)[[2]], c(110.071, 138.0655, 138.1057, 138.1742), tolerance = 1e-04)
     
     ## remove_peaks_around_precursor_mz
-    p <- remove_peaks_around_precursor_mzParam(mz_tolerance = 20)
+    p <- remove_peaks_around_precursor_mz(mz_tolerance = 20)
     pstring <- SpectriPy:::python_command(p)
     py$py_spectrum_in <- rspec_to_pyspec(caf, reference = import("matchms"),
         mapping = vars)
@@ -168,7 +168,7 @@ test_that("python commands evaluation", {
     expect_equal(mz(res)[[2]], c(110.071, 138.0655, 138.1057, 138.1742), tolerance = 1e-04)
     
     ## normalize_intensities
-    p <- normalize_intensitiesParam()
+    p <- normalize_intensities()
     pstring <- SpectriPy:::python_command(p)
     py$py_spectrum_in <- rspec_to_pyspec(caf, reference = import("matchms"),
         mapping = vars)
@@ -184,12 +184,12 @@ test_that("python commands evaluation", {
 })
 
 test_that(".filter_spectra_python works", {
-    res <- SpectriPy:::.filter_spectra_python(caf, select_by_intensityParam())
+    res <- SpectriPy:::.filter_spectra_python(caf, select_by_intensity())
     expect_true(length(res) == 2)
     expect_is(res, "Spectra")
 
     ## try with empty Spectra
-    res <- SpectriPy:::.filter_spectra_python(caf[integer()], select_by_intensityParam())
+    res <- SpectriPy:::.filter_spectra_python(caf[integer()], select_by_intensity())
     expect_true(length(res) == 0)
     expect_is(res, "Spectra")
 })
@@ -204,7 +204,7 @@ test_that("filterSpectriPy works", {
     
     ## select_by_intensity
     res <- filterSpectriPy(caf, 
-        param = select_by_intensityParam(intensity_from = 1000, intensity_to = 20000))
+        param = select_by_intensity(intensity_from = 1000, intensity_to = 20000))
     expect_true(length(res) == 2)
     expect_is(res, "Spectra")
     expect_equal(unname(intensity(res)[[1]]), 2580, tolerance = 1e-04)
@@ -212,7 +212,7 @@ test_that("filterSpectriPy works", {
     
     ## select_by_mz
     res <- filterSpectriPy(caf, 
-        param = select_by_mzParam(mz_from = 0, mz_to = 150))
+        param = select_by_mz(mz_from = 0, mz_to = 150))
     expect_true(length(res) == 2)
     expect_is(res, "Spectra")
     expect_equal(mz(res)[[1]], c(135.0432, 138.0632), tolerance = 1e-04)
@@ -220,7 +220,7 @@ test_that("filterSpectriPy works", {
     
     ## remove_peaks_around_precursor_mz
     res <- filterSpectriPy(caf, 
-        param = remove_peaks_around_precursor_mzParam(mz_tolerance = 20))
+        param = remove_peaks_around_precursor_mz(mz_tolerance = 20))
     expect_true(length(res) == 2)
     expect_is(res, "Spectra")
     expect_equal(mz(res)[[1]], c(135.0432, 138.0632, 163.0375), tolerance = 1e-04)
@@ -228,7 +228,7 @@ test_that("filterSpectriPy works", {
     
     ## normalize_intensities
     res <- filterSpectriPy(caf, 
-        param = normalize_intensitiesParam())
+        param = normalize_intensities())
     expect_true(length(res) == 2)
     expect_is(res, "Spectra")
     expect_equal(intensity(caf)[[1]], c(340, 416, 2580, 412), tolerance = 1e-04)
@@ -239,6 +239,6 @@ test_that("filterSpectriPy works", {
     ##caf_mod <- caf
     ##caf_mod$precursorMz[2] <- NA_real_
     ##expect_error(filterSpectriPy(caf_mod,
-    ##    param = remove_peaks_around_precursor_mzParam()),
+    ##    param = remove_peaks_around_precursor_mz()),
     ##    "Expect precursor to be positive")
 })

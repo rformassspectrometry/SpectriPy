@@ -10,7 +10,7 @@
 #' module.
 #'
 #' Selection and configuration of the algorithm can be performed with one of the
-#' parameter objects:
+#' parameter objects (equivalent to `matchms`' function names):
 #'
 #' - `select_by_intensity`: Keeps only the peaks within defined intensity range
 #' (keep if `intensity_from` >= intensity >= `intensity_to`). 
@@ -27,7 +27,7 @@
 #' @param sps A [Spectra::Spectra()] object.
 #'
 #' @param param one of parameter classes listed above (such as
-#'   `select_by_intensityParam`) defining the filter/processing function in python
+#'   `select_by_intensity`) defining the filter/processing function in python
 #'   and its parameters.
 #'
 #' @param ... ignored.
@@ -66,18 +66,18 @@
 #' ## process Spectra with matchms' select_by_intensity algorithm
 #' ## note: the first filterSpectriPy will take longer because the Python
 #' ## environment needs to be set up.
-#' filterSpectriPy(sps, param = select_by_intensityParam(intensity_from=50, intensity_to=400))
+#' filterSpectriPy(sps, param = select_by_intensity(intensity_from=50, intensity_to=400))
 #'
 #' ## Process Spectra with matchms' select_by_mz algorithm
-#' filterSpectriPy(sps, param = select_by_mzParam(mz_from=150, mz_to=450))
+#' filterSpectriPy(sps, param = select_by_mz(mz_from=150, mz_to=450))
 #'
 #' ## Calculate pairwise similarity of all spectra in sps with matchms' 
 #' ## remove_peaks_around_precursor_mz algorithm
-#' filterSpectriPy(sps, param = remove_peaks_around_precursor_mzParam(mz_tolerance=20))
+#' filterSpectriPy(sps, param = remove_peaks_around_precursor_mz(mz_tolerance=20))
 #' 
 #' ## Calculate pairwise similarity of all spectra in sps with matchms' 
 #' ## normalize_intensities algorithm
-#' filterSpectriPy(sps, normalize_intensitiesParam())
+#' filterSpectriPy(sps, normalize_intensities())
 NULL
 
 setGeneric("filterSpectriPy", function(sps, param, ...)
@@ -86,7 +86,7 @@ setGeneric("filterSpectriPy", function(sps, param, ...)
 #' @importClassesFrom ProtGenerics Param
 #'
 #' @noRd
-setClass("select_by_intensityParam",
+setClass("select_by_intensity",
     slots = c(
         intensity_from = "numeric", intensity_to = "numeric"),
     prototype = prototype(
@@ -100,7 +100,7 @@ setClass("select_by_intensityParam",
         msg
     }
 )
-setClass("select_by_mzParam",
+setClass("select_by_mz",
     slots = c(
         mz_from = "numeric",
         mz_to = "numeric"),
@@ -116,7 +116,7 @@ setClass("select_by_mzParam",
         msg
     }
 )
-setClass("remove_peaks_around_precursor_mzParam",
+setClass("remove_peaks_around_precursor_mz",
     slots = c(
         mz_tolerance = "numeric"),
     prototype = prototype(
@@ -128,7 +128,7 @@ setClass("remove_peaks_around_precursor_mzParam",
         msg
     }
 )
-setClass("normalize_intensitiesParam",
+setClass("normalize_intensities",
     prototype = prototype(),
     validity = function(object) {
         msg <- NULL
@@ -147,8 +147,8 @@ setClass("normalize_intensitiesParam",
 #' @importFrom methods new
 #'
 #' @export
-select_by_intensityParam <- function(intensity_from = 10, intensity_to = 200) {
-    new("select_by_intensityParam", intensity_from = as.numeric(intensity_from),
+select_by_intensity <- function(intensity_from = 10, intensity_to = 200) {
+    new("select_by_intensity", intensity_from = as.numeric(intensity_from),
         intensity_to = as.numeric(intensity_to))
 }
 
@@ -161,8 +161,8 @@ select_by_intensityParam <- function(intensity_from = 10, intensity_to = 200) {
 #' Default is 1000.
 #' 
 #' @export
-select_by_mzParam <- function(mz_from = 0, mz_to = 1000) {
-    new("select_by_mzParam", mz_from = as.numeric(mz_from), 
+select_by_mz <- function(mz_from = 0, mz_to = 1000) {
+    new("select_by_mz", mz_from = as.numeric(mz_from), 
         mz_to = as.numeric(mz_to))
 }
 
@@ -172,16 +172,16 @@ select_by_mzParam <- function(mz_from = 0, mz_to = 1000) {
 #' allowed to lie within the precursor mz. Default is 17 Da.
 #' 
 #' @export
-remove_peaks_around_precursor_mzParam <- function(mz_tolerance = 17) {
-    new("remove_peaks_around_precursor_mzParam", 
+remove_peaks_around_precursor_mz <- function(mz_tolerance = 17) {
+    new("remove_peaks_around_precursor_mz", 
         mz_tolerance = as.numeric(mz_tolerance))
 }
 
 #' @rdname filterSpectriPy
 #'
 #' @export
-normalize_intensitiesParam <- function() {
-    new("normalize_intensitiesParam")
+normalize_intensities <- function() {
+    new("normalize_intensities")
 }
 
 #' @rdname filterSpectriPy
@@ -189,7 +189,7 @@ normalize_intensitiesParam <- function() {
 #' @exportMethod filterSpectriPy
 setMethod(
     "filterSpectriPy",
-    signature = c(sps = "Spectra", param = "select_by_intensityParam"),
+    signature = c(sps = "Spectra", param = "select_by_intensity"),
     function(sps, param, ...) {
         .filter_spectra_python(sps, param)
     })
@@ -199,7 +199,7 @@ setMethod(
 #' @exportMethod filterSpectriPy
 setMethod(
     "filterSpectriPy",
-    signature = c(sps = "Spectra", param = "select_by_mzParam"),
+    signature = c(sps = "Spectra", param = "select_by_mz"),
     function(sps, param, ...) {
         .filter_spectra_python(sps, param)
     })
@@ -209,7 +209,7 @@ setMethod(
 #' @exportMethod filterSpectriPy
 setMethod(
     "filterSpectriPy",
-    signature = c(sps = "Spectra", param = "remove_peaks_around_precursor_mzParam"),
+    signature = c(sps = "Spectra", param = "remove_peaks_around_precursor_mz"),
     function(sps, param, ...) {
         .filter_spectra_python(sps, param)
     })
@@ -219,7 +219,7 @@ setMethod(
 #' @exportMethod filterSpectriPy
 setMethod(
     "filterSpectriPy",
-    signature = c(sps = "Spectra", param = "normalize_intensitiesParam"),
+    signature = c(sps = "Spectra", param = "normalize_intensities"),
     function(sps, param, ...) {
         .filter_spectra_python(sps, param)
     })
@@ -258,7 +258,7 @@ setMethod(
 #' @noRd
 setMethod(
     "python_command",
-    "select_by_intensityParam",
+    "select_by_intensity",
     function(object, input_param = "py_spectrum_in") {
         FUN <- .fun_name(object)
         paste0("import matchms\n",
@@ -267,7 +267,7 @@ setMethod(
     })
 setMethod(
     "python_command",
-    "select_by_mzParam",
+    "select_by_mz",
     function(object, input_param = "py_spectrum_in") {
         FUN <- .fun_name(object)
         paste0("import matchms\n",
@@ -276,7 +276,7 @@ setMethod(
     })
 setMethod(
     "python_command",
-    "remove_peaks_around_precursor_mzParam",
+    "remove_peaks_around_precursor_mz",
     function(object, input_param = "py_spectrum_in") {
         FUN <- .fun_name(object)
         paste0("import matchms\n",
@@ -285,7 +285,7 @@ setMethod(
     })
 setMethod(
     "python_command",
-    "normalize_intensitiesParam",
+    "normalize_intensities",
     function(object, input_param = "py_spectrum_in") {
         FUN <- .fun_name(object)
         paste0("import matchms\n",
