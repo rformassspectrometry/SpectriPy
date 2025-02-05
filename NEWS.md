@@ -3,6 +3,8 @@
 ## Changes in 0.2.0
 
 - Use *matchms* version 0.28.2.
+- Add `filterSpectriPy` method and related parameter objects to perform spectra
+  Filtering/processing in python.
 
 # SpectriPy 0.1
 
