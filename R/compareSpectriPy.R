@@ -5,23 +5,24 @@
 #' @description
 #'
 #' The `compareSpectriPy()` function allows to calculate spectral similarity
-#' scores using the `calculate_scores module` of the python
-#' [matchms.similarity package](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html)
-#' package.
+#' scores using the `calculate_scores function` of the Python
+#' [matchms.similarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html).
+#' module.
 #'
 #' Selection and configuration of the algorithm can be performed with one of the
 #' parameter objects:
 #'
 #' - `CosineGreedyParam`: calculate the *cosine similarity score* between
-#'   spectra. The score is calculated by finding best possible matches between
-#'   peaks of two spectra. Two peaks are considered a potential match if their
-#'   m/z ratios lie within the given `tolerance`. The underlying peak assignment
-#'   problem is here solved in a *greedy* way. This can perform notably faster,
-#'   but does occasionally deviate slightly from a fully correct solution (as
-#'   with the `CosineHungarianParam` algorithm). In practice this will rarely
-#'   affect similarity scores notably, in particular for smaller tolerances. The
-#'   algorithm can be configured with parameters `tolerance`, `mzPower` and
-#'   `intensityPower` (see parameter description for more details).
+#'   spectra. The score is calculated by finding the best possible matches
+#'   between peaks of two spectra. Two peaks are considered a potential match if
+#'   their m/z ratios lie within the given `tolerance`. The underlying peak
+#'   assignment problem is here solved in a *greedy* way. This can perform
+#'   notably faster, but does occasionally deviate slightly from a fully correct
+#'   solution (as with the `CosineHungarianParam` algorithm). In practice this
+#'   will rarely affect similarity scores notably, in particular for smaller
+#'   tolerances. The algorithm can be configured with parameters `tolerance`,
+#'   `mzPower` and `intensityPower` (see parameter description for more
+#'   details).
 #'
 #' - `CosineHungarianParam`: calculate the *cosine similarity score* as with
 #'   `CosineGreedyParam`, but using the Hungarian algorithm to find the best
@@ -31,18 +32,18 @@
 #'
 #' - `ModifiedCosineParam`: The modified cosine score aims at quantifying the
 #'   similarity between two mass spectra. The score is calculated by finding
-#'   best possible matches between peaks of two spectra. Two peaks are
+#'   the best possible matches between peaks of two spectra. Two peaks are
 #'   considered a potential match if their m/z ratios lie within the given
 #'   `tolerance`, or if their m/z ratios lie within the tolerance once a
-#'   mass-shift is applied. The mass shift is simply the difference in
+#'   mass shift is applied. The mass shift is simply the difference in
 #'   precursor-m/z between the two spectra.
 #'
 #' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
 #'   quantifying the similarity between two mass spectra. The score is
-#'   calculated by finding best possible matches between peaks of two spectra.
-#'   Two peaks are considered a potential match if their m/z ratios lie within
-#'   the given `tolerance` once a mass-shift is applied. The mass shift is the
-#'   difference in precursor-m/z between the two spectra.
+#'   calculated by finding the best possible matches between peaks of two
+#'   spectra. Two peaks are considered a potential match if their m/z ratios lie
+#'   within the given `tolerance` once a mass shift is applied. The mass shift
+#'   is the difference in precursor-m/z between the two spectra.
 #'
 #' - `FingerprintSimilarityParam`: Calculate similarity between molecules based 
 #'   on their fingerprints. For this similarity measure to work, fingerprints 
@@ -53,11 +54,11 @@
 #' @param y A [Spectra::Spectra()] object to compare against. If missing,
 #'   spectra similarities are calculated between all spectra in `x`.
 #'
-#' @param param one of parameter classes listed above (such as
-#'   `CosineGreedyParam`) defining the similarity scoring function in python
+#' @param param One of the parameter classes listed above (such as
+#'   `CosineGreedyParam`) defining the similarity scoring function in Python
 #'   and its parameters.
 #'
-#' @param tolerance `numeric(1)`: tolerated differences in peaks' m/z. Peaks
+#' @param tolerance `numeric(1)`: tolerated differences in the peaks' m/z. Peaks
 #'   with m/z differences `<= tolerance` are considered matching.
 #'
 #' @param mzPower `numeric(1)`: the power to raise m/z to in the cosine
@@ -73,9 +74,9 @@
 #'
 #' @param ... ignored.
 #'
-#' @return `compareSpectriPy()` returns a `numeric` matrix with the scores,
-#'   number of rows being equal to `length(x)` and number of columns equal to
-#'   `length(y)`.
+#' @return `compareSpectriPy()` Returns a `numeric` matrix with the scores,
+#'   with the number of rows equal to `length(x)` and the number of columns
+#'   equal to `length(y)`.
 #'
 #' @author Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht,
 #'   Marilyn De Graeve

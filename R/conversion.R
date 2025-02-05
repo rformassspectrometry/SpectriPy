@@ -129,7 +129,7 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' @param x `Spectra` object **of length 1!**.
 #'
 #' @param spectraVariables named `character` vector defining the spectra
-#'     varibles that should be stored as metadata in `matchms`' metadata. Names
+#'     variables that should be stored as metadata in `matchms`' metadata. Names
 #'     are expected to be the spectra variable names and values the
 #'     corresponding metadata fields in `matchms`. Defaults to
 #'     [spectraVariableMapping()]. If `spectraVariables = character()` no
