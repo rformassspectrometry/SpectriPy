@@ -74,18 +74,18 @@ NULL
 #'
 #' @rdname rspec_to_pyspec
 setMethod("spectraVariableMapping", "missing", function(object, ...) {
-    .SPECTRA_2_MATCHMS
+  .SPECTRA_2_MATCHMS
 })
 
 .SPECTRA_2_MATCHMS <- c(
-    precursorMz = "precursor_mz",
-    precursorIntensity = "precursor_intensity",
-    precursorCharge = "charge",
-    rtime = "retention_time",
-    collisionEnergy = "collision_energy",
-    isolationWindowTargetMz = "isolation_window_target_mz",
-    ## polarity = "ionmode", # Disabling since matchms does not support int.
-    msLevel = "ms_level"
+  precursorMz = "precursor_mz",
+  precursorIntensity = "precursor_intensity",
+  precursorCharge = "charge",
+  rtime = "retention_time",
+  collisionEnergy = "collision_energy",
+  isolationWindowTargetMz = "isolation_window_target_mz",
+  ## polarity = "ionmode", # Disabling since matchms does not support int.
+  msLevel = "ms_level"
 )
 
 #' @rdname rspec_to_pyspec
@@ -96,11 +96,14 @@ setMethod("spectraVariableMapping", "missing", function(object, ...) {
 rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
                             reference = import("matchms"),
                             BPPARAM = SerialParam(), .check = TRUE) {
-    if (.check && !is(x, "Spectra"))
-        stop("'x' should be a Spectra object.")
-    plist <- spectrapply(x, .single_rspec_to_pyspec, spectraVariables = mapping,
-                         reference = reference, BPPARAM = BPPARAM)
-    r_to_py(unname(plist))
+  if (.check && !is(x, "Spectra")) {
+    stop("'x' should be a Spectra object.")
+  }
+  plist <- spectrapply(x, .single_rspec_to_pyspec,
+    spectraVariables = mapping,
+    reference = reference, BPPARAM = BPPARAM
+  )
+  r_to_py(unname(plist))
 }
 
 #' @rdname rspec_to_pyspec
@@ -110,15 +113,19 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #' @export
 pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
                             BPPARAM = SerialParam(), .check = TRUE) {
-    if (!(is(x, "list") | is(x, "python.builtin.list")))
-      stop("'x' is expected to be a Python list.")
-    x <- py_to_r(x)
-    if (.check && !all(vapply(x, function(z)
-        is(z, "matchms.Spectrum.Spectrum"), logical(1))))
-        stop("'x' is expected to be a Python list of matchms Spectrum objects.")
-    spectra_list <- bplapply(x, .single_pyspec_to_rspec,
-                             spectraVariables = mapping, BPPARAM = BPPARAM)
-    do.call(concatenateSpectra, spectra_list)
+  if (!(is(x, "list") | is(x, "python.builtin.list"))) {
+    stop("'x' is expected to be a Python list.")
+  }
+  x <- py_to_r(x)
+  if (.check && !all(vapply(x, function(z) {
+    is(z, "matchms.Spectrum.Spectrum")
+  }, logical(1)))) {
+    stop("'x' is expected to be a Python list of matchms Spectrum objects.")
+  }
+  spectra_list <- bplapply(x, .single_pyspec_to_rspec,
+    spectraVariables = mapping, BPPARAM = BPPARAM
+  )
+  do.call(concatenateSpectra, spectra_list)
 }
 
 #' @description
@@ -155,18 +162,24 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 .single_rspec_to_pyspec <- function(x,
                                     spectraVariables = spectraVariableMapping(),
                                     reference = import("matchms")) {
-    pks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
-    if (length(spectraVariables)) {
-        slist <- as.list(spectraData(x, columns = names(spectraVariables)))
-        ## ## Seems matchms.Spectrum does not support NA retention times?
-        ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
-        ##     slist$rtime <- 0
-        names(slist) <- spectraVariables
-        reference$Spectrum(mz = np_array(pks[, 1L]),
-                           intensities = np_array(pks[, 2L]),
-                           metadata = r_to_py(slist))
-    } else reference$Spectrum(mz = np_array(pks[, 1L]),
-                              intensities = np_array(pks[, 2L]))
+  pks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
+  if (length(spectraVariables)) {
+    slist <- as.list(spectraData(x, columns = names(spectraVariables)))
+    ## ## Seems matchms.Spectrum does not support NA retention times?
+    ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
+    ##     slist$rtime <- 0
+    names(slist) <- spectraVariables
+    reference$Spectrum(
+      mz = np_array(pks[, 1L]),
+      intensities = np_array(pks[, 2L]),
+      metadata = r_to_py(slist)
+    )
+  } else {
+    reference$Spectrum(
+      mz = np_array(pks[, 1L]),
+      intensities = np_array(pks[, 2L])
+    )
+  }
 }
 
 #' @description
@@ -195,22 +208,25 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @noRd
 .single_pyspec_to_rspec <-
-    function(x, spectraVariables = spectraVariableMapping()) {
-        plist <- x$metadata
-        vars <- spectraVariables[spectraVariables %in% names(plist)]
-        if (length(vars)) {
-            rlist <- lapply(vars, function(z) plist[z])
-            ## Drop NULL variables.
-            spd <- DataFrame(rlist[lengths(rlist) > 0])
-            if (!nrow(spd))
-                spd <- DataFrame(msLevel = NA_integer_)
-        } else
-            spd <- DataFrame(msLevel = NA_integer_)
-        spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
-        spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
-                                     compress = FALSE)
-        Spectra(spd)
+  function(x, spectraVariables = spectraVariableMapping()) {
+    plist <- x$metadata
+    vars <- spectraVariables[spectraVariables %in% names(plist)]
+    if (length(vars)) {
+      rlist <- lapply(vars, function(z) plist[z])
+      ## Drop NULL variables.
+      spd <- DataFrame(rlist[lengths(rlist) > 0])
+      if (!nrow(spd)) {
+        spd <- DataFrame(msLevel = NA_integer_)
+      }
+    } else {
+      spd <- DataFrame(msLevel = NA_integer_)
     }
+    spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
+    spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
+      compress = FALSE
+    )
+    Spectra(spd)
+  }
 
 #' Extract all spectraData and all mz and intensity values, give them to
 #' Python to create an array of Spectrum. Could be faster because loop is
@@ -227,4 +243,3 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' @noRd
 .multi_pyspec_to_rspec <- function() {
 }
-
