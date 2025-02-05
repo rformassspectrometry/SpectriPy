@@ -45,15 +45,16 @@ checking should only disabled for very good reasons.}
 }
 \value{
 For \code{rspec_to_pyspec()}: Python array of Spectrum objects, same
-length than \code{x}. For \code{pyspec_to_rspec()}: \code{\link[=Spectra]{Spectra()}} with the converted
-spectra. For \code{spectraVariableMapping()}: named \code{character} vector with
-names being \code{Spectra} variable names and values the corresponding names
-in \code{matchms}.
+length than \code{x}. For \code{pyspec_to_rspec()}: \code{\link[Spectra:Spectra]{Spectra::Spectra()}} with the
+converted spectra. For \code{spectraVariableMapping()}: named \code{character}
+vector with names being \code{Spectra} variable names and values the
+corresponding names in \code{matchms}.
 }
 \description{
 The \code{rspec_to_pyspec()} and \code{pyspec_to_rspec()} functions allow to convert
-R \code{\link[=Spectra]{Spectra()}} objects into \href{https://github.com/matchms/matchms}{matchms}
-Python \code{Spectrum} objects. These functions are designed for
+R \code{\link[Spectra:Spectra]{Spectra::Spectra()}} objects into
+\href{https://github.com/matchms/matchms}{matchms} Python \code{matchms.Spectrum}
+objects. These functions are designed for
 \strong{advanced users or developers} who want/need to integrate Python/matchms
 functionality into R using \emph{reticulate}. All other users should use the
 dedicated R functions within this package that take care of running the

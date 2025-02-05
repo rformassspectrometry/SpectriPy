@@ -18,7 +18,7 @@ helpful references to code and files for contributors. Preferably read the
   vignette for a description of the data structure).
 
 - Powerful MS data algorithms algorithms are also available in Python,
-  e.g. in the library [matchms](https://github.com/matchms/matchms).
+  e.g. provided by the [matchms](https://github.com/matchms/matchms) library.
 
 - Why re-implement what's already available?
 
@@ -66,6 +66,7 @@ helpful references to code and files for contributors. Preferably read the
   explore the package and its functionality.
 
 
+
 ## Python setup and configuration
 
 **Where are python libraries defined?**
@@ -93,27 +94,28 @@ helpful references to code and files for contributors. Preferably read the
 
 ## Test data
 
-**What data can be used in tests?**
+**What data could be used in tests?**
 
-- The package does not contain test data files. Test and example data are
-  created *manually* by defining *m/z* and intensity values of MS peaks. If
-  necessary, data files can be added (e.g. in MGF format) and placed in an
+- The package does not contain any test data files. Test and example data are
+  created *manually* by defining *m/z* and intensity values of MS peaks. Data
+  files could be added (e.g. in MGF format) if needed and put into a
   *inst/extdata* folder.
 
-- Alternatively, sample files in mzML format are available in Bioconductor's
-  [*msdata*](https://bioconductor.org/packages/msdata) package.
+- Alternatively, example files in mzML format would be available in
+  Bioconductor's [*msdata*](https://bioconductor.org/packages/msdata)
+  package.
 
 - To test the package and newly created functionality: add the respective unit
-  tests to the *tests/testthat* folder and evaluate them by e.g. running the
-  following `rcmdcheck::rcmdcheck(args = "--no-manual")` command in an R session
-  started in the package folder.
+  tests to the *tests/testthat* folder and evaluate them e.g. by running
+  `rcmdcheck::rcmdcheck(args = "--no-manual")` in an R session started within
+  the package folder.
 
 
 ## Potential contributions and extensions
 
-**What can be implemented?**
+**What could be implemented?**
 
-- Add new similarity calculation functionality to `SpectriPy`. See also
+- Add some new similarity calculation functionality to `SpectriPy`. See also
   [issue #19](https://github.com/rformassspectrometry/SpectriPy/issues/19).
 
 - Integrate other Python libraries? More a discussion - see [issue
@@ -134,7 +136,7 @@ helpful references to code and files for contributors. Preferably read the
   #25](https://github.com/rformassspectrometry/SpectriPy/issues/25).
 
 - Define a use case analysis (or ideally several): show how data can be analyzed
-  with the SpectriPy package and contrast that with a "quarto" or "Jupyter
+  with the *SpectriPy* package and contrast that with a "quarto" or "Jupyter
   Notebook" document directly combining the R and Python code: is there really
   need for additional convenience functionality within an R package, or can the
   same, or more, be achieved with e.g. "quarto"? What are the benefits of
@@ -142,6 +144,7 @@ helpful references to code and files for contributors. Preferably read the
   #21](https://github.com/rformassspectrometry/SpectriPy/issues/21).
 
 - Add more use cases and examples to the package vignette
+
   (*vignettes/SpectriPy.Rmd*) file. See also [issue
   #26](https://github.com/rformassspectrometry/SpectriPy/issues/26).
 
@@ -151,9 +154,9 @@ helpful references to code and files for contributors. Preferably read the
 **How to contribute?**
 
 - Ideally fork the github repository, implement extensions and make a pull
-  request to the ??FINDME branch.
+  request to the *main* branch.
 
-- Follow the R [coding stile
+- Follow the [coding style
   guidelines](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#coding-style)
-  and adhere to the R [code of
+  and adhere to the [code of
   conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/RforMassSpectrometry.html#code-of-conduct).

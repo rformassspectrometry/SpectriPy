@@ -5,8 +5,9 @@
 #' @description
 #'
 #' The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to convert
-#' R [Spectra()] objects into [matchms](https://github.com/matchms/matchms)
-#' Python `Spectrum` objects. These functions are designed for
+#' R [Spectra::Spectra()] objects into
+#' [matchms](https://github.com/matchms/matchms) Python `matchms.Spectrum`
+#' objects. These functions are designed for
 #' **advanced users or developers** who want/need to integrate Python/matchms
 #' functionality into R using *reticulate*. All other users should use the
 #' dedicated R functions within this package that take care of running the
@@ -46,10 +47,10 @@
 #' @param ... ignored.
 #'
 #' @return For `rspec_to_pyspec()`: Python array of Spectrum objects, same
-#'     length than `x`. For `pyspec_to_rspec()`: [Spectra()] with the converted
-#'     spectra. For `spectraVariableMapping()`: named `character` vector with
-#'     names being `Spectra` variable names and values the corresponding names
-#'     in `matchms`.
+#'     length than `x`. For `pyspec_to_rspec()`: [Spectra::Spectra()] with the
+#'     converted spectra. For `spectraVariableMapping()`: named `character`
+#'     vector with names being `Spectra` variable names and values the
+#'     corresponding names in `matchms`.
 #'
 #' @author Michael Witting, Johannes Rainer
 #'
@@ -142,6 +143,8 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @importMethodsFrom Spectra spectraData
 #'
+#' @importMethodsFrom Spectra peaksData
+#'
 #' @importMethodsFrom Spectra mz
 #'
 #' @importMethodsFrom Spectra intensity
@@ -152,17 +155,18 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 .single_rspec_to_pyspec <- function(x,
                                     spectraVariables = spectraVariableMapping(),
                                     reference = import("matchms")) {
+    pks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
     if (length(spectraVariables)) {
         slist <- as.list(spectraData(x, columns = names(spectraVariables)))
         ## ## Seems matchms.Spectrum does not support NA retention times?
         ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
         ##     slist$rtime <- 0
         names(slist) <- spectraVariables
-        reference$Spectrum(mz = np_array(mz(x)[[1L]]),
-                           intensities = np_array(intensity(x)[[1L]]),
+        reference$Spectrum(mz = np_array(pks[, 1L]),
+                           intensities = np_array(pks[, 2L]),
                            metadata = r_to_py(slist))
-    } else reference$Spectrum(mz = np_array(mz(x)[[1L]]),
-                              intensities = np_array(intensity(x)[[1L]]))
+    } else reference$Spectrum(mz = np_array(pks[, 1L]),
+                              intensities = np_array(pks[, 2L]))
 }
 
 #' @description
