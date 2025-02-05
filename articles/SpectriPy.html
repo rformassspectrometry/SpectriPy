@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (links[i].hostname != window.location.hostname)
       links[i].target = '_blank';
 });
-</script><p><strong>Compiled</strong>: Wed Feb 5 08:17:53 2025</p>
+</script><p><strong>Compiled</strong>: Wed Feb 5 08:30:59 2025</p>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -194,7 +194,8 @@ matrix of similarities. Note also that the first
 <code><a href="../reference/compareSpectriPy.html">compareSpectriPy()</a></code> call takes usually a little longer
 because the Python setup has to be initialized.</p>
 <p>Next we use the <em>ModifiedCosine</em> algorithm that considers also
-differences between the spectra’s precursor m/z in the calculation.</p>
+differences between the spectra’s precursor <em>m/z</em> in the
+calculation.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">res</span></span></code></pre></div>
@@ -203,14 +204,46 @@ differences between the spectra’s precursor m/z in the calculation.</p>
 <span><span class="co">## [2,] 0.19481813 1.0000000</span></span>
 <span><span class="co">## [3,] 0.13841831 0.8520549</span></span>
 <span><span class="co">## [4,] 0.05724816 0.3523997</span></span></code></pre>
-<p>Note that for this calculation all spectra precursor m/z values need
-to be available, otherwise an error will be thrown. Thus, we should
-always ensure to remove spectra without precursor m/z values prior to
-similarity scoring with this similarity method. Below we remove the
-precursor m/z from one of our input spectra and then show how the
-<code>Spectra</code> object could be subsetted to <em>valid</em> spectra
-for this method.</p>
+<p>A third example is the <em>CosineHungarian</em> algorithm, also a
+similarity function from <em>matchms</em>. This algorithm calculates the
+<em>cosine similarity score</em> as with <code>CosineGreedyParam</code>,
+but using the Hungarian algorithm to find the best matching peaks
+between the compared spectra. The algorithm can be configured with
+parameters <code>tolerance</code>, <code>mzPower</code> and
+<code>intensityPower</code> (see parameter description for more
+details).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">CosineHungarianParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
+<pre><code><span><span class="co">##           [,1]      [,2]</span></span>
+<span><span class="co">## [1,] 1.0000000 0.1948181</span></span>
+<span><span class="co">## [2,] 0.1948181 1.0000000</span></span>
+<span><span class="co">## [3,] 0.0000000 0.0000000</span></span>
+<span><span class="co">## [4,] 0.0000000 0.0000000</span></span></code></pre>
+<p>A fourth example is the <em>NeutralLossesCosine</em> algorithm, also
+a similarity function from <em>matchms</em>. The neutral losses cosine
+score aims at quantifying the similarity between two mass spectra. The
+score is calculated by finding best possible matches between peaks of
+two spectra. Two peaks are considered a potential match if their
+<em>m/z</em> ratios lie within the given <code>tolerance</code> once a
+mass-shift is applied. The mass shift is the difference in
+precursor-<em>m/z</em> between the two spectra.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="../reference/compareSpectriPy.html">NeutralLossesCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
+<pre><code><span><span class="co">##            [,1]       [,2]</span></span>
+<span><span class="co">## [1,] 1.00000000 0.04853991</span></span>
+<span><span class="co">## [2,] 0.04853991 1.00000000</span></span>
+<span><span class="co">## [3,] 0.00000000 0.00000000</span></span>
+<span><span class="co">## [4,] 0.00000000 0.00000000</span></span></code></pre>
+<p>Note that for the abovementioned similarity calculations all spectra
+precursor <em>m/z</em> values need to be available, otherwise an error
+will be thrown. Thus, we should always ensure to remove spectra without
+precursor <em>m/z</em> values prior to similarity scoring with this
+similarity method. Below we remove the precursor <em>m/z</em> from one
+of our input spectra and then show how the <code>Spectra</code> object
+could be subsetted to <em>valid</em> spectra for this method.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Remove precursor m/z from the 3rd spectrum</span></span>
 <span><span class="va">all</span><span class="op">$</span><span class="va">precursorMz</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span></span>
@@ -236,15 +269,15 @@ environment and the <em>matchms</em> Python package.</p>
 <p>To illustrate their use we initialize below the Python environment
 that is bundled using the <em><a href="https://bioconductor.org/packages/3.20/basilisk" class="external-link">basilisk</a></em>
 package within <em>SpectriPy</em>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">basilisk</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: reticulate</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/basilisk/man/basiliskStart.html" class="external-link">basiliskStart</a></span><span class="op">(</span><span class="fu">SpectriPy</span><span class="fu">:::</span><span class="va">matchms_env</span><span class="op">)</span></span></code></pre></div>
 <p>We next create a simple <code>Spectra</code> object representing
 fragment spectra for some small compounds.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/Spectra" class="external-link">Spectra</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># create example spectra</span></span>
@@ -267,7 +300,7 @@ fragment spectra for some small compounds.</p>
 <span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">spd</span><span class="op">)</span></span></code></pre></div>
 <p>We next convert the <code>Spectra</code> to a
 <code>matchms.Spectrum</code> object.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pysps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">rspec_to_pyspec</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></span>
 <span><span class="va">pysps</span></span></code></pre></div>
 <pre><code><span><span class="co">## [Spectrum(precursor m/z=nan, 5 fragments between 109.2 and 170.5), Spectrum(precursor m/z=nan, 7 fragments between 83.1 and 170.2), Spectrum(precursor m/z=nan, 9 fragments between 56.0 and 195.1)]</span></span></code></pre>
@@ -281,7 +314,7 @@ default is to convert all variables defined by
 with their respective names in the Python Spectrum object can be defined
 too. Below we list the pre-selected spectra variables that are converted
 by default.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                  precursorMz           precursorIntensity </span></span>
 <span><span class="co">##               "precursor_mz"        "precursor_intensity" </span></span>
@@ -298,7 +331,7 @@ the 3 spectra using the <code>normalize_intensities()</code> function
 from the <em>matchms.filtering</em> library. We thus need to first
 import the functionality from that package and can then call the
 function directly on the (Python) objects.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
 <span><span class="va">filters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"matchms.filtering"</span><span class="op">)</span></span>
 <span></span>
@@ -310,7 +343,7 @@ function directly on the (Python) objects.</p>
 <pre><code><span><span class="co">## [Spectrum(precursor m/z=nan, 5 fragments between 109.2 and 170.5), Spectrum(precursor m/z=nan, 7 fragments between 83.1 and 170.2), Spectrum(precursor m/z=nan, 9 fragments between 56.0 and 195.1)]</span></span></code></pre>
 <p>We can now convert the list of Python <code>matchms.Spectrum</code>
 objects back to R with <code><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec()</a></code>:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sps_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rspec_to_pyspec.html">pyspec_to_rspec</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="co">#' The normalized intensities</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">sps_r</span><span class="op">)</span></span></code></pre></div>
@@ -318,7 +351,7 @@ objects back to R with <code><a href="../reference/rspec_to_pyspec.html">pyspec_
 <span><span class="co">## [[1]] 0.03407 0.47494 0.03094 1 0.1324</span></span>
 <span><span class="co">## [[2]] 0.06685 0.04381 0.03022 0.16708 1 0.04565 0.40643</span></span>
 <span><span class="co">## [[3]] 0.00459 0.02585 0.02446 0.00508 0.08968 0.00524 0.00974 1 0.40994</span></span></code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' The original intensities</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## NumericList of length 3</span></span>
@@ -332,7 +365,7 @@ efficient) to directly use a Python function on the list of Spectrum
 objects instead of the mixed R and Python code used in the example
 above. Below we define a simple python script that iterates over the
 spectra in python and performs the normalization.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">py_script</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"from matchms.filtering import normalize_intensities\n"</span>,</span>
 <span>                    <span class="st">"for i in range(len(pysps)):\n"</span>,</span>
 <span>                    <span class="st">"    pysps[i] = normalize_intensities(pysps[i])\n"</span><span class="op">)</span></span>
@@ -347,13 +380,13 @@ spectra in python and performs the normalization.</p>
 <span><span class="co">## [[3]] 0.00459 0.02585 0.02446 0.00508 0.08968 0.00524 0.00974 1 0.40994</span></span></code></pre>
 <p>At very last we need also to stop the Python environment enabled by
 <em>basilisk</em>.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/basilisk/man/basiliskStart.html" class="external-link">basiliskStop</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.2 (2024-10-31)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
