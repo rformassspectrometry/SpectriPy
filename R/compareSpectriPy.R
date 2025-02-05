@@ -138,7 +138,8 @@ matchms_sim <- NULL
 
 #' @importFrom reticulate py_install virtualenv_exists virtualenv_remove
 install_python_packages <-
-  function(..., envname = "r-spectripy", new_env = identical(envname, "r-spectripy")) {
+  function(..., envname = "r-spectripy",
+           new_env = identical(envname, "r-spectripy")) {
     if (new_env && virtualenv_exists(envname)) {
       virtualenv_remove(envname)
     }
@@ -150,7 +151,10 @@ install_python_packages <-
 .onLoad <- function(...) {
   use_virtualenv("r-spectripy")
   matchms <<- import("matchms", delay_load = TRUE, convert = FALSE)
-  matchms_sim <<- import("matchms.similarity", delay_load = TRUE, convert = FALSE)
+  matchms_sim <<- import(
+    "matchms.similarity",
+    delay_load = TRUE, convert = FALSE
+  )
 }
 
 setGeneric("compareSpectriPy", function(x, y, param, ...) {
@@ -162,15 +166,9 @@ setGeneric("compareSpectriPy", function(x, y, param, ...) {
 #' @noRd
 setClass("CosineGreedyParam",
   slots = c(
-    tolerance = "numeric",
-    mzPower = "numeric",
-    intensityPower = "numeric"
+    tolerance = "numeric", mzPower = "numeric", intensityPower = "numeric"
   ),
-  prototype = prototype(
-    tolerance = 0.1,
-    mzPower = 0.0,
-    intensityPower = 1.0
-  ),
+  prototype = prototype(tolerance = 0.1, mzPower = 0.0, intensityPower = 1.0),
   validity = function(object) {
     msg <- NULL
     if (length(object@tolerance) != 1 || object@tolerance < 0) {
@@ -180,20 +178,13 @@ setClass("CosineGreedyParam",
       msg <- c(msg, "'mzPower' has to be a number of length 1")
     }
     if (length(object@intensityPower) != 1) {
-      msg <- c(
-        msg,
-        "'intensityPower' has to be a number of length 1"
-      )
+      msg <- c(msg, "'intensityPower' has to be a number of length 1")
     }
     msg
   }
 )
-setClass("CosineHungarianParam",
-  contains = "CosineGreedyParam"
-)
-setClass("ModifiedCosineParam",
-  contains = "CosineGreedyParam"
-)
+setClass("CosineHungarianParam", contains = "CosineGreedyParam")
+setClass("ModifiedCosineParam", contains = "CosineGreedyParam")
 setClass("NeutralLossesCosineParam",
   contains = "CosineGreedyParam",
   slots = c(ignorePeaksAbovePrecursor = "logical"),
@@ -202,16 +193,13 @@ setClass("NeutralLossesCosineParam",
     msg <- NULL
     if (length(object@ignorePeaksAbovePrecursor) != 1) {
       msg <- paste0(
-        "'ignorePeaksAbovePrecursor' has to be a ",
-        "positive number of length 1"
+        "'ignorePeaksAbovePrecursor' has to be a positive number of length 1"
       )
     }
     msg
   }
 )
-setClass("FingerprintSimilarityParam",
-  contains = "CosineGreedyParam"
-)
+setClass("FingerprintSimilarityParam", contains = "CosineGreedyParam")
 
 #' @rdname compareSpectriPy
 #'
@@ -342,19 +330,13 @@ setMethod(
   ## Determine which type of matchms similarity to compute.
   sim_functions <- list(
     CosineGreedy = function(p) {
-      matchms_sim$CosineGreedy(
-        p@tolerance, p@mzPower, p@intensityPower
-      )
+      matchms_sim$CosineGreedy(p@tolerance, p@mzPower, p@intensityPower)
     },
     CosineHungarian = function(p) {
-      matchms_sim$CosineHungarian(
-        p@tolerance, p@mzPower, p@intensityPower
-      )
+      matchms_sim$CosineHungarian(p@tolerance, p@mzPower, p@intensityPower)
     },
     ModifiedCosine = function(p) {
-      matchms_sim$ModifiedCosine(
-        p@tolerance, p@mzPower, p@intensityPower
-      )
+      matchms_sim$ModifiedCosine(p@tolerance, p@mzPower, p@intensityPower)
     },
     NeutralLossesCosine = function(p) {
       matchms_sim$NeutralLossesCosine(
@@ -417,7 +399,8 @@ r_to_py.Spectra <- function(x, convert) {
 #' @importFrom reticulate np_array r_to_py
 #'
 #' @noRd
-.single_rspec_to_pyspec <- function(x, spectraVariables = spectraVariableMapping()) {
+.single_rspec_to_pyspec <- function(
+    x, spectraVariables = spectraVariableMapping()) {
   peaks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
   if (length(spectraVariables)) {
     slist <- as.list(spectraData(x, columns = names(spectraVariables)))
@@ -432,8 +415,7 @@ r_to_py.Spectra <- function(x, convert) {
     )
   } else {
     matchms$Spectrum(
-      mz = np_array(peaks[, 1L]),
-      intensities = np_array(peaks[, 2L])
+      mz = np_array(peaks[, 1L]), intensities = np_array(peaks[, 2L])
     )
   }
 }
