@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (links[i].hostname != window.location.hostname)
       links[i].target = '_blank';
 });
-</script><p><strong>Compiled</strong>: Wed Feb 5 08:30:59 2025</p>
+</script><p><strong>Compiled</strong>: Wed Feb 5 13:28:56 2025</p>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -327,7 +327,7 @@ by default.</p>
 <p>With our <code>Spectra</code> data converted to Python, we could
 directly call all routines from the <code>matchms</code> package using
 the <em>reticulate</em> R package. Below we normalize the intensities of
-the 3 spectra using the <code>normalize_intensities()</code> function
+the 3 spectra using the <code><a href="../reference/filterSpectriPy.html">normalize_intensities()</a></code> function
 from the <em>matchms.filtering</em> library. We thus need to first
 import the functionality from that package and can then call the
 function directly on the (Python) objects.</p>
@@ -412,7 +412,7 @@ spectra in python and performs the normalization.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] basilisk_1.18.0     reticulate_1.40.0   SpectriPy_0.2.0    </span></span>
+<span><span class="co">## [1] basilisk_1.18.0     reticulate_1.40.0   SpectriPy_0.2.1    </span></span>
 <span><span class="co">## [4] Spectra_1.16.0      BiocParallel_1.40.0 S4Vectors_0.44.0   </span></span>
 <span><span class="co">## [7] BiocGenerics_0.52.0 BiocStyle_2.34.0   </span></span>
 <span><span class="co">## </span></span>
