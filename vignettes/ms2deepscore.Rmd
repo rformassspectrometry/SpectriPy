@@ -1,0 +1,410 @@
+---
+title: "SpectriPy MS2DeepScore"
+author: "EuBIC hackathon team - Matthias Anagho-Mattanovich"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SpectriPy MS2DeepScore}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+# Introduction
+
+This vignette demonstrates how to use **MS2DeepScore** within `SpectriPy`, by using `reticulate` to interact with Python-based spectral similarity scoring methods.
+
+**MS2DeepScore** is a machine-learning model that computes spectral similarities based on learned fragmentation patterns, allowing for **molecular structure predictions** from mass spectrometry (MS/MS) spectra.
+
+---
+
+# Installation
+
+Before running this vignette, all required R dependencies need to be installed. Use the following command:
+
+```{r installation}
+
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+BiocManager::install("reticulate")
+BiocManager::install(c("ggplot2", "reshape2", "gplots", "Spectra", "MsBackendMgf", "rcdk", "fingerprint", "igraph"))
+```
+
+---
+
+# **Setting Up Python Environment**
+
+```{r Setting Up Python Environment, results='hide'}
+library(reticulate)
+
+# Specify Python 3.10 (Update path)
+use_python("/Users/krv114/Library/r-miniconda-arm64/bin/python3.10", required = TRUE)
+
+# Configure Python
+py_config()
+```
+
+We also need Python dependencies. Ensure `ms2deepscore`, `matchms`, and `torch` are installed:
+
+```{r Python package installation, results='hide'}
+system("pip install ms2deepscore matchms numpy torch", intern = TRUE)
+```
+
+This ensures that a specified **Python version** is used for compatibility with `matchms` and `ms2deepscore`.
+
+---
+
+# **Initializing the MS2DeepScore Environment**
+
+We define a function to **initialize the environment**, loading Python modules and patching `torch.load()` to allow full model loading.
+
+```{r Adjust Python settings and imports, results='hide'}
+initialize_ms2deepscore <- function(python_env = NULL) {
+  if (!is.null(python_env)) {
+    use_virtualenv(python_env, required = TRUE)
+  }
+
+  # Import Python modules
+  torch <- import("torch", convert = FALSE)
+  ms2ds <- import("ms2deepscore", convert = FALSE)
+  matchms <- import("matchms", convert = FALSE)
+
+  # Patch PyTorch to Allow Full Model Loading
+  cat("Patching PyTorch to allow full model loading...\n")
+  py_run_string("
+import torch
+
+# Patch `torch.load()` globally to set `weights_only=False`
+original_load = torch.load
+def patched_load(*args, **kwargs):
+    if 'weights_only' not in kwargs:
+        kwargs['weights_only'] = False  # Force weights_only=False
+    return original_load(*args, **kwargs)
+
+torch.load = patched_load
+  ")
+
+  # Import matchms and MS2DeepScore
+  py_run_string("
+from matchms.Pipeline import Pipeline, create_workflow
+from matchms.filtering.default_pipelines import DEFAULT_FILTERS
+from ms2deepscore import MS2DeepScore
+")
+
+  return(list(ms2ds = ms2ds, matchms = matchms))
+}
+```
+
+---
+
+# **Loading the MS2DeepScore Model**
+
+Once the Python environment is ready, we can **load the pre-trained MS2DeepScore model**.
+
+```{r Loading the MS2DeepScore Model, results='hide'}
+load_ms2deepscore_model <- function(model_file, env) {
+  ms2ds <- env$ms2ds
+  cat("Loading MS2DeepScore model...\n")
+
+  model <- ms2ds$models$load_model(model_file)
+
+  if (is.null(model)) {
+    stop("ERROR: Model failed to load.")
+  } else {
+    cat("Model loaded successfully!\n")
+  }
+
+  return(model)
+}
+```
+
+---
+
+# **Running the MS2DeepScore Pipeline**
+
+Now, we define a function to run **MS2DeepScore** on a set of spectra.
+
+```{r Running the MS2DeepScore Pipeline, results='hide'}
+run_ms2deepscore_pipeline <- function(spectrum_path, model, env) {
+  matchms <- env$matchms
+  ms2ds <- env$ms2ds
+
+  cat("Setting up MS2DeepScore pipeline...\n")
+
+  # Run MS2DeepScore in Python
+  py_run_string("
+pipeline = Pipeline(create_workflow(
+    query_filters=DEFAULT_FILTERS,
+    score_computations=[[MS2DeepScore, {'model': r.model}]]
+))
+report = pipeline.run(r.spectrum_path)
+similarity_matrix = pipeline.scores.to_array()
+")
+
+  # Retrieve results
+  cat("Running pipeline...\n")
+  similarity_matrix <- py$similarity_matrix 
+
+  cat("Pipeline run successfully!\n")
+  return(similarity_matrix)
+}
+```
+
+---
+
+# **Running the Full Workflow in R**
+
+Now, let’s run the full **MS2DeepScore workflow** in **R**.
+
+```{r Running the Full Workflow in R, results='hide'}
+# Define file paths
+model_path <- "/Users/krv114/Desktop/MS/R_python_hackathon/ms2deepscore_model.pt"
+spectrum_path <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+
+# Initialize Python environment
+env <- initialize_ms2deepscore()
+
+# Load the MS2DeepScore model
+model <- load_ms2deepscore_model(model_path, env)
+
+# Run the pipeline and get similarity scores
+similarity_scores <- run_ms2deepscore_pipeline(spectrum_path, model, env)
+```
+
+---
+
+# **Visualizing the Results**
+
+To better understand MS2DeepScore similarity scores, we can visualize them using a **heatmap**.
+
+```{r Plot similarity heatmap and clustered similarity heatmap, fig.show='hold', results='hide'}
+library(ggplot2)
+library(reshape2)
+
+
+# Function to plot MS2DeepScore similarity heatmap
+plot_similarity_heatmap <- function(similarity_matrix) {
+  # Convert matrix to a long format for ggplot2
+  similarity_df <- melt(similarity_matrix)
+
+  p <- ggplot(similarity_df, aes(Var1, Var2, fill = value)) +
+    geom_tile() +
+    scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0.5) +
+    labs(title = "MS2DeepScore\nSimilarity Heatmap", x = "Spectrum Index", y = "Spectrum Index") +
+    theme_minimal()
+  
+  print(p)
+}
+
+# Run the function
+plot_similarity_heatmap(similarity_scores)
+
+
+plot_clustered_heatmap <- function(similarity_matrix) {
+  # Compute hierarchical clustering
+  row_order <- hclust(dist(similarity_matrix))$order
+  col_order <- hclust(dist(t(similarity_matrix)))$order
+
+  # Convert to long format and reorder based on clustering
+  similarity_df <- melt(as.matrix(similarity_matrix))
+  similarity_df$Var1 <- factor(similarity_df$Var1, levels = row_order)
+  similarity_df$Var2 <- factor(similarity_df$Var2, levels = col_order)
+
+  ggplot(similarity_df, aes(Var1, Var2, fill = value)) +
+    geom_tile() +  # Heatmap effect
+    scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0.5) +
+    labs(title = "Clustered MS2DeepScore\nSimilarity") + #, x = "Spectrum Index", y = "Spectrum Index") +
+    theme_minimal() +
+    theme(axis.text.x = element_blank(), axis.text.y = element_blank())  # Hide axis labels
+}
+
+# Run function
+plot_clustered_heatmap(similarity_scores)
+```
+
+---
+
+# **Conclusion**
+This vignette demonstrated how to:
+**Install and configure MS2DeepScore in R**  
+**Load a pre-trained model**  
+**Run a similarity scoring pipeline**  
+**Visualize the results using a heatmap**  
+
+By integrating **MS2DeepScore** within `SpectriPy`, we can achieve **accurate MS/MS similarity scoring** directly in R.
+
+---
+
+# **Next Steps**
+- Compare **MS2DeepScore similarity** to **Tanimoto similarity** from molecular fingerprints.
+- Apply **clustering techniques** to group similar spectra.
+
+
+```{r Plot similarity distribution among the tested compounds and comparison of similarity scores to Tanimoto scores, fig.show='hold', results='hide'}
+# Function to plot similarity score distribution
+plot_similarity_distribution <- function(similarity_matrix) {
+  similarity_values <- as.vector(similarity_matrix)  # Convert to vector
+  similarity_values <- similarity_values[similarity_values != 1]  # Remove self-matches
+  
+  p <- ggplot(data.frame(similarity = similarity_values), aes(x = similarity)) +
+    geom_histogram(bins = 50, fill = "steelblue", color = "black", alpha = 0.7) +
+    labs(title = "Distribution of\nMS2DeepScore\nSimilarity Scores",
+         x = "MS2DeepScore Similarity", y = "Count") +
+    theme_minimal()
+  print(p)
+}
+
+# Run the function
+plot_similarity_distribution(similarity_scores)
+
+
+library(Spectra)
+library(MsBackendMgf)
+
+# Function to extract SMILES from MGF with manual backend setup
+extract_smiles_from_mgf <- function(mgf_file) {
+  # Manually initialize the MGF backend
+  backend <- MsBackendMgf()
+  backend <- backendInitialize(backend, mgf_file)
+  
+  # Load MGF data using the correct backend
+  spectra <- Spectra(backend)
+  
+  # Print available metadata columns
+  cat("Available metadata columns in Spectra:\n")
+  print(colnames(spectraData(spectra)))
+  
+  # Extract SMILES if available
+  if (!"SMILES" %in% colnames(spectraData(spectra))) {
+    stop("ERROR: 'SMILES' column not found in metadata. Check column names above.")
+  }
+  
+  smiles_list <- spectraData(spectra)$SMILES
+  
+  # Remove NA values
+  smiles_list <- smiles_list[!is.na(smiles_list)]
+  
+  return(smiles_list)
+}
+
+# Run the function
+mgf_file <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+smiles_list <- extract_smiles_from_mgf(mgf_file)
+
+
+library(rcdk)
+library(fingerprint)
+
+# Function to Compute Tanimoto Similarity from SMILES
+compute_tanimoto_similarity <- function(smiles_list) {
+  # Convert SMILES to molecular objects
+  mols <- lapply(smiles_list, parse.smiles)
+  
+  # Generate fingerprints
+  fingerprints <- lapply(mols, function(mol) {
+    if (!is.null(mol[[1]])) {
+      return(get.fingerprint(mol[[1]], type = "standard"))
+    } else {
+      return(NULL)
+    }
+  })
+  
+  # Remove NULL values (invalid SMILES)
+  fingerprints <- Filter(Negate(is.null), fingerprints)
+  
+  # Compute Tanimoto similarity matrix
+  similarity_matrix <- fp.sim.matrix(fingerprints, method = "tanimoto")
+  
+  return(as.matrix(similarity_matrix))  # Convert to standard R matrix
+}
+
+# Run Tanimoto Similarity Computation
+tanimoto_scores <- compute_tanimoto_similarity(smiles_list)
+
+
+# Function to plot MS2DeepScore vs. Tanimoto Similarity
+plot_score_comparison <- function(ms2_scores, tanimoto_scores) {
+  df <- data.frame(
+    ms2_score = as.vector(ms2_scores),
+    tanimoto = as.vector(tanimoto_scores)
+  )
+  
+  p <- ggplot(df, aes(x = tanimoto, y = ms2_score)) +
+    geom_point(alpha = 0.5, color = "darkblue") +
+    geom_smooth(method = "lm", color = "red", se = FALSE) +
+    labs(title = "MS2DeepScore vs.\nTanimoto Similarity",
+         x = "Tanimoto Similarity", y = "MS2DeepScore") +
+    theme_minimal()
+  print(p)
+}
+
+# Run the function (assuming `tanimoto_scores` exists)
+plot_score_comparison(similarity_scores, tanimoto_scores)
+```
+
+
+```{r Plot molecular similarity network, fig.show='hold', results='hide'}
+# Function to extract NAME from MGF with manual backend setup
+extract_names_from_mgf <- function(mgf_file) {
+  # Manually initialize the MGF backend
+  backend <- MsBackendMgf()
+  backend <- backendInitialize(backend, mgf_file)
+  # Load MGF data using the correct backend
+  spectra <- Spectra(backend)
+  # Extract NAME if available
+  if (!"NAME" %in% colnames(spectraData(spectra))) {
+    stop("ERROR: 'NAME' column not found in metadata. Check column names above.")
+  }
+  names_list <- spectraData(spectra)$NAME
+  # Remove NA values
+  names_list <- names_list[!is.na(names_list)]
+  return(names_list)
+}
+# Run the function
+mgf_file <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+names_list <- extract_names_from_mgf(mgf_file)
+# Print extracted NAME
+print(names_list)
+
+
+library(igraph)
+
+# Function to plot molecular similarity network
+plot_molecular_network <- function(similarity_matrix, threshold = 0.7) {
+  # Create a graph from similarity matrix
+  adjacency_matrix <- similarity_matrix >= threshold
+  graph <- graph_from_adjacency_matrix(adjacency_matrix, mode = "undirected", diag = FALSE)
+  
+  # Plot the network
+  plot(
+    graph, vertex.size = 5, vertex.label = NA, 
+    #vertex.label.cex = 0.5,
+    edge.color = "gray",
+    main = "Molecular Similarity\nNetwork (MS2DeepScore)"
+  )
+}
+
+similarity_scores_named <- similarity_scores
+#rownames(similarity_scores_named) <- names_list
+#colnames(similarity_scores_named) <- names_list
+# Run the function
+plot_molecular_network(similarity_scores_named, threshold = 0.7)
+```
+
+---
+
+### **Citation**
+If using MS2DeepScore, please cite:  
+`Huber, F., van der Burg, S., van der Hooft, J. J., & Ridder, L. (2021). MS2DeepScore: a novel deep learning similarity measure to compare tandem mass spectra. Journal of cheminformatics, 13(1), 84.`
+
+---
