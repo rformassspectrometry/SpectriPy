@@ -171,8 +171,6 @@ setClass("NeutralLossesCosineParam",
                                "positive number of length 1")
              msg
          })
-setClass("FingerprintSimilarityParam",
-         contains = "CosineGreedyParam")
 
 #' @rdname compareSpectriPy
 #'
