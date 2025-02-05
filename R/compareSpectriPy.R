@@ -129,6 +129,9 @@
 #' compareSpectriPy(sps, param = ModifiedCosineParam())
 NULL
 
+matchms <- reticulate::import("matchms")
+matchms_sim <- reticulate::import("matchms.similarity")
+
 setGeneric("compareSpectriPy", function(x, y, param, ...)
     standardGeneric("compareSpectriPy"))
 
@@ -247,14 +250,6 @@ setMethod(
         .compare_spectra_python(x, y = NULL, param)
     })
 
-#' helper function to extract cosine parameter settings for similarity functions
-#' based on cosine.
-#'
-#' @noRd
-.cosine_param_string <- function(x) {
-    paste0("tolerance=", x@tolerance, ", mz_power=", x@mzPower,
-           ", intensity_power=", x@intensityPower)
-}
 #' Could also define a method, but I guess that's overkill in this case.
 #'
 #' @noRd
@@ -262,44 +257,8 @@ setMethod(
     sub("Param$", "", class(x)[1L])
 }
 
-#' (internal) helper method to build the python command to perform the
-#' comparison. Each parameter class could (if needed) it's own implementation
-#' to create the string. This methods will be called in the
-#' `compare_spectra_python` function.
-#'
-#' @noRd
-setGeneric("python_command", function(object, ...)
-    standardGeneric("python_command"))
-setMethod(
-    "python_command",
-    "CosineGreedyParam",
-    function(object, input_param = "py_x, py_y", is_symmetric = "False") {
-        FUN <- .fun_name(object)
-        paste0("import matchms\n",
-               "from matchms.similarity import ", FUN, "\n",
-               "res = matchms.calculate_scores(", input_param,
-               ", ", FUN, "(", .cosine_param_string(object), "), ",
-               "is_symmetric=", is_symmetric, ")\n",
-               "sim = res.scores.to_array()[\"", FUN, "_score\"]\n")
-    })
-setMethod(
-    "python_command",
-    "NeutralLossesCosineParam",
-    function(object, input_param = "py_x, py_y", is_symmetric = "False") {
-        FUN <- .fun_name(object)
-        paste0("import matchms\n",
-               "from matchms.similarity import ", FUN, "\n",
-               "res = matchms.calculate_scores(", input_param,
-               ", ", FUN, "(", .cosine_param_string(object), ", ",
-               "ignore_peaks_above_precursor=",
-               ifelse(object@ignorePeaksAbovePrecursor,
-                      yes = "True", no = "False"),
-               "), is_symmetric=", is_symmetric, ")\n",
-               "sim = res.scores.to_array()[\"", FUN, "_score\"]\n")
-    })
-
-#' internal function to calculate similarities with python's matchms. `Spectra`
-#' will be converted to python.
+#' Internal function to calculate similarities with Python's matchms. `Spectra`
+#' will be converted to Python.
 #'
 #' @param x `Spectra`
 #'
@@ -312,52 +271,103 @@ setMethod(
 #'
 #' @return a `numeric` `matrix` nrow being length of `x`, nrow length `y`.
 #'
-#' @importFrom basilisk basiliskStart basiliskRun basiliskStop
-#'
 #' @importFrom reticulate py
 #'
 #' @noRd
 #'
-#' @author Carolin Huber, Johannes Rainer
-.compare_spectra_python <- function(x, y = NULL, param, value = "score") {
-    ## handle empty input
+#' @author Carolin Huber, Johannes Rainer, Wout Bittremieux
+.compare_spectra_python <- function(x, y = NULL, param) {
+    ## Handle empty input.
     if (!length(x) || (!length(y) & !is.null(y)))
         return(matrix(NA_real_, ncol = length(y), nrow = length(x)))
 
-    cl <- basiliskStart(matchms_env)
-    on.exit(basiliskStop(cl))
+    ## Convert R spectra to Python.
+    py_x <- r_to_py(x)
+    if (is.null(y)) {
+        py_y <- py_x
+        is_symmetric <- TRUE
+    } else {
+        py_y <- r_to_py(y)
+        is_symmetric <- FALSE
+    }
 
-    basiliskRun(cl, function(x, y, param) {
-        ref <- import("matchms")
-        vars <- c(precursorMz = "precursor_mz")
-        is_symmetric <- "False"
-        py$py_x <- rspec_to_pyspec(x, reference = ref, mapping = vars)
-        if (is.null(y)) {
-            py$py_y <- py$py_x
-            is_symmetric <- "True"
-        } else
-            py$py_y <- rspec_to_pyspec(y, reference = ref, mapping = vars)
-        com <- python_command(param, is_symmetric = is_symmetric)
-        ## Run the command. Result is in py$res
-        py_run_string(com)
-        ## Collect the results
-        return(py$sim)
-        ## py_run_string(
-        ##     paste0("sim = []\n",
-        ##            "for x,y,z in res:\n  sim.append(z['", value, "'])"))
-        ## matrix(unlist(py$sim, use.names = FALSE),
-        ##        nrow = length(x), byrow = TRUE)
-    }, x = x, y = y, param = param)
+    ## Determine which type of matchms similarity to compute.
+    sim_functions <- list(
+        CosineGreedy = function(p) matchms_sim$CosineGreedy(
+            p@tolerance,p@mzPower, p@intensityPower),
+        CosineHungarian = function(p) matchms_sim$CosineHungarian(
+            p@tolerance, p@mzPower, p@intensityPower),
+        ModifiedCosine = function(p) matchms_sim$ModifiedCosine(
+            p@tolerance, p@mzPower, p@intensityPower),
+        NeutralLossesCosine = function(p) matchms_sim$NeutralLossesCosine(
+            p@tolerance, p@mzPower, p@intensityPower,
+            ignore_peaks_above_precursor = as.logical(p@ignorePeaksAbovePrecursor)
+        )
+    )
+
+    sim_fun_name <- .fun_name(param)
+
+    if (!sim_fun_name %in% names(sim_functions)) {
+        stop("Unknown similarity measure")
+    }
+    sim_fun <- sim_functions[[sim_fun_name]](param)
+
+
+    ## Compute the similarity scores with matchms.
+    scores <- matchms$calculate_scores(
+      py_x, py_y, sim_fun, is_symmetric = is_symmetric)
+
+    return(py_to_r(scores$to_array()[paste(sim_fun_name, "_score", sep = "")]))
 }
 
-## from matchms import calculate_scores
-## from matchms.importing import load_from_msp
-## from ms2deepscore import MS2DeepScore
-## from ms2deepscore.models import load_model
 
-## model = load_model("load model file")
-## similarity_measure = MS2DeepScore(model)
-## scores_mat = similarity_measure.matrix(
-## matchms_spectrum1,
-## matchms_spectrum2
-## )
+r_to_py.Spectra <- function(x, convert) {
+    plist <- spectrapply(x, .single_rspec_to_pyspec)
+    r_to_py(unname(plist))
+}
+
+
+#' @description
+#'
+#' Function to convert a **single** R Spectra object (of length 1) into a
+#' Python matchms Spectrum using the `reticulate` package.
+#'
+#' @param x `Spectra` object **of length 1!**.
+#'
+#' @param spectraVariables named `character` vector defining the spectra
+#'     variables that should be stored as metadata in `matchms`' metadata. Names
+#'     are expected to be the spectra variable names and values the
+#'     corresponding metadata fields in `matchms`. Defaults to
+#'     [spectraVariableMapping()]. If `spectraVariables = character()` no
+#'     metadata will be stored.
+#'
+#' @return `Spectrum` Single Python Spectrum
+#'
+#' @author Michael Witting, Johannes Rainer
+#'
+#' @importMethodsFrom Spectra spectraData
+#'
+#' @importMethodsFrom Spectra peaksData
+#'
+#' @importMethodsFrom Spectra mz
+#'
+#' @importMethodsFrom Spectra intensity
+#'
+#' @importFrom reticulate np_array r_to_py
+#'
+#' @noRd
+.single_rspec_to_pyspec <- function(
+      x, spectraVariables = spectraVariableMapping()) {
+  peaks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
+  if (length(spectraVariables)) {
+    slist <- as.list(spectraData(x, columns = names(spectraVariables)))
+    ## ## Seems matchms.Spectrum does not support NA retention times?
+    ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
+    ##     slist$rtime <- 0
+    names(slist) <- spectraVariables
+    matchms$Spectrum(mz = np_array(peaks[, 1L]),
+                     intensities = np_array(peaks[, 2L]),
+                     metadata = r_to_py(slist))
+  } else matchms$Spectrum(mz = np_array(peaks[, 1L]),
+                          intensities = np_array(peaks[, 2L]))
+}
