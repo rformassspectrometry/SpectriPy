@@ -109,7 +109,7 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @export
 pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
-                            BPPARAM = SerialParam(), .check = TRUE) {
+        BPPARAM = SerialParam(), .check = TRUE) {
     if (!(is(x, "list") | is(x, "python.builtin.list")))
       stop("'x' is expected to be a Python list.")
     x <- py_to_r(x)
