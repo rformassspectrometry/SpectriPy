@@ -62,6 +62,14 @@ system("pip install ms2deepscore matchms numpy torch", intern = TRUE)
 
 This ensures that a specified **Python version** is used for compatibility with `matchms` and `ms2deepscore`.
 
+And finally, we need to download the MS2DeepScore model and a test dataset. if the download times-out, you can increase the timeout limit by changing the options with the commented-out code below.
+
+```{r download needed files}
+#options(timeout = 1000)
+download.file("https://zenodo.org/records/13897744/files/ms2deepscore_model.pt?download=1", "download_test.pt")
+download.file("https://raw.githubusercontent.com/matchms/ms2deepscore/refs/heads/main/tests/resources/pesticides_processed.mgf", "pesticides.mgf")
+```
+
 ---
 
 # **Initializing the MS2DeepScore Environment**
