@@ -1,0 +1,205 @@
+---
+title: "Full installation of SpectriPy"
+format: html
+editor: visual
+---
+
+# Introduction
+
+In this document we: - Present a simple way to install SpectriPy
+
+# Installation instructions
+
+System requirements:
+
+-   Install RStudio with latest R version
+
+# Install reticulate
+
+-   Install reticulate for R
+
+```{r}
+install.packages("reticulate")
+```
+
+# **Install python for use with python3 on reticulate:**
+
+We can use reticulate to install directly python via miniconda A path can be precised to put python *Warning:* If the path for miniconda_reticulate is changed, it needs to be changed in all other steps as well.
+
+```{r}
+library(reticulate)
+options(timeout = 600)
+install_miniconda(path = "~/miniconda3_reticulate",force = TRUE)
+```
+
+############################################################################## 
+
+# Set the python environment for reticulate
+
+It is possible to choose which python environment should be used by reticulate. We can here decide to create a specific python environment for reticulate.
+
+Rem: if in step 1 python was created in an other folder, the path to the python3 exe file needs to be specified here in the use_python() function.
+
+A conda environment that can be used in the analysis is also created here.
+
+```{r}
+use_python("~/miniconda3_reticulate/bin/python3")
+conda_create("r-reticulate")
+reticulate::py_config()
+```
+
+# Install the python tools needed:
+
+Python packages can now be installed using reticulate in its python environment. To install more python packages, they could be added in this step with the function py_install.
+
+Rem: an error message was printed when "pip = FALSE" for matchms and spectrum_utils. Could be an issue with the env ? On the other hand, pip = FALSE needs to be precised for a correct numpy installation
+
+```{r}
+py_install("matchms==0.28.2",pip = TRUE)
+py_install("spectrum_utils",pip = TRUE)
+py_install("numpy==2.0.2",pip = FALSE)
+```
+
+We may also add the python packages to the created conda environment ***WARNING*** python version needs to be specified when installing matchms else it can't be installed here (this needs to be done only when working with a virtual environment)
+
+```{r}
+conda_install(envname = "r-reticulate","matchms==0.28.2",pip = TRUE,python_version = "3.12.2")
+conda_install(envname = "r-reticulate","spectrum_utils",pip = TRUE)
+conda_install(envname = "r-reticulate","numpy==2.0.2",pip = FALSE)
+```
+
+# Install all R packages and dependencies
+
+-   If needed, install Bioconductor's *BiocManager* package from CRAN:
+
+    ```{r}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.20")
+    ```
+
+-   Install all required R/Bioconductor packages: The *option(timeout = 600)* makes sure no error messages are returned if the packages are too long to install
+
+```{r}
+options(timeout = 600)
+BiocManager::install(c("Spectra", "msdata", "AnnotationHub", "CompoundDb","GenomeInfoDbData","mzR","basilisk"))
+```
+
+################################################################################ 
+
+***The installation should now be complete*** we can now try a small example to test it and see if everithing works correctly.
+
+We now needs to restart the R session
+
+## Observations:
+
+reticulate WILL NOT find automatically the python installation. The binary needs to be indicated with use_python() or use_condaenv() as in the example below.
+
+# Example (from the other quarto document)
+
+-   load mzML file (DIA).
+-   clean spectra.
+
+***WARNING*** If we DO NOT use the conda environment created (for whatever reason)
+
+We have to run the following command to add python to the PATH else some packages like numpy will not be recognised
+
+The python binary to use needs to be precised in use_python()
+
+```{r}
+Sys.setenv(PATH= paste("~/miniconda3_reticulate/bin",Sys.getenv()["PATH"],sep=";"))
+library(reticulate)
+use_python("~/miniconda3_reticulate/bin/python3")
+```
+
+DON'T run this block in any other case
+
+Load required R packages.
+
+**use_condaenv()** is here telling reticulate where the python binary is, for the conda environment that we will use and which python binary to use. *WARNING* as it may not find python if this is not precised.
+
+```{r}
+#| warning: false
+#' R MS packages
+library(Spectra)
+library(msdata)
+
+#' libraries for integration with Python; in interactive mode, use
+#' `repl_python()` to start a Python shell to execute the Python code
+#' blocks and return to R using `exit`
+library(reticulate)
+use_condaenv("~/miniconda3_reticulate/envs/r-reticulate/bin/python3")
+#' To translate between R and Python MS data classes
+library(SpectriPy)
+
+#' To retrieve data from Bioconductor's AnnotationHub
+library(AnnotationHub)
+```
+
+Load a test data set with LC-MS/MS DDA data of a pesticide mix provided by the *matchms* library.
+
+```{r}
+fl <- system.file("TripleTOF-SWATH/PestMix1_DDA.mzML", package = "msdata")
+pest_dda <- Spectra(fl)
+pest_dda$msLevel |>
+    table()
+```
+
+Load a public reference from Bioconductor's *AnnotationHub*: MassBank release 2023.11:
+
+```{r}
+#' Load MassBank release 2023.11 from AnnotationHub
+ah <- AnnotationHub()
+mbank <- ah[["AH116166"]]
+mbank
+
+#' Get the full data as a `Spectra` object
+mbank <- Spectra(mbank)
+mbank
+```
+
+# 
+
+```{python}
+import numpy
+import matchms
+import spectrum_utils
+```
+
+Next we extract the MS2 spectra from the `pest_dda` data set and *translate* the `Spectra` to Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+system.time(
+    pest_ms2_py <- rspec_to_pyspec(pest_ms2)
+)
+pest_ms2_py
+```
+
+The translation is not very efficient at present - so we need to work on that (later). Seems the variable lives in R, so to access it we need to append the `r.` to the variable name (check, is this required? can we have the variable in python?).
+
+```{python}
+r.pest_ms2_py
+
+```
+
+Object translation is at present not perfect - as an alternative approach we extract the data from the `Spectra` object as base R data types and process these in Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+pd <- as.list(peaksData(pest_ms2))
+precursor_mz <- precursorMz(pest_ms2)
+```
+
+We should be able to access these variables directly from Python - could these be used to create an e.g. `spectrum_utils.MsmsSpectrum` directly in Python? Note: each element in the `list` `pd` is a numerical `matrix` (`array`) with two columns, the first with the *m/z*, the second with the intensity values. Question is also which other *spectra variables* (metadata) is required or supported by *spectrum_utils*.
+
+```{python}
+r.pd[0]
+r.precursor_mz[0]
+```
+
+# General observations
+
+-   Setup of R and python environments might be tricky as it seems to involve manual setup steps (please correct and add information/code how to do it properly/semi-automatically).
+-   Does this setup work with dockerized R? *basilisk* might be a better alternative then?
+-   Limitations of the approach: *translation* of data classes is not very efficient.
