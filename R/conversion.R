@@ -1,10 +1,10 @@
 #' @title Low level functions to convert between Spectra and matchms Spectrum
 #'
-#' @name rspec_to_pyspec
+#' @name conversion
 #'
 #' @description
 #'
-#' The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to convert
+#' The `r_to_py.Spectra()` and `pyspec_to_rspec()` functions allow to convert
 #' R [Spectra::Spectra()] objects into
 #' [matchms](https://github.com/matchms/matchms) Python `matchms.Spectrum`
 #' objects. These functions are designed for
@@ -25,7 +25,7 @@
 #' The `spectraVariableMapping()` function provides a default mapping of some
 #' core `Spectra` variables based on this [definition in matchms](https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv).
 #' The function returns a named vector that can be directly used as parameter
-#' `mapping` in the `rspec_to_pyspec()` and `pyspec_to_rspec()` functions.
+#' `mapping` in the `r_to_py.Spectra()` and `pyspec_to_rspec()` functions.
 #'
 #' @param .check Optionally disable input parameter checking. Input parameter
 #'     checking should only disabled for very good reasons.
@@ -41,20 +41,18 @@
 #'
 #' @param reference Optional reference to Python environment `matchms`.
 #'
-#' @param x For `rspec_to_pyspec()`: `Spectra` object. For `pyspec_to_rspec()`:
+#' @param x For `r_to_py.Spectra()`: `Spectra` object. For `pyspec_to_rspec()`:
 #'     a Python list of matchms Spectrum objects.
 #'
 #' @param ... ignored.
 #'
-#' @return For `rspec_to_pyspec()`: Python array of Spectrum objects, same
+#' @return For `r_to_py.Spectra()`: Python array of Spectrum objects, same
 #'     length than `x`. For `pyspec_to_rspec()`: [Spectra::Spectra()] with the
 #'     converted spectra. For `spectraVariableMapping()`: named `character`
 #'     vector with names being `Spectra` variable names and values the
 #'     corresponding names in `matchms`.
 #'
 #' @author Michael Witting, Johannes Rainer
-#'
-#' @export
 #'
 #' @importFrom reticulate r_to_py import py_to_r
 #'
@@ -88,6 +86,11 @@ setMethod("spectraVariableMapping", "missing", function(object, ...) {
     msLevel = "ms_level"
 )
 
+#' @rdname r_to_py.Spectra
+#'
+#' @importFrom Spectra spectrapply
+#'
+#' @export
 r_to_py.Spectra <- function(x, convert) {
     plist <- spectrapply(x, .single_rspec_to_pyspec)
     r_to_py(unname(plist))
