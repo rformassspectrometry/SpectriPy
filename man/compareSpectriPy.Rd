@@ -6,6 +6,7 @@
 \alias{CosineHungarianParam}
 \alias{ModifiedCosineParam}
 \alias{NeutralLossesCosineParam}
+\alias{FingerprintSimilarityParam}
 \alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
 \alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
 \title{Spectra similarity calculations using matchms}
@@ -22,6 +23,8 @@ NeutralLossesCosineParam(
   intensityPower = 1,
   ignorePeaksAbovePrecursor = TRUE
 )
+
+FingerprintSimilarityParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
 
 \S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
 
@@ -95,6 +98,9 @@ calculated by finding best possible matches between peaks of two spectra.
 Two peaks are considered a potential match if their m/z ratios lie within
 the given \code{tolerance} once a mass-shift is applied. The mass shift is the
 difference in precursor-m/z between the two spectra.
+\item \code{FingerprintSimilarityParam}: Calculate similarity between molecules based
+on their fingerprints. For this similarity measure to work, fingerprints
+are expected to be derived by running \emph{add_fingerprint()}.
 }
 }
 \examples{
@@ -138,9 +144,10 @@ sps <- sps[!is.na(precursorMz(sps))]
 compareSpectriPy(sps, param = ModifiedCosineParam())
 }
 \seealso{
-\code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \code{Spectra} package for pure R
+\code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \emph{Spectra} package for pure R
 implementations of spectra similarity calculations.
 }
 \author{
-Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht
+Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht,
+Marilyn De Graeve
 }

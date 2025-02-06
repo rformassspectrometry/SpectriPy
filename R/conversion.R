@@ -31,15 +31,8 @@
 #'     checking should only disabled for very good reasons.
 #'
 #' @param BPPARAM Optional parallel processing setup.
-#'
-#' @param mapping Named `character` providing the spectra variable names
-#'     (metadata) to convert. Names are expected to be the spectra variable
-#'     names and values the corresponding names of the Python Spectrum metadata
-#'     fields. See description above for more details.
-#'
-#' @param object ignored.
-#'
-#' @param reference Optional reference to Python environment `matchms`.
+#' 
+#' @param pythonLibrary character(1) specifying the Python library to be used
 #'
 #' @param x For `rspec_to_pyspec()`: `Spectra` object. For `pyspec_to_rspec()`:
 #'     a Python list of matchms Spectrum objects.
@@ -62,10 +55,7 @@
 #'
 #' @importMethodsFrom Spectra spectrapply
 #'
-#' @examples
 #'
-#' ## List the default spectra variables and their mapping.
-#' spectraVariableMapping()
 NULL
 
 #' @importMethodsFrom Spectra spectraVariableMapping
@@ -73,8 +63,25 @@ NULL
 #' @exportMethod spectraVariableMapping
 #'
 #' @rdname rspec_to_pyspec
-setMethod("spectraVariableMapping", "missing", function(object, ...) {
-    .SPECTRA_2_MATCHMS
+#' 
+#' @examples
+#' ## List the default spectra variables and their mapping.
+#' spectraVariableMapping(pythonLibrary = "matchms")
+#' spectraVariableMapping(pythonLibrary = "spectrum_utils")
+setGeneric("spectraVariableMapping", function(pythonLibrary, ...)
+    standardGeneric("spectraVariableMapping"))
+setMethod("spectraVariableMapping", "character", 
+    function(pythonLibrary = c("matchms", "spectrum_utils"), ...) {
+    
+    pythonLibrary <- match.arg(pythonLibrary)
+    
+    if (pythonLibrary == "matchms")
+        mapping <- .SPECTRA_2_MATCHMS
+    if (pythonLibrary == "spectrum_utils")
+        mapping <- .SPECTRA_2_SPECTRUM_UTILS
+    
+    ## return the mapping
+    mapping
 })
 
 .SPECTRA_2_MATCHMS <- c(
@@ -88,18 +95,63 @@ setMethod("spectraVariableMapping", "missing", function(object, ...) {
     msLevel = "ms_level"
 )
 
+.SPECTRA_2_SPECTRUM_UTILS <- c(
+    precursorMz = "precursor_mz",
+    ##precursorIntensity = "",
+    precursorCharge = "precursor_charge",
+    rtime = "retention_time"
+    ##collisionEnergy = "",
+    ##isolationWindowTargetMz = "",
+    ##polarity = ""
+    ##msLevel = "",
+)
+
 #' @rdname rspec_to_pyspec
 #'
 #' @importFrom methods is
 #'
 #' @export
-rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
-                            reference = import("matchms"),
-                            BPPARAM = SerialParam(), .check = TRUE) {
+#' 
+#' @examples
+#' library(Spectra)
+#' 
+#' DF <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+#'     precursorMz = c(195.0877, 195.0877, 170.0924)
+#' )
+#' DF$intensity <- list(
+#'     c(340.0, 416, 2580, 412),
+#'     c(388.0, 3270, 85, 54, 10111),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240))
+#' DF$mz <- list(
+#'     c(135.0432, 138.0632, 163.0375, 195.0880),
+#'     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52))
+#' sps <- Spectra(DF)
+#'
+#' ## apply the function rspec_to_pyspec on sps
+#' rspec_to_pyspec(x = sps, pythonLibrary = "matchms")
+#' ## gives [Spectrum(precursor m/z=195.09, 4 fragments between 135.0 and 195.1), Spectrum(precursor m/z=195.09, 5 fragments between 110.1 and 195.1), Spectrum(precursor m/z=170.09, 5 fragments between 109.2 and 170.5)]
+#' 
+#' rspec_to_pyspec(x = sps, pythonLibrary = "spectrum_utils")
+#' ## gives [<spectrum_utils.spectrum.MsmsSpectrum>, <spectrum_utils.spectrum.MsmsSpectrum>, <spectrum_utils.spectrum.MsmsSpectrum>]
+#'
+rspec_to_pyspec <- function(x, pythonLibrary = c("matchms", "spectrum_utils"), ##mapping = spectraVariableMapping(),
+    ##reference = import("matchms"), ## set import(, convert = TRUE/FALSE)???
+    BPPARAM = SerialParam(), .check = TRUE, ...) {
+    
+    ## check arguments
     if (.check && !is(x, "Spectra"))
         stop("'x' should be a Spectra object.")
-    plist <- spectrapply(x, .single_rspec_to_pyspec, spectraVariables = mapping,
-                         reference = reference, BPPARAM = BPPARAM)
+    
+    pythonLibrary <- match.arg(pythonLibrary)
+    
+    ## apply on each spectra of x the conversion from R to Python
+    plist <- spectrapply(object = x, 
+        FUN = function(x_i) .single_rspec_to_pyspec(x = x_i, 
+            pythonLibrary = pythonLibrary, ...), 
+        BPPARAM = BPPARAM)
     r_to_py(unname(plist))
 }
 
@@ -108,17 +160,69 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #' @importFrom Spectra concatenateSpectra
 #'
 #' @export
-pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
-        BPPARAM = SerialParam(), .check = TRUE) {
+#' 
+#' @examples 
+#' library(Spectra)
+#' 
+#' DF <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+#'     precursorMz = c(195.0877, 195.0877, 170.0924)
+#' )
+#' DF$intensity <- list(
+#'     c(340.0, 416, 2580, 412),
+#'     c(388.0, 3270, 85, 54, 10111),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240))
+#' DF$mz <- list(
+#'     c(135.0432, 138.0632, 163.0375, 195.0880),
+#'     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52))
+#' sps <- Spectra(DF)
+#'
+#' ## python library: matchms
+#' ## apply the function rspec_to_pyspec on sps
+#' py_obj <- rspec_to_pyspec(x = sps, pythonLibrary = "matchms")
+#' pyspec_to_rspec(py_obj, pythonLibrary = "matchms")
+#' 
+#' ## python library: spectrum_utils
+#' py_obj <- rspec_to_pyspec(x = sps, pythonLibrary = "spectrum_utils")
+#' pyspec_to_rspec(py_obj, pythonLibrary = "spectrum_utils")
+#' 
+pyspec_to_rspec <- function(x, 
+        BPPARAM = SerialParam(), .check = TRUE, 
+        pythonLibrary = c("matchms", "spectrum_utils"), ...) {
+    
+    ## check the arguments
+    pythonLibrary <- match.arg(pythonLibrary)
+    
+    ## obtain the mapping
+    args <- list(...)
+    if (!("spectraVariables" %in% names(args)))
+        spectraVars <- spectraVariableMapping(pythonLibrary = pythonLibrary)
+    if ("spectraVariables" %in% names(args))
+        spectraVars <- args[["spectraVariables"]]
+    
     if (!(is(x, "list") | is(x, "python.builtin.list")))
       stop("'x' is expected to be a Python list.")
     x <- py_to_r(x)
-    if (.check && !all(vapply(x, function(z)
+    
+    ## check for matchms
+    if (pythonLibrary == "matchms" && .check  && !all(vapply(x, function(z)
         is(z, "matchms.Spectrum.Spectrum"), logical(1))))
         stop("'x' is expected to be a Python list of matchms Spectrum objects.")
-    spectra_list <- bplapply(x, .single_pyspec_to_rspec,
-                             spectraVariables = mapping, BPPARAM = BPPARAM)
-    do.call(concatenateSpectra, spectra_list)
+    
+    if (pythonLibrary == "spectrum_utils" && .check && !all(vapply(x, function(z)
+        is(z, "spectrum_utils.spectrum.MsmsSpectrum"), logical(1))))
+        stop("'x' is expected to be a Python list of spectrum_utils MsmsSpectrum objects.")
+    
+    ## apply the Python to R Spectra conversion for each element of x and 
+    ## combine the list entries
+    
+    spectra_list <- bplapply(X = x, 
+        FUN = function(x_i) .single_pyspec_to_rspec(x = x_i,
+            pythonLibrary = pythonLibrary, spectraVariables = spectraVars), 
+        BPPARAM = BPPARAM)
+    do.call(concatenateSpectra, spectra_list)    
 }
 
 #' @description
@@ -126,6 +230,10 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' Function to convert a **single** R Spectra object (of length 1) into a
 #' Python matchms Spectrum using the `reticulate` package.
 #'
+#' @details
+#' Converting to a `spectrum_utils`' `MsmsSpectrum` object might change the 
+#' `m/z` values (approximately by +- 1e-06).
+#' 
 #' @param x `Spectra` object **of length 1!**.
 #'
 #' @param spectraVariables named `character` vector defining the spectra
@@ -150,29 +258,92 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' @importMethodsFrom Spectra intensity
 #'
 #' @importFrom reticulate np_array r_to_py
+#' @importFrom Spectra precursorMz precursorCharge
+#' 
+#' @examples
+#' library(Spectra)
+#' 
+#' DF <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+#'     precursorMz = c(195.0877, 195.0877, 170.0924)
+#' )
+#' DF$intensity <- list(
+#'     c(340.0, 416, 2580, 412),
+#'     c(388.0, 3270, 85, 54, 10111),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240))
+#' DF$mz <- list(
+#'     c(135.0432, 138.0632, 163.0375, 195.0880),
+#'     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52))
+#' sps <- Spectra(DF)
 #'
+#' .single_rspec_to_pyspec(x = sps[1, ], pythonLibrary = "matchms")
+#' ## gives Spectrum(precursor m/z=195.09, 4 fragments between 135.0 and 195.1)
+#' .single_rspec_to_pyspec(x = sps[1, ], pythonLibrary = "spectrum_utils")
+#' ## gives <spectrum_utils.spectrum.MsmsSpectrum object at ...>
+#' 
 #' @noRd
-.single_rspec_to_pyspec <- function(x,
-                                    spectraVariables = spectraVariableMapping(),
-                                    reference = import("matchms")) {
+.single_rspec_to_pyspec <- function(x, pythonLibrary = c("matchms", "spectrum_utils"), ...) { 
+    
+    ## match argument pythonLibrary
+    pythonLibrary <- match.arg(pythonLibrary)
+    
+    ## obtain the mapping
+    args <- list(...)
+    if (!("spectraVariables" %in% names(args)))
+        spectraVars <- spectraVariableMapping(pythonLibrary = pythonLibrary)
+    if ("spectraVariables" %in% names(args))
+        spectraVars <- args[["spectraVariables"]]
+    
+    ## run import() to import the specified Python library, making it available
+    ## for use from R
+    reference <- import(module = pythonLibrary, convert = TRUE) ## set import(, convert = TRUE/FALSE)???
+    
     pks <- unname(peaksData(x, c("mz", "intensity")))[[1L]]
-    if (length(spectraVariables)) {
-        slist <- as.list(spectraData(x, columns = names(spectraVariables)))
-        ## ## Seems matchms.Spectrum does not support NA retention times?
-        ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
-        ##     slist$rtime <- 0
-        names(slist) <- spectraVariables
-        reference$Spectrum(mz = np_array(pks[, 1L]),
-                           intensities = np_array(pks[, 2L]),
-                           metadata = r_to_py(slist))
-    } else reference$Spectrum(mz = np_array(pks[, 1L]),
-                              intensities = np_array(pks[, 2L]))
+    
+    if (pythonLibrary == "matchms") {
+        if (length(spectraVars)) {
+            slist <- as.list(spectraData(x, columns = names(spectraVars)))
+            ## ## Seems matchms.Spectrum does not support NA retention times?
+            ## if (any(names(slist) == "rtime") && is.na(slist$rtime))
+            ##     slist$rtime <- 0
+            names(slist) <- spectraVars
+            res <- reference$Spectrum(mz = np_array(pks[, 1L]),
+                intensities = np_array(pks[, 2L]),
+                metadata = r_to_py(slist))
+        } else 
+            res <- reference$Spectrum(mz = np_array(pks[, 1L]),
+                intensities = np_array(pks[, 2L]))    
+    }
+    
+    if (pythonLibrary == "spectrum_utils") {
+        res <- reference$spectrum$MsmsSpectrum(mz = np_array(pks[, 1L]),
+            intensity = np_array(pks[, 2L]), 
+            identifier = "Spectra_to_MsmsSpectrum", 
+            precursor_mz = precursorMz(x), 
+            precursor_charge = precursorCharge(x))
+        
+        ## add spectraVariables
+        slist <- as.list(spectraData(x, columns = names(spectraVars)))
+        names(slist) <- spectraVars
+        for (i in seq_along(slist))
+            res[[names(slist)[i]]] <- slist[i]
+    }
+    
+    ## return the Python object
+    res
+    
 }
 
 #' @description
 #'
 #' Function to convert a single Python Spectrum object into an R Spectra using
 #' the `reticulate` package.
+#' 
+#' @details
+#' Converting to a `spectrum_utils`' `MsmsSpectrum` object might change the 
+#' `m/z` values (approximately by +- 1e-06). 
 #'
 #' @param x `Spectrum` Single Python Spectrum.
 #'
@@ -194,10 +365,52 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
 #' @importMethodsFrom Spectra Spectra
 #'
 #' @noRd
-.single_pyspec_to_rspec <-
-    function(x, spectraVariables = spectraVariableMapping()) {
+#' 
+#' @examples
+#' library(Spectra)
+#' 
+#' DF <- DataFrame(
+#'     msLevel = c(2L, 2L, 2L),
+#'     name = c("Caffeine", "Caffeine", "1-Methylhistidine"),
+#'     precursorMz = c(195.0877, 195.0877, 170.0924)
+#' )
+#' DF$intensity <- list(
+#'     c(340.0, 416, 2580, 412),
+#'     c(388.0, 3270, 85, 54, 10111),
+#'     c(3.407, 47.494, 3.094, 100.0, 13.240))
+#' DF$mz <- list(
+#'     c(135.0432, 138.0632, 163.0375, 195.0880),
+#'     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
+#'     c(109.2, 124.2, 124.5, 170.16, 170.52))
+#' sps <- Spectra(DF)
+#'
+#' ## python library: matchms
+#' ## apply the function rspec_to_pyspec on sps
+#' py_obj <- rspec_to_pyspec(x = sps, pythonLibrary = "matchms")
+#' .single_pyspec_to_rspec(py_to_r(py_obj[0]), pythonLibrary = "matchms")
+#' 
+#' ## python library: spectrum_utils
+#' py_obj <- rspec_to_pyspec(x = sps, pythonLibrary = "spectrum_utils")
+#' .single_pyspec_to_rspec(py_obj[0], pythonLibrary = "spectrum_utils")
+#' 
+.single_pyspec_to_rspec <- function(x, 
+    ##spectraVariables = spectraVariableMapping(), 
+    pythonLibrary = c("matchms", "spectrum_utils"), ...) {
+        
+    ## match argument pythonLibrary
+    pythonLibrary <- match.arg(pythonLibrary)
+    
+    ## obtain the mapping
+    args <- list(...)
+    if (!("spectraVariables" %in% names(args)))
+        spectraVars <- spectraVariableMapping(pythonLibrary = pythonLibrary)
+    if ("spectraVariables" %in% names(args))
+        spectraVars <- args[["spectraVariables"]]
+    
+    if (pythonLibrary == "matchms") {
+        
         plist <- x$metadata
-        vars <- spectraVariables[spectraVariables %in% names(plist)]
+        vars <- spectraVars[spectraVars %in% names(plist)]
         if (length(vars)) {
             rlist <- lapply(vars, function(z) plist[z])
             ## Drop NULL variables.
@@ -209,8 +422,25 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
         spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
         spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
                                      compress = FALSE)
-        Spectra(spd)
     }
+    
+    if (pythonLibrary == "spectrum_utils") {
+        plist <- names(x)
+        vars <- spectraVars[spectraVars %in% plist]## vars <- plist[plist %in% spectraVars]
+        if (length(vars)) {
+            rlist <- lapply(vars, function(z) unlist(unname(x[[z]])))
+            ## Drop NULL variables.
+            spd <- DataFrame(rlist[lengths(rlist) > 0])
+            if (!nrow(spd))
+                spd <- DataFrame(msLevel = NA_integer_)
+        } else
+            spd <- DataFrame(msLevel = NA_integer_)
+        spd$mz <- NumericList(as.numeric(x$mz), compress = FALSE)
+        spd$intensity <- NumericList(as.numeric(x$intensity), compress = FALSE)
+    }
+    
+    Spectra(spd)
+}
 
 #' Extract all spectraData and all mz and intensity values, give them to
 #' Python to create an array of Spectrum. Could be faster because loop is
