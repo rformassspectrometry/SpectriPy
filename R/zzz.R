@@ -11,3 +11,14 @@
     envir = asNamespace(pkgname)
     )
 }
+
+#' @importFrom reticulate py_install virtualenv_exists virtualenv_remove
+install_python_packages <-
+  function(..., envname = "r-spectripy",
+           new_env = identical(envname, "r-spectripy")) {
+    if (new_env && virtualenv_exists(envname)) {
+      virtualenv_remove(envname)
+    }
+
+    py_install(packages = "matchms", envname = envname, ...)
+  }
