@@ -3,10 +3,13 @@
 \name{rspec_to_pyspec}
 \alias{rspec_to_pyspec}
 \alias{spectraVariableMapping}
+\alias{spectraVariableMapping,character-method}
 \alias{pyspec_to_rspec}
 \title{Low level functions to convert between Spectra and matchms Spectrum}
 \usage{
 spectraVariableMapping(pythonLibrary, ...)
+
+\S4method{spectraVariableMapping}{character}(pythonLibrary = c("matchms", "spectrum_utils"), ...)
 
 rspec_to_pyspec(
   x,
@@ -25,9 +28,9 @@ pyspec_to_rspec(
 )
 }
 \arguments{
-\item{pythonLibrary}{character(1) specifying the Python library to be used}
+\item{pythonLibrary}{character(1)\verb{, the name of the target Python library, supported values are }"matchms"\code{and}"spectrum_utils"`}
 
-\item{...}{ignored.}
+\item{...}{additional arguments}
 
 \item{x}{For \code{rspec_to_pyspec()}: \code{Spectra} object. For \code{pyspec_to_rspec()}:
 a Python list of matchms Spectrum objects.}

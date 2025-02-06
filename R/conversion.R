@@ -62,6 +62,11 @@ NULL
 #'
 #' @exportMethod spectraVariableMapping
 #'
+#' @param pythonLibrary character(1)`, the name of the target Python library,
+#' supported values are `"matchms"` and `"spectrum_utils"`
+#' @param ... additional arguments
+#' 
+#' @export
 #' @rdname rspec_to_pyspec
 #' 
 #' @examples
@@ -70,6 +75,9 @@ NULL
 #' spectraVariableMapping(pythonLibrary = "spectrum_utils")
 setGeneric("spectraVariableMapping", function(pythonLibrary, ...)
     standardGeneric("spectraVariableMapping"))
+
+#' @rdname rspec_to_pyspec
+#' @export
 setMethod("spectraVariableMapping", "character", 
     function(pythonLibrary = c("matchms", "spectrum_utils"), ...) {
     
