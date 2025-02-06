@@ -33,7 +33,11 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Victor", family = "Chrone",
                     email = "vchrone@bmb.sdu.dk",
                     role = c("ctb"),
-                    comment = c(ORCID = "0009-0007-2121-4066")))
+                    comment = c(ORCID = "0009-0007-2121-4066")),
+	     person(given = "Matthias", family = "Anagho-Mattanovich",
+                    email = "matthias.mattanovich@sund.ku.dk",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0001-7561-7898")))
 Depends:
     R (>= 4.1.0)
 Imports:
