@@ -127,5 +127,5 @@ pyspec_to_rspec(py_obj, pythonLibrary = "spectrum_utils")
 
 }
 \author{
-Michael Witting, Johannes Rainer
+Michael Witting, Johannes Rainer, Thomas Naake
 }

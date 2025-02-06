@@ -45,7 +45,7 @@
 #'     vector with names being `Spectra` variable names and values the
 #'     corresponding names in `matchms`.
 #'
-#' @author Michael Witting, Johannes Rainer
+#' @author Michael Witting, Johannes Rainer, Thomas Naake
 #'
 #' @export
 #'
@@ -255,7 +255,7 @@ pyspec_to_rspec <- function(x,
 #'
 #' @return `Spectrum` Single Python Spectrum
 #'
-#' @author Michael Witting, Johannes Rainer
+#' @author Michael Witting, Johannes Rainer, Thomas Naake
 #'
 #' @importMethodsFrom Spectra spectraData
 #'
@@ -364,7 +364,7 @@ pyspec_to_rspec <- function(x,
 #'
 #' @return `Spectra` single R Spectra
 #'
-#' @author Michael Witting, Johannes Rainer
+#' @author Michael Witting, Johannes Rainer, Thomas Naake
 #'
 #' @importFrom IRanges NumericList
 #'
