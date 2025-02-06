@@ -183,13 +183,13 @@ The following algorithms are already incorporated, and added to the vignette
   - [X] NeutralLossesCosine using NeutralLossesCosineParam
 
  The following algorithms are not yet incorporated or added to the vignette,
- but can(not) run in Quarto using `reticulate` in the background:
+ but can run in Quarto using `reticulate` in the background:
 
   - [X] FingerprintSimilarity using the Quarto extension
   - [X] IntersectMz using the Quarto extension
-  - [ ] MetadataMatch using the Quarto extension
-  - [ ] ParentMassMatch using the Quarto extension
-  - [ ] PrecursorMzMatch using the Quarto extension
+  - [X] MetadataMatch using the Quarto extension
+  - [X] ParentMassMatch using the Quarto extension
+  - [X] PrecursorMzMatch using the Quarto extension
 
 See code chunks below (instead of in the vignette using
 the `Basilisk` environment).
