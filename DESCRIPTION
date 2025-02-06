@@ -29,7 +29,11 @@ Authors@R: c(person(given = "Michael", family = "Witting",
 	     person(given = "Thomas", family = "Naake",
                     email = "thomasnaake@googlemail.com",
                     role = c("ctb"),
-                    comment = c(ORCID = "0000-0001-7917-5580")))
+                    comment = c(ORCID = "0000-0001-7917-5580")),
+             person(given = "Victor", family = "Chrone",
+                    email = "vchrone@bmb.sdu.dk",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0007-2121-4066")))
 Depends:
     R (>= 4.1.0)
 Imports:
