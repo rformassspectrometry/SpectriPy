@@ -88,7 +88,7 @@
 #'
 #' @export
 #'
-#' @importFrom reticulate py_run_string
+#' @importFrom reticulate py_run_string 
 #'
 #' @examples
 #'
@@ -134,101 +134,6 @@ NULL
 setGeneric("compareSpectriPyRet", function(x, y, param, use_existing_env, ...)
   standardGeneric("compareSpectriPyRet"))
 
-#' @importClassesFrom ProtGenerics Param
-#'
-#' @noRd
-setClass("CosineGreedyParam",
-         slots = c(
-           tolerance = "numeric",
-           mzPower = "numeric",
-           intensityPower = "numeric"
-         ),
-         prototype = prototype(
-           tolerance = 0.1,
-           mzPower = 0.0,
-           intensityPower = 1.0
-         ),
-         validity = function(object) {
-           msg <- NULL
-           if (length(object@tolerance) != 1 || object@tolerance < 0)
-             msg <- c("'tolerance' has to be a positive number of length 1")
-           if (length(object@mzPower) != 1)
-             msg <- c(msg, "'mzPower' has to be a number of length 1")
-           if (length(object@intensityPower) != 1)
-             msg <- c(msg,
-                      "'intensityPower' has to be a number of length 1")
-           msg
-         })
-setClass("CosineHungarianParam",
-         contains = "CosineGreedyParam")
-setClass("ModifiedCosineParam",
-         contains = "CosineGreedyParam")
-setClass("NeutralLossesCosineParam",
-         contains = "CosineGreedyParam",
-         slots = c(ignorePeaksAbovePrecursor = "logical"),
-         prototype = prototype(ignorePeaksAbovePrecursor = TRUE),
-         validity = function(object) {
-           msg <- NULL
-           if (length(object@ignorePeaksAbovePrecursor) != 1)
-             msg <- paste0("'ignorePeaksAbovePrecursor' has to be a ",
-                           "positive number of length 1")
-           msg
-         })
-
-#' @rdname compareSpectriPyRet
-#'
-#' @importFrom methods new
-#'
-#' @export
-CosineGreedyParam <- function(tolerance = 0.1, mzPower = 0.0,
-                              intensityPower = 1.0) {
-  new("CosineGreedyParam", tolerance = as.numeric(tolerance),
-      mzPower = as.numeric(mzPower),
-      intensityPower = as.numeric(intensityPower))
-}
-
-#' @rdname compareSpectriPyRet
-#'
-#' @export
-CosineHungarianParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                 intensityPower = 1.0) {
-  new("CosineHungarianParam", tolerance = as.numeric(tolerance),
-      mzPower = as.numeric(mzPower),
-      intensityPower = as.numeric(intensityPower))
-}
-
-#' @rdname compareSpectriPyRet
-#'
-#' @export
-ModifiedCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                intensityPower = 1.0) {
-  new("ModifiedCosineParam", tolerance = as.numeric(tolerance),
-      mzPower = as.numeric(mzPower),
-      intensityPower = as.numeric(intensityPower))
-}
-
-#' @rdname compareSpectriPyRet
-#'
-#' @export
-NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                     intensityPower = 1.0,
-                                     ignorePeaksAbovePrecursor = TRUE) {
-  new("NeutralLossesCosineParam", tolerance = as.numeric(tolerance),
-      mzPower = as.numeric(mzPower),
-      intensityPower = as.numeric(intensityPower),
-      ignorePeaksAbovePrecursor = as.logical(ignorePeaksAbovePrecursor))
-}
-
-#' @rdname compareSpectriPyRet
-#'
-#' @export
-FingerprintSimilarityParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                       intensityPower = 1.0) {
-  new("FingerprintSimilarityParam", tolerance = as.numeric(tolerance),
-      mzPower = as.numeric(mzPower),
-      intensityPower = as.numeric(intensityPower))
-}
-
 #' @rdname compareSpectriPyRet
 #'
 #' @exportMethod compareSpectriPyRet
@@ -236,7 +141,7 @@ setMethod(
   "compareSpectriPyRet",
   signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedyParam", use_existing_env = "character"),
   function(x, y, param, use_existing_env, ...) {
-    .compare_spectra_python(x, y, param, use_existing_env)
+    .compare_spectra_reticulate(x, y, param, use_existing_env)
   })
 
 #' @rdname compareSpectriPyRet
@@ -244,7 +149,7 @@ setMethod(
   "compareSpectriPyRet",
   signature = c(x = "Spectra", y = "missing", param = "CosineGreedyParam", use_existing_env = "missing"),
   function(x, y, param, use_existing_env, ...) {
-    .compare_spectra_python(x, y = NULL, param, use_existing_env = NULL)
+    .compare_spectra_reticulate(x, y = NULL, param, use_existing_env = NULL)
   })
 
 #' @rdname compareSpectriPyRet
@@ -252,7 +157,7 @@ setMethod(
   "compareSpectriPyRet",
   signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedyParam", use_existing_env = "missing"),
   function(x, y, param, use_existing_env, ...) {
-    .compare_spectra_python(x, y, param, use_existing_env = NULL)
+    .compare_spectra_reticulate(x, y, param, use_existing_env = NULL)
   })
 
 #' @rdname compareSpectriPyRet
@@ -260,7 +165,7 @@ setMethod(
   "compareSpectriPyRet",
   signature = c(x = "Spectra", y = "missing", param = "CosineGreedyParam", use_existing_env = "character"),
   function(x, y, param, use_existing_env, ...) {
-    .compare_spectra_python(x, y = NULL, param, use_existing_env)
+    .compare_spectra_reticulate(x, y = NULL, param, use_existing_env)
   })
 
 #' internal helper function which sets up a basilisk conda env unless a local 
@@ -274,7 +179,7 @@ setMethod(
 #'
 #' @noRd
 #'
-#' @author
+#' @author Victor Chrone
 .setup_conda_env <- function( use_existing_env = NULL) {
   # If the user provides an existing Conda environment, use reticulate
   if (!is.null(use_existing_env)) {
@@ -309,20 +214,18 @@ setMethod(
   return(list(matchms = matchms, numpy = numpy))
 }
 
-#' internal helper function to convert R Spectra object to Python-compatible formati. `Spectra`
-#' will be converted to python.
+#' internal helper function to convert R Spectra object to a Python-compatible 
+#' matchms.Spectrum format object using reticulate.
 #'
-#' @param x `Spectra`
+#' @param spectra `Spectra`
 #'
-#' @param y `Spectra`
+#' @return A Python list of matchms Spectrum objects
 #'
-#' @return a 
-#'
-#' @importFrom reticulate py
+#' @importFrom reticulate py import
 #'
 #' @noRd
 #'
-#' @author author
+#' @author Victor Chrone
 # Convert R Spectra object to Python-compatible format
 .convert_to_python <- function(spectra) {
   
@@ -345,7 +248,7 @@ setMethod(
 }
 
 #' internal function to calculate similarities with python's matchms. `Spectra`
-#' will be converted to python.
+#' using reticulate
 #'
 #' @param x `Spectra`
 #'
@@ -364,8 +267,8 @@ setMethod(
 #'
 #' @noRd
 #'
-#' @author
-.compare_spectra_python <- function(x, y = NULL, param, use_existing_env = NULL) {
+#' @author Victor Chrone
+.compare_spectra_reticulate <- function(x, y = NULL, param, use_existing_env = NULL) {
   
   #Set up Conda environment using basilisk if no local Conda environment is provided
   env_packages <- .setup_conda_env(use_existing_env = use_existing_env)
