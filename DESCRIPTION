@@ -24,7 +24,12 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Marilyn", family = "De Graeve",
                     email = "marilyn.degraeve@eurac.edu",
                     role = c("ctb"),
-                    comment = c(ORCID = "0000-0001-6916-401X"))		    )
+                    comment = c(ORCID = "0000-0001-6916-401X")),
+             person(given = "Wout", family = "Bittremieux",
+                    email = "wout.bittremieux@uantwerpen.be",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0002-3105-1359"))
+             )
 Depends:
     R (>= 4.1.0)
 Imports:
