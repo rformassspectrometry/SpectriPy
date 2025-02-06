@@ -64,7 +64,7 @@ using the \code{select_by_intensity}, \code{select_by_mz},
 module.
 
 Selection and configuration of the algorithm can be performed with one of the
-parameter objects:
+parameter objects (equivalent to \code{matchms}' function names):
 \itemize{
 \item \code{select_by_intensity}: Keeps only the peaks within defined intensity range
 (keep if \code{intensity_from} >= intensity >= \code{intensity_to}).

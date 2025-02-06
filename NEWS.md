@@ -1,5 +1,10 @@
 # SpectriPy 0.2
 
+## Changes in 0.2.2
+
+- Add functions to convert between R/Spectra's Spectra and Python/spectrum_utils
+  MsmsSpectrum object
+
 ## Changes in 0.2.1
 
 - Add `filterSpectriPy` method and related parameter objects to perform spectra

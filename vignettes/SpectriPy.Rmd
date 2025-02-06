@@ -240,7 +240,8 @@ too. Below we list the pre-selected spectra variables that are converted by
 default.
 
 ```{r}
-spectraVariableMapping()
+mapping <- spectraVariableMapping(pythonLibrary = "matchms")
+mapping
 ```
 
 With our `Spectra` data converted to Python, we could directly call all routines
@@ -265,7 +266,7 @@ We can now convert the list of Python `matchms.Spectrum` objects back to R with
 `pyspec_to_rspec()`:
 
 ```{r}
-sps_r <- pyspec_to_rspec(res)
+sps_r <- pyspec_to_rspec(x = res, pythonLibrary = "matchms", spectraVariables = spectraVariableMapping("matchms"))
 #' The normalized intensities
 intensity(sps_r)
 #' The original intensities
@@ -287,7 +288,7 @@ py_script <- paste0("from matchms.filtering import normalize_intensities\n",
 py$pysps <- pysps
 py_run_string(py_script)
 
-tmp <- pyspec_to_rspec(pysps)
+tmp <- pyspec_to_rspec(x = pysps)
 intensity(tmp)
 ```
 

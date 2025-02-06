@@ -328,12 +328,12 @@ setMethod(
         ref <- import("matchms")
         vars <- c(precursorMz = "precursor_mz")
         is_symmetric <- "False"
-        py$py_x <- rspec_to_pyspec(x, reference = ref, mapping = vars)
+        py$py_x <- rspec_to_pyspec(x, pythonLibrary = "matchms") ##reference = ref, mapping = vars)
         if (is.null(y)) {
             py$py_y <- py$py_x
             is_symmetric <- "True"
         } else
-            py$py_y <- rspec_to_pyspec(y, reference = ref, mapping = vars)
+            py$py_y <- rspec_to_pyspec(y, pythonLibrary = "matchms") ##reference = ref, mapping = vars)
         com <- python_command(param, is_symmetric = is_symmetric)
         ## Run the command. Result is in py$res
         py_run_string(com)
