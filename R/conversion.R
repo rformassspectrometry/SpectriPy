@@ -155,23 +155,22 @@ pyspec_to_rspec <- function(x, mapping = .SPECTRA_2_MATCHMS,
 #' @importMethodsFrom Spectra Spectra
 #'
 #' @noRd
-.single_pyspec_to_rspec <-
-    function(x, spectraVariables = .SPECTRA_2_MATCHMS) {
-        plist <- x$metadata
-        vars <- spectraVariables[spectraVariables %in% names(plist)]
-        if (length(vars)) {
-            rlist <- lapply(vars, function(z) plist[z])
-            ## Drop NULL variables.
-            spd <- DataFrame(rlist[lengths(rlist) > 0])
-            if (!nrow(spd)) {
-                spd <- DataFrame(msLevel = NA_integer_)
-            }
-        } else {
+.single_pyspec_to_rspec <- function(x, spectraVariables = .SPECTRA_2_MATCHMS) {
+    plist <- x$metadata
+    vars <- spectraVariables[spectraVariables %in% names(plist)]
+    if (length(vars)) {
+        rlist <- lapply(vars, function(z) plist[z])
+        ## Drop NULL variables.
+        spd <- DataFrame(rlist[lengths(rlist) > 0])
+        if (!nrow(spd)) {
             spd <- DataFrame(msLevel = NA_integer_)
         }
-        spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
-        spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
-            compress = FALSE
-        )
-        Spectra(spd)
+    } else {
+        spd <- DataFrame(msLevel = NA_integer_)
     }
+    spd$mz <- NumericList(as.numeric(x$peaks$mz), compress = FALSE)
+    spd$intensity <- NumericList(as.numeric(x$peaks$intensities),
+        compress = FALSE
+    )
+    Spectra(spd)
+}
