@@ -26,7 +26,7 @@
 #'
 #' @author Michael Witting, Johannes Rainer, Wout Bittremieux
 #'
-#' @importFrom reticulate r_to_py import py_to_r
+#' @importFrom reticulate r_to_py py_to_r
 #'
 #' @importMethodsFrom Spectra spectrapply
 NULL
@@ -53,6 +53,8 @@ NULL
 #'
 #' @param convert Boolean; should Python objects be automatically converted to
 #' their R equivalent? Defaults to `FALSE`.
+#'
+#' @importFrom reticulate r_to_py
 #'
 #' @importFrom Spectra spectrapply
 #'

@@ -1,5 +1,3 @@
-library(reticulate)
-
 #' @title Spectra similarity calculations using matchms
 #'
 #' @name compareSpectriPy
@@ -87,8 +85,6 @@ library(reticulate)
 #'   implementations of spectra similarity calculations.
 #'
 #' @export
-#'
-#' @importFrom reticulate py_run_string
 #'
 #' @examples
 #'
@@ -285,6 +281,8 @@ setMethod(
 #' @noRd
 #'
 #' @author Carolin Huber, Johannes Rainer, Wout Bittremieux
+#'
+#' @importFrom reticulate r_to_py py_to_r
 .compare_spectra_python <- function(x, y = NULL, param) {
     ## Handle empty input.
     if (!length(x) || (!length(y) & !is.null(y))) {

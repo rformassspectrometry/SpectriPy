@@ -2,63 +2,30 @@
 % Please edit documentation in R/conversion.R
 \name{conversion}
 \alias{conversion}
-\title{Low level functions to convert between Spectra and matchms Spectrum}
+\title{Low-level functions to convert between Spectra and matchms Spectrum}
 \arguments{
-\item{.check}{Optionally disable input parameter checking. Input parameter
-checking should only disabled for very good reasons.}
-
-\item{BPPARAM}{Optional parallel processing setup.}
-
-\item{mapping}{Named \code{character} providing the spectra variable names
-(metadata) to convert. Names are expected to be the spectra variable
-names and values the corresponding names of the Python Spectrum metadata
-fields. See description above for more details.}
-
-\item{object}{ignored.}
-
-\item{reference}{Optional reference to Python environment \code{matchms}.}
-
 \item{x}{For \code{r_to_py.Spectra()}: \code{Spectra} object. For \code{pyspec_to_rspec()}:
 a Python list of matchms Spectrum objects.}
-
-\item{...}{ignored.}
 }
 \value{
 For \code{r_to_py.Spectra()}: Python array of Spectrum objects, same
-length than \code{x}. For \code{pyspec_to_rspec()}: \code{\link[Spectra:Spectra]{Spectra::Spectra()}} with the
-converted spectra. For \code{spectraVariableMapping()}: named \code{character}
-vector with names being \code{Spectra} variable names and values the
-corresponding names in \code{matchms}.
+length as \code{x}. For \code{pyspec_to_rspec()}: \code{\link[Spectra:Spectra]{Spectra::Spectra()}} with the
+converted spectra.
 }
 \description{
 The \code{r_to_py.Spectra()} and \code{pyspec_to_rspec()} functions allow to convert
 R \code{\link[Spectra:Spectra]{Spectra::Spectra()}} objects into
 \href{https://github.com/matchms/matchms}{matchms} Python \code{matchms.Spectrum}
-objects. These functions are designed for
-\strong{advanced users or developers} who want/need to integrate Python/matchms
-functionality into R using \emph{reticulate}. All other users should use the
-dedicated R functions within this package that take care of running the
-Python code in the correct Python environment.
+objects. These functions are designed for \strong{advanced users or developers}
+who want/need to integrate Python/matchms functionality into R using
+\emph{reticulate}. All other users should use the dedicated R functions within
+this package that take care of running the Python code in the correct Python
+environment.
 
-Parameter \code{mapping} allows to define which spectra variables (metadata)
-should be copied between the R and Python spectra. Only provided spectra
-variables will be copied to R respectively Python. \code{mapping} also defines
-the mapping between the \code{Spectra}'s spectra variables and the Spectrum
-metadata. The names of the character vector \code{mapping} are the R spectra
-variables and the values the corresponding names in the Python's Spectrum
-metadata. See the output of the \code{spectraVariableMapping()} function for the
-default variables and the mapping of the names.
-
-The \code{spectraVariableMapping()} function provides a default mapping of some
-core \code{Spectra} variables based on this \href{https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv}{definition in matchms}.
-The function returns a named vector that can be directly used as parameter
-\code{mapping} in the \code{r_to_py.Spectra()} and \code{pyspec_to_rspec()} functions.
-}
-\examples{
-
-## List the default spectra variables and their mapping.
-spectraVariableMapping()
+\code{.SPECTRA_2_MATCHMS} provides a mapping of core \code{Spectra} variables, based on
+this \href{https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv}{definition in matchms},
+that is used in the \code{r_to_py.Spectra()} and \code{pyspec_to_rspec()} functions.
 }
 \author{
-Michael Witting, Johannes Rainer
+Michael Witting, Johannes Rainer, Wout Bittremieux
 }
