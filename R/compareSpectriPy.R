@@ -133,9 +133,6 @@ library(reticulate)
 #' compareSpectriPy(sps, param = ModifiedCosineParam())
 NULL
 
-matchms <- NULL
-matchms_sim <- NULL
-
 #' @importFrom reticulate py_install virtualenv_exists virtualenv_remove
 install_python_packages <-
     function(..., envname = "r-spectripy",
@@ -146,16 +143,6 @@ install_python_packages <-
 
         py_install(packages = "matchms", envname = envname, ...)
     }
-
-#' @importFrom reticulate import use_virtualenv
-.onLoad <- function(...) {
-    use_virtualenv("r-spectripy")
-    matchms <<- import("matchms", delay_load = TRUE, convert = FALSE)
-    matchms_sim <<- import(
-        "matchms.similarity",
-        delay_load = TRUE, convert = FALSE
-    )
-}
 
 setGeneric("compareSpectriPy", function(x, y, param, ...) {
     standardGeneric("compareSpectriPy")
