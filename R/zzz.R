@@ -4,7 +4,7 @@
     assign("matchms", import("matchms", delay_load = TRUE, convert = FALSE),
         envir = asNamespace(pkgname)
     )
-    assign("matchms.similarity", import("matchms.similarity",
+    assign("matchms_sim", import("matchms.similarity",
         delay_load = TRUE,
         convert = FALSE
     ),
