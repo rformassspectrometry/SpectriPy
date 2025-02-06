@@ -1,0 +1,126 @@
+---
+title: "Rapid prototyping of a Python backend"
+authors: "<add your name>, Johannes Rainer"
+date: last-modified
+format:
+    html:
+        code-fold: true
+        code-overflow: wrap
+        code-tools: true
+        graphics: yes
+        toc: true
+        toc-location: left-body
+        toc-title: "Outline"
+
+---
+
+
+# Introduction
+
+Instead of translating and hence copying the MS data between R and Python we
+could also have a Python-based `MsBackend` for `Spectra` where all data is in
+Python (e.g. as a list of `matchms.Spectrum` objects) and we retrieve the data,
+as basic data types, whenever needed. That could be more efficient and also less
+memory demanding. Data analysis in Python can be done directly on the
+variable/object in Python, while we can access and use the data in R through the backend.
+
+Related issue: https://github.com/rformassspectrometry/SpectriPy/issues/33
+
+Load libraries
+
+```{r}
+library(reticulate)
+library(SpectriPy)
+library(Spectra)
+
+```
+
+## Loading data in Python
+
+We first load the data in Python go the other way round: reading and importing
+the data from Python. The data file is within the package, thus we first define
+the file name using R.
+
+```{r}
+fl <- system.file("extdata", "spectra2.mgf", package = "SpectriPy")
+```
+
+Next we load the data using *matchms* in Python.
+
+```{python}
+import matchms
+from matchms.importing import load_from_mgf
+
+pysps = list(load_from_mgf(r.fl))
+
+```
+
+The data is now loaded in Python.
+
+```{python}
+len(pysps)
+pysps[1].peaks.to_numpy
+```
+
+And we can also get access to the data from R.
+
+```{r}
+length(py$pysps)
+py$pysps[[1]]$peaks$to_numpy |>
+    head()
+```
+
+What's the more efficient way to access the data?
+
+```{r}
+library(microbenchmark)
+
+microbenchmark(
+    py$pysps[[1]]$peaks$to_numpy,
+    py_run_string("vals = pysps[0].peaks.to_numpy")$vals
+)
+
+library(testthat)
+expect_identical(py$pysps[[1]]$peaks$to_numpy,
+                 py_run_string("vals = pysps[0].peaks.to_numpy")$vals)
+
+```
+
+Getting all peaks matrices from the python object.
+
+```{python}
+res = list()
+for i in range(len(pysps)):
+  res.append(pysps[i].peaks.to_numpy)
+```
+
+Access that variable from R.
+
+```{r}
+class(py$res)
+class(py$res[[1L]])
+
+```
+
+Check if the attribute is available.
+
+```{r}
+py_has_attr(py, "res")
+```
+
+```{r}
+microbenchmark(
+    py_get_attr(py, "res"),
+    py$res,
+    py_to_r(py_get_attr(py, "res"))
+)
+```
+
+The difference in speed is that with `py$res` we translate already to R.
+
+```{r}
+expect_identical(py$res, py_to_r(py_get_attr(py, "res")))
+```
+
+So, the python code above could be called in a `peaksData()` method of the
+backend.
