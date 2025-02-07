@@ -1,10 +1,10 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.2.1
+Version: 0.3.0
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python's matchms Spectrum objects. In addition, SpectriPy integrates
-    and wraps the similarity scoring and processing/filtering functions 
+    and wraps the similarity scoring and processing/filtering functions
     from the matchms package into R.
 Authors@R: c(person(given = "Michael", family = "Witting",
                     role = c("aut"),
@@ -20,7 +20,7 @@ Authors@R: c(person(given = "Michael", family = "Witting",
                     comment = c(ORCID = "0000-0002-9355-8948")),
              person(given = "Helge", family = "Hecht",
                     email = "helge.hecht@recetox.muni.cz",
-                    role = c("aut"),
+                    role = c("ctb"),
                     comment = c(ORCID = "0000-0001-6744-996X")),
              person(given = "Marilyn", family = "De Graeve",
                     email = "marilyn.degraeve@eurac.edu",
