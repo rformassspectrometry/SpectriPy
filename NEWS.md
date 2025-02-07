@@ -1,8 +1,18 @@
+# SpectriPy 0.3
+
+- Add a `MsBackendPython` backend referencing to MS data residing in Python.
+
 # SpectriPy 0.2
+
+## Changes in 0.2.1
+
+- Add `filterSpectriPy` method and related parameter objects to perform spectra
+  filtering/processing via matchms in python.
 
 ## Changes in 0.2.0
 
 - Use *matchms* version 0.28.2.
+
 
 # SpectriPy 0.1
 

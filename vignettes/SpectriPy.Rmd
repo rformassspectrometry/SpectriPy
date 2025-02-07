@@ -33,13 +33,19 @@ package.
 
 # Installation
 
+If the *BiocManager* package is not already available, 
+please install it with `install.packages("BiocManager")`
+
+To install the development version of *SpectriPy* from GitHub, please install the 
+*remotes* package with `install.packages("remotes").
+
 The package requires a python environment to be available and can be installed
 with the *BiocManager* R package using the command
-`BiocManager::install("RforMassSpectrometry/SpectriPy")`. All required python
-libraries are installed automatically on demand. Note that first installation
-or first invocation of specific functions might take long because of this
-installation process. The *BiocManager* package, if not already available, could
-be installed with `install.packages("BiocManager")`.
+`BiocManager::install("RforMassSpectrometry/SpectriPy")`. This will install the
+latest version of the package from GitHub.
+All required python libraries are installed automatically on demand. 
+Note that first installation or first invocation of specific functions might 
+take long because of this installation process.
 
 
 # Spectra similarity calculations using `matchms`
@@ -111,6 +117,9 @@ similarity function (from *matchms*) using a dedicated parameter object. Below
 we calculate the similarity using the *CosineGreedy* function changing the
 `tolerance` to a value of `0.05` (instead of the default `0.1`).
 
+Executing the following step will automatically download and install conda mini 
+forge to manage Python package dependencies.
+
 ```{r}
 res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
 res
@@ -121,19 +130,43 @@ Note also that the first `compareSpectriPy()` call takes usually a little longer
 because the Python setup has to be initialized.
 
 Next we use the *ModifiedCosine* algorithm that considers also differences
-between the spectra's precursor m/z in the calculation.
+between the spectra's precursor *m/z* in the calculation.
 
 ```{r}
 res <- compareSpectriPy(all, caf, param = ModifiedCosineParam())
 res
 ```
 
-Note that for this calculation all spectra precursor m/z values need to be
-available, otherwise an error will be thrown. Thus, we should always ensure to
-remove spectra without precursor m/z values prior to similarity scoring with
-this similarity method. Below we remove the precursor m/z from one of our input
-spectra and then show how the `Spectra` object could be subsetted to *valid*
-spectra for this method.
+A third example is the *CosineHungarian* algorithm, also a similarity function
+from *matchms*. This algorithm calculates the *cosine similarity score* as with
+`CosineGreedyParam`, but using the Hungarian algorithm to find the best matching
+peaks between the compared spectra. The algorithm can be configured with
+parameters `tolerance`, `mzPower` and `intensityPower` (see parameter description for more details).
+
+```{r}
+res <- compareSpectriPy(all, caf, param = CosineHungarianParam())
+res
+```
+
+A fourth example is the *NeutralLossesCosine* algorithm, also a similarity
+function from *matchms*. The neutral losses cosine score aims at quantifying the
+similarity between two mass spectra. The score is calculated by finding best
+possible matches between peaks of two spectra. Two peaks are considered a
+potential match if their *m/z* ratios lie within the given `tolerance` once a
+mass-shift is applied. The mass shift is the difference in precursor-*m/z*
+between the two spectra.
+
+```{r}
+res <- compareSpectriPy(all, caf, param = NeutralLossesCosineParam())
+res
+```
+
+Note that for the abovementioned similarity calculations all spectra precursor
+*m/z* values need to be available, otherwise an error will be thrown. Thus, we
+should always ensure to remove spectra without precursor *m/z* values prior to
+similarity scoring with this similarity method. Below we remove the precursor
+*m/z* from one of our input spectra and then show how the `Spectra` object could
+be subsetted to *valid* spectra for this method.
 
 ```{r}
 ## Remove precursor m/z from the 3rd spectrum

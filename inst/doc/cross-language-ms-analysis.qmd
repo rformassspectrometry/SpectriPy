@@ -1,6 +1,6 @@
 ---
 title: "Cross-language MS data analysis"
-authors: "<add your name>, Johannes Rainer"
+authors: "<add your name>, Marilyn De Graeve, Johannes Rainer"
 date: last-modified
 format:
     html:
@@ -19,6 +19,7 @@ format:
 
 In this document we:
 - illustrate how R and Python code can be used for MS data analysis
+- Perform similarity scoring from matchms
 
 # Installation instructions
 
@@ -130,6 +131,7 @@ Next we extract the MS2 spectra from the `pest_dda` data set and *translate* the
 `Spectra` to Python.
 
 ```{r}
+pest_dda <- all
 pest_ms2 <- filterMsLevel(pest_dda, 2L)
 system.time(
     pest_ms2_py <- rspec_to_pyspec(pest_ms2)
@@ -180,3 +182,388 @@ r.precursor_mz[0]
   alternative then?
 - Limitations of the approach: *translation* of data classes is not very
   efficient.
+
+
+# Add similarity algorithms from matchms
+
+There are currently 9 similarity algorithms in matchms, excluding the
+`BaseSimilarity` that is also present in R using *Spectra*'s built-in 
+`compareSpectra()` function. 
+
+The following algorithms are already incorporated, and added to the vignette
+"SpectriPy.Rmd":
+
+  - [X] CosineGreedy using CosineGreedyParam
+  - [X] ModifiedCosine using ModifiedCosineParam
+  - [X] CosineHungarian using CosineHungarianParam
+  - [X] NeutralLossesCosine using NeutralLossesCosineParam
+
+ The following algorithms are not yet incorporated or added to the vignette,
+ but can(not) run in Quarto using `reticulate` in the background:
+
+  - [X] FingerprintSimilarity using the Quarto extension
+  - [X] IntersectMz using the Quarto extension
+  - [ ] MetadataMatch using the Quarto extension
+  - [ ] ParentMassMatch using the Quarto extension
+  - [ ] PrecursorMzMatch using the Quarto extension
+
+See code chunks below (instead of in the vignette using
+the `Basilisk` environment).
+
+
+## Test data
+
+For this, we first make some test data.
+
+```{r}
+library(Spectra)
+library(SpectriPy)
+
+## Create a Spectra object with two MS2 spectra for Caffeine.
+caf <- DataFrame(
+    msLevel = c(2L, 2L),
+    name = "Caffeine",
+    precursorMz = c(195.0877, 195.0877),
+    smiles = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C',
+    inchi = '1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3',
+    parent_mass = 195.08
+)
+caf$intensity <- list(
+    c(340.0, 416, 2580, 412),
+    c(388.0, 3270, 85, 54, 10111))
+caf$mz <- list(
+    c(135.0432, 138.0632, 163.0375, 195.0880),
+    c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864))
+caf <- Spectra(caf)
+
+
+## Create a Spectra object with two MS2 spectra for 1-Methylhistidine
+mhd <- DataFrame(
+    msLevel = c(2L, 2L),
+    precursorMz = c(170.0924, 170.0924),
+    id = c("HMDB0000001", "HMDB0000001"),
+    name = c("1-Methylhistidine", "1-Methylhistidine"),
+    smiles = 'CN1C=C(N=C1)C[C@@H](C(=O)O)N',
+    inchi = '1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1',
+    parent_mass = 170.09)
+mhd$mz <- list(
+    c(109.2, 124.2, 124.5, 170.16, 170.52),
+    c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
+mhd$intensity <- list(
+    c(3.407, 47.494, 3.094, 100.0, 13.240),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
+mhd <- Spectra(mhd)
+
+
+#' merge the caffeine and 1-Methylhistidine Spectra objects
+#' we have 2 spectra from caf and 2 spectra from 1-methylhis
+all <- c(caf, mhd)
+
+```
+
+
+## Cheat sheet 
+
+R - py nomenclature help guide.
+
+Language 
+R             | python
+
+object
+Spectra       | Spectrum
+
+vars in spectra/spectrum
+msLevel       | *1
+precursorMz   | *2
+id            | *3
+name          | *4
+mz            | mz
+intensity     | intensities
+              | metadata
+
+added new to the Spectra object
+smiles       | *5
+inchi        | *6
+parent_mass  | *7
+
+subvars under the metadata in Spectrum py
+*2            | precursor_mz
+*3            | id
+*4            | compound_name
+*5            | smiles
+*6            | inchi
+*7            | parent_mass
+              | peak_comments
+              | charge
+              | instrument_type
+              | ...
+
+with Spectrum examples in python.
+
+```{python}
+import numpy as np
+from matchms import Spectrum
+
+# example Spectrum 1
+spectrum_1 = Spectrum(mz=np.array([100, 150, 200.]),
+                    intensities=np.array([0.7, 0.2, 0.1]),
+                    metadata={"id": 'spectrum1',
+                              "precursor_mz": 222.333,
+                              "peak_comments": {200.: "the peak at 200 m/z"}})
+
+print(spectrum_1)
+print(spectrum_1.peaks.mz[0])
+print(spectrum_1.peaks.intensities[0])
+print(spectrum_1.get('id'))
+print(spectrum_1.peak_comments.get(200))
+print(spectrum_1.get('precursor_mz'))
+
+# example Spectrum 2
+spectrum_2 = Spectrum(mz=np.array([100, 140, 190], dtype="float"),
+                    intensities=np.array([0.4, 0.2, 0.1], dtype="float"),
+                    metadata={"charge": -1,
+                              "inchi": '"InChI=1S/C6H12"',
+                              "precursor_mz": 222.2})
+
+print(spectrum_2)
+print(spectrum_2.peaks.mz[0])
+print(spectrum_2.get('charge'))
+print(spectrum_2.get('inchi'))
+print(spectrum_2.get('precursor_mz'))
+
+```
+
+
+## Conversion to Spectrum object
+
+First, we check if the r Spectra object can be accessed in python using the 'r.' 
+prefix.
+
+```{python}
+# check if the r Spectra object can be accessed in python using the 'r.' 
+# prefix
+r.all
+
+```
+
+Second, we filter to only keeping the MS2 level and translate the Spectra 
+object 'all' to the py Spectrum object 'all_ms2_py'.
+
+```{r}
+#' filter Spectra object to retain only MS2 level 
+all_ms2 <- filterMsLevel(all, 2L)
+
+#' convert to py Spectrum
+#' pass via 'mapping' the r = 'py' names if needed
+system.time(
+    all_ms2_py <- rspec_to_pyspec(all_ms2, mapping = c(smiles = 'smiles', 
+                                                       inchi = 'inchi', 
+                                                       name = 'compound_name',
+                                                       parent_mass = 'parent_mass',
+                                                       precursorMz = 'precursor_mz')) 
+)
+all_ms2_py
+
+```
+
+Third, we check if the "r convertend Spectrum" object can be accessed in python using the 'r.' 
+prefix.
+
+```{python}
+# check if the "r convertend Spectrum" object can be accessed in python using 
+# the 'r.' prefix
+r.all_ms2_py
+
+```
+
+
+## FingerprintSimilarity
+
+`FingerprintSimilarity`: Calculate similarity between molecules based on their
+fingerprints. For this similarity measure to work, fingerprints are expected to
+be derived by running *add_fingerprint()*.  Further information can be found in
+the matchms
+[readthedocs](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html#module-matchms.similarity).
+
+Run the FingerprintSimilarity algorithm.
+
+```{python}
+#' - `FingerprintSimilarity`: Calculate similarity between molecules based 
+#'   on their fingerprints. For this similarity measure to work, fingerprints 
+#'   are expected to be derived by running *add_fingerprint()*.
+
+# libraries
+import numpy as np
+from matchms import calculate_scores
+from matchms import Spectrum
+from matchms.filtering import add_fingerprint
+from matchms.similarity import FingerprintSimilarity
+
+spectrums = r.all_ms2_py
+
+# Add fingerprints
+# Add molecular finterprint to spectrum. If smiles or inchi present in 
+# metadata, derive a molecular finterprint and add it to the spectrum.
+spectrums = [add_fingerprint(x, nbits=256) for x in spectrums]
+
+# Specify type and calculate similarities
+similarity_measure = FingerprintSimilarity("jaccard")
+scores = calculate_scores(spectrums, spectrums, similarity_measure)
+print(np.round(scores.scores.to_array(), 3))
+
+```
+
+
+## IntersectMz
+
+`IntersectMz`: IntersectMz will count all exact matches of peaks and divide it
+by all unique peaks found in both spectrums. Further information can be found 
+in the matchms
+[readthedocs](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html#module-matchms.similarity).
+
+Run the IntersectMz algorithm.
+
+```{python}
+# test subsetting of pu spectrum object to select the 1st spectra
+spectrums[0]
+spectrums[0].get('compound_name')
+spectrums[0].get('precursor_mz')
+
+```
+
+```{python}
+#' - `IntersectMz`: IntersectMz will count all exact matches of peaks and 
+#     divide it by all unique peaks found in both spectrums.
+
+# libraries
+import numpy as np
+from matchms import Spectrum
+from matchms.similarity import IntersectMz
+
+spectrums = r.all_ms2_py
+
+# Construct a similarity function
+similarity_measure = IntersectMz(scaling=1.0)
+score = similarity_measure.pair(spectrums[0], spectrums[1]) #count from 0 in py
+print(f"IntersectMz score is {score:.2f}")
+
+#' Example with similarity > 0
+#similarity_measure = IntersectMz(scaling=1.0)
+#score = similarity_measure.pair(spectrum_1, spectrum_2)
+#print(f"IntersectMz score is {score:.2f}")
+
+```
+
+
+## MetadataMatch
+
+`MetadataMatch`: Return True if metadata entries of a specified field match
+between two spectra. This is supposed to be used to compare a wide range of
+possible metadata entries and use this to later select related or similar 
+spectra. Further information can be found in the matchms
+[readthedocs](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html#module-matchms.similarity).
+
+Run the MetadataMatch algorithm.
+
+```{python}
+#' - `MetadataMatch`: Return True if metadata entries of a specified field 
+#     match between two spectra. This is supposed to be used to compare a wide
+#     range of possible metadata entries and use this to later select related 
+#     or similar spectra.
+
+# libraries
+import numpy as np
+import pandas as pd
+from matchms import calculate_scores
+from matchms import Spectrum
+from matchms.similarity import MetadataMatch
+
+spectrums = r.all_ms2_py
+
+references = [spectrums[0], spectrums[2]] #count from 0 in py
+queries = [spectrums[1], spectrums[3]]
+
+similarity_score = MetadataMatch(field="compound_name", tolerance=0) #other example is to compare 'instrument_type'
+scores = calculate_scores(references, queries, similarity_score)
+
+for (reference, query, score) in scores:
+    print(f"Metadata match between {reference.get('compound_name')} and {query.get('compound_name')}" + f" is {score}")
+
+```
+
+
+## ParentMassMatch
+
+`ParentMassMatch`: Return True if spectrums match in parent mass (within
+tolerance), and False otherwise. Further information can be found in the 
+matchms
+[readthedocs](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html#module-matchms.similarity).
+
+Run the ParentMassMatch algorithm.
+
+```{python}
+#' - `ParentMassMatch`: Return True if spectrums match in parent mass (within
+#     tolerance), and False otherwise.
+
+# libraries
+import numpy as np
+from matchms import calculate_scores
+from matchms import Spectrum
+from matchms.similarity import ParentMassMatch
+
+spectrums = r.all_ms2_py
+
+references = [spectrums[0], spectrums[2]] #count from 0 in py
+queries = [spectrums[1], spectrums[3]]
+
+similarity_score = ParentMassMatch(tolerance=5.0)
+scores = calculate_scores(references, queries, similarity_score)
+
+for (reference, query, score) in scores:
+  #reference.get('id')
+  #query.get('id')
+  #score
+  print(f"Parentmass match between {reference.get('compound_name')} and {query.get('compound_name')}" + f" is {score}")
+
+```
+
+
+## PrecursorMzMatch
+
+`PrecursorMzMatch`: Return True if spectrums match in precursor m/z (within
+tolerance), and False otherwise. The match within tolerance can be calculated
+based on an absolute m/z difference (tolerance_type=”Dalton”) or based on a 
+relative difference in ppm (tolerance_type=”ppm”). Further information can be 
+found in the matchms
+[readthedocs](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html#module-matchms.similarity).
+
+Run the PrecursorMzMatch algorithm.
+
+```{python}
+#' - `PrecursorMzMatch`: Return True if spectrums match in precursor m/z
+#    (within tolerance), and False otherwise. The match within tolerance can 
+#    be calculated based on an absolute m/z difference 
+#    (tolerance_type=”Dalton”) or based on a relative difference in ppm 
+#    (tolerance_type=”ppm”).
+
+# libraries
+import numpy as np
+from matchms import calculate_scores
+from matchms import Spectrum
+from matchms.similarity import PrecursorMzMatch
+
+spectrums = r.all_ms2_py
+
+references = [spectrums[0], spectrums[2]] #count from 0 in py
+queries = [spectrums[1], spectrums[3]]
+
+similarity_score = PrecursorMzMatch(tolerance=5.0, tolerance_type="Dalton")
+scores = calculate_scores(references, queries, similarity_score)
+
+for (reference, query, score) in scores:
+    print(f"Precursor m/z match between {reference.get('compound_name')} and {query.get('compound_name')}" + f" is {score}")
+
+```
+
+
+
