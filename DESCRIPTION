@@ -1,10 +1,11 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.2.0
+Version: 0.2.1
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python's matchms Spectrum objects. In addition, SpectriPy integrates
-    and wraps the similarity scoring functions from the matchms package into R.
+    and wraps the similarity scoring and processing/filtering functions
+    from the matchms package into R.
 Authors@R: c(person(given = "Michael", family = "Witting",
                     role = c("aut"),
                     email = "michael.witting@helmholtz-muenchen.de",
@@ -19,7 +20,7 @@ Authors@R: c(person(given = "Michael", family = "Witting",
                     comment = c(ORCID = "0000-0002-9355-8948")),
              person(given = "Helge", family = "Hecht",
                     email = "helge.hecht@recetox.muni.cz",
-                    role = c("aut"),
+                    role = c("ctb"),
                     comment = c(ORCID = "0000-0001-6744-996X")),
              person(given = "Marilyn", family = "De Graeve",
                     email = "marilyn.degraeve@eurac.edu",
@@ -28,8 +29,20 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Wout", family = "Bittremieux",
                     email = "wout.bittremieux@uantwerpen.be",
                     role = c("ctb"),
-                    comment = c(ORCID = "0000-0002-3105-1359"))
-             )
+                    comment = c(ORCID = "0000-0002-3105-1359")),
+	     person(given = "Thomas", family = "Naake",
+                    email = "thomasnaake@googlemail.com",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0001-7917-5580")),
+             person(given = "Victor", family = "Chrone",
+                    email = "vchrone@bmb.sdu.dk",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0007-2121-4066")),
+	     person(given = "Matthias", family = "Anagho-Mattanovich",
+                    email = "matthias.mattanovich@sund.ku.dk",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0001-7561-7898"))
+		    )
 Depends:
     R (>= 4.1.0)
 Imports:

@@ -1,13 +1,19 @@
-#' @title Low-level functions to convert between Spectra and matchms Spectrum
+#' @title Converting between R and Python MS data structures
 #'
 #' @name conversion
 #'
 #' @description
 #'
-#' The `r_to_py.Spectra()` and `pyspec_to_rspec()` functions allow to convert
-#' R [Spectra::Spectra()] objects into
-#' [matchms](https://github.com/matchms/matchms) Python `matchms.Spectrum`
-#' objects. These functions are designed for **advanced users or developers**
+#' The `rspec_to_pyspec()`, `pyspec_to_rspec()` and `r_to_py.Spectra()`
+#' functions allow to convert (translate) MS data structures between R and
+#' Python. In particular, at present the R [Spectra::Spectra()] objects are
+#' translated into [matchms](https://github.com/matchms/matchms) Python
+#' `matchms.Spectrum` objects.
+#' LLLL continue documentation...
+#'
+#' TODO: setSpectraVariableMapping(), getSpectraVariableMapping()
+#'
+#' These functions are designed for **advanced users or developers**
 #' who want/need to integrate Python/matchms functionality into R using
 #' *reticulate*. All other users should use the dedicated R functions within
 #' this package that take care of running the Python code in the correct Python
@@ -42,7 +48,17 @@ NULL
     msLevel = "ms_level"
 )
 
-#' @rdname r_to_py.Spectra
+#' @importMethodsFrom ProtGenerics spectraVariableMapping
+#'
+#' @exportMethod spectraVariableMapping
+#'
+#' @rdname conversion
+setMethod("spectraVariableMapping", "missing", function(object, ...) {
+    .SPECTRA_2_MATCHMS
+})
+
+
+#' @rdname conversion
 #'
 #' @description
 #'
@@ -62,6 +78,39 @@ NULL
 r_to_py.Spectra <- function(x, convert = FALSE) {
     plist <- spectrapply(x, .single_rspec_to_pyspec)
     r_to_py(unname(plist))
+}
+
+#' @rdname conversion
+#'
+#' @importFrom methods is
+#'
+#' @export
+rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
+                            reference = import("matchms"),
+                            BPPARAM = SerialParam(), .check = TRUE) {
+    if (.check && !is(x, "Spectra"))
+        stop("'x' should be a Spectra object.")
+    plist <- spectrapply(x, .single_rspec_to_pyspec, spectraVariables = mapping,
+                         reference = reference, BPPARAM = BPPARAM)
+    r_to_py(unname(plist))
+}
+
+#' @rdname conversion
+#'
+#' @importFrom Spectra concatenateSpectra
+#'
+#' @export
+pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
+        BPPARAM = SerialParam(), .check = TRUE) {
+    if (!(is(x, "list") | is(x, "python.builtin.list")))
+      stop("'x' is expected to be a Python list.")
+    x <- py_to_r(x)
+    if (.check && !all(vapply(x, function(z)
+        is(z, "matchms.Spectrum.Spectrum"), logical(1))))
+        stop("'x' is expected to be a Python list of matchms.Spectrum objects.")
+    spectra_list <- bplapply(x, .single_pyspec_to_rspec,
+                             spectraVariables = mapping, BPPARAM = BPPARAM)
+    do.call(concatenateSpectra, spectra_list)
 }
 
 #' @description
@@ -108,28 +157,6 @@ r_to_py.Spectra <- function(x, convert = FALSE) {
             mz = np_array(pks[, 1L]), intensities = np_array(pks[, 2L])
         )
     }
-}
-
-#' @rdname pyspec_to_rspec
-#'
-#' @importFrom Spectra concatenateSpectra
-#'
-#' @export
-pyspec_to_rspec <- function(x, mapping = .SPECTRA_2_MATCHMS,
-                            BPPARAM = SerialParam(), .check = TRUE) {
-    if (!(is(x, "list") | is(x, "python.builtin.list"))) {
-        stop("'x' is expected to be a Python list.")
-    }
-    x <- py_to_r(x)
-    if (.check && !all(vapply(x, function(z) {
-        is(z, "matchms.Spectrum.Spectrum")
-    }, logical(1)))) {
-        stop("'x' is expected to be a Python list of matchms Spectrum objects.")
-    }
-    spectra_list <- bplapply(x, .single_pyspec_to_rspec,
-        spectraVariables = mapping, BPPARAM = BPPARAM
-    )
-    do.call(concatenateSpectra, spectra_list)
 }
 
 #' @description

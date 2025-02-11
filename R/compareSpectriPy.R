@@ -164,9 +164,8 @@ setClass("NeutralLossesCosineParam",
     validity = function(object) {
         msg <- NULL
         if (length(object@ignorePeaksAbovePrecursor) != 1) {
-            msg <- paste0(
-                "'ignorePeaksAbovePrecursor' has to be a positive number of length 1"
-            )
+            msg <- paste0("'ignorePeaksAbovePrecursor' has to be a ",
+                          "positive number of length 1")
         }
         msg
     }
@@ -301,8 +300,7 @@ setMethod(
         },
         CosineHungarian = function(p) {
             matchms_sim$CosineHungarian(
-                p@tolerance, p@mzPower, p@intensityPower
-            )
+                p@tolerance, p@mzPower, p@intensityPower)
         },
         ModifiedCosine = function(p) {
             matchms_sim$ModifiedCosine(p@tolerance, p@mzPower, p@intensityPower)
@@ -310,8 +308,8 @@ setMethod(
         NeutralLossesCosine = function(p) {
             matchms_sim$NeutralLossesCosine(
                 p@tolerance, p@mzPower, p@intensityPower,
-                ignore_peaks_above_precursor = as.logical(p@ignorePeaksAbovePrecursor)
-            )
+                ignore_peaks_above_precursor =
+                    as.logical(p@ignorePeaksAbovePrecursor))
         }
     )
 
@@ -321,7 +319,6 @@ setMethod(
         stop("Unknown similarity measure")
     }
     sim_fun <- sim_functions[[sim_fun_name]](param)
-
 
     ## Compute the similarity scores with matchms.
     scores <- matchms$calculate_scores(
