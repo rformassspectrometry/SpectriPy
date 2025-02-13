@@ -5,7 +5,7 @@
     )
     use_conda <- getOption(
         "spectripy.use_conda",
-        as.logical(Sys.getenv("SPECTRIPY_USE_CONDA", unset = "FALSE"))
+        as.logical(Sys.getenv("SPECTRIPY_USE_CONDA", unset = "TRUE"))
     )
     use_system <- getOption(
         "spectripy.use_system",
@@ -56,15 +56,14 @@
         return()
     } else if (!py_module_available("matchms")) {
         if (use_conda) {
-            py_install(c("numpy==1.26", "matchms"),
-                envname = envname,
-                method = "conda", pip = TRUE, ...
-            )
+            py_install(c("matchms==0.28.2"), envname = envname,
+                       method = "conda", pip = TRUE,
+                       channels = c("bioconda", "conda-forge"), ...)
         } else {
+            ## Seem the versions above are not available through pip?
             py_install(c("numpy==1.26", "matchms"),
-                envname = envname,
-                method = "virtualenv", ...
-            )
+                       envname = envname, method = "virtualenv",
+                       channels = c("bioconda", "conda-forge"), ...)
         }
     }
 }

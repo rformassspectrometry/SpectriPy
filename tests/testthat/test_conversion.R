@@ -11,44 +11,96 @@ df$intensity <- list(
 )
 sps <- Spectra(df)
 
-test_that("spectraVariableMapping works", {
+test_that("spectraVariableMapping, spectraVariableMapping<- works", {
     res <- spectraVariableMapping()
     expect_true(is.character(res))
     expect_true(length(res) > 0)
+    expect_true(length(names(res)) > 0)
+    expect_equal(res, SpectriPy:::.SPECTRA_2_MATCHMS)
+
+    setSpectraVariableMapping(c(a = "b", d = "e"))
+    expect_equal(spectraVariableMapping(), c(a = "b", d = "e"))
+    setSpectraVariableMapping(SpectriPy:::.SPECTRA_2_MATCHMS)
+    expect_equal(spectraVariableMapping(),
+                 SpectriPy:::.SPECTRA_2_MATCHMS)
+})
+
+test_that(".single_rspec_to_pyspec works", {
+    res <- .single_rspec_to_pyspec(sps[1L])
+    expect_true(is(res, "matchms.Spectrum.Spectrum"))
+    expect_true(all(SpectriPy:::.SPECTRA_2_MATCHMS %in% names(res$metadata)))
+    expect_equal(sps$mz[[1L]], as.vector(py_to_r(res$mz)))
+    expect_equal(sps$intensity[[1L]], as.vector(py_to_r(res$intensities)))
+    expect_equal(sps$rtime[1L], py_to_r(res$metadata["retention_time"]))
+    expect_equal(sps$msLevel[1L], py_to_r(res$metadata["ms_level"]))
+    expect_equal(sps$precursorMz[1L], py_to_r(res$metadata["precursor_mz"]))
+
+    res <- .single_rspec_to_pyspec(sps[2L], character())
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res$mz)))
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res$intensities)))
+    expect_equal(names(res$metadata), character())
+})
+
+test_that(".rspec_to_pyspec works", {
+    res <- .rspec_to_pyspec(sps)
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(length(res) == length(sps))
+
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
+    expect_true(all(.SPECTRA_2_MATCHMS %in% names(res[[1]]$metadata)))
+
+    res <- .rspec_to_pyspec(sps, character())
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
+    expect_equal(names(res[[1]]$metadata), character())
 })
 
 test_that("rspec_to_pyspec works", {
-    cl <- basiliskStart(SpectriPy:::matchms_env)
-    basiliskRun(cl, function(x) {
-        res <- rspec_to_pyspec(x)
-        expect_true(is(res, "python.builtin.list"))
-        expect_equal(length(res), length(x))
-        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
-        expect_equal(rtime(x)[1], py_to_r(res[0]$metadata$retention_time))
-    }, x = sps)
+    res <- r_to_py(sps)
+    expect_equal(res, rspec_to_pyspec(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_equal(length(res), length(sps))
+    expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(sps)[[3]])
+    expect_equal(rtime(sps)[1], py_to_r(res[0]$metadata$retention_time))
+    expect_equal(msLevel(sps)[1], py_to_r(res[0]$metadata$ms_level))
+    expect_equal(msLevel(sps)[2], py_to_r(res[1]$metadata$ms_level))
+    expect_equal(msLevel(sps)[3], py_to_r(res[2]$metadata$ms_level))
+    expect_equal(precursorMz(sps)[1], py_to_r(res[0]$metadata$precursor_mz))
 
-    basiliskRun(cl, function(x) {
-        x$new_col <- c(9, 3, 1)
-        res <- rspec_to_pyspec(x, mapping = c(rtime = "retention_time",
-                                              new_col = "new_col"))
-        expect_true(is(res, "python.builtin.list"))
-        expect_equal(length(res), length(x))
-        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
-        expect_equal(rtime(x)[1], py_to_r(res[0]$metadata$retention_time))
-        expect_equal(x$new_col[1], py_to_r(res[0]$metadata$new_col))
-    }, x = sps)
+    ## mapping only specific spectra variables.
+    sps$new_col <- c(9, 3, 1)
+    setSpectraVariableMapping(c(collisionEnergy = "collision_energy",
+                                new_col = "new_col"))
+    res <- r_to_py(sps)
+    expect_true(is(res, "python.builtin.list"))
+    expect_equal(length(res), length(sps))
+    expect_equal(sort(names(res[0]$metadata)),
+                 sort(c("collision_energy", "new_col")))
+    expect_equal(py_to_r(res[0]$metadata$new_col), 9)
 
-    basiliskRun(cl, function(x) {
-        x$rtime <- NULL
-        res <- rspec_to_pyspec(x)
-        expect_true(is(res, "python.builtin.list"))
-        expect_equal(length(res), length(x))
-        expect_equal(as.numeric(py_to_r(res[2]$peaks$mz)), mz(x)[[3]])
-        ## Seems NA for rtime is changed to NULL in Spectrum
-        expect_equal(py_to_r(res[0]$metadata$retention_time), NULL)
-    }, x = sps)
+    s <- sps
+    s$rtime <- NULL
+    setSpectraVariableMapping(c(precursorMz = "precursor_mz",
+                                rtime = "retention_time"))
+    res <- r_to_py(s)
+    expect_equal(sort(names(res[0]$metadata)),
+                 c("precursor_mz", "retention_time"))
+    expect_equal(py_to_r(res[0]$metadata$precursor_mz), NA_real_)
+    ## It's a bit odd - a retention time of NA is converted to a NULL
+    expect_equal(py_to_r(res[0]$metadata$retention_time), NULL)
 
-    basiliskStop(cl)
+    s$new_col <- NULL
+    setSpectraVariableMapping(c(precursorMz = "precursor_mz",
+                                new_col = "new_col"))
+    expect_error(res <- r_to_py(s), "requested spectra variables")
+
+    ## No mapping at all.
+    setSpectraVariableMapping(character())
+    res <- rspec_to_pyspec(s)
+    expect_equal(names(res[0]$metadata), character())
+
+    setSpectraVariableMapping(SpectriPy:::.SPECTRA_2_MATCHMS)
 })
 
 test_that("pyspec_to_rspec works", {
