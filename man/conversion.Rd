@@ -6,7 +6,6 @@
 \alias{setSpectraVariableMapping}
 \alias{r_to_py.Spectra}
 \alias{rspec_to_pyspec}
-\alias{pyspec_to_rspec}
 \title{Converting between R and Python MS data structures}
 \usage{
 \S4method{spectraVariableMapping}{missing}(object, ...)
@@ -16,13 +15,6 @@ setSpectraVariableMapping(x)
 \method{r_to_py}{Spectra}(x, convert = FALSE)
 
 rspec_to_pyspec(x, mapping = spectraVariableMapping(), .check = TRUE)
-
-pyspec_to_rspec(
-  x,
-  mapping = spectraVariableMapping(),
-  BPPARAM = SerialParam(),
-  .check = TRUE
-)
 }
 \arguments{
 \item{x}{\code{Spectra} object.}
@@ -31,25 +23,29 @@ pyspec_to_rspec(
 their R equivalent? Defaults to \code{FALSE}.}
 }
 \value{
-For \code{r_to_py.Spectra()}: Python array of Spectrum objects, same
-length as \code{x}. For \code{pyspec_to_rspec()}: \code{\link[Spectra:Spectra]{Spectra::Spectra()}} with the
-converted spectra.
+For \code{r_to_py.Spectra()} and \code{rspec_to_pyspec()}: Python list of
+\code{matchms.Spectrum} objects. For \code{pyspec_to_rspec()}:
+\code{\link[Spectra:Spectra]{Spectra::Spectra()}} with the MS data of all \code{matchms.Spectrum} objects
+in the submitted \code{list}. For \code{py_to_r.matchms.Spectrum.Spectrum}: a
+\code{Spectra} of length 1 with the MS data of the one submitted spectrum.
 }
 \description{
-The \code{rspec_to_pyspec()}, \code{pyspec_to_rspec()} and \code{r_to_py.Spectra()}
-functions allow to convert (translate) MS data structures between R and
-Python. At present the R \code{\link[Spectra:Spectra]{Spectra::Spectra()}} objects are translated into
-a list of \href{https://github.com/matchms/matchms}{matchms} Python
-\code{matchms.Spectrum} objects.
-The \code{r_to_py()} and \code{py_to_r()} methods are provided to integrate
-better with the R/Python bindings of the \emph{reticulate} package, but the
-dedicated \code{rspec_to_pyspec()} and \code{pyspec_to_rspec()} allow more
-customization and are more efficient (specifically for translating from
-Python to R).
+The \code{rspec_to_pyspec()}, \code{pyspec_to_rspec()} functions allow to convert
+(translate) MS data structures between R and Python. At present the
+R \code{\link[Spectra:Spectra]{Spectra::Spectra()}} objects are translated into a list of
+\href{https://github.com/matchms/matchms}{matchms} Python \code{matchms.Spectrum}
+objects. For better integration with the \emph{reticulate} R package also
+\code{r_to_py.Spectra()} and \code{py_to_r.matchms.Spectrum.Spectrum()} methods are
+provided, but these lack the additional parameters of the former functions
+and, in the case of \code{py_to_r.matchms.Spectrum.Spectrum()} convert each
+\code{matchms.Spectrum} object into it's own (single spectrum) \code{Spectra} object.
 
-The mapping of spectra variables (in R) to
-(Python) spectra metadata can be configured and defined with the
-\code{setSpectraVariableMapping()} and \code{spectraVariableMapping()}.
+The mapping of spectra variables (in R) to (Python) spectra metadata can
+be configured and defined with the \code{setSpectraVariableMapping()} and
+\code{spectraVariableMapping()}. These get and set the \emph{global} (system wide)
+setting and are thus also used by the \code{r_to_py()} and \code{py_to_r()} methods.
+
+See the indivudual function's documentation for more details.
 
 Function to convert R Spectra objects into a Python list of matchms Spectrum
 objects using the \code{reticulate} package.
@@ -58,15 +54,42 @@ objects using the \code{reticulate} package.
 The \code{py_ro_r()} method allows only to translate a \strong{single}
 \code{matchms.Spectrum} object into a \link[Spectra:Spectra]{Spectra::Spectra} object of length 1.
 To translate a list of \code{matchms.Spectrum} objects one would need to iterate
-over the list and then concatenate the resulting \code{list} of \code{Spectra} would thus require#'
-See the indivudual function's documentation for more details.
+over the list and then concatenate the resulting \code{list} of \code{Spectra} using
+the \code{\link[Spectra:combineSpectra]{Spectra::concatenateSpectra()}}. This is however much less efficient
+than the \code{pyspec_to_rspec()} function.
 }
 \section{Translation of MS data objects}{
 
 
 MS data structures can be translated between R and Python using the
-\code{rspec_to_pyspec()}, \code{r_to_py()}, \code{pyspec_to_rspec()} and \code{py_to_r()}
-functions.
+\code{rspec_to_pyspec()} and \code{pyspec_to_rspec()} functions, or with the
+\code{r_to_py()} and \code{py_to_r()} methods.
+\itemize{
+\item \code{rspec_to_pyspec()} translates an R \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object into a
+list of \code{matchms.Spectrum} objects. Parameter \code{mapping} allows to specify
+which spectra variables from the \code{Spectra} object \code{x} should be converted
+in addition to the peaks data (m/z and intensity values). It defaults to
+\code{mapping = spectraVariableMapping()} (See the respective help below for
+more information on the variable mapping). While being fast, this function
+first loads all peaks and spectra data into memory before translating to
+Python data structures. A less memory intense operation could be to call
+this function in a loop to only load parts of the data at a time into
+memory.
+\item \code{pyspec_to_rspec()} translates a list of \code{matchms.Spectrum} objects to a
+\code{\link[Spectra:Spectra]{Spectra::Spectra()}} object. Parameter \code{mapping} allows to speficy the
+metadata variables that should be translated and mapped in addition to
+the peaks data.
+\item \code{r_to_py.Spectra()} is equivalent to \code{rspec_to_pyspec()}. The spectra
+variables that should be converted can be configures with
+\code{setSpectraVariableMapping()} (see documentation below).
+\item \code{py_to_r.matchms.Spectrum.Spectrum()} translates a single
+\code{matchms.Spectrum} object to a (single-spectrum) \code{Spectra} object. Calling
+\code{py_to_r()} on a list of such object will thus result in an R \code{list} of
+(single spectrum) \code{Spectra} object. While these could then be combined
+using \code{\link[Spectra:combineSpectra]{Spectra::combineSpectra()}}, it is far less efficient than
+\code{pyspec_to_rspec()}. Mapping and translation of spectra variables from
+metadata values can be configured with \code{setSpectraVariableMapping()}.
+}
 }
 
 \section{Mapping of spectra variables (metadata)}{
@@ -99,6 +122,77 @@ data (m/z and intensity values) but no spectra metadata.
 }
 }
 
+\examples{
+
+## Import a MGF file as a `Spectra` object
+library(MsBackendMgf)
+library(SpectriPy)
+library(reticulate)
+s <- Spectra(
+    system.file("extdata", "spectra2.mgf", package = "SpectriPy"),
+    source = MsBackendMgf())
+s
+
+#########################
+## Conversion R to Python
+
+## A `Spectra` can be translated to a `list` of `matchms.Spectrum` objects
+## using either the `r_to_py()` method or the `rspec_to_pyspec()` function:
+s_py <- r_to_py(s)
+s_py
+
+## The `s_py` can now be used like any other Python variable within the R
+## *reticulate* framework. Below we extract the m/z values of the first
+## spectrum
+s_py[0]$mz
+
+## Extracting that information from the `Spectra` object in R
+s[1]$mz
+
+## The `spectraVariableMapping()` defines which spectra variables (metadata)
+## should be translated between R and Python:
+spectraVariableMapping()
+
+## The names of that character vector represent the names of the spectra
+## variables in R, the elements the name of the metadata variable in Python.
+## Below we list the available metadata information from the first
+## Spectrum in Python
+s_py[0]$metadata
+
+## `setSpectraVariableMapping()` allows to replace the default mapping
+## of variables. Below we e.g. add a new spectra variable to the `Spectra`
+## object.
+s$new_col <- 1:4
+
+## To translate that variable to Python we need to include it to the
+## `spectraVariableMapping()`. Below we define to translate only the
+## precursor m/z and the new spectra variable to Python.
+setSpectraVariableMapping(
+    c(precursorMz = "precursor_mz", new_col = "new_col"))
+s_py <- r_to_py(s)
+
+s_py[0]$metadata
+
+#########################
+## Conversion Python to R
+
+## A single `matchms.Spectrum` object can be translated to a `Spectra` (of
+## length 1) using the `py_to_r()` function:
+s1 <- py_to_r(s_py[0])
+s1
+
+## This function could thus be used to iterate over the `list` of
+## `matchms.Spectrum` and convert each of them to a `Spectra`:
+res <- py_to_r(s_py)
+res
+
+## While these could be concatenated into a single `Spectra` using
+concatenateSpectra(res)
+
+## it is suggested and much more efficient to use the `pyspec_to_rspec()`
+## function instead:
+pyspec_to_rspec(s_py)
+}
 \author{
 Michael Witting, Johannes Rainer, Wout Bittremieux
 }

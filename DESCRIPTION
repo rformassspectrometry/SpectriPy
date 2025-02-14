@@ -56,6 +56,7 @@ Imports:
 Suggests:
     testthat,
     knitr,
+    MsBackendMgf,
     BiocStyle,
     rmarkdown
 License: Artistic-2.0
