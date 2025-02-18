@@ -1,4 +1,4 @@
-#' @title Spectra similarity calculations using matchms
+#' @title Spectra similarity calculations using Python's matchms library
 #'
 #' @name compareSpectriPy
 #'
@@ -10,44 +10,56 @@
 #' module.
 #'
 #' Selection and configuration of the algorithm can be performed with one of the
-#' parameter objects:
+#' *parameter* objects/functions:
 #'
-#' - `CosineGreedyParam`: calculate the *cosine similarity score* between
+#' - `CosineGreedy()`: calculate the *cosine similarity score* between
 #'   spectra. The score is calculated by finding the best possible matches
 #'   between peaks of two spectra. Two peaks are considered a potential match if
 #'   their m/z ratios lie within the given `tolerance`. The underlying peak
 #'   assignment problem is here solved in a *greedy* way. This can perform
 #'   notably faster, but does occasionally deviate slightly from a fully correct
-#'   solution (as with the `CosineHungarianParam` algorithm). In practice this
+#'   solution (as with the `CosineHungarian` algorithm). In practice this
 #'   will rarely affect similarity scores notably, in particular for smaller
 #'   tolerances. The algorithm can be configured with parameters `tolerance`,
-#'   `mzPower` and `intensityPower` (see parameter description for more
-#'   details).
+#'   `mz_power` and `intensity_power` (see parameter description for more
+#'   details). See also
+#'   [matchms CosineGreedy](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineGreedy.html) for more information.
 #'
-#' - `CosineHungarianParam`: calculate the *cosine similarity score* as with
-#'   `CosineGreedyParam`, but using the Hungarian algorithm to find the best
+#' - `CosineHungarian()`: calculate the *cosine similarity score* as with
+#'   `CosineGreedy`, but using the Hungarian algorithm to find the best
 #'   matching peaks between the compared spectra. The algorithm can be
-#'   configured with parameters `tolerance`, `mzPower` and `intensityPower`
-#'   (see parameter description for more details).
+#'   configured with parameters `tolerance`, `mz_power` and `intensity_power`
+#'   (see parameter description for more details). See also
+#'   [matchms CosingHungarian](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html) for more information.
 #'
-#' - `ModifiedCosineParam`: The modified cosine score aims at quantifying the
+#' - `ModifiedCosine()`: The modified cosine score aims at quantifying the
 #'   similarity between two mass spectra. The score is calculated by finding
 #'   the best possible matches between peaks of two spectra. Two peaks are
 #'   considered a potential match if their m/z ratios lie within the given
 #'   `tolerance`, or if their m/z ratios lie within the tolerance once a
 #'   mass shift is applied. The mass shift is simply the difference in
 #'   precursor-m/z between the two spectra.
+#'   See also [matchms ModifiedCosine](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html) for more information.
 #'
-#' - `NeutralLossesCosineParam`: The neutral losses cosine score aims at
+#' - `NeutralLossesCosine()`: The neutral losses cosine score aims at
 #'   quantifying the similarity between two mass spectra. The score is
 #'   calculated by finding the best possible matches between peaks of two
 #'   spectra. Two peaks are considered a potential match if their m/z ratios lie
 #'   within the given `tolerance` once a mass shift is applied. The mass shift
-#'   is the difference in precursor-m/z between the two spectra.
+#'   is the difference in precursor-m/z between the two spectra. See also
+#'   [matchms NeutralLossesCosine](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.NeutralLossesCosine.html) for more information.
 #'
-#' - `FingerprintSimilarityParam`: Calculate similarity between molecules based
+#' - `FingerprintSimilarity()`: Calculate similarity between molecules based
 #'   on their fingerprints. For this similarity measure to work, fingerprints
-#'   are expected to be derived by running *add_fingerprint()*.
+#'   are expected to be derived by running *add_fingerprint()*. See also
+#'   [matchms FingerprintSimilarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.FingerprintSimilarity.html) for more information.
+#'
+#'
+#' @note
+#'
+#' Parameters and algorithms are named as originally defined in the *matchms*
+#' library (i.e. all parameters in *snake_case* while *CamelCase* is used
+#' for the algorithms.
 #'
 #' @param x A [Spectra::Spectra()] object.
 #'
@@ -55,21 +67,21 @@
 #'   spectra similarities are calculated between all spectra in `x`.
 #'
 #' @param param One of the parameter classes listed above (such as
-#'   `CosineGreedyParam`) defining the similarity scoring function in Python
+#'   `CosineGreedy`) defining the similarity scoring function in Python
 #'   and its parameters.
 #'
 #' @param tolerance `numeric(1)`: tolerated differences in the peaks' m/z. Peaks
 #'   with m/z differences `<= tolerance` are considered matching.
 #'
-#' @param mzPower `numeric(1)`: the power to raise m/z to in the cosine
+#' @param mz_power `numeric(1)`: the power to raise m/z to in the cosine
 #'   function. The default is 0, in which case the peak intensity products will
 #'   not depend on the m/z ratios.
 #'
-#' @param ignorePeaksAbovePrecursor For `NeutralLossesCosineParam()`:
+#' @param ignore_peaks_above_precursor For `NeutralLossesCosine()`:
 #'   `logical(1)`: if `TRUE` (the default), peaks with m/z values larger than
 #'   the precursor m/z are ignored.
 #'
-#' @param intensityPower `numeric(1)`: the power to raise intensity to in the
+#' @param intensity_power `numeric(1)`: the power to raise intensity to in the
 #'   cosine function. The default is 1.
 #'
 #' @param ... ignored.
@@ -111,31 +123,28 @@
 #' ## matchms' CosineGreedy algorithm
 #' ## Note: the first compareSpectriPy will take longer because the Python
 #' ## environment needs to be set up.
-#' res <- compareSpectriPy(sps, param = CosineGreedyParam())
+#' res <- compareSpectriPy(sps, param = CosineGreedy())
 #' res
 #'
 #' ## Next we calculate similarities for all spectra against the first one
-#' res <- compareSpectriPy(sps, sps[1], param = CosineGreedyParam())
+#' res <- compareSpectriPy(sps, sps[1], param = CosineGreedy())
 #'
 #' ## Calculate pairwise similarity of all spectra in sps with matchms'
 #' ## ModifiedCosine algorithm
-#' res <- compareSpectriPy(sps, param = ModifiedCosineParam())
+#' res <- compareSpectriPy(sps, param = ModifiedCosine())
 #' res
 #'
 #' ## Note that the ModifiedCosine method requires the precursor m/z to be
 #' ## known for all input spectra. Thus, it is advisable to remove spectra
 #' ## without precursor m/z before using this algorithm.
 #' sps <- sps[!is.na(precursorMz(sps))]
-#' compareSpectriPy(sps, param = ModifiedCosineParam())
+#' compareSpectriPy(sps, param = ModifiedCosine())
 NULL
 
 setGeneric("compareSpectriPy", function(x, y, param, ...) {
     standardGeneric("compareSpectriPy")
 })
 
-#' @importClassesFrom ProtGenerics Param
-#'
-#' @noRd
 setClass("CosineGreedyParam",
     slots = c(
         tolerance = "numeric", mzPower = "numeric", intensityPower = "numeric"
@@ -147,10 +156,10 @@ setClass("CosineGreedyParam",
             msg <- c("'tolerance' has to be a positive number of length 1")
         }
         if (length(object@mzPower) != 1) {
-            msg <- c(msg, "'mzPower' has to be a number of length 1")
+            msg <- c(msg, "'mz_power' has to be a number of length 1")
         }
         if (length(object@intensityPower) != 1) {
-            msg <- c(msg, "'intensityPower' has to be a number of length 1")
+            msg <- c(msg, "'intensity_power' has to be a number of length 1")
         }
         msg
     }
@@ -170,71 +179,70 @@ setClass("NeutralLossesCosineParam",
         msg
     }
 )
-setClass("FingerprintSimilarityParam", contains = "CosineGreedyParam")
+setClass("FingerprintSimilarityParam", contains = "CosineGreedyParam",
+         slots = c(similarityMeasure = "character"),
+         prototype = prototype(similarityMeasure = "jaccard"))
 
 #' @rdname compareSpectriPy
 #'
 #' @importFrom methods new
 #'
 #' @export
-CosineGreedyParam <- function(tolerance = 0.1, mzPower = 0.0,
-                              intensityPower = 1.0) {
+CosineGreedy <- function(tolerance = 0.1, mz_power = 0.0,
+                         intensity_power = 1.0) {
     new("CosineGreedyParam",
         tolerance = as.numeric(tolerance),
-        mzPower = as.numeric(mzPower),
-        intensityPower = as.numeric(intensityPower)
-    )
+        mzPower = as.numeric(mz_power),
+        intensityPower = as.numeric(intensity_power)
+        )
 }
 
 #' @rdname compareSpectriPy
 #'
 #' @export
-CosineHungarianParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                 intensityPower = 1.0) {
+CosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
+                            intensity_power = 1.0) {
     new("CosineHungarianParam",
         tolerance = as.numeric(tolerance),
-        mzPower = as.numeric(mzPower),
-        intensityPower = as.numeric(intensityPower)
+        mzPower = as.numeric(mz_power),
+        intensityPower = as.numeric(intensity_power)
     )
 }
 
 #' @rdname compareSpectriPy
 #'
 #' @export
-ModifiedCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                intensityPower = 1.0) {
+ModifiedCosine <- function(tolerance = 0.1, mz_power = 0.0,
+                                intensity_power = 1.0) {
     new("ModifiedCosineParam",
         tolerance = as.numeric(tolerance),
-        mzPower = as.numeric(mzPower),
-        intensityPower = as.numeric(intensityPower)
+        mzPower = as.numeric(mz_power),
+        intensityPower = as.numeric(intensity_power)
     )
 }
 
 #' @rdname compareSpectriPy
 #'
 #' @export
-NeutralLossesCosineParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                     intensityPower = 1.0,
-                                     ignorePeaksAbovePrecursor = TRUE) {
+NeutralLossesCosine <- function(tolerance = 0.1, mz_power = 0.0,
+                                intensity_power = 1.0,
+                                ignore_peaks_above_precursor = TRUE) {
     new("NeutralLossesCosineParam",
         tolerance = as.numeric(tolerance),
-        mzPower = as.numeric(mzPower),
-        intensityPower = as.numeric(intensityPower),
-        ignorePeaksAbovePrecursor = as.logical(ignorePeaksAbovePrecursor)
+        mzPower = as.numeric(mz_power),
+        intensityPower = as.numeric(intensity_power),
+        ignorePeaksAbovePrecursor = as.logical(ignore_peaks_above_precursor)
     )
 }
 
-#' @rdname compareSpectriPy
-#'
-#' @export
-FingerprintSimilarityParam <- function(tolerance = 0.1, mzPower = 0.0,
-                                       intensityPower = 1.0) {
-    new("FingerprintSimilarityParam",
-        tolerance = as.numeric(tolerance),
-        mzPower = as.numeric(mzPower),
-        intensityPower = as.numeric(intensityPower)
-    )
-}
+## #' @rdname compareSpectriPy
+## #'
+## #' @export
+## FingerprintSimilarity <- function(similarity_measure = "jaccard") {
+##     new("FingerprintSimilarityParam",
+##         similarityMeasure = similarity_measure
+##         )
+## }
 
 #' @rdname compareSpectriPy
 #'
@@ -256,9 +264,27 @@ setMethod(
     }
 )
 
-#' Could also define a method, but I guess that's overkill in this case.
+#' Method to construct a python function name for a param object.
 #'
 #' @noRd
+setGeneric("py_fun", function(x, ...) {
+    standardGeneric("py_fun")
+})
+setMethod("py_fun", "CosineGreedyParam", function(x) {
+    matchms_similarity$CosineGreedy(x@tolerance, x@mzPower, x@intensityPower)
+})
+setMethod("py_fun", "CosineHungarianParam", function(x) {
+    matchms_similarity$CosineHungarian(x@tolerance, x@mzPower, x@intensityPower)
+})
+setMethod("py_fun", "ModifiedCosineParam", function(x) {
+    matchms_similarity$ModifiedCosine(x@tolerance, x@mzPower, x@intensityPower)
+})
+setMethod("py_fun", "NeutralLossesCosineParam", function(x) {
+    matchms_similarity$NeutralLossesCosine(x@tolerance, x@mzPower,
+                                           x@intensityPower,
+                                           x@ignorePeaksAbovePrecursor)
+})
+
 .fun_name <- function(x) {
     sub("Param$", "", class(x)[1L])
 }
@@ -282,49 +308,23 @@ setMethod(
 #' @author Carolin Huber, Johannes Rainer, Wout Bittremieux
 #'
 #' @importFrom reticulate r_to_py py_to_r
-.compare_spectra_python <- function(x, y = NULL, param) {
+.compare_spectra_python <- function(x, y = NULL, param,
+                                    mapping = spectraVariableMapping()) {
     ## Handle empty input.
     if (!length(x) || (!length(y) & !is.null(y))) {
         return(matrix(NA_real_, ncol = length(y), nrow = length(x)))
     }
 
     ## Convert R spectra to Python.
-    py_x <- r_to_py(x)
-    py_y <- if (!is.null(y)) r_to_py(y) else py_x
+    py_x <- rspec_to_pyspec(x, mapping = mapping)
+    py_y <- if (!is.null(y)) rspec_to_pyspec(y) else py_x
     is_symmetric <- is.null(y)
-
-    ## Determine which type of matchms similarity to compute.
-    sim_functions <- list(
-        CosineGreedy = function(p) {
-            matchms_sim$CosineGreedy(p@tolerance, p@mzPower, p@intensityPower)
-        },
-        CosineHungarian = function(p) {
-            matchms_sim$CosineHungarian(
-                p@tolerance, p@mzPower, p@intensityPower)
-        },
-        ModifiedCosine = function(p) {
-            matchms_sim$ModifiedCosine(p@tolerance, p@mzPower, p@intensityPower)
-        },
-        NeutralLossesCosine = function(p) {
-            matchms_sim$NeutralLossesCosine(
-                p@tolerance, p@mzPower, p@intensityPower,
-                ignore_peaks_above_precursor =
-                    as.logical(p@ignorePeaksAbovePrecursor))
-        }
-    )
-
-    sim_fun_name <- .fun_name(param)
-
-    if (!sim_fun_name %in% names(sim_functions)) {
-        stop("Unknown similarity measure")
-    }
-    sim_fun <- sim_functions[[sim_fun_name]](param)
 
     ## Compute the similarity scores with matchms.
     scores <- matchms$calculate_scores(
-        py_x, py_y, sim_fun,
+        py_x, py_y, py_fun(param),
         is_symmetric = is_symmetric
-    )
-
-    return(py_to_r(scores$to_array()[paste(sim_fun_name, "_score", sep = "")]))
+        )
+    ## Collect results
+    py_to_r(scores$to_array()[paste0(.fun_name(param), "_score")])
 }

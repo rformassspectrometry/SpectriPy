@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.3.0
+Version: 0.3.1
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python's matchms Spectrum objects. In addition, SpectriPy integrates
@@ -24,48 +24,48 @@ Authors@R: c(person(given = "Michael", family = "Witting",
                     comment = c(ORCID = "0000-0001-6744-996X")),
              person(given = "Marilyn", family = "De Graeve",
                     email = "marilyn.degraeve@eurac.edu",
-                    role = c("ctb"),
+                    role = c("aut"),
                     comment = c(ORCID = "0000-0001-6916-401X")),
              person(given = "Wout", family = "Bittremieux",
                     email = "wout.bittremieux@uantwerpen.be",
-                    role = c("ctb"),
+                    role = c("aut"),
                     comment = c(ORCID = "0000-0002-3105-1359")),
-	     person(given = "Thomas", family = "Naake",
+             person(given = "Thomas", family = "Naake",
                     email = "thomasnaake@googlemail.com",
-                    role = c("ctb"),
+                    role = c("aut"),
                     comment = c(ORCID = "0000-0001-7917-5580")),
              person(given = "Victor", family = "Chrone",
                     email = "vchrone@bmb.sdu.dk",
                     role = c("ctb"),
                     comment = c(ORCID = "0009-0007-2121-4066")),
-	     person(given = "Matthias", family = "Anagho-Mattanovich",
+             person(given = "Matthias", family = "Anagho-Mattanovich",
                     email = "matthias.mattanovich@sund.ku.dk",
                     role = c("ctb"),
                     comment = c(ORCID = "0000-0001-7561-7898"))
-		    )
+             )
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.1.0),
+    reticulate
 Imports:
     Spectra (>= 1.5.8),
-    reticulate,
     IRanges,
     S4Vectors,
-    BiocParallel,
-    ProtGenerics,
+    MsCoreUtils,
     methods
 Suggests:
     testthat,
-    knitr,
+    quarto,
     MsBackendMgf,
-    BiocStyle,
-    rmarkdown
+    BiocStyle
 License: Artistic-2.0
-VignetteBuilder: knitr
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues
 URL: https://github.com/RforMassSpectrometry/SpectriPy
 biocViews: Infrastructure, Metabolomics, MassSpectrometry
 Encoding: UTF-8
 StagedInstall: no
-SystemRequirements: python (>= 3.9)
+SystemRequirements:
+    python (>= 3.9),
+    pandoc
+VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
