@@ -57,6 +57,7 @@ Suggests:
     quarto,
     MsBackendMgf,
     msdata,
+    mzR,
     BiocStyle
 License: Artistic-2.0
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues
