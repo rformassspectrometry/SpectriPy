@@ -56,15 +56,15 @@ Suggests:
     testthat,
     quarto,
     MsBackendMgf,
+    msdata,
     BiocStyle
 License: Artistic-2.0
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues
 URL: https://github.com/RforMassSpectrometry/SpectriPy
 biocViews: Infrastructure, Metabolomics, MassSpectrometry
 Encoding: UTF-8
-StagedInstall: no
 SystemRequirements:
-    python (>= 3.9),
+    python (>= 3.10),
     pandoc
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
