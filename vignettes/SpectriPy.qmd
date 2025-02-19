@@ -10,7 +10,7 @@ vignette: >
   %\VignettePackage{SpectriPy}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{quarto::html}
-  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate}
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate,MsBackendMgf}
 ---
 
 ```{r style, echo = FALSE, results = 'asis', message = FALSE}

@@ -92,6 +92,7 @@ jobs:
         uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install quarto
+        if: runner.os != 'Linux'
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Query dependencies
@@ -190,10 +191,10 @@ jobs:
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = TRUE)
 
-
           message(paste('****', Sys.time(), 'force installation of selected packages ****'))
           BiocManager::install(c("BiocStyle", "rmarkdown", "magick"))
 
+          BiocManager::install("mzR")
           BiocManager::install("Spectra")
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
