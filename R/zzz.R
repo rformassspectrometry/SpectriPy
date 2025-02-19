@@ -17,15 +17,15 @@
     .install_python_packages(
         envname = envname, use_conda = use_conda, use_system = use_system
     )
-    assign("matchms", import("matchms", delay_load = TRUE, convert = FALSE),
+    assign("matchms", import("matchms", delay_load = FALSE, convert = FALSE),
         envir = asNamespace(pkgname)
     )
     assign("matchms_similarity",
-        import("matchms.similarity", delay_load = TRUE, convert = FALSE),
+        import("matchms.similarity", delay_load = FALSE, convert = FALSE),
         envir = asNamespace(pkgname)
     )
     assign("matchms_filtering",
-        import("matchms.filtering", delay_load = TRUE, convert = FALSE),
+        import("matchms.filtering", delay_load = FALSE, convert = FALSE),
         envir = asNamespace(pkgname)
     )
 }
