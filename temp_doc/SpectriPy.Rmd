@@ -1,16 +1,16 @@
 ---
-title: "Integrating Spectra with Python's matchms package"
+title: "Enabling integration of Python libraries and R packages for combined mass spectrometry data analysis"
 package: SpectriPy
 output:
   BiocStyle::html_document:
     toc_float: true
 vignette: >
-  %\VignetteIndexEntry{Integrating Spectra with Python's matchms package}
+  %\VignetteIndexEntry{Enabling integration of Python libraries and R packages for combined mass spectrometry data analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative}
   %\VignettePackage{SpectriPy}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,basilisk,reticulate}
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate}
 ---
 
 ```{r style, echo = FALSE, results = 'asis', message = FALSE}
@@ -21,31 +21,114 @@ BiocStyle::markdown()
 
 # Introduction
 
-The *SpectriPy* package allows integration of Python MS packages into a
-*Spectra*-based MS analysis in *R*. Python functionality is wrapped into R
-functions allowing a seamless integration of the functionality of Python's
-*matchms* package into R. In addition, functions to convert between R's
-`Spectra` objects and Python's *matchms* spectrum objects are available to the
-advanced user or developer enabling to create custom functions or workflows on
-`Spectra` objects in Python and executing them in R using the *reticulate* R
-package.
+Powerful software libraries for mass spectrometry (MS) data are available in
+both Python and R, covering specific and sometimes distinct aspects in the
+analysis of proteomics and metabolomics data. R's *reticulate* package converts
+basic data types between Python and R and enables a seamless interoperability of
+both programming languages. The *SpectriPy* package extends *reticulate*
+allowing to translate MS data data structures between Python and R. In addition,
+functionality from Python's *matchms* library is directly wrapped into R
+functions allowing a seamless integration into R based workflows. *SpectriPy*
+thus enables powerful proteomics or metabolomics analysis workflows combining
+the strengths of Python and R MS libraries.
 
 
 # Installation
 
-If the *BiocManager* package is not already available, 
-please install it with `install.packages("BiocManager")`
+If the *BiocManager* package is not already available, please install it with
+`install.packages("BiocManager")`. To install the development version of
+*SpectriPy* from GitHub, please install in addition the *remotes* package with
+`install.packages("remotes"). As a system dependency, the package requires a
+Python environment to be available.
 
-To install the development version of *SpectriPy* from GitHub, please install the 
-*remotes* package with `install.packages("remotes").
-
-The package requires a python environment to be available and can be installed
+LLLL Update installation instructions.
+and can be installed
 with the *BiocManager* R package using the command
 `BiocManager::install("RforMassSpectrometry/SpectriPy")`. This will install the
 latest version of the package from GitHub.
-All required python libraries are installed automatically on demand. 
-Note that first installation or first invocation of specific functions might 
+All required python libraries are installed automatically on demand.
+Note that first installation or first invocation of specific functions might
 take long because of this installation process.
+
+
+# Translating data structures between Python and R
+
+The [*reticulate*](https://rstudio.github.io/reticulate/) package enables a
+seamless integration of Python with R by translating the core data structures
+between the two programming languages and sharing a Python (respectively R)
+runtime environment that can be accessed from the other programming languages
+including shared variables. The *SpectriPy* package builds on that providing
+functionality to translate data structures for mass spectrometry (MS) data
+between the two languages. Specifically, the package translates between R's
+`Spectra` objects (from the `r BiocStyle::Biocpkg("Spectra")` package) and
+`matchms.Spectrum` objects from the
+[*matchms*](https://github.com/matchms/matchms) Python library.
+
+
+## R to Python
+
+In the first examples we translated MS data from R to Python. We first load data
+from a mzML data file provided through the `r BiocStyle::Biocpkg("msdata")`
+package.
+
+```{r}
+#' Loading the data from a mzML file as a `Spectra` object.
+library(Spectra)
+fl <- system.file("TripleTOF-SWATH", "PestMix1_DDA.mzML", package = "msdata")
+s_r <- Spectra(fl)
+```
+
+We next restrict the data to MS2 spectra and remove spectra with less than 3
+peaks (fragments).
+
+```{r}
+#' Restrict to MS level 2 spectra
+s_r <- filterMsLevel(s_r, 2)
+s_r <- s_r[lengths(s_r) < 3]
+s_r
+```
+
+```{r}
+library(AnnotationHub)
+ah <- AnnotationHub(localHub = TRUE)
+query(ah, "MassBank")
+mb <- ah[["AH107049"]]
+mb <- Spectra(mb)
+```
+
+```{r}
+register(SerialParam())
+library(MetaboAnnotation)
+m <- matchSpectra(s_r, mb, CompareSpectraParam(ppm = 40))
+set.seed(123)
+idx <- c(whichTarget(m), 5970, 5971, 5972, 5973, 10279, 15505, 15506,
+         sample(seq_along(mb), 51))
+
+mb <- mb[sort(idx)]
+tmp <- selectSpectraVariables(
+    mb, c("msLevel", "rtime", "acquisitionNum", "precursorMz",
+          "precursorIntensity", "precursorCharge", "inchi", "smiles",
+          "name"))
+
+library(MsBackendMgf)
+sm <- c(spectraVariableMapping(MsBackendMgf()), inchi = "INCHI",
+        smiles = "SMILES", name = "NAME")
+export(tmp, MsBackendMgf(), file = "/home/jo/tmp/test.mgf", mapping = sm)
+
+
+library(AnnotationHub)
+tmp <- system.file()
+```
+
+
+
+
+
+## Python to R
+
+We next import MS data from a file in MGF format using the *matchms* Python
+library.
+
 
 
 # Spectra similarity calculations using `matchms`
@@ -67,7 +150,7 @@ added in future.
 We next create some simple example spectra and subsequently use the
 `compareSpectriPy()` function to calculate pairwise similarities between these.
 
-```{r, message = FALSE}
+```{r, message = FALSE, eval = FALSE}
 library(Spectra)
 library(SpectriPy)
 
@@ -103,7 +186,7 @@ mhd <- Spectra(mhd)
 We first calculate pairwise similarities between all spectra defined above and
 those of caffeine using *Spectra*'s built-in `compareSpectra()` function.
 
-```{r}
+```{r, eval = FALSE}
 all <- c(caf, mhd)
 res_r <- compareSpectra(all, caf)
 res_r
@@ -117,10 +200,10 @@ similarity function (from *matchms*) using a dedicated parameter object. Below
 we calculate the similarity using the *CosineGreedy* function changing the
 `tolerance` to a value of `0.05` (instead of the default `0.1`).
 
-Executing the following step will automatically download and install conda mini 
+Executing the following step will automatically download and install conda mini
 forge to manage Python package dependencies.
 
-```{r}
+```{r, eval = FALSE}
 res <- compareSpectriPy(all, caf, param = CosineGreedyParam(tolerance = 0.05))
 res
 ```
@@ -132,7 +215,7 @@ because the Python setup has to be initialized.
 Next we use the *ModifiedCosine* algorithm that considers also differences
 between the spectra's precursor *m/z* in the calculation.
 
-```{r}
+```{r, eval = FALSE}
 res <- compareSpectriPy(all, caf, param = ModifiedCosineParam())
 res
 ```
@@ -143,7 +226,7 @@ from *matchms*. This algorithm calculates the *cosine similarity score* as with
 peaks between the compared spectra. The algorithm can be configured with
 parameters `tolerance`, `mzPower` and `intensityPower` (see parameter description for more details).
 
-```{r}
+```{r, eval = FALSE}
 res <- compareSpectriPy(all, caf, param = CosineHungarianParam())
 res
 ```
@@ -156,7 +239,7 @@ potential match if their *m/z* ratios lie within the given `tolerance` once a
 mass-shift is applied. The mass shift is the difference in precursor-*m/z*
 between the two spectra.
 
-```{r}
+```{r, eval = FALSE}
 res <- compareSpectriPy(all, caf, param = NeutralLossesCosineParam())
 res
 ```
@@ -168,7 +251,7 @@ similarity scoring with this similarity method. Below we remove the precursor
 *m/z* from one of our input spectra and then show how the `Spectra` object could
 be subsetted to *valid* spectra for this method.
 
-```{r}
+```{r, eval = FALSE}
 ## Remove precursor m/z from the 3rd spectrum
 all$precursorMz[3] <- NA
 
@@ -191,7 +274,7 @@ the *matchms* Python package.
 To illustrate their use we initialize below the Python environment that is
 bundled using the `r BiocStyle::Biocpkg("basilisk")` package within *SpectriPy*.
 
-```{r setup-basilisk}
+```{r setup-basilisk, eval = FALSE}
 library(SpectriPy)
 library(basilisk)
 cl <- basiliskStart(SpectriPy:::matchms_env)
@@ -200,7 +283,7 @@ cl <- basiliskStart(SpectriPy:::matchms_env)
 We next create a simple `Spectra` object representing fragment spectra for some
 small compounds.
 
-```{r}
+```{r, eval = FALSE}
 library(Spectra)
 
 # create example spectra
@@ -225,7 +308,7 @@ sps <- Spectra(spd)
 
 We next convert the `Spectra` to a `matchms.Spectrum` object.
 
-```{r}
+```{r, eval = FALSE}
 pysps <- rspec_to_pyspec(sps)
 pysps
 ```
@@ -239,7 +322,7 @@ with their respective names in the Python Spectrum object can be defined
 too. Below we list the pre-selected spectra variables that are converted by
 default.
 
-```{r}
+```{r, eval = FALSE}
 spectraVariableMapping()
 ```
 
@@ -250,7 +333,7 @@ from the *matchms.filtering* library. We thus need to first import the
 functionality from that package and can then call the function directly on the
 (Python) objects.
 
-```{r}
+```{r, eval = FALSE}
 library(reticulate)
 filters <- import("matchms.filtering")
 
@@ -264,7 +347,7 @@ res
 We can now convert the list of Python `matchms.Spectrum` objects back to R with
 `pyspec_to_rspec()`:
 
-```{r}
+```{r, eval = FALSE}
 sps_r <- pyspec_to_rspec(res)
 #' The normalized intensities
 intensity(sps_r)
@@ -280,7 +363,7 @@ mixed R and Python code used in the example above. Below we define a simple
 python script that iterates over the spectra in python and performs the
 normalization.
 
-```{r}
+```{r, eval = FALSE}
 py_script <- paste0("from matchms.filtering import normalize_intensities\n",
                     "for i in range(len(pysps)):\n",
                     "    pysps[i] = normalize_intensities(pysps[i])\n")
@@ -293,7 +376,7 @@ intensity(tmp)
 
 At very last we need also to stop the Python environment enabled by *basilisk*.
 
-```{r}
+```{r, eval = FALSE}
 basiliskStop(cl)
 ```
 
