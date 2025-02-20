@@ -28,7 +28,22 @@ package. For first time R users see also section @sec-first in the appendix.
 
 ## System requirements
 
+*SpectriPy* relies on, and extends, the
+[*reticulate*](https://rstudio.github.io/reticulate/index.html) package for
+interoperability between Python and R. For installation of *SpectriPy*, Python
+needs to be installed on the system. See also the [Install Python
+Packages](https://rstudio.github.io/reticulate/articles/python_packages.html)
+documentation from the *reticulate* package for information on installing
+Python. Ideally *miniconda* should be installed on the system. The code below
+shows how *miniconda* can be installed with the *reticulate* package (which
+needs to be first installed with `install.package("reticulate")` if not already
+available):
 
+```{r}
+#| eval: false
+install.packages("reticulate")
+reticulate::install_miniconda()
+```
 
 # Configuration
 
