@@ -10,3 +10,4 @@ _pkgdown.yml
 .BBSoptions
 ^\.vscode
 devnotes.md
+temp_doc/*

@@ -1,3 +1,18 @@
+# SpectriPy 0.3
+
+## Changes in 0.3.1
+
+- Add `filterSpectriPy()` function for spectra filtering using *matchms*.
+- Add a new example MGF file to the package.
+- Add a new quarto vignette.
+
+## Changes in 0.3.0
+
+- Add changes and results introduced a the EuBIC 2024 r-python hackathon in
+  Neustift, Italy.
+- Remove dependency from *basilisk* and base the package entirely on
+  *reticulate*.
+
 # SpectriPy 0.2
 
 ## Changes in 0.2.1
