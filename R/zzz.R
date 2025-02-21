@@ -1,3 +1,8 @@
+## based on https://rstudio.github.io/reticulate/articles/package.html#delay-loading-python-modules
+matchms <- NULL
+matchms_similarity <- NULL
+matchms_filtering <- NULL
+
 #' @importFrom reticulate import use_virtualenv use_condaenv py_available py_install virtualenv_exists virtualenv_create virtualenv_remove conda_list conda_create
 .onLoad <- function(libname, pkgname) {
     envname <- .spectripy_env()
@@ -17,17 +22,11 @@
     .install_python_packages(
         envname = envname, use_conda = use_conda, use_system = use_system
     )
-    assign("matchms", import("matchms", delay_load = FALSE, convert = FALSE),
-        envir = asNamespace(pkgname)
-    )
-    assign("matchms_similarity",
-        import("matchms.similarity", delay_load = FALSE, convert = FALSE),
-        envir = asNamespace(pkgname)
-    )
-    assign("matchms_filtering",
-        import("matchms.filtering", delay_load = FALSE, convert = FALSE),
-        envir = asNamespace(pkgname)
-    )
+    matchms <<- import("matchms", delay_load = TRUE, convert = FALSE)
+    matchms_similarity <<- import("matchms.similarity", delay_load = TRUE,
+                                  convert = FALSE)
+    matchms_filtering <<- import("matchms.filtering", delay_load = TRUE,
+                                 convert = FALSE)
 }
 
 .spectripy_env <- function() {
