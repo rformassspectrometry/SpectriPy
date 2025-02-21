@@ -41,7 +41,15 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Matthias", family = "Anagho-Mattanovich",
                     email = "matthias.mattanovich@sund.ku.dk",
                     role = c("ctb"),
-                    comment = c(ORCID = "0000-0001-7561-7898"))
+                    comment = c(ORCID = "0000-0001-7561-7898")),
+             person(given = "Pierre", family = "Marchal",
+                    email = "pierre.marchal@unibe.ch",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0006-6567-6257")),
+             person(given = "Philippine", family = "Louail",
+                    email = "philippine.louail@eurac.edu",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0007-5429-6846"))
              )
 Depends:
     R (>= 4.1.0),
@@ -51,6 +59,7 @@ Imports:
     IRanges,
     S4Vectors,
     MsCoreUtils,
+    ProtGenerics,
     methods
 Suggests:
     testthat,
@@ -70,3 +79,9 @@ SystemRequirements:
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Collate:
+    'conversion.R'
+    'MsBackendPython.R'
+    'compareSpectriPy.R'
+    'filterSpectriPy.R'
+    'zzz.R'

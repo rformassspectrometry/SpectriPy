@@ -374,6 +374,13 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping()) {
     m
 }
 
+.py_matchms_spectrum_peaks_data_columns <-
+    function(x, columns = c("mz", "intensity"), drop = FALSE, ...) {
+        m <- py_to_r(x$peaks$to_numpy)
+        colnames(m) <- c("mz", "intensity")
+        m[, columns, drop = drop]
+    }
+
 #' @description
 #'
 #' Function to convert a single Python Spectrum object into an R Spectra using

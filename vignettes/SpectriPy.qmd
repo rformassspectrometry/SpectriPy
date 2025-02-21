@@ -34,14 +34,7 @@ If the *BiocManager* package is not already available, please install it with
 `install.packages("remotes"). As a system dependency, the package requires a
 Python environment to be available.
 
-LLLL Update installation instructions.
-and can be installed
-with the *BiocManager* R package using the command
-`BiocManager::install("RforMassSpectrometry/SpectriPy")`. This will install the
-latest version of the package from GitHub.
-All required python libraries are installed automatically on demand.
-Note that first installation or first invocation of specific functions might
-take long because of this installation process.
+TODO: Update installation instructions.
 
 
 # Translating data structures between Python and R

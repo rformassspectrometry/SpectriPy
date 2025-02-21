@@ -140,6 +140,27 @@ test_that(".py_matchms_spectrum_peaks_data works", {
     expect_equal(res, peaksData(sps)[[2L]])
 })
 
+test_that(".py_matchms_spectrum_peaks_data_columns works", {
+    p <- r_to_py(sps)
+    res <- SpectriPy:::.py_matchms_spectrum_peaks_data_columns(p[[1]])
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("mz", "intensity"))
+    expect_equal(res, peaksData(sps)[[2L]])
+    res <- SpectriPy:::.py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity", "mz"))
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("intensity", "mz"))
+    res <- SpectriPy:::.py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity"))
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("intensity"))
+
+    res <- SpectriPy:::.py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity"), drop = TRUE)
+    expect_true(is.numeric(res))
+    expect_false(is.matrix(res))
+})
+
 test_that("pyspec_to_rspec and .single_pyspec_to_rspec work", {
     p <- r_to_py(sps)
     res <- pyspec_to_rspec(p[0])
