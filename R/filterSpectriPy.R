@@ -37,7 +37,7 @@
 #' filter functions from the *matchms* Python libraries and then translates
 #' the filtered data back to a `Spectra` object. Thus, any spectra variables
 #' other than those that are translated between R and Python will be lost
-#' during the processing. Use [selectSpectraVariables()] to define which
+#' during the processing. Use [setSpectraVariableMapping()] to define which
 #' spectra variables should be transferred/converted between R and Python.
 #' See also examples below for more information.
 #'
@@ -54,7 +54,7 @@
 #'
 #' @param mapping named `character()` defining which spectra variables/metadata
 #'     should be converted between R and Python and how they should be renamed.
-#'     Defaults to `spectraVariableMapping()`. See [spectraVariableMapping()]
+#'     Defaults to `spectraVariableMapping()`. See [setSpectraVariableMapping()]
 #'     for more information.
 #'
 #' @param intensity_from `numeric(1)`: Set lower threshold for peak intensity.

@@ -57,6 +57,10 @@ between the two languages. Specifically, the package translates between R's
 `matchms.Spectrum` objects from the
 [*matchms*](https://github.com/matchms/matchms) Python library.
 
+```{r, include = FALSE}
+library(reticulate)
+```
+
 
 ## Library loading and system setup
 
@@ -271,6 +275,7 @@ from matchms.importing import load_from_mgf
 
 mgf_p = list(load_from_mgf(r.f_mgf))
 mgf_p
+
 ```
 
 The MS data from the MGF is now loaded in Python as a `list` of
