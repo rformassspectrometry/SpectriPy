@@ -6,11 +6,8 @@
 \alias{select_by_mz}
 \alias{remove_peaks_around_precursor_mz}
 \alias{normalize_intensities}
-\alias{filterSpectriPy,Spectra,select_by_intensity-method}
-\alias{filterSpectriPy,Spectra,select_by_mz-method}
-\alias{filterSpectriPy,Spectra,remove_peaks_around_precursor_mz-method}
-\alias{filterSpectriPy,Spectra,normalize_intensities-method}
-\title{Filter Spectra using matchms}
+\alias{filterSpectriPy,Spectra,filter_param-method}
+\title{Filter Spectra using Python's matchms library}
 \usage{
 select_by_intensity(intensity_from = 10, intensity_to = 200)
 
@@ -20,13 +17,7 @@ remove_peaks_around_precursor_mz(mz_tolerance = 17)
 
 normalize_intensities()
 
-\S4method{filterSpectriPy}{Spectra,select_by_intensity}(sps, param, ...)
-
-\S4method{filterSpectriPy}{Spectra,select_by_mz}(sps, param, ...)
-
-\S4method{filterSpectriPy}{Spectra,remove_peaks_around_precursor_mz}(sps, param, ...)
-
-\S4method{filterSpectriPy}{Spectra,normalize_intensities}(sps, param, ...)
+\S4method{filterSpectriPy}{Spectra,filter_param}(object, param, mapping = spectraVariableMapping(), ...)
 }
 \arguments{
 \item{intensity_from}{\code{numeric(1)}: Set lower threshold for peak intensity.
@@ -44,11 +35,16 @@ Default is 1000.}
 \item{mz_tolerance}{\code{numeric(1)}: Tolerance of m/z values that are not
 allowed to lie within the precursor mz. Default is 17 Da.}
 
-\item{sps}{A \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object.}
+\item{object}{A \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object.}
 
 \item{param}{one of parameter classes listed above (such as
-\code{select_by_intensity}) defining the filter/processing function in python
-and its parameters.}
+\code{select_by_intensity()}) defining the filter/processing function in
+Python and its parameters.}
+
+\item{mapping}{named \code{character()} defining which spectra variables/metadata
+should be converted between R and Python and how they should be renamed.
+Defaults to \code{spectraVariableMapping()}. See \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}}
+for more information.}
 
 \item{...}{ignored.}
 }
@@ -58,26 +54,48 @@ filtering/processing function has been applied
 }
 \description{
 The \code{filterSpectriPy()} function allows to filter/process a \code{Spectra} object
-using the \code{select_by_intensity}, \code{select_by_mz},
-\code{remove_peaks_around_precursor_mz}, and \code{normalize_intensities} of the python
+using the \code{select_by_intensity()}, \code{select_by_mz()},
+\code{remove_peaks_around_precursor_mz()}, and \code{normalize_intensities()}
+functions of the Python
 \href{https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html}{matchms.filtering}
 module.
 
-Selection and configuration of the algorithm can be performed with one of the
-parameter objects:
+Selection and configuration of the algorithm can be performed with one of
+the parameter objects (equivalent to \emph{matchms}' function names):
 \itemize{
-\item \code{select_by_intensity}: Keeps only the peaks within defined intensity range
-(keep if \code{intensity_from} >= intensity >= \code{intensity_to}).
-\item \code{select_by_mz}: Keeps only the peaks between \code{mz_from} and \code{mz_to}
-(keep if \code{mz_from} >= m/z >= \code{mz_to}).
-\item \code{remove_peaks_around_precursor_mz}: Removes the peaks that are within
-\code{mz_tolerance} (in Da) of the precursor mz, exlcuding the precursor peak.
-\item \code{normalize_intensities}: Normalizes the intensities of peaks
+\item \code{select_by_intensity()}: Keeps only the peaks within defined intensity
+range (keep if \code{intensity_from} >= intensity >= \code{intensity_to}). See also
+the respective \href{https://matchms.readthedocs.io/en/latest/api/matchms.filtering.peak_processing.select_by_intensity.html}{documentation in \emph{matchms}}.
+\item \code{select_by_mz()}: Keeps only the peaks between \code{mz_from} and \code{mz_to}
+(keep if \code{mz_from} >= m/z >= \code{mz_to}). See also the respective
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.filtering.peak_processing.select_by_mz.html}{documentation in \emph{matchms}}.
+\item \code{remove_peaks_around_precursor_mz()}: Removes the peaks that are within
+\code{mz_tolerance} (in Da) of the precursor mz, excluding the precursor peak.
+\item \code{normalize_intensities()}: Normalizes the intensities of peaks
 (and losses) to unit height.
 }
 }
+\note{
+The first call to the \code{filterSpectriPy()} function can take longer because
+the Python environment needs to be first set up.
+
+\code{filterSpectriPy()} first translates the \code{Spectra} to Python, applies the
+filter functions from the \emph{matchms} Python libraries and then translates
+the filtered data back to a \code{Spectra} object. Thus, any spectra variables
+other than those that are translated between R and Python will be lost
+during the processing. Use \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} to define which
+spectra variables should be transferred/converted between R and Python.
+See also examples below for more information.
+
+The \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object returned by \code{filterSpectriPy()} will
+\strong{always} use an in-memory backend (i.e. the \code{\link[Spectra:MsBackend]{Spectra::MsBackendMemory()}}),
+independently of the backend used by the backend used by the input
+\code{Spectra}.
+}
 \examples{
+
 library(Spectra)
+
 ## create some example Spectra
 DF <- DataFrame(
     msLevel = c(2L, 2L, 2L),
@@ -94,26 +112,47 @@ DF$mz <- list(
     c(109.2, 124.2, 124.5, 170.16, 170.52))
 sps <- Spectra(DF)
 
-## process Spectra with matchms' select_by_intensity algorithm
-## note: the first filterSpectriPy will take longer because the Python
-## environment needs to be set up.
-filterSpectriPy(sps, param = select_by_intensity(intensity_from=50, intensity_to=400))
+## Filter: select_by_intensity
+res <- filterSpectriPy(
+    sps, select_by_intensity(intensity_from = 15, intensity_to = 300))
+## Only mass peaks with intensities between the specified limits are
+## retained
+intensity(res)
+## Compared to the original intensities
+intensity(sps)
 
-## Process Spectra with matchms' select_by_mz algorithm
-filterSpectriPy(sps, param = select_by_mz(mz_from=150, mz_to=450))
+## Note that the spectra variable `"name"` was lost during conversion of
+## the MS data between R and Python:
+sps$name
+any(spectraVariables(res) == "name")
 
-## Calculate pairwise similarity of all spectra in sps with matchms' 
-## remove_peaks_around_precursor_mz algorithm
-filterSpectriPy(sps, param = remove_peaks_around_precursor_mz(mz_tolerance=20))
+## Only spectra variables defined by `spectraVariableMapping()` are
+## converted and thus retained:
+spectraVariableMapping()
 
-## Calculate pairwise similarity of all spectra in sps with matchms' 
-## normalize_intensities algorithm
-filterSpectriPy(sps, normalize_intensities())
+## We can also pass a custom *spectra variable mapping* with the `mapping`
+## parameter to the `filterSpectriPy()` function. Below we create such
+## a mapping by adding the translation of a spectra variable `"name"` to
+## a metadata name `"compound_name"` to the default spectra variable
+## mapping `defaultSpectraVariableMapping()`.
+map <- c(defaultSpectraVariableMapping(), name = "compound_name")
+map
+
+## Repeat the filtering operation passing this mapping information:
+res <- filterSpectriPy(
+    sps, select_by_intensity(intensity_from = 15, intensity_to = 300),
+    mapping = map)
+res$name
+
 }
 \seealso{
-\code{\link[Spectra:filterMsLevel]{Spectra::filterIntensity()}}, \code{\link[Spectra:filterMsLevel]{Spectra::filterMzRange()}},
+\itemize{
+\item \code{\link[Spectra:filterMsLevel]{Spectra::filterIntensity()}}, \code{\link[Spectra:filterMsLevel]{Spectra::filterMzRange()}},
 \code{\link[Spectra:addProcessing]{Spectra::scalePeaks()}} in the \code{Spectra} package for pure R
 implementations of filtering/processing calculations.
+\item \code{\link[=rspec_to_pyspec]{rspec_to_pyspec()}} or \code{\link[=pyspec_to_rspec]{pyspec_to_rspec()}} for the functions used to
+translated the MS data between R and Python.
+}
 }
 \author{
 Thomas Naake

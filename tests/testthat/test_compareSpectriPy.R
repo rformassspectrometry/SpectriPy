@@ -26,141 +26,100 @@ mhd <- Spectra(mhd)
 
 test_that("param constructors work", {
     ## Errors
-    expect_error(CosineGreedyParam(tolerance = c(1.2, 1.5)), "length 1")
-    expect_error(CosineGreedyParam(tolerance = -1.2), "length 1")
-    expect_error(CosineGreedyParam(mzPower = c(1, 2)), "length 1")
-    expect_error(CosineGreedyParam(intensityPower = c(1, 2)), "length 1")
-    expect_error(NeutralLossesCosineParam(
-        ignorePeaksAbovePrecursor = c(TRUE, FALSE)), "length 1")
+    expect_error(CosineGreedy(tolerance = c(1.2, 1.5)), "length 1")
+    expect_error(CosineGreedy(tolerance = -1.2), "length 1")
+    expect_error(CosineGreedy(mz_power = c(1, 2)), "length 1")
+    expect_error(CosineGreedy(intensity_power = c(1, 2)), "length 1")
+    expect_error(NeutralLossesCosine(
+        ignore_peaks_above_precursor = c(TRUE, FALSE)), "length 1")
 })
 
-test_that("CosineGreedyParam constructor works", {
-    res <- CosineGreedyParam(tolerance = 5)
-    expect_s4_class(res, "CosineGreedyParam")
+test_that("CosineGreedy constructor works", {
+    res <- CosineGreedy(tolerance = 5)
+    expect_s4_class(res, "CosineGreedy")
     expect_equal(res@tolerance, 5)
 })
 
-test_that("CosineHungarianParam constructor works", {
-    res <- CosineHungarianParam(intensityPower = 1.3)
-    expect_s4_class(res, "CosineGreedyParam")
+test_that("CosineHungarian constructor works", {
+    res <- CosineHungarian(intensity_power = 1.3)
+    expect_s4_class(res, "CosineGreedy")
     expect_equal(res@intensityPower, 1.3)
 })
 
-test_that("ModifiedCosineParam constructor works", {
-    res <- ModifiedCosineParam(mzPower = 4.3)
-    expect_s4_class(res, "ModifiedCosineParam")
+test_that("ModifiedCosine constructor works", {
+    res <- ModifiedCosine(mz_power = 4.3)
+    expect_s4_class(res, "ModifiedCosine")
     expect_equal(res@mzPower, 4.3)
 })
 
-test_that("NeutralLossesCosineParam constructor works", {
-    res <- NeutralLossesCosineParam(ignorePeaksAbovePrecursor = FALSE)
-    expect_s4_class(res, "NeutralLossesCosineParam")
+test_that("NeutralLossesCosine constructor works", {
+    res <- NeutralLossesCosine(ignore_peaks_above_precursor = FALSE)
+    expect_s4_class(res, "NeutralLossesCosine")
     expect_false(res@ignorePeaksAbovePrecursor)
 })
 
-test_that(".fun name works parameterized", {
-    a <- CosineGreedyParam()
-    expect_equal(SpectriPy:::.fun_name(a), "CosineGreedy")
-    a <- CosineHungarianParam()
-    expect_equal(SpectriPy:::.fun_name(a), "CosineHungarian")
-    a <- ModifiedCosineParam()
-    expect_equal(SpectriPy:::.fun_name(a), "ModifiedCosine")
-    a <- NeutralLossesCosineParam()
-    expect_equal(SpectriPy:::.fun_name(a), "NeutralLossesCosine")
+test_that(".fun_name works", {
+    a <- CosineGreedy()
+    expect_equal(.fun_name(a), "CosineGreedy")
+    a <- CosineHungarian()
+    expect_equal(.fun_name(a), "CosineHungarian")
+    a <- ModifiedCosine()
+    expect_equal(.fun_name(a), "ModifiedCosine")
+    a <- NeutralLossesCosine()
+    expect_equal(.fun_name(a), "NeutralLossesCosine")
 })
 
-test_that("python_command and .cosine_param_string work", {
-    a <- ModifiedCosineParam(tolerance = 0.9)
-    res <- .cosine_param_string(a)
-    expect_equal(res, "tolerance=0.9, mz_power=0, intensity_power=1")
-    a <- CosineHungarianParam(mzPower = 4, intensityPower = 10)
-    res <- .cosine_param_string(a)
-    expect_equal(res, "tolerance=0.1, mz_power=4, intensity_power=10")
-    res <- python_command(a)
-    expect_match(res, "CosineHungarian")
-    expect_match(res, "mz_power=4, intensity_power=10")
-    expect_match(res, "py_x, py_y")
-    expect_match(res, "is_symmetric=False")
-    res <- python_command(a, "py_x", is_symmetric = "True")
-    expect_match(res, "py_x, Co")
-    expect_match(res, "is_symmetric=True")
-
-    a <- NeutralLossesCosineParam(ignorePeaksAbovePrecursor = FALSE,
-                                  tolerance = 0.9)
-    res <- .cosine_param_string(a)
-    expect_equal(res, "tolerance=0.9, mz_power=0, intensity_power=1")
-    res <- python_command(a)
-    expect_match(res, "ignore_peaks_above_precursor=False")
-
-    a <- NeutralLossesCosineParam(ignorePeaksAbovePrecursor = TRUE,
-                                  tolerance = 0.9)
-    res <- .cosine_param_string(a)
-    expect_equal(res, "tolerance=0.9, mz_power=0, intensity_power=1")
-    res <- python_command(a)
-    expect_match(res, "ignore_peaks_above_precursor=True")
-})
-
-test_that("python commands evaluation", {
-    p <- CosineGreedyParam(tolerance = 0.05)
-    pstring <- SpectriPy:::python_command(p)
-    ## Invoke basilisk
-    cl <- basiliskStart(matchms_env)
-    py$py_x <- rspec_to_pyspec(caf, reference = import("matchms"),
-                               mapping = c(precursorMz = "precursor_mz"))
-    py$py_y <- rspec_to_pyspec(caf, reference = import("matchms"),
-                               mapping = c(precursorMz = "precursor_mz"))
-    py_run_string(pstring)
-    ## Convert to similarity array
-    py_run_string("sim = res.scores.to_array()")
-    py$sim["CosineGreedy_score"]
-
-    p <- CosineHungarianParam()
-    pstring <- SpectriPy:::python_command(p)
-    py_run_string(pstring)
-    py_run_string("sim = res.scores.to_array()")
-    py$sim["CosineHungarian_score"]
-
-    p <- ModifiedCosineParam()
-    pstring <- SpectriPy:::python_command(p)
-    py_run_string(pstring)
-    py_run_string("sim = res.scores.to_array()")
-    py$sim["ModifiedCosine_score"]
-
-    p <- SpectriPy:::NeutralLossesCosineParam()
-    pstring <- SpectriPy:::python_command(p)
-    py_run_string(pstring)
-    py_run_string("sim = res.scores.to_array()[\"NeutralLossesCosine_score\"]")
-
-    basiliskStop(cl)
+test_that("py_fun works", {
+    res <- py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
+                                           intensity_power = 0.2))
+    expect_equal(class(res)[1L],
+                 "matchms.similarity.CosineGreedy.CosineGreedy")
+    res <- py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
+                                           intensity_power = 0.2))
+    expect_equal(
+        class(res)[1L], "matchms.similarity.CosineHungarian.CosineHungarian")
+    res <- py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
+                                           intensity_power = 0.2))
+    expect_equal(
+        class(res)[1L], "matchms.similarity.ModifiedCosine.ModifiedCosine")
+    res <- py_fun(NeutralLossesCosine(tolerance = 0.1, mz_power = 0.3,
+                                                  intensity_power = 0.2,
+                                                  ignore_peaks_above_precursor = FALSE))
+    expect_equal(
+        class(res)[1L],
+        "matchms.similarity.NeutralLossesCosine.NeutralLossesCosine")
 })
 
 test_that(".compare_spectra_python works", {
     all <- c(caf, mhd)
-    res <- SpectriPy:::.compare_spectra_python(all, caf, CosineGreedyParam())
+    res <- .compare_spectra_python(all, caf, CosineGreedy())
     expect_true(nrow(res) == 4)
     expect_true(ncol(res) == 2)
+    expect_equal(res[1, 1], 1)
+    expect_equal(res[2, 2], 1)
+    expect_true(all(res[3:4, ]== 0))
 
-    res_sps <- compareSpectra(all, caf)
+    res_sps <- compareSpectra(all, caf, tolerance = 0.1, ppm = 0)
     diffs <- abs(as.numeric(res - res_sps))
     expect_true(all(diffs < 0.01))
 
     ## only one spectra
-    res <- SpectriPy:::.compare_spectra_python(all, param = CosineGreedyParam())
-    res_2 <- SpectriPy:::.compare_spectra_python(all, all, param = CosineGreedyParam())
+    res <- .compare_spectra_python(all, param = CosineGreedy())
+    res_2 <- .compare_spectra_python(all, all, param = CosineGreedy())
     expect_equal(res, res_2)
 
     ## try with empty Spectra
-    res <- SpectriPy:::.compare_spectra_python(all, all[integer()], CosineGreedyParam())
+    res <- .compare_spectra_python(all, all[integer()], CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == length(all))
     expect_true(ncol(res) == 0)
 
-    res <- SpectriPy:::.compare_spectra_python(all[integer()], param = CosineGreedyParam())
+    res <- .compare_spectra_python(all[integer()], param = CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == 0)
     expect_true(ncol(res) == 0)
 
-    res <- SpectriPy:::.compare_spectra_python(all[integer()], all, CosineGreedyParam())
+    res <- .compare_spectra_python(all[integer()], all, CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == 0)
     expect_true(ncol(res) == length(all))
@@ -168,61 +127,53 @@ test_that(".compare_spectra_python works", {
 
 test_that("compareSpectriPy works", {
     all <- c(caf, mhd)
-    res_all <- compareSpectriPy(all, param = CosineGreedyParam())
+    res_all <- compareSpectriPy(all, param = CosineGreedy())
     expect_true(is.numeric(res_all))
     expect_true(nrow(res_all) == length(all))
     expect_true(ncol(res_all) == length(all))
     expect_equal(diag(res_all), c(1, 1, 1, 1))
 
-    ## Test python call. LLLLLLL
-    ## cl <- basiliskStart(SpectriPy:::matchms_env)
-    ## p <- CosineGreedyParam()
-    ## cmd <- SpectriPy:::python_command(p)
-    ## py$py_x <- rspec_to_pyspec(caf, mapping = c(precursorMz = "precursor_mz"))
-    ## py$py_y <- rspec_to_pyspec(mhd, mapping = c(precursorMz = "precursor_mz"))
-    ## strng <- paste0("import matchms\n",
-    ##                 "from matchms.similarity import CosineGreedy\n",
-    ##                 "res = matchms.calculate_scores(py_x, py_y, CosineGreedy(), is_symmetric = False)\n")
-    ## py_run_string(strng)
-    ## basiliskStop(cl)
-    ## res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
-    ## WHY is this not working??? Seems to be some python issue, maybe a bug
-    ## in CosineGreedy?
-    ##
-    ## WORKS res <- compareSpectriPy(caf, caf, param = CosineGreedyParam())
-    ## WORKS res <- compareSpectriPy(mhd, mhd, param = CosineGreedyParam())
-    ## NOT res <- compareSpectriPy(mhd, caf, param = CosineGreedyParam())
-    ## NOT res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
-    ## Maybe the issue is with spectra without any similarity (score = 0) and
-    ## having a result matrix with more than 1 column or row.
-    ## Seems to be the case:
-    res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam(tolerance = 10))
+    ## CosineGreedy
+    res <- compareSpectriPy(caf, mhd, param = CosineGreedy())
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
+    expect_true(all(res == 0))
+    res <- compareSpectriPy(caf, mhd, param = CosineGreedy(tolerance = 10))
+    expect_true(any(res > 0))
 
-    res <- compareSpectriPy(caf[1L], mhd[1L], param = CosineGreedyParam())
+    res <- compareSpectriPy(caf[1L], mhd[1L], param = CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == 1)
     expect_true(ncol(res) == 1)
     expect_true(all(res == 0))
     expect_equal(res[1, 1], res_all[1, 3])
 
-    res <- compareSpectriPy(caf, c(mhd, caf[1]), param = CosineGreedyParam())
-    expect_true(nrow(res) == 2L)
-    expect_true(ncol(res) == 3L)
-    expect_equal(res[1, 3], 1)
-    expect_equal(res[2, 3], res_all[1, 2])
+    ## CosineHungarian
+    res <- compareSpectriPy(caf, mhd, param = CosineHungarian())
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
+    expect_true(all(res == 0))
+    res <- compareSpectriPy(caf, mhd, param = CosineHungarian(tolerance = 10))
+    expect_true(any(res > 0))
 
-    ## Add tests after matchms > 0.14.0
-    ## res <- compareSpectriPy(all, all, param = NeutralLossesCosineParam())
-
-    ## ModifiedCosine with and without precursor m/z
-    res <- compareSpectriPy(all, all, param = ModifiedCosineParam())
-    expect_true(nrow(res) == length(all))
-    expect_true(ncol(res) == length(all))
+    ## ModifiedCosine
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosine())
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
     expect_true(all(res > 0))
-    expect_equal(diag(res), c(1, 1, 1, 1))
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosine(tolerance = 10))
+    expect_true(all(res > 0.3))
 
     all_mod <- all
     all_mod$precursorMz[3] <- NA_real_
-    expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosineParam()),
+    expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosine()),
                  "Expect precursor to be positive")
+
+    ## NeutralLossesCosine
+    res <- compareSpectriPy(caf, mhd, param = NeutralLossesCosine())
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
+    expect_true(all(res == 0))
+    res <- compareSpectriPy(caf, mhd, param = NeutralLossesCosine(tolerance = 10))
+    expect_true(all(res > 0))
 })

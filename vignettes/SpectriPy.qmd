@@ -1,0 +1,450 @@
+---
+title: "Enabling integration of Python libraries and R packages for combined mass spectrometry data analysis"
+package: SpectriPy
+vignette: >
+  %\VignetteIndexEntry{Enabling integration of Python libraries and R packages for combined mass spectrometry data analysis}
+  %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative}
+  %\VignettePackage{SpectriPy}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate,MsBackendMgf,msdata,mzR}
+---
+
+**Compiled**: `r date()`
+
+# Introduction
+
+Powerful software libraries for mass spectrometry (MS) data are available in
+both Python and R, covering specific and sometimes distinct aspects in the
+analysis of proteomics and metabolomics data. R's *reticulate* package converts
+basic data types between Python and R and enables a seamless interoperability of
+both programming languages. The *SpectriPy* package extends *reticulate*
+allowing to translate MS data data structures between Python and R. In addition,
+functionality from Python's *matchms* library is directly wrapped into R
+functions allowing a seamless integration into R based workflows. *SpectriPy*
+thus enables powerful proteomics or metabolomics analysis workflows combining
+the strengths of Python and R MS libraries.
+
+
+# Installation
+
+If the *BiocManager* package is not already available, please install it with
+`install.packages("BiocManager")`. To install the development version of
+*SpectriPy* from GitHub, please install in addition the *remotes* package with
+`install.packages("remotes"). As a system dependency, the package requires a
+Python environment to be available.
+
+LLLL Update installation instructions.
+and can be installed
+with the *BiocManager* R package using the command
+`BiocManager::install("RforMassSpectrometry/SpectriPy")`. This will install the
+latest version of the package from GitHub.
+All required python libraries are installed automatically on demand.
+Note that first installation or first invocation of specific functions might
+take long because of this installation process.
+
+
+# Translating data structures between Python and R
+
+The [*reticulate*](https://rstudio.github.io/reticulate/) package enables a
+seamless integration of Python with R by translating the core data structures
+between the two programming languages and sharing a Python (respectively R)
+runtime environment that can be accessed from the other programming languages
+including shared variables. The *SpectriPy* package builds on that providing
+functionality to translate data structures for mass spectrometry (MS) data
+between the two languages. Specifically, the package translates between R's
+`Spectra` objects (from the `r BiocStyle::Biocpkg("Spectra")` package) and
+`matchms.Spectrum` objects from the
+[*matchms*](https://github.com/matchms/matchms) Python library.
+
+```{r, include = FALSE}
+library(reticulate)
+```
+
+
+## Library loading and system setup
+
+Below we load all required packages. By loading *SpectriPy*, the package will
+evaluate if the required Python libraries (i.e. *matchms* version 0.28.2) are
+available. If they are not available, *SpectriPy* tries to install them using
+functionality from the *reticulate* R package (see also here for more information on
+Python and library
+[versions](https://rstudio.github.io/reticulate/articles/versions.html)). By
+default, the *SpectriPy* will install its dependencies into LLLL TODO continue
+here once it's clear how we do that).
+
+The *reticulate* package will be loaded by *SpectriPy* hence, the Python/R
+integration provided by that package will be available as well. To better
+discriminate between R and Python code chunks we add and show the comment `#' R
+session:` or `#' Python session:` to label the R and Python code chunks,
+respectively.
+
+```{r}
+#' R session:
+library(Spectra)
+library(SpectriPy)
+```
+
+TODO: add info on detailed/custom configuration (separate subsection).
+
+## R to Python
+
+In the first examples we translated MS data from R to Python. We first load data
+from a mzML data file provided through the `r BiocStyle::Biocpkg("msdata")`
+package.
+
+```{r}
+#| message: false
+#' R session:
+#' Loading the data from a mzML file as a `Spectra` object.
+fl <- system.file("TripleTOF-SWATH", "PestMix1_DDA.mzML", package = "msdata")
+s_r <- Spectra(fl)
+```
+
+We next restrict the data to MS2 data and remove spectra with less than 3
+peaks (fragments).
+
+```{r}
+#' R session:
+#' Restrict to MS level 2 spectra
+s_r <- filterMsLevel(s_r, 2)
+s_r <- s_r[lengths(s_r) >= 3]
+s_r
+```
+
+The data is thus available in R as a `Spectra` object. This MS data structure
+can be translated to corresponding data structures in Python using the
+`rspec_to_pyspec()` function:
+
+```{r}
+#' R session:
+#' Convert the R Spectra to a list of Python matchms.Spectrum objects
+s_p <- rspec_to_pyspec(s_r)
+```
+
+The `s_p` variable is now a Python list of `matchms.Spectrum` objects:
+
+```{r}
+#' R session:
+#' Class of the converted variable
+class(s_p)
+
+#' First element
+class(s_p[1])
+```
+
+While the variable is stored in the R session, it can also be accessed from the
+current Python session managed through the *reticulate* package. This Python
+session contains the special *variable* `r` that can be used to access any
+variable defined in the R session using `r.<variable name>`. In the Python code
+block below we first load the required Python library *matchms* and access the
+translated MS data.
+
+```{python}
+#' Python session:
+import matchms
+
+#' data type of the variable:
+type(r.s_p)
+
+#' the length of the list:
+len(r.s_p)
+
+#' data type of the first element:
+type(r.s_p[0])
+```
+
+We can then for example process the data in Python and convert the results back
+to R. Below we load the *matchms.filtering* library and scale the intensity
+values of each spectrum with the `normalize_intensities()` function such that
+their sum is 1.
+
+```{python}
+#' Python session:
+import matchms.filtering as mms_filt
+
+#' Iterate over the Spectrum list and scale the intensities
+for i in range(len(r.s_p)):
+    r.s_p[i] = mms_filt.normalize_intensities(r.s_p[i])
+
+#' Intensities for the first spectrum
+r.s_p[0].peaks.intensities
+```
+
+We can also access the changed data from R. Through the *reticulate* package it
+is possible to call attributes and functions in Python directly from R. To
+extract the intensities of the first spectrum we can use the same code as above,
+just replacing `.` with `$`. Note also that, since the variable is a Python
+object, we need to use index `0` to access the first element.
+
+```{r}
+#' R session:
+#' Access the intensities of the first spectrum
+s_p[0]$peaks$intensities
+```
+
+As a result we got a Python array, that we can however translate to the
+respective R data type (`numeric`) using the `py_to_r()` function. For easier
+readability of the code we use the R `|>` pipe operator to sequentially combine
+the functions.
+
+```{r}
+#' R session:
+#' Access the intensities and translate to R
+s_p[0]$peaks$intensities |>
+    py_to_r()
+```
+
+A more efficient way to translate the results back to R data structure is
+however the `pyspec_to_rspec()` function, that will translate the list of
+`matchms.Spectrum` objects to a `Spectra` object.
+
+```{r}
+#' R session:
+#' Convert the data back to R data structures
+s_r2 <- pyspec_to_rspec(s_p)
+```
+
+And the `s_r2` variable contains now the scaled intensities.
+
+```{r}
+#' R session:
+intensity(s_r2)
+```
+
+Note that any R data type for which a `r_to_py()` method is implemented, would
+also be automatically be translated into the respective Python data type when
+the variable in R is accessed from Python. The variable `fl` that we defined
+above and which contains the name of the data file would for example be
+automatically converted from the R `character` data type to a Python `str`:
+
+```{python}
+#' Python session:
+#' Access the `fl` variable from the R session:
+r.fl
+
+type(r.fl)
+```
+
+*SpectriPy* provides also a `r_to_py()` method for `Spectra` objects, thus, we
+would not need to convert the data *manually* but the data would be translated
+*on-the-fly* when the `Spectra` object is accessed from Python:
+
+```{python}
+#' Python session:
+#' Access the `Spectra` object with the original data from R; the data
+#' gets directly translated on-the-fly
+r.s_r
+
+#' Access the intensities of the first spectrum
+r.s_r[0].peaks.intensities
+```
+
+Note however that the `rspec_to_pyspec()` and `pyspec_to_rspec()` allow also to
+configure the handling of the spectra variables (i.e. metadata) during the
+conversion and should thus be preferred.
+
+Also, be however aware that the conversion between R and Python generally
+**copies** the data, thus, any data processing performed in the other
+programming language will not change the data variables from the former (unless
+they are directly replaced as in our example above).
+
+
+## Python to R
+
+To show conversion of MS data from Python to R we import in this section a file
+in MGF format using the *matchms* Python library. The MGF file is provided
+within the *SpectriPy* package and we define below its file name and path in R
+and assign that to a variable in R.
+
+```{r}
+#' R session:
+f_mgf <- system.file("extdata", "mgf", "test.mgf", package = "SpectriPy")
+```
+
+We next load the required Python library and import the data in Python. We can
+access the variable (defined in the R session) with the file name to import the
+data from through the `r.<variable name>`.
+
+```{python}
+#| warning: false
+
+#' Python session
+import matchms
+from matchms.importing import load_from_mgf
+
+mgf_p = list(load_from_mgf(r.f_mgf))
+mgf_p
+```
+
+The MS data from the MGF is now loaded in Python as a `list` of
+`matchms.Spectrum` objects. We can directly access this variable
+also from the R session through `py$<variable name in Python>`.
+Below we access the first spectrum in that list:
+
+```{r}
+#' R session:
+py$mgf_p[[1]]
+```
+
+The data is thus provided in a *matchms.Spectrum* object. We could extract the
+*m/z* and intensity peak matrix from that spectrum using built-in functionality
+from the *reticulate* package that allows to call Python functions from R or
+translates between basic data types. As an example we below get the `peaks`
+attribute from the first spectrum and convert that to a Python `numpy`
+array. This array can then be translated to an R `matrix` with the `py_to_r()`
+function (see also the [*Calling Python from
+R*](https://rstudio.github.io/reticulate/articles/calling_python.html) vignette
+from the *reticulate* package for examples on accessing data from Python):
+
+```{r}
+#' R session:
+py_to_r(py$mgf_p[[1]]$peaks$to_numpy)
+```
+
+While such functionality could thus be used to extract the MS data from Python,
+it is (for R users) more convenient to transform the MS data to a `Spectra`
+object using the `pyspec_to_rspec()` function and use this container to perform
+MS data analyses in R. Note that below we use the `py_get_attr()` function to
+get the Python variable with the MS data instead of `py$mgf_p`. The `py$mgf_p`
+calls by default `py_to_r()` on the variable which will convert the Python list
+to an R `list`. `pyspec_to_rspec()` would thus iterate over the R `list` (in R),
+while with `py_get_attr()` the loop will be performed in Python, which has a
+minimal performance advantage.
+
+```{r}
+#' R session:
+mgf_r <- pyspec_to_rspec(py_get_attr(py, "mgf_p"))
+mgf_r
+```
+
+The full MS data is thus now available as a `Spectra` object. Note however that
+with `pyspec_to_rspec()` the data gets copied, thus, we have now two (detached)
+variables containing the MS data, one in R and one in Python.
+
+
+## Conversion of spectra variables/metadata
+
+Conversion of the MS peaks data (i.e. *m/z* and intensity values) is always
+performed by the `rspec_to_pyspec()` and `pyspec_to_rspec()` functions. But next
+to the peaks data, also additional information are available for individual
+spectra. In R/*Spectra* they are called *spectra variables* while in *matchms*
+they are stored as a *metadata* attribute of a `matchms.Spectrum`. The
+*SpectriPy* package defines a core set of spectra variables/metadata that are by
+default converted (transferred) by the `rspec_to_pyspec()` and
+`pyspec_to_rspec()` function. They are also renamed to match the respective (and
+differing) definitions in *Spectra* and *matchms*. This set of default variables
+can be accessed using the `defaultSpectraVariableMapping()` function:
+
+```{r}
+#' R session:
+defaultSpectraVariableMapping()
+```
+
+These variables, if present in the respective data object, are transferred to
+the MS data structure of the other programming language. The names of this
+character vector represent the name of the spectra variable in the `Spectra`
+object, while the value (element) is the name of the metadata key in Python's
+`matchms.Spectrum` class. The `precursorMz()` spectra variable in thus
+transferred by default to Python and renamed to `"precursor_mz"`. Any additional
+spectra variable not being defined will **not** be converted. Below we inspect
+the available metadata in the `matchms.Spectrum` objects that were imported from
+the MGF file.
+
+```{python}
+#' Python session:
+#' Available metadata for the first spectrum
+mgf_p[0].metadata.keys()
+```
+
+Several additional metadata variables, such as `"smiles"`, `"inchi"` or
+`"compound_name"`, not part of the default variables, would be available. To
+also transfer these to our `Spectra` object we could add a mapping for them to
+the default mapping and pass that to the `pyspec_to_rspec()` function. Both the
+`rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to provide a custom
+mapping between spectra variables/metadata with the `mapping` parameter. Below
+we define such mapping and call the `pyspec_to_rspec()` to convert the full
+data.
+
+```{r}
+#' R session:
+#' Add mapping for additional spectra variables to the default mapping
+map <- c(defaultSpectraVariableMapping(), smiles = "smiles",
+         inchi = "inchi", name = "compound_name")
+mgf_r <- pyspec_to_rspec(py_get_attr(py, "mgf_p"), mapping = map)
+```
+
+The respective metadata values have been added as new spectra variables to our
+`Spectra` object:
+
+```{r}
+#' R session:
+mgf_r$name |> head()
+
+mgf_r$inchi |> head()
+```
+
+The `r_to_py()` methods don't support additional parameters, thus, in order to
+use a similar mapping also with the `r_to_py()` method for `Spectra` the
+*global* spectra variable mapping would have to be changed. See the help of the
+`setSpectraVariableMapping()` function for more details.
+
+
+## Combined MS data analysis
+
+With the functionality to translate between R and Python MS data structures, the
+*SpectriPy* package enables thus a MS data analysis combining functionality
+provided by both R and Python libraries. Some of the functionality of the
+*matchms* Python library was also directly wrapped into R functions simplifying
+their use and inclusion in R-based workflows (see help of `compareSpectraPy()`
+and `filterSpectriPy()` functions). Using both R and Python code for data
+analyses has however clear advantages, since it allows a more customized use of
+the functionality and a better performance. As an example we below calculate
+spectra similarities between the MS2 spectra imported from the mzML and the MGF
+file.
+
+In R we can use the `compareSpectra()` function that calculates a pairwise
+similarity between the compared spectra. With the default settings a normalized
+dot product similarity is calculated. We calculate the similarity between the
+`Spectra` object with the data imported from the mzML file and the `Spectra`
+object that was translated from Python using the `pyspec_to_rspec()` function.
+
+```{r}
+#' R session:
+#' Calculate the pairwise similarity between all spectra
+sim <- compareSpectra(s_r, mgf_r, tolerance = 0.1)
+dim(sim)
+```
+
+For comparison, we calculate in Python a pairwise similarity using the *cosine
+hungarian* method. Here we use the previously translated `Spectra` object with
+the data from the mzML file and the MS data imported from the MGF file.
+
+```{python}
+#' Python session:
+import matchms.similarity as mms_similarity
+
+#' Calculate similarity scores
+scores = matchms.calculate_scores(
+    r.s_p, mgf_p, mms_similarity.CosineHungarian(tolerance = 0.1))
+#' Extract similarity scores
+sim = scores.to_array()["CosineHungarian_score"]
+```
+
+We can also directly compare the scores calculated using the two different
+algorithms.
+
+```{r}
+plot(sim, py$sim, pch = 21, col = "#000000ce", bg = "#00000060",
+     xlab = "Dot product", ylab = "Cosine Hungarian")
+grid()
+```
+
+
+
+
+# Session information
+
+```{r}
+sessionInfo()
+```

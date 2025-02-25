@@ -2,43 +2,43 @@
 % Please edit documentation in R/compareSpectriPy.R
 \name{compareSpectriPy}
 \alias{compareSpectriPy}
-\alias{CosineGreedyParam}
-\alias{CosineHungarianParam}
-\alias{ModifiedCosineParam}
-\alias{NeutralLossesCosineParam}
-\alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
-\alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
-\title{Spectra similarity calculations using matchms}
+\alias{CosineGreedy}
+\alias{CosineHungarian}
+\alias{ModifiedCosine}
+\alias{NeutralLossesCosine}
+\alias{compareSpectriPy,Spectra,Spectra,CosineGreedy-method}
+\alias{compareSpectriPy,Spectra,missing,CosineGreedy-method}
+\title{Spectra similarity calculations using Python's matchms library}
 \usage{
-CosineGreedyParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
+CosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
-CosineHungarianParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
+CosineHungarian(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
-ModifiedCosineParam(tolerance = 0.1, mzPower = 0, intensityPower = 1)
+ModifiedCosine(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
-NeutralLossesCosineParam(
+NeutralLossesCosine(
   tolerance = 0.1,
-  mzPower = 0,
-  intensityPower = 1,
-  ignorePeaksAbovePrecursor = TRUE
+  mz_power = 0,
+  intensity_power = 1,
+  ignore_peaks_above_precursor = TRUE
 )
 
-\S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
+\S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedy}(x, y, param, ...)
 
-\S4method{compareSpectriPy}{Spectra,missing,CosineGreedyParam}(x, y, param, ...)
+\S4method{compareSpectriPy}{Spectra,missing,CosineGreedy}(x, y, param, ...)
 }
 \arguments{
-\item{tolerance}{\code{numeric(1)}: tolerated differences in peaks' m/z. Peaks
+\item{tolerance}{\code{numeric(1)}: tolerated differences in the peaks' m/z. Peaks
 with m/z differences \verb{<= tolerance} are considered matching.}
 
-\item{mzPower}{\code{numeric(1)}: the power to raise m/z to in the cosine
+\item{mz_power}{\code{numeric(1)}: the power to raise m/z to in the cosine
 function. The default is 0, in which case the peak intensity products will
 not depend on the m/z ratios.}
 
-\item{intensityPower}{\code{numeric(1)}: the power to raise intensity to in the
+\item{intensity_power}{\code{numeric(1)}: the power to raise intensity to in the
 cosine function. The default is 1.}
 
-\item{ignorePeaksAbovePrecursor}{For \code{NeutralLossesCosineParam()}:
+\item{ignore_peaks_above_precursor}{For \code{NeutralLossesCosine()}:
 \code{logical(1)}: if \code{TRUE} (the default), peaks with m/z values larger than
 the precursor m/z are ignored.}
 
@@ -47,55 +47,69 @@ the precursor m/z are ignored.}
 \item{y}{A \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object to compare against. If missing,
 spectra similarities are calculated between all spectra in \code{x}.}
 
-\item{param}{one of parameter classes listed above (such as
-\code{CosineGreedyParam}) defining the similarity scoring function in python
+\item{param}{One of the parameter classes listed above (such as
+\code{CosineGreedy}) defining the similarity scoring function in Python
 and its parameters.}
 
 \item{...}{ignored.}
 }
 \value{
-\code{compareSpectriPy()} returns a \code{numeric} matrix with the scores,
-number of rows being equal to \code{length(x)} and number of columns equal to
-\code{length(y)}.
+\code{compareSpectriPy()} Returns a \code{numeric} matrix with the scores,
+with the number of rows equal to \code{length(x)} and the number of columns
+equal to \code{length(y)}.
 }
 \description{
 The \code{compareSpectriPy()} function allows to calculate spectral similarity
-scores using the \verb{calculate_scores module} of the python
-\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html}{matchms.similarity package}
-package.
+scores using the \code{calculate_scores()} function of the Python
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html}{matchms.similarity}.
+module.
 
 Selection and configuration of the algorithm can be performed with one of the
-parameter objects:
+\emph{parameter} objects/functions:
 \itemize{
-\item \code{CosineGreedyParam}: calculate the \emph{cosine similarity score} between
-spectra. The score is calculated by finding best possible matches between
-peaks of two spectra. Two peaks are considered a potential match if their
-m/z ratios lie within the given \code{tolerance}. The underlying peak assignment
-problem is here solved in a \emph{greedy} way. This can perform notably faster,
-but does occasionally deviate slightly from a fully correct solution (as
-with the \code{CosineHungarianParam} algorithm). In practice this will rarely
-affect similarity scores notably, in particular for smaller tolerances. The
-algorithm can be configured with parameters \code{tolerance}, \code{mzPower} and
-\code{intensityPower} (see parameter description for more details).
-\item \code{CosineHungarianParam}: calculate the \emph{cosine similarity score} as with
-\code{CosineGreedyParam}, but using the Hungarian algorithm to find the best
+\item \code{CosineGreedy()}: calculate the \emph{cosine similarity score} between
+spectra. The score is calculated by finding the best possible matches
+between peaks of two spectra. Two peaks are considered a potential match if
+their m/z ratios lie within the given \code{tolerance}. The underlying peak
+assignment problem is here solved in a \emph{greedy} way. This can perform
+notably faster, but does occasionally deviate slightly from a fully correct
+solution (as with the \code{CosineHungarian} algorithm). In practice this
+will rarely affect similarity scores notably, in particular for smaller
+tolerances. The algorithm can be configured with parameters \code{tolerance},
+\code{mz_power} and \code{intensity_power} (see parameter description for more
+details). See also
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineGreedy.html}{matchms CosineGreedy} for more information.
+\item \code{CosineHungarian()}: calculate the \emph{cosine similarity score} as with
+\code{CosineGreedy}, but using the Hungarian algorithm to find the best
 matching peaks between the compared spectra. The algorithm can be
-configured with parameters \code{tolerance}, \code{mzPower} and \code{intensityPower}
-(see parameter description for more details).
-\item \code{ModifiedCosineParam}: The modified cosine score aims at quantifying the
+configured with parameters \code{tolerance}, \code{mz_power} and \code{intensity_power}
+(see parameter description for more details). See also
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html}{matchms CosingHungarian} for more information.
+\item \code{ModifiedCosine()}: The modified cosine score aims at quantifying the
 similarity between two mass spectra. The score is calculated by finding
-best possible matches between peaks of two spectra. Two peaks are
+the best possible matches between peaks of two spectra. Two peaks are
 considered a potential match if their m/z ratios lie within the given
 \code{tolerance}, or if their m/z ratios lie within the tolerance once a
-mass-shift is applied. The mass shift is simply the difference in
+mass shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-\item \code{NeutralLossesCosineParam}: The neutral losses cosine score aims at
+See also \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html}{matchms ModifiedCosine} for more information.
+\item \code{NeutralLossesCosine()}: The neutral losses cosine score aims at
 quantifying the similarity between two mass spectra. The score is
-calculated by finding best possible matches between peaks of two spectra.
-Two peaks are considered a potential match if their m/z ratios lie within
-the given \code{tolerance} once a mass-shift is applied. The mass shift is the
-difference in precursor-m/z between the two spectra.
+calculated by finding the best possible matches between peaks of two
+spectra. Two peaks are considered a potential match if their m/z ratios lie
+within the given \code{tolerance} once a mass shift is applied. The mass shift
+is the difference in precursor-m/z between the two spectra. See also
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.NeutralLossesCosine.html}{matchms NeutralLossesCosine} for more information.
+\item \code{FingerprintSimilarity()}: Calculate similarity between molecules based
+on their fingerprints. For this similarity measure to work, fingerprints
+are expected to be derived by running \emph{add_fingerprint()}. See also
+\href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.FingerprintSimilarity.html}{matchms FingerprintSimilarity} for more information.
 }
+}
+\note{
+Parameters and algorithms are named as originally defined in the \emph{matchms}
+library (i.e. all parameters in \emph{snake_case} while \emph{CamelCase} is used
+for the algorithms.
 }
 \examples{
 
@@ -109,38 +123,41 @@ DF <- DataFrame(
 DF$intensity <- list(
     c(340.0, 416, 2580, 412),
     c(388.0, 3270, 85, 54, 10111),
-    c(3.407, 47.494, 3.094, 100.0, 13.240))
+    c(3.407, 47.494, 3.094, 100.0, 13.240)
+)
 DF$mz <- list(
     c(135.0432, 138.0632, 163.0375, 195.0880),
     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864),
-    c(109.2, 124.2, 124.5, 170.16, 170.52))
+    c(109.2, 124.2, 124.5, 170.16, 170.52)
+)
 sps <- Spectra(DF)
 
 ## Calculate pairwise similarity beween all spectra within sps with
 ## matchms' CosineGreedy algorithm
 ## Note: the first compareSpectriPy will take longer because the Python
 ## environment needs to be set up.
-res <- compareSpectriPy(sps, param = CosineGreedyParam())
+res <- compareSpectriPy(sps, param = CosineGreedy())
 res
 
 ## Next we calculate similarities for all spectra against the first one
-res <- compareSpectriPy(sps, sps[1], param = CosineGreedyParam())
+res <- compareSpectriPy(sps, sps[1], param = CosineGreedy())
 
 ## Calculate pairwise similarity of all spectra in sps with matchms'
 ## ModifiedCosine algorithm
-res <- compareSpectriPy(sps, param = ModifiedCosineParam())
+res <- compareSpectriPy(sps, param = ModifiedCosine())
 res
 
 ## Note that the ModifiedCosine method requires the precursor m/z to be
 ## known for all input spectra. Thus, it is advisable to remove spectra
 ## without precursor m/z before using this algorithm.
 sps <- sps[!is.na(precursorMz(sps))]
-compareSpectriPy(sps, param = ModifiedCosineParam())
+compareSpectriPy(sps, param = ModifiedCosine())
 }
 \seealso{
-\code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \code{Spectra} package for pure R
+\code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \emph{Spectra} package for pure R
 implementations of spectra similarity calculations.
 }
 \author{
-Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht
+Carolin Huber, Michael Witting, Johannes Rainer, Helge Hecht,
+Marilyn De Graeve
 }

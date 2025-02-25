@@ -52,9 +52,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: '4.4', bioc: '3.20', cont: "bioconductor/bioconductor_docker:RELEASE_3_20", rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest" }
-          - { os: macOS-latest, r: '4.4', bioc: '3.20'}
-          - { os: windows-latest, r: '4.4', bioc: '3.20'}
+          - { os: ubuntu-latest, r: 'devel', bioc: '3.21', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest" }
+          - { os: macOS-latest, r: 'devel', bioc: '3.21'}
+          - { os: windows-latest, r: 'devel', bioc: '3.21'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -77,7 +77,7 @@ jobs:
       ## https://github.com/r-lib/actions/blob/master/examples/check-standard.yaml
       ## If they update their steps, we will also need to update ours.
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       ## R is already included in the Bioconductor docker images
       - name: Setup R from r-lib
@@ -86,16 +86,34 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      ## Install R dependencies using R-lib
+      - name: Setup R dependencies from r-lib
+        if: runner.os != 'Linux'
+        uses: r-lib/actions/setup-r-dependencies@v2
+
       ## pandoc is already included in the Bioconductor docker images
       - name: Setup pandoc from r-lib
         if: runner.os != 'Linux'
         uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Install quarto
+        if: runner.os != 'Linux'
+        uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Query dependencies
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
+
+      - name: Install Miniconda
+        run: |
+          Rscript -e "install.packages('reticulate')"
+          Rscript -e "reticulate::install_miniconda()"
+
+      - name: Fix conda for macOS
+        if: runner.os == 'macOS'
+        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> .Rprofile
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
@@ -137,9 +155,6 @@ jobs:
           ## For installing usethis's dependency gert
           brew install libgit2
 
-          ## Python
-          brew install python@3.10
-
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
@@ -179,8 +194,9 @@ jobs:
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = TRUE)
 
           message(paste('****', Sys.time(), 'force installation of selected packages ****'))
-          BiocManager::install(c("BiocStyle", "rmarkdown", "magick"))
+          BiocManager::install(c("BiocStyle"))
 
+          BiocManager::install("mzR")
           BiocManager::install("Spectra")
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
@@ -219,7 +235,7 @@ jobs:
           _R_CHECK_CRAN_INCOMING_: false
         run: |
           rcmdcheck::rcmdcheck(
-              args = c("--no-build-vignettes", "--no-manual", "--timings"),
+              args = c("--no-manual", "--timings"),
               build_args = c("--no-manual", "--no-resave-data"),
               error_on = "warning",
               check_dir = "check"
