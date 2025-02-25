@@ -207,28 +207,41 @@ test_that("pyspec_to_rspec works", {
     expect_equal(spectraVariableMapping(), SpectriPy:::.SPECTRA_2_MATCHMS)
 })
 
+test_that(".py_matchms_peaks_data works", {
+    ## Python variable in R
+    p <- r_to_py(sps)
+    res <- SpectriPy:::.py_matchms_peaks_data("r.p", (1:3 - 1L))
+    expect_true(is.list(res))
+    expect_equal(length(res), length(sps))
+    expect_true(is.matrix(res[[1L]]))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend))
 
-## library(microbenchmark)
-## library(msdata)
-## fl <- system.file("TripleTOF-SWATH/PestMix1_DDA.mzML", package = "msdata")
-## pest_r <- filterMsLevel(Spectra(fl), 2L)
-## pest_r <- setBackend(pest_r, MsBackendMemory())
-## system.time(
-##     pest_py <- rspec_to_pyspec(pest_r)
-## ) # 0.9sec
+    res <- SpectriPy:::.py_matchms_peaks_data("r.p", (c(3, 1, 3) - 1L))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend)[c(3, 1, 3)])
 
-## microbenchmark(
-##     r_to_py(pest_r),
-##     pyspec_to_rspec(pest_py),
-##     concatenateSpectra(py_to_r(pest_py)),
-##     times = 7
-## )
-## Unit: milliseconds
-##                                  expr       min        lq      mean    median       uq
-##                       r_to_py(pest_r)  910.6022  927.3481  964.0274  940.4552 1002.636
-##              pyspec_to_rspec(pest_py) 1018.6564 1025.0681 1089.1945 1033.7767 1153.097
-##  concatenateSpectra(py_to_r(pest_py)) 2722.2907 2772.4679 2891.9192 2807.5928 3036.487
-##       max neval cld
-##  1037.166     7  a
-##  1215.599     7  a
-##  3095.642     7   b
+    ## Python variable in Python
+    rm("p")
+    py_set_attr(py, "p", r_to_py(sps))
+    res <- SpectriPy:::.py_matchms_peaks_data("p", (1:3 - 1L))
+    expect_true(is.list(res))
+    expect_equal(length(res), length(sps))
+    expect_true(is.matrix(res[[1L]]))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend))
+})
+
+test_that(".py_matchms_peaks_data_cmd works", {
+    res <- SpectriPy:::.py_matchms_peaks_data_cmd("AAA")
+    expect_match(res, "AAA")
+})

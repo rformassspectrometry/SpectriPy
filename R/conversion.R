@@ -455,85 +455,77 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping()) {
     Spectra(be)
 }
 
-## below are functions that would use direct python calls that iterate in
-## Python.
-
-#' function to create a Python command to extract the peaks data.
+#' Function to get peaks data matrices from a list of `matchms.Spectrum`
+#' objects.
 #'
-#' @param x `character(1)` with the variable name containing the `list` of
-#'     `matchms.Spectrum` data.
+#' @param x `character(1)` with the name of the variable (in Python!) that
+#'     contains the MS data.
 #'
-#' @return `character(1)` with the Python command.
+#' @param i `integer` with the indices of the spectra from which the peaks
+#'     data should be extracted.
+#'
+#' @return `list` of two column `matrix` **without** column names.
+#'
+#' @importFrom reticulate py_set_attr py_del_attr
 #'
 #' @noRd
-.py_matchms_cmd_peaks_data <- function(x) {
+.py_matchms_peaks_data <- function(x, i) {
+    if (length(i) > 1)
+        py_set_attr(py, "_i_", as.integer(i))
+    else py_set_attr(py, "_i_", list(as.integer(i)))
+    res <- py_to_r(py_run_string(.py_matchms_peaks_data_cmd(x),
+                                 local = TRUE, convert = FALSE))[["_res_"]]
+    py_del_attr(py, "_i_")
+    res
+}
+
+.py_matchms_peaks_data_cmd <- function(x) {
     paste0("_res_ = list()\n",
-           "for i in range(len(", x, ")):\n",
+           "for i in _i_:\n",
            "  _res_.append(", x, "[i].peaks.to_numpy)\n")
 }
 
-#' function to get the `list` of peaks matrices from a Python `list` of
-#' `matchms.Spectrum` objects. This function calls a Python command.
-#'
-#' @note
-#'
-#' The returned peak matrices don't have column names.
-#'
-#' @param x `character(1)` with the name of the variables containing the data.
-#'
-#' @param local `logical(1)` passed to [reticulate::py_run_string()]
-#'
-#' @return a `list` of 2-column `matrix` with the m/z and intensity values.
-#'     Note that the matrices don't have column names.
-#'
-#' @importFrom reticulate py_run_string
-#'
-#' @noRd
-.py_matchms_peaks_data <- function(x, local = TRUE) {
-    py_to_r(
-        py_run_string(
-            .py_matchms_cmd_peaks_data(x), local = local,
-            convert = FALSE)[["_res_"]])
-}
+## below are functions that would use direct python calls that iterate in
+## Python.
 
-#' function to create a Python command to loop through the variable which name
-#' was provided with parameter `x` and extract and combine the metadata of all
-#' `matchms.Spectrum` objects in `x` as a `pandas.DataFrame`.
-#'
-#' @param x `character(1)` with the name of the (Python) variable with the
-#'     `list` of `matchms.Spectrum` objects.
-#'
-#' @return `character(1)` defining the Python command.
-#'
-#' @noRd
-.py_matchms_cmd_spectra_data <- function(x) {
-    paste0(
-        "import pandas as pd\n",
-        "_res_ = pd.DataFrame()\n",
-        "for i in range(len(", x, ")):\n",
-        "  _res_ = pd.concat([_res_, pd.DataFrame(", x, "[i].metadata, index = [0])], ignore_index = True)\n")
-}
+## #' function to create a Python command to loop through the variable which name
+## #' was provided with parameter `x` and extract and combine the metadata of all
+## #' `matchms.Spectrum` objects in `x` as a `pandas.DataFrame`.
+## #'
+## #' @param x `character(1)` with the name of the (Python) variable with the
+## #'     `list` of `matchms.Spectrum` objects.
+## #'
+## #' @return `character(1)` defining the Python command.
+## #'
+## #' @noRd
+## .py_matchms_cmd_spectra_data <- function(x) {
+##     paste0(
+##         "import pandas as pd\n",
+##         "_res_ = pd.DataFrame()\n",
+##         "for i in range(len(", x, ")):\n",
+##         "  _res_ = pd.concat([_res_, pd.DataFrame(", x, "[i].metadata, index = [0])], ignore_index = True)\n")
+## }
 
-#' Retrieve the metadata of all `matchms.Spectrum` objects in a Python `list`
-#' as a R `data.frame`.
-#'
-#' @param x `character(1)` with the name of the variable containing the MS data
-#'     in Python.
-#'
-#' @param local `logical(1)` passed to the [reticulate::py_run_string()]
-#'     function.
-#'
-#' @return `data.frame()` with the metadata of the MS data.
-#'
-#' @noRd
-.py_matchms_spectra_data <-
-    function(x, local = TRUE, mapping = spectraVariableMapping(), ...) {
-        res <- py_to_r(
-            py_run_string(
-                .py_matchms_cmd_spectra_data(x),
-                local = local, convert = FALSE)[["_res_"]])
-        mapping <- mapping[mapping %in% colnames(res)]
-        res <- res[, mapping]
-        colnames(res) <- names(mapping)
-        res
-    }
+## #' Retrieve the metadata of all `matchms.Spectrum` objects in a Python `list`
+## #' as a R `data.frame`.
+## #'
+## #' @param x `character(1)` with the name of the variable containing the MS data
+## #'     in Python.
+## #'
+## #' @param local `logical(1)` passed to the [reticulate::py_run_string()]
+## #'     function.
+## #'
+## #' @return `data.frame()` with the metadata of the MS data.
+## #'
+## #' @noRd
+## .py_matchms_spectra_data <-
+##     function(x, local = TRUE, mapping = spectraVariableMapping(), ...) {
+##         res <- py_to_r(
+##             py_run_string(
+##                 .py_matchms_cmd_spectra_data(x),
+##                 local = local, convert = FALSE)[["_res_"]])
+##         mapping <- mapping[mapping %in% colnames(res)]
+##         res <- res[, mapping]
+##         colnames(res) <- names(mapping)
+##         res
+##     }

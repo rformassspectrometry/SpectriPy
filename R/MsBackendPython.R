@@ -18,13 +18,20 @@
 #' @details
 #'
 #' The `MsBackendPy` keeps only a reference to the MS data in Python (i.e. the
-#' name of the variable in Python) but no other data. Any data requested from
+#' name of the variable in Python) as well as an index pointing to the
+#' individual spectra in Python but no other data. Any data requested from
 #' the `MsBackendPy` is accessed and translated on-the-fly from the Python
 #' variable. The `MsBackendPy` is thus an interface to the MS data, but does
 #' not contain any data itself. Because of this also all changes done to the
 #' data in Python (which inlcudes also a subset operation performed using `[`
 #' on the backend in R!) would immediately affect any `MsBackendPy` instances
 #' pointing to the same Python variable.
+#'
+#' Special care must be taken if the MS data structure in Python is subset or
+#' it's order is changed (e.g. by another process). In that case it might be
+#' needed to re-index the backend using the `reindex()` function:
+#' `object <- reindex(object)`. This will update (replace) the index to the
+#' individual spectra in Python which is stored within the backend.
 #'
 #' @note
 #'
@@ -34,6 +41,28 @@
 #' backend, it is retrieved in its **current** state.
 #' If for example data was transformed or metadata added or removed in the
 #' Python object, it would immediately also affect the backend.
+#'
+#' @section `MsBackendPy` methods:
+#'
+#' The `MsBackendPy` supports all methods defined by the [Spectra::MsBackend()]
+#' interface for access to MS data. Details on the invidual functions can also
+#' be found in the main documentation in the *Spectra* package (i.e. for
+#' [Spectra::MsBackend()]). Here we provide information for functions with
+#' specific properties of the backend.
+#'
+#' TODO LLLLL complete the documentation
+#'
+#' - `backendInitialize()`:
+#'
+#' - `peaksData()`:
+#'
+#' - `spectraData()`:
+#'
+#' @section Additional helper and utility functions:
+#'
+#' - `reindex()`: update the internal *index* to match `1:length(object)`.
+#'   This function is useful if the original data referenced by the backend was
+#'   subset or re-ordered by a different process (or a function in Python).
 #'
 #' @author Johannes Rainer and the EuBIC hackathon team
 #'
@@ -56,7 +85,10 @@
 #' s
 #'
 #' ## Translating the MS data to Python and assigning it to a variable
-#' ## named "s_p" in the (*reticulate*'s) `py` Python environment.
+#' ## named "s_p" in the (*reticulate*'s) `py` Python environment. Assigning
+#' ## the variable to the Python environment has performance advantages, as
+#' ## any Python code applied to the MS data does not require any data
+#' ## conversions.
 #' py_set_attr(py, "s_p", rspec_to_pyspec(s))
 #'
 #'
@@ -69,7 +101,9 @@
 #' s_2 <- Spectra(be)
 #' s_2
 #'
-#' ## Available spectraVariables:
+#' ## Available spectra variables: these include, next to the *core* spectra
+#' ## variables, also the names of all metadata stored in the `matchms.Spectrum`
+#' ## objects.
 #' spectraVariables(s_2)
 #'
 #' ## Get the full peaks data:
@@ -83,16 +117,32 @@
 #'
 #' ## Plot the first spectrum
 #' plotSpectra(s_2[1L])
+#'
+NULL
+
+#' @noRd
+#'
+#' @slot py_var the name of the variable
+#'
+#' @slot py_lib the Python library representing the data. currently not used.
+#'
+#' @slot is_in_py if the variable is in Python (py$) or in the R environment.
+#'
+#' @slot i the integer/index of the spectra from the backend we should
+#'     represent. We might need to synchronize that index with the actual
+#'     data.
 setClass("MsBackendPy",
          contains = "MsBackend",
          slots = c(py_var = "character",
                    py_lib = "character",
                    is_in_py = "logical",
+                   i = "integer",
                    spectraVariableMapping = "character"),
          prototype = prototype(
              py_var = character(),
              py_lib = "matchms",
              is_in_py = TRUE,
+             i = integer(),
              spectraVariableMapping = defaultSpectraVariableMapping(),
              version = "0.1"))
 
@@ -144,6 +194,22 @@ MsBackendPy <- function() {
         TRUE
 }
 
+#' Check that all indices are within the range of the data in Python.
+#'
+#' @param object `MsBackendPy` object.
+#'
+#' @return `TRUE` if all is OK - otherwise it throws an error
+#'
+#' @noRd
+.check_i <- function(object) {
+    l <- .py_var_length(object)
+    if (l > 0 && max(object@i) > l)
+        stop("Indices are out of bound. Use `reindex()` to update indices ",
+             "of 'object' if \"", object@py_var, "\" was subset by ",
+             "another process.", call. = FALSE)
+    TRUE
+}
+
 #' Helper function to get the variable with the Python data. Can be either
 #' in R or in Python.
 #'
@@ -191,6 +257,7 @@ setMethod("backendInitialize", "MsBackendPy",
                   ## 2) Check if the variable is of the correct data type.
                   .check_py_var(pythonVariableName, object@is_in_py)
                   object@py_var <- pythonVariableName
+                  object <- reindex(object)
               } else {
                   stop("not yet implemented")
                   ## if data provided -> convert the data to Python.
@@ -201,19 +268,24 @@ setMethod("backendInitialize", "MsBackendPy",
 
 #' @importMethodsFrom methods show
 setMethod("show", "MsBackendPy", function(object) {
-    cat(class(object), "with", length(object), "spectra\n")
+    .check_i(object)
+    l <- length(object)
+    cat(class(object), "with", l, "spectra\n")
     cat("Data stored in the \"", object@py_var,"\" variable ",
         ifelse(object@is_in_py, "in Python", "in R"), "\n", sep = "")
 })
 
 #' @importFrom reticulate py_run_string py_eval
-#'
-#' @rdname MsBackendPy
-setMethod("length", "MsBackendPy", function(x) {
+.py_var_length <- function(x) {
     if (length(x@py_var)) {
         if (x@is_in_py) py_eval(paste0("len(", x@py_var, ")"))
         else length(.get_py_var(x@py_var, FALSE))
     } else 0L
+}
+
+#' @rdname MsBackendPy
+setMethod("length", "MsBackendPy", function(x) {
+    length(x@i)
 })
 
 #' Get the names of the metadata fields from the referenced Python object.
@@ -243,10 +315,12 @@ setMethod("length", "MsBackendPy", function(x) {
 #'
 #' @rdname MsBackendPy
 setMethod("spectraVariables", "MsBackendPy", function(object) {
-    var <- .py_get_metadata_names(object)
-    i <- match(var, object@spectraVariableMapping)
-    if (length(i))
-        var[!is.na(i)] <- names(object@spectraVariableMapping)[i[!is.na(i)]]
+    if (length(object)) {
+        var <- .py_get_metadata_names(object)
+        i <- match(var, object@spectraVariableMapping)
+        if (length(i))
+            var[!is.na(i)] <- names(object@spectraVariableMapping)[i[!is.na(i)]]
+    } else var <- character()
     union(names(coreSpectraVariables()), var)
 })
 
@@ -263,14 +337,17 @@ setMethod(
     "spectraData", "MsBackendPy",
     function(object, columns = spectraVariables(object), drop = FALSE) {
         if (!length(object))
-            return(as(fillCoreSpectraVariables(data.frame()), "DataFrame"))
+            return(as(fillCoreSpectraVariables(
+                data.frame()), "DataFrame")[, columns, drop = drop])
         mt <- .py_get_metadata_names(object)
         mt <- mt[names(mt) %in% columns]
         if (length(mt)) {
-            FUN <- function(x) .py_matchms_spectrum_spectra_data(x, mt)
-            res <- do.call(rbindFill,
-                           iterate(.get_py_var(object@py_var, object@is_in_py),
-                                   FUN, simplify = FALSE))
+            ## Note: creating a pandas.DataFrame in Python is not faster
+            d <- .get_py_var(object@py_var, object@is_in_py)
+            if (!is.list(d)) d <- py_to_r(d)
+            res <- do.call(
+                rbindFill,
+                lapply(d[object@i], .py_matchms_spectrum_spectra_data, mt))
         } else
             res <- as.data.frame(matrix(ncol = 0, nrow = length(object)))
         n <- names(coreSpectraVariables())
@@ -288,7 +365,7 @@ setMethod(
         if (any(columns == "dataStorage"))
             res$dataStorage <- object@py_var
         if (!all(columns %in% colnames(res)))
-            stop("Columns ",
+            stop("Column(s) ",
                  paste0("\"", columns[!columns %in% colnames(res)], "\"",
                         collapse = ", "), " not available.", call. = FALSE)
         if (drop && length(columns) == 1)
@@ -306,22 +383,158 @@ setMethod(
                                          columns = c("mz", "intensity"),
                                          drop = FALSE) {
         if (length(object@py_var)) {
+            res <- .py_matchms_peaks_data(object@py_var, (object@i - 1L))
             if (identical(as.vector(columns), c("mz", "intensity"))) {
-                res <- iterate(.get_py_var(object@py_var, object@is_in_py),
-                               .py_matchms_spectrum_peaks_data,
-                               simplify = FALSE)
+                res <- lapply(res, function(z) {
+                    colnames(z) <- c("mz", "intensity")
+                    z
+                })
             } else {
-                FUN <- function(x)
-                    .py_matchms_spectrum_peaks_data_columns(
-                        x, columns, drop = drop)
-                res <- iterate(.get_py_var(object@py_var, object@is_in_py),
-                               FUN, simplify = FALSE)
+                res <- lapply(res, function(z) {
+                    colnames(z) <- c("mz", "intensity")
+                    z[, columns, drop = drop]
+                })
             }
             res
         } else list()
     })
 
+#' @importMethodsFrom ProtGenerics extractByIndex
+setMethod("extractByIndex", c("MsBackendPy", "ANY"), function(object, i) {
+    object@i <- object@i[i]
+    .check_i(object)
+    object
+})
 
+#' @rdname MsBackendPy
+setMethod("$", "MsBackendPy", function(x, name) {
+    spectraData(x, name, drop = TRUE)
+})
+
+setMethod("lengths", "MsBackendPy", function(x, use.names = FALSE) {
+    vapply(peaksData(x), nrow, NA_integer_)
+})
+
+#' @importMethodsFrom S4Vectors isEmpty
+setMethod("isEmpty", "MsBackendPy", function(x) {
+    lengths(x) == 0L
+})
+
+#' @importMethodsFrom ProtGenerics acquisitionNum
+setMethod("acquisitionNum", "MsBackendPy", function(object) {
+    spectraData(object, "acquisitionNum", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics centroided
+setMethod("centroided", "MsBackendPy", function(object) {
+    spectraData(object, "centroided", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics collisionEnergy
+setMethod("collisionEnergy", "MsBackendPy", function(object) {
+    spectraData(object, "collisionEnergy", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics dataOrigin
+setMethod("dataOrigin", "MsBackendPy", function(object) {
+    spectraData(object, "dataOrigin", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics intensity
+setMethod("intensity", "MsBackendPy", function(object) {
+    NumericList(peaksData(object, "intensity", drop = TRUE), compress = FALSE)
+})
+
+#' @importMethodsFrom ProtGenerics isolationWindowLowerMz
+setMethod("isolationWindowLowerMz", "MsBackendPy", function(object) {
+    spectraData(object, "isolationWindowLowerMz", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics isolationWindowTargetMz
+setMethod("isolationWindowTargetMz", "MsBackendPy", function(object) {
+    spectraData(object, "isolationWindowTargetMz", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics isolationWindowUpperMz
+setMethod("isolationWindowUpperMz", "MsBackendPy", function(object) {
+    spectraData(object, "isolationWindowUpperMz", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics msLevel
+setMethod("msLevel", "MsBackendPy", function(object) {
+    spectraData(object, "msLevel", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics mz
+setMethod("mz", "MsBackendPy", function(object) {
+    NumericList(peaksData(object, "mz", drop = TRUE), compress = FALSE)
+})
+
+#' @importMethodsFrom ProtGenerics polarity
+setMethod("polarity", "MsBackendPy", function(object) {
+    spectraData(object, "polarity", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics precScanNum
+setMethod("precScanNum", "MsBackendPy", function(object) {
+    spectraData(object, "precScanNum", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics precursorCharge
+setMethod("precursorCharge", "MsBackendPy", function(object) {
+    spectraData(object, "precursorCharge", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics precursorIntensity
+setMethod("precursorIntensity", "MsBackendPy", function(object) {
+    spectraData(object, "precursorIntensity", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics precursorMz
+setMethod("precursorMz", "MsBackendPy", function(object) {
+    spectraData(object, "precursorMz", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics rtime
+setMethod("rtime", "MsBackendPy", function(object) {
+    res <- spectraData(object, "rtime", drop = TRUE)
+    l <- length(object)
+    if (length(res) != l)
+        rep(NA_real_, l)
+    else res
+})
+
+#' @importMethodsFrom ProtGenerics scanIndex
+setMethod("scanIndex", "MsBackendPy", function(object) {
+    spectraData(object, "scanIndex", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics smoothed
+setMethod("smoothed", "MsBackendPy", function(object) {
+    spectraData(object, "smoothed", drop = TRUE)
+})
+
+#' @importMethodsFrom ProtGenerics spectraNames
+setMethod("spectraNames", "MsBackendPy", function(object) {
+    rownames(spectraData(object))
+})
+
+#' @importMethodsFrom ProtGenerics tic
+setMethod("tic", "MsBackendPy", function(object, initial = TRUE) {
+    if (initial) {
+        if (any(spectraVariables(object) == "totIonCurrent"))
+            spectraData(object, "totIonCurrent")[, 1L]
+        else rep(NA_real_, length(object))
+    } else vapply(intensity(object), sum, numeric(1), na.rm = TRUE)
+})
+
+#' @rdname MsBackendPy
+#'
+#' @export
+reindex <- function(object) {
+    object@i <- seq_len(.py_var_length(object))
+    object
+}
 
 #' TODO:
 #'
@@ -345,31 +558,34 @@ setMethod(
 #' - [X] `spectraVariables()`
 #' - [X] `spectraData()`
 #' - [X] `peaksData()`
-#' - [ ] `extractByIndex()`
-#' - [ ] `[`
+#' - [X] `extractByIndex()`
+#' - [X] `[`
 #' - [ ] `backendMerge()`
-#' - [ ] `$`
-#' - [ ] `lengths()`
-#' - [ ] `isEmpty()`
-#' - [ ] `acquisitionNum()`
-#' - [ ] `centroided()`
-#' - [ ] `collisionEnergy()`
-#' - [ ] `dataOrigin()`
-#' - [ ] `intensity()`
-#' - [ ] `isolationWindowLowerMz()`
-#' - [ ] `isolationWindowTargetMz()`
-#' - [ ] `isolationWindowUpperMz()`
-#' - [ ] `msLevel()`
-#' - [ ] `mz()`
-#' - [ ] `polarity()`
-#' - [ ] `precScanNum()`
-#' - [ ] `precursorCharge()`
-#' - [ ] `precursorIntensity()`
-#' - [ ] `precursorMz()`
-#' - [ ] `rtime()`
-#' - [ ] `scanIndex()`
-#' - [ ] `smoothed()`
-#' - [ ] `spectraNames()`
-#' - [ ] `tic()`
+#' - [X] `$`
+#' - [X] `lengths()`
+#' - [X] `isEmpty()`
+#' - [X] `acquisitionNum()`
+#' - [X] `centroided()`
+#' - [X] `collisionEnergy()`
+#' - [X] `dataOrigin()`
+#' - [X] `intensity()`
+#' - [X] `isolationWindowLowerMz()`
+#' - [X] `isolationWindowTargetMz()`
+#' - [X] `isolationWindowUpperMz()`
+#' - [X] `msLevel()`
+#' - [X] `mz()`
+#' - [X] `polarity()`
+#' - [X] `precScanNum()`
+#' - [X] `precursorCharge()`
+#' - [X] `precursorIntensity()`
+#' - [X] `precursorMz()`
+#' - [X] `rtime()`
+#' - [X] `scanIndex()`
+#' - [X] `smoothed()`
+#' - [X] `spectraNames()`
+#' - [X] `tic()`
+#'
+#' - [ ] ensure data types in `spectraData()` are of the correct type.
+#' - [ ] check mapping: seems that variables are not properly/correctly renamed?
 #' @noRd
 NULL

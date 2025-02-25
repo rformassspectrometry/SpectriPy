@@ -78,8 +78,10 @@ test_that("show,MsBackendPy works", {
     expect_output(show(be), "MsBackendPy")
 })
 
-test_that("length,MsBackendPy works", {
+test_that(".py_var_length, length,MsBackendPy works", {
     be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_equal(.py_var_length(be), 100L)
+    expect_equal(.py_var_length(MsBackendPy()), 0L)
     expect_equal(length(be), 100L)
     expect_equal(length(MsBackendPy()), 0L)
 })
@@ -99,7 +101,14 @@ test_that("spectraVariables and .py_get_metadata_names works", {
 })
 
 test_that("peaksData,MsBackendPy works", {
+    ## Empty data
+    be <- MsBackendPy()
+    res <- peaksData(be)
+    expect_equal(res, list())
+
+    ## Read data
     be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_equal(be@i, 1:100)
     res <- peaksData(be)
     expect_equal(res, peaksData(s@backend))
 
@@ -182,6 +191,210 @@ test_that("spectraData,MsBackendPy works", {
     expect_equal(res$precursorCharge, s$precursorCharge)
     expect_equal(res$msLevel, s$msLevel)
 
+    ## only one with drop TRUE
+    res <- spectraData(be, "msLevel", drop = TRUE)
+    expect_equal(res, s$msLevel)
+
     ## non-existant column
     expect_error(spectraData(be, c("msLevel", "other_col")), "not available")
+})
+
+test_that(".check_i works", {
+    expect_true(.check_i(MsBackendPy()))
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_true(.check_i(be))
+    be@i <- 1233:3431
+    expect_error(.check_i(be), "out of bound")
+})
+
+test_that("reindex works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_equal(be@i, 1:100)
+    be@i <- c(4L, 3L)
+    be <- reindex(be)
+    expect_equal(be@i, 1:100)
+})
+
+test_that("extractByIndex and [,MsBackendPy work", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- be[c(43, 2)]
+    expect_equal(res@i, c(43L, 2L))
+
+    expect_equal(peaksData(res), peaksData(s@backend)[c(43, 2)])
+    cols <- c("msLevel", "precursorMz", "rtime", "spectrum_index")
+    expect_equal(spectraData(res, cols),
+                 spectraData(s@backend, cols)[c(43, 2), ])
+
+    ## Single element
+    res <- be[3L]
+    expect_equal(peaksData(res), peaksData(s@backend)[3L])
+})
+
+test_that("$,MsBackendPy works", {
+    be <- MsBackendPy()
+    expect_equal(be$msLevel, integer())
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_equal(be$msLevel, s$msLevel)
+    expect_equal(be$precursorMz, s$precursorMz)
+    expect_error(be$not_exists, "not available")
+})
+
+test_that("lengths,MsBackendPy works", {
+    be <- MsBackendPy()
+    expect_equal(lengths(be), integer(0))
+
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_equal(lengths(be), lengths(s))
+})
+
+test_that("isEmpty,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    expect_false(any(isEmpty(be)))
+})
+
+test_that("acquisitionNum,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- acquisitionNum(be)
+    expect_true(is.integer(res))
+    expect_true(all(is.na(res)))
+})
+
+test_that("centroided,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- centroided(be)
+    expect_true(is.logical(res))
+    expect_true(all(is.na(res)))
+})
+
+test_that("collisionEnergy,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- collisionEnergy(be)
+    expect_true(is.numeric(res))
+    expect_true(all(is.na(res)))
+})
+
+test_that("dataOrigin,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- dataOrigin(be)
+    expect_true(is.character(res))
+    expect_true(all(is.na(res)))
+})
+
+test_that("intensity,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- intensity(be)
+    expect_equal(res, intensity(s@backend))
+    expect_s4_class(res, "NumericList")
+})
+
+test_that("isolationWindowLowerMz,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- isolationWindowLowerMz(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, isolationWindowLowerMz(s@backend))
+    expect_true(all(is.na(res)))
+})
+
+test_that("isolationWindowUpperMz,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- isolationWindowUpperMz(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, isolationWindowUpperMz(s@backend))
+    expect_true(all(is.na(res)))
+})
+
+test_that("isolationWindowTargetMz,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- isolationWindowTargetMz(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, isolationWindowTargetMz(s@backend))
+    expect_true(all(is.na(res)))
+})
+
+test_that("msLevel,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- msLevel(be)
+    expect_true(is.integer(res))
+    expect_equal(res, msLevel(s@backend))
+})
+
+test_that("mz,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- mz(be)
+    expect_equal(res, mz(s@backend))
+    expect_s4_class(res, "NumericList")
+})
+
+test_that("polarity,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- polarity(be)
+    expect_true(is.integer(res))
+    expect_equal(res, polarity(s@backend))
+    expect_true(all(is.na(res)))
+})
+
+test_that("precScanNum,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- precScanNum(be)
+    expect_true(is.integer(res))
+    expect_equal(res, precScanNum(s@backend))
+    expect_true(all(is.na(res)))
+})
+
+test_that("precursorCharge,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- precursorCharge(be)
+    expect_true(is.integer(res))
+    expect_equal(res, precursorCharge(s@backend))
+})
+
+test_that("precursorIntensity,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- precursorIntensity(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, precursorIntensity(s@backend))
+})
+
+test_that("precursorMz,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- precursorMz(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, precursorMz(s@backend))
+})
+
+test_that("rtime,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- rtime(be)
+    expect_true(is.numeric(res))
+    expect_equal(res, rtime(s@backend))
+})
+
+test_that("scanIndex,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- scanIndex(be)
+    expect_true(is.integer(res))
+    expect_equal(res, scanIndex(s@backend))
+})
+
+test_that("scanIndex,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- smoothed(be)
+    expect_true(is.logical(res))
+    expect_equal(res, smoothed(s@backend))
+})
+
+test_that("spectraNames,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- spectraNames(be)
+    expect_equal(res, spectraNames(s@backend))
+})
+
+test_that("tic,MsBackendPy works", {
+    be <- backendInitialize(MsBackendPy(), "s_p")
+    res <- tic(be, initial = TRUE)
+    expect_true(is.numeric(res))
+    expect_equal(res, tic(s@backend, initial = TRUE))
+    res <- tic(be, initial = FALSE)
+    expect_true(is.numeric(res))
+    expect_equal(res, tic(s@backend, initial = FALSE))
 })
