@@ -105,7 +105,7 @@ The initial mapping is based on this
 \itemize{
 \item \code{defaultSpectraVariableMapping()}: returns the \emph{default} mapping between
 spectra variables and \emph{matchms} metadata names.
-\item \code{spectraVariableMapping()}: returns the currenctly defined spectra
+\item \code{spectraVariableMapping()}: returns the currently defined spectra
 variable mapping as a named character vector, with names representing the
 names of the spectra variables in R and elements the respective names
 of the spectra metadata in Python. Use \code{\link[Spectra:spectraData]{Spectra::spectraVariables()}} on

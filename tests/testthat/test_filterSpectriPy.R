@@ -42,7 +42,7 @@ test_that("select_by_intensity constructor works", {
 
 test_that("py_fun,select_by_intensity works", {
     p <- select_by_intensity(intensity_from = 3, intensity_to = 24)
-    res <- SpectriPy:::py_fun(p)
+    res <- py_fun(p)
     expect_true(is(res, "functools.partial"))
     expect_equal(py_to_r(res$keywords["intensity_from"]), 3.0)
     expect_equal(py_to_r(res$keywords["intensity_to"]), 24.0)
@@ -77,7 +77,7 @@ test_that("select_by_mz constructor works", {
 
 test_that("py_fun,select_by_mz works", {
     p <- select_by_mz(mz_from = 3, mz_to = 24)
-    res <- SpectriPy:::py_fun(p)
+    res <- py_fun(p)
     expect_true(is(res, "functools.partial"))
     expect_equal(py_to_r(res$keywords["mz_from"]), 3.0)
     expect_equal(py_to_r(res$keywords["mz_to"]), 24.0)
@@ -111,7 +111,7 @@ test_that("remove_peaks_around_precursor_mz constructor works", {
 
 test_that("py_fun,remove_peaks_around_precursor_mz works", {
     p <- remove_peaks_around_precursor_mz(mz_tolerance = 200)
-    res <- SpectriPy:::py_fun(p)
+    res <- py_fun(p)
     expect_true(is(res, "functools.partial"))
     expect_equal(py_to_r(res$keywords["mz_tolerance"]), 200)
 })
@@ -140,7 +140,7 @@ test_that("normalize_intensities constructor works", {
 
 test_that("py_fun,select_by_intensity works", {
     p <- select_by_mz(mz_from = 3, mz_to = 24)
-    res <- SpectriPy:::py_fun(p)
+    res <- py_fun(p)
     expect_true(is(res, "functools.partial"))
     expect_equal(py_to_r(res$keywords["mz_from"]), 3.0)
     expect_equal(py_to_r(res$keywords["mz_to"]), 24.0)

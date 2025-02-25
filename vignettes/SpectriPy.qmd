@@ -285,7 +285,6 @@ from matchms.importing import load_from_mgf
 
 mgf_p = list(load_from_mgf(r.f_mgf))
 mgf_p
-
 ```
 
 The MS data from the MGF is now loaded in Python as a list of
@@ -424,7 +423,7 @@ intensity(mgf)
 
 Conversion of the MS peaks data (i.e., the *m/z* and intensity values) is always
 performed by the `rspec_to_pyspec()` and `pyspec_to_rspec()` functions. But next
-to the peaks data also additional information are available for individual
+to the peaks data, also additional information are available for individual
 spectra. In R/*Spectra* they are called *spectra variables* while in *matchms*
 they are stored as a *metadata* attribute to a `matchms.Spectrum` object. The
 *SpectriPy* package defines a core set of spectra variables/metadata that are by
