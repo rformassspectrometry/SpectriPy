@@ -155,9 +155,6 @@ jobs:
           ## For installing usethis's dependency gert
           brew install libgit2
 
-          ## Python
-          ## brew install python@3.12
-
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |

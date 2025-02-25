@@ -253,28 +253,28 @@ setMethod(
 #' @importFrom reticulate py_dict
 #'
 #' @noRd
-setMethod("py_fun", "select_by_intensity", function(x) {
+setMethod("py_fun", "select_by_intensity", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$select_by_intensity,
         py_dict(c("intensity_from", "intensity_to"),
-                c(x@intensity_from, x@intensity_to)))
+                c(object@intensity_from, object@intensity_to)))
 })
 
-setMethod("py_fun", "select_by_mz", function(x) {
+setMethod("py_fun", "select_by_mz", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$select_by_mz,
         py_dict(c("mz_from", "mz_to"),
-                c(x@mz_from, x@mz_to)))
+                c(object@mz_from, object@mz_to)))
 })
 
-setMethod("py_fun", "remove_peaks_around_precursor_mz", function(x) {
+setMethod("py_fun", "remove_peaks_around_precursor_mz", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$remove_peaks_around_precursor_mz,
         py_dict(c("mz_tolerance"),
-                c(x@mz_tolerance)))
+                c(object@mz_tolerance)))
 })
 
-setMethod("py_fun", "normalize_intensities", function(x) {
+setMethod("py_fun", "normalize_intensities", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$normalize_intensities)
 })

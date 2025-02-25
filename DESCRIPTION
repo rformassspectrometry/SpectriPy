@@ -58,6 +58,7 @@ Suggests:
     MsBackendMgf,
     msdata,
     mzR,
+    knitr,
     BiocStyle
 License: Artistic-2.0
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues

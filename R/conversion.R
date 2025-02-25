@@ -64,7 +64,7 @@
 #' - `defaultSpectraVariableMapping()`: returns the *default* mapping between
 #'   spectra variables and *matchms* metadata names.
 #'
-#' - `spectraVariableMapping()`: returns the currenctly defined spectra
+#' - `spectraVariableMapping()`: returns the currently defined spectra
 #'   variable mapping as a named character vector, with names representing the
 #'   names of the spectra variables in R and elements the respective names
 #'   of the spectra metadata in Python. Use [Spectra::spectraVariables()] on
