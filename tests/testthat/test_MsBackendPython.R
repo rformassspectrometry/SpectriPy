@@ -8,7 +8,8 @@ s$spectrum_index <- seq_along(s)
 ## the Python object in Python, otherwise it can not be seen by the unit
 ## tests below.
 py_set_attr(py, "s_p", rspec_to_pyspec(s, c(defaultSpectraVariableMapping(),
-                                            spectrum_index = "spectrum_index")))
+                                            spectrum_index = "spctrm_idx")))
+expect_true(any(names(py$s_p[[1]]$metadata) == "spctrm_idx"))
 
 test_that("MsBackendPy constructor works", {
     res <- MsBackendPy()
@@ -42,7 +43,6 @@ test_that(".check_py_var_exists works", {
     expect_true(.check_py_var_exists("py", FALSE))
     expect_true(.check_py_var_exists("s_p", TRUE))
     ## expect_true(.check_py_var_exists("s", FALSE))
-
 })
 
 test_that(".check_py_var works", {
@@ -94,10 +94,17 @@ test_that("spectraVariables and .py_get_metadata_names works", {
         all(c("charge", "collision_energy", "ms_level",
               "precursor_intensity", "precursor_mz", "retention_time") %in%
             vars))
-    expect_true(any(vars == "spectrum_index"))
-    expect_true(any(names(vars) == "spectrum_index"))
+    expect_true(any(vars == "spctrm_idx"))
+    expect_true(any(names(vars) == "spctrm_idx"))
     res <- spectraVariables(be)
     expect_true(all(names(coreSpectraVariables()) %in% res))
+    expect_true("spctrm_idx" %in% res)
+
+    m <- c(defaultSpectraVariableMapping(), spectrum_index = "spctrm_idx")
+    be@spectraVariableMapping <- m
+    res <- spectraVariables(be)
+    expect_true(all(names(coreSpectraVariables()) %in% res))
+    expect_true("spectrum_index" %in% res)
 })
 
 test_that("peaksData,MsBackendPy works", {
@@ -139,10 +146,10 @@ test_that("spectraData,MsBackendPy works", {
     expect_s4_class(res, "DataFrame")
     expect_true(all(names(coreSpectraVariables()) %in% colnames(res)))
     expect_true(all(names(be@spectraVariableMapping) %in% colnames(res)))
-    expect_true(any(colnames(res) == "spectrum_index"))
+    expect_true(any(colnames(res) == "spctrm_idx"))
 
     ## arbitrary order
-    cols <- c("rtime", "msLevel", "spectrum_index", "precursorMz", "polarity")
+    cols <- c("rtime", "msLevel", "spctrm_idx", "precursorMz", "polarity")
     res <- spectraData(be, cols)
     expect_equal(colnames(res), cols)
     expect_equal(res$precursorMz, s$precursorMz)
@@ -153,10 +160,10 @@ test_that("spectraData,MsBackendPy works", {
     expect_s4_class(res, "DataFrame")
     expect_equal(res$msLevel, s$msLevel)
 
-    res <- spectraData(be, "spectrum_index")
+    res <- spectraData(be, "spctrm_idx")
     expect_s4_class(res, "DataFrame")
-    expect_equal(colnames(res), "spectrum_index")
-    expect_equal(res$spectrum_index, s$spectrum_index)
+    expect_equal(colnames(res), "spctrm_idx")
+    expect_equal(res$spctrm_idx, s$spectrum_index)
 
     res <- spectraData(be, "smoothed")
     expect_s4_class(res, "DataFrame")
@@ -197,6 +204,14 @@ test_that("spectraData,MsBackendPy works", {
 
     ## non-existant column
     expect_error(spectraData(be, c("msLevel", "other_col")), "not available")
+
+    ## custom spectravariablemapping
+    m <- c(defaultSpectraVariableMapping(),
+           spectrum_index = "spctrm_idx")
+    be@spectraVariableMapping <- m
+    res <- spectraData(be)
+    expect_true(all(names(m) %in% colnames(res)))
+    expect_equal(res$spectrum_index, seq_along(be))
 })
 
 test_that(".check_i works", {
@@ -221,7 +236,7 @@ test_that("extractByIndex and [,MsBackendPy work", {
     expect_equal(res@i, c(43L, 2L))
 
     expect_equal(peaksData(res), peaksData(s@backend)[c(43, 2)])
-    cols <- c("msLevel", "precursorMz", "rtime", "spectrum_index")
+    cols <- c("msLevel", "precursorMz", "rtime")
     expect_equal(spectraData(res, cols),
                  spectraData(s@backend, cols)[c(43, 2), ])
 

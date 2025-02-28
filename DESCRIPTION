@@ -55,7 +55,7 @@ Depends:
     R (>= 4.1.0),
     reticulate
 Imports:
-    Spectra (>= 1.5.8),
+    Spectra (>= 1.17.7),
     IRanges,
     S4Vectors,
     MsCoreUtils,

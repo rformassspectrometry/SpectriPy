@@ -32,7 +32,7 @@ matchms_filtering <- NULL
         }
     }
     if (!py_module_available("matchms"))
-        message("Required Python library 'matchms' not available!")
+        warning("Required Python library 'matchms' not available!")
     matchms <<- import("matchms", delay_load = TRUE, convert = FALSE)
     matchms_similarity <<- import("matchms.similarity", delay_load = TRUE,
                                   convert = FALSE)
@@ -72,6 +72,7 @@ matchms_filtering <- NULL
                        envname = envname, method = "virtualenv",
                        channels = c("conda-forge"), ...)
         }
-        message("\nPlease restart R to load the freshly installed packages.\n")
+        packageStartupMessage(
+            "\nPlease restart R to load the freshly installed packages.\n")
     }
 }

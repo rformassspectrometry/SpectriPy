@@ -75,7 +75,7 @@ functionality from the *reticulate* R package (see also
 information on Python and library version). Note that if required Python
 libraries are being installed during package loading it might be required to
 restart the R session to ensure they are correctly loaded. See section
-@sec-python for more Python configuration options of *SpectriPy*.
+@sec-python for more configuration options of *SpectriPy*.
 
 The *reticulate* package will be loaded by *SpectriPy* hence, the Python/R
 integration provided by that package will be available as well. To better
@@ -90,7 +90,6 @@ library(Spectra)
 library(SpectriPy)
 ```
 
-TODO: add info on detailed/custom configuration (separate subsection).
 
 
 ## Converting MS data from R to Python
@@ -228,7 +227,7 @@ the scaled intensity values. To get the processing results back to R we would
 need to convert the data from Python to R. This could be done with the
 `pyspec_to_rspec()` function which translates Python MS data structures into an
 R `Spectra` object (see the following @sec-py-to-r section for more
-information). A more elegant way would be to use the `MsBackendPy` backend for
+information). A more elegant way is to use the `MsBackendPy` backend for
 R' `Spectra` objects (see section @sec-backend).
 
 With *reticulate* we can use the `py` special variable in R to access attributes
@@ -510,24 +509,44 @@ mgf_r$inchi |>
     head()
 ```
 
-Similarly, we can also provide a custom mapping for the `MsBackendPy`:
+When using a `MsBackendPy`, all metadata attributes from the `matchms.Spectrum`
+objects can be accessed and extracted with the `spectraData()` function. The
+`spectraVariables()` function lists all available columns:
+
+```{r}
+#' R session:
+
+#' List available spectra variables
+spectraVariables(mgf)
+```
+
+We thus have already access to e.g. the `"inchi"` variable:
+
+```{r}
+#' R session:
+
+#' Get the first entries from the inchi variable
+mgf$inchi |>
+    head()
+```
+
+A `spectraVariableMapping()` could however be used to rename variables. Below we
+add for example a mapping of the `matchms.Spectrum` metadata attribute
+`"pepmassint"` to the (core) variable `"precursorIntensity"`:
 
 ```{r}
 #' R session:
 
 #' Add mapping for additional spectra variables to the `MsBackendPy`
-mgf <- Spectra("mgf_p", source = MsBackendPy(), mapping = map)
+m <- defaultSpectraVariableMapping()
+m["precursorIntensity"] <- "pepmassint"
+spectraVariableMapping(mgf) <- m
+
+#' List available spectra variables
 spectraVariables(mgf)
-```
 
-And we have now also access to the additional metadata:
-
-```{r}
-#' R session:
-
-#' List the first values for the spectra variable
-mgf$compound_name |>
-    head()
+#' Get spectra data for two variables
+spectraData(mgf, c("precursorMz", "precursorIntensity"))
 ```
 
 The `r_to_py()` methods don't support additional parameters, thus, in order to

@@ -8,6 +8,8 @@
 \alias{spectraData,MsBackendPy-method}
 \alias{peaksData,MsBackendPy-method}
 \alias{$,MsBackendPy-method}
+\alias{spectraVariableMapping<-,MsBackendPy-method}
+\alias{spectraVariableMapping<-,Spectra-method}
 \alias{reindex}
 \title{A MS data backend for MS data stored in Python}
 \usage{
@@ -29,15 +31,49 @@
 
 \S4method{$}{MsBackendPy}(x, name)
 
+\S4method{spectraVariableMapping}{MsBackendPy}(object) <- value
+
+\S4method{spectraVariableMapping}{Spectra}(object) <- value
+
 reindex(object)
+}
+\arguments{
+\item{object}{A \code{MsBackendPy} object.}
+
+\item{pythonVariableName}{For \code{backendInitialize()}: \code{character(1)} with the
+name of the variable/Python attribute that contains the list of
+\code{matchms.Spectrum} objects with the MS data.}
+
+\item{spectraVariableMapping}{For \code{backendInitialize()}: the mapping between
+spectra variable names and (\code{matchms.Spectrum}) metadata names. See
+\code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} for more information and details.}
+
+\item{...}{Additional parameters.}
+
+\item{data}{For \code{backendInitialize()}: \code{DataFrame} with the full MS data
+(peaks data and spectra data). Currently not supported.}
+
+\item{x}{A \code{MsBackendPy} object}
+
+\item{columns}{For \code{spectraData()}: names of columns (spectra variables) to
+retrieve. Defaults to \code{spectraVariables(object)}. For \code{peaksData()}:
+names of the peaks variables to retrieve.}
+
+\item{drop}{For \code{spectraData()} and \code{peaksData()}: if, when a single column
+is requested, the data should be returned as a \code{vector} instead of a
+\code{data.frame} or \code{matrix}.}
+
+\item{name}{For \code{$}: the name of the variable to retrieve.}
+
+\item{value}{Replacement value(s).}
 }
 \description{
 The \code{MsBackendPy} allows to access MS data stored as \code{matchms.Spectrum}
 objects from the \href{https://github.com/matchms/matchms}{matchms} Python
-library directly from R. The MS data (peaks data or spectra variables) get
+library directly from R. The MS data (peaks data or spectra variables) are
 translated on-the-fly when accessed. Thus, the \code{MsBackendPy} allows a
-seamless integration of Python MS data structures into \code{\link[=Spectra]{Spectra()}} based
-analysis workflows.
+seamless integration of Python MS data structures into \code{\link[Spectra:Spectra]{Spectra::Spectra()}}
+based analysis workflows.
 
 The \code{MsBackendPy} object is considered \emph{read-only}, i.e. it does not provide
 functionality to replace the peaks data from R. However, it is possible to
@@ -48,11 +84,10 @@ The \code{MsBackendPy} keeps only a reference to the MS data in Python (i.e. the
 name of the variable in Python) as well as an index pointing to the
 individual spectra in Python but no other data. Any data requested from
 the \code{MsBackendPy} is accessed and translated on-the-fly from the Python
-variable. The \code{MsBackendPy} is thus an interface to the MS data, but does
-not contain any data itself. Because of this also all changes done to the
-data in Python (which inlcudes also a subset operation performed using \code{[}
-on the backend in R!) would immediately affect any \code{MsBackendPy} instances
-pointing to the same Python variable.
+variable. The \code{MsBackendPy} is thus an interface to the MS data, but not
+a data container. All changes to the MS data in the Python variable
+(performed e.g. in Python) immediately affect any \code{MsBackendPy} instances
+pointing to this variable.
 
 Special care must be taken if the MS data structure in Python is subset or
 it's order is changed (e.g. by another process). In that case it might be
@@ -66,7 +101,7 @@ Python and the backend only references to this data through the name of
 the variable in Python. Thus, each time MS data is requested from the
 backend, it is retrieved in its \strong{current} state.
 If for example data was transformed or metadata added or removed in the
-Python object, it would immediately also affect the backend.
+Python object, it immediately affects the \code{Spectra}/backend.
 }
 \section{\code{MsBackendPy} methods}{
 
@@ -76,12 +111,33 @@ interface for access to MS data. Details on the invidual functions can also
 be found in the main documentation in the \emph{Spectra} package (i.e. for
 \code{\link[Spectra:MsBackend]{Spectra::MsBackend()}}). Here we provide information for functions with
 specific properties of the backend.
-
-TODO LLLLL complete the documentation
 \itemize{
-\item \code{backendInitialize()}:
-\item \code{peaksData()}:
-\item \code{spectraData()}:
+\item \code{backendInitialize()}: initializes the backend with information from the
+referenced Python variable (attribute). The name of this attribute,
+ideally stored in the associated Python session, is expected to be
+provided with the \code{pythonVariableName} parameter. The optional
+\code{spectraVariableMapping} parameter allows to provide additional, or
+alternative, mapping of \code{Spectra}'s \emph{spectra variables} to metadata in the
+\code{matchms.Spectrum} objects. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} (the
+default) for more information. The function returns an initialized
+instance of \code{MsBackendPy}.
+\item \code{peaksData()}: extracts the peaks data matrices from the backend. Python
+code is applied to the data structure in Python to
+extract the \emph{m/z} and intensity values as a list of (numpy) arrays. These
+are then translated into an R \code{list} of two-column \code{numeric} matrices.
+Because Python does not allow to name columns of an array, an additional
+loop in R is required to set the column names to \code{"mz"} and \code{"intensity"}.
+\item \code{spectraData()}: extracts the spectra data from the backend. Which spectra
+variables are translated and retrieved from the Python objects depends on
+the backend's \code{spectraVariableMapping()}. All metadata names defined are
+retrieved and added to the returned \code{DataFrame} (with eventually missing
+\emph{core} spectra variables filled with \code{NA}).
+\item \code{spectraVariables()}: retrieves available spectra variables, which include
+the names of all metadata attributes in the \code{matchms.Spectrum} objects
+and the \emph{core} spectra variables \code{\link[Spectra:spectraData]{Spectra::coreSpectraVariables()}}.
+\item \verb{spectraVariableMapping<-}: replaces the \code{spectraVariableMapping} of the
+backend (see \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} for details and description
+of the expected format).
 }
 }
 
@@ -133,6 +189,9 @@ spectraVariables(s_2)
 
 ## Get the full peaks data:
 peaksData(s_2)
+
+## Get the peaks from the first spectrum
+peaksData(s_2)[[1L]]
 
 ## Get the full spectra data:
 spectraData(s_2)
