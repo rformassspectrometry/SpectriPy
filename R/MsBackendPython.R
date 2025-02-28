@@ -6,7 +6,7 @@
 #'
 #' The `MsBackendPy` allows to access MS data stored as `matchms.Spectrum`
 #' objects from the [matchms](https://github.com/matchms/matchms) Python
-#' library directly from R. The MS data (peaks data or spectra variables) get
+#' library directly from R. The MS data (peaks data or spectra variables) are
 #' translated on-the-fly when accessed. Thus, the `MsBackendPy` allows a
 #' seamless integration of Python MS data structures into [Spectra()] based
 #' analysis workflows.
@@ -21,11 +21,10 @@
 #' name of the variable in Python) as well as an index pointing to the
 #' individual spectra in Python but no other data. Any data requested from
 #' the `MsBackendPy` is accessed and translated on-the-fly from the Python
-#' variable. The `MsBackendPy` is thus an interface to the MS data, but does
-#' not contain any data itself. Because of this also all changes done to the
-#' data in Python (which inlcudes also a subset operation performed using `[`
-#' on the backend in R!) would immediately affect any `MsBackendPy` instances
-#' pointing to the same Python variable.
+#' variable. The `MsBackendPy` is thus an interface to the MS data, but not
+#' a data container. All changes to the MS data in the Python variable
+#' (performed e.g. in Python) immediately affect any `MsBackendPy` instances
+#' pointing to this variable.
 #'
 #' Special care must be taken if the MS data structure in Python is subset or
 #' it's order is changed (e.g. by another process). In that case it might be
@@ -40,7 +39,7 @@
 #' the variable in Python. Thus, each time MS data is requested from the
 #' backend, it is retrieved in its **current** state.
 #' If for example data was transformed or metadata added or removed in the
-#' Python object, it would immediately also affect the backend.
+#' Python object, it immediately affects the `Spectra`/backend.
 #'
 #' @section `MsBackendPy` methods:
 #'
@@ -50,13 +49,15 @@
 #' [Spectra::MsBackend()]). Here we provide information for functions with
 #' specific properties of the backend.
 #'
-#' TODO LLLLL complete the documentation
-#'
 #' - `backendInitialize()`:
 #'
-#' - `peaksData()`:
+#' - `peaksData()`: Python code is applied to the data structure in Python to
+#'   extract the *m/z* and intensity values as a list of (numpy) arrays. These
+#'   are then translated into an R `list` of two-column `numeric` matrices.
+#'   Because Python does not allow to name columns of an array, an additional
+#'   loop in R is required to set the column names to `"mz"` and `"intensity"`.
 #'
-#' - `spectraData()`:
+#' - `spectraData()`: the spectra
 #'
 #' @section Additional helper and utility functions:
 #'
