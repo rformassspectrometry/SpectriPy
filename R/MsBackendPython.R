@@ -27,7 +27,7 @@
 #' pointing to this variable.
 #'
 #' Special care must be taken if the MS data structure in Python is subset or
-#' it's order is changed (e.g. by another process). In that case it might be
+#' its order is changed (e.g. by another process). In that case it might be
 #' needed to re-index the backend using the `reindex()` function:
 #' `object <- reindex(object)`. This will update (replace) the index to the
 #' individual spectra in Python which is stored within the backend.
@@ -86,18 +86,20 @@
 #'   This function is useful if the original data referenced by the backend was
 #'   subset or re-ordered by a different process (or a function in Python).
 #'
-#' @param columns For `spectraData()`: names of columns (spectra variables) to
-#'     retrieve. Defaults to `spectraVariables(object)`. For `peaksData()`:
+#' @param columns For `spectraData()`: `character` with the names of
+#'     columns (spectra variables) to retrieve. Defaults to
+#'     `spectraVariables(object)`. For `peaksData()`: `character` with the
 #'     names of the peaks variables to retrieve.
 #'
 #' @param data For `backendInitialize()`: `DataFrame` with the full MS data
 #'     (peaks data and spectra data). Currently not supported.
 #'
-#' @param drop For `spectraData()` and `peaksData()`: if, when a single column
-#'     is requested, the data should be returned as a `vector` instead of a
-#'     `data.frame` or `matrix`.
+#' @param drop For `spectraData()` and `peaksData()`: `logical(1)` whether,
+#'     when a single column is requested, the data should be returned as a
+#'     `vector` instead of a `data.frame` or `matrix`.
 #'
-#' @param name For `$`: the name of the variable to retrieve.
+#' @param name For `$`: `character(1)` with the name of the variable to
+#'     retrieve.
 #'
 #' @param object A `MsBackendPy` object.
 #'
@@ -105,9 +107,10 @@
 #'     name of the variable/Python attribute that contains the list of
 #'     `matchms.Spectrum` objects with the MS data.
 #'
-#' @param spectraVariableMapping For `backendInitialize()`: the mapping between
-#'     spectra variable names and (`matchms.Spectrum`) metadata names. See
-#'     [defaultSpectraVariableMapping()] for more information and details.
+#' @param spectraVariableMapping For `backendInitialize()`: named `character`
+#'     with the mapping between spectra variable names and (`matchms.Spectrum`)
+#'     metadata names. See [defaultSpectraVariableMapping()] for more
+#'     information and details.
 #'
 #' @param value Replacement value(s).
 #'
@@ -176,15 +179,18 @@ NULL
 
 #' @noRd
 #'
-#' @slot py_var the name of the variable
+#' @slot py_var `character(1)` with the **name** of the variable. The variable
+#'     could be defined in R or in Python.
 #'
-#' @slot py_lib the Python library representing the data. currently not used.
+#' @slot py_lib `character(1)` defining the Python library representing the
+#'     data. Currently not used/defaults to `matchms`.
 #'
-#' @slot is_in_py if the variable is in Python (py$) or in the R environment.
+#' @slot is_in_py `logical(1)` whether the variable is in Python (py$) or in
+#'     the R environment.
 #'
-#' @slot i the integer/index of the spectra from the backend we should
-#'     represent. We might need to synchronize that index with the actual
-#'     data.
+#' @slot i `integer` with the integer/index of the spectra from the backend
+#'     we should represent. This allows to subset using `[` **without**
+#'     changing the original data.
 setClass("MsBackendPy",
          contains = "MsBackend",
          slots = c(py_var = "character",
@@ -203,85 +209,6 @@ setClass("MsBackendPy",
 #' @export
 MsBackendPy <- function() {
     new("MsBackendPy")
-}
-
-.check_spectra_variable_mapping <- function(x) {
-    if (length(x) && !length(names(x)))
-        stop("'spectraVariableMapping' needs to be a named character vector")
-    else TRUE
-}
-
-#' Helper to get the `py` variable from *reticulate*.
-#'
-#' @noRd
-.get_py <- function() {
-    tryCatch({
-        get("py")
-    }, error = function(e) {
-        stop("Failed to get variable 'py'. Is the 'reticulate' package loaded?")
-    })
-}
-
-#' @importFrom reticulate py_has_attr
-.exists_py_var <- function(x) {
-    py_has_attr(.get_py(), x)
-}
-
-#' Checks if the variable with the name `x` **exists** in Python (if
-#' `is_in_py = TRUE`) or in R (if `is_in_py = FALSE`). It throws and error
-#' if there is none.
-#'
-#' @noRd
-.check_py_var_exists <- function(x, is_in_py = TRUE) {
-    if ((is_in_py && !.exists_py_var(x)) |
-        (!is_in_py && !length(get0(x))))
-        stop("No variable of name \"", x, "\" found",
-             " in the Python or R environment.")
-    TRUE
-}
-
-.check_py_var <- function(x, is_in_py = TRUE) {
-    var <- .get_py_var(x, is_in_py)
-    if (!is(var, "python.builtin.list"))
-        stop("Variable \"", x, "\" is supposed to be a Python list, ",
-             "but it is a ", class(x)[1L])
-        TRUE
-}
-
-#' Check that all indices are within the range of the data in Python.
-#'
-#' @param object `MsBackendPy` object.
-#'
-#' @return `TRUE` if all is OK - otherwise it throws an error
-#'
-#' @noRd
-.check_i <- function(object) {
-    l <- .py_var_length(object)
-    if (l > 0 && max(object@i) > l)
-        stop("Indices are out of bound. Use `reindex()` to update indices ",
-             "of 'object' if \"", object@py_var, "\" was subset by ",
-             "another process.", call. = FALSE)
-    TRUE
-}
-
-#' Helper function to get the variable with the Python data. Can be either
-#' in R or in Python.
-#'
-#' @param x `character(1)` with the name of the variable.
-#'
-#' @param is_in_py `logical(1)` whether the variable is stored in the `py`
-#'     module (`is_in_py = TRUE`, the default) or in the R environment
-#'     (`is_in_py = FALSE`).
-#'
-#' @return the variable for which then name was provided.
-#'
-#' @noRd
-#'
-#' @importFrom reticulate py_get_attr
-.get_py_var <- function(x, is_in_py = TRUE) {
-    if (is_in_py) {
-        py_get_attr(.get_py(), x)
-    } else get0(x)
 }
 
 #' @importMethodsFrom ProtGenerics backendInitialize
@@ -329,39 +256,10 @@ setMethod("show", "MsBackendPy", function(object) {
         ifelse(object@is_in_py, "in Python", "in R"), "\n", sep = "")
 })
 
-#' @importFrom reticulate py_run_string py_eval
-.py_var_length <- function(x) {
-    if (length(x@py_var)) {
-        if (x@is_in_py) py_eval(paste0("len(", x@py_var, ")"))
-        else length(.get_py_var(x@py_var, FALSE))
-    } else 0L
-}
-
 #' @rdname MsBackendPy
 setMethod("length", "MsBackendPy", function(x) {
     length(x@i)
 })
-
-#' Get the names of the metadata fields from the referenced Python object.
-#' Returns a named vector, elements being the metadata names in Python and
-#' names the respective spectra variable names, i.e. the names that should
-#' be used in R.
-#'
-#' @param x `MsBackendPy`
-#'
-#' @noRd
-.py_get_metadata_names <- function(x) {
-    var <- .get_py_var(x@py_var, x@is_in_py)
-    if (length(var)) {
-        mt <- names(var[0L]$metadata)
-        names(mt) <- names(
-            x@spectraVariableMapping)[match(mt, x@spectraVariableMapping)]
-        nas <- is.na(names(mt))
-        names(mt)[nas] <- mt[nas]
-        mt
-    }
-    else character()
-}
 
 #' @importMethodsFrom ProtGenerics spectraVariables
 #'
@@ -610,6 +508,117 @@ reindex <- function(object) {
     object
 }
 
+################################################################################
+##        HELPER FUNCTIONS
+################################################################################
+.check_spectra_variable_mapping <- function(x) {
+    if (length(x) && !length(names(x)))
+        stop("'spectraVariableMapping' needs to be a named character vector")
+    else TRUE
+}
+
+#' Helper to get the `py` variable from *reticulate*.
+#'
+#' @noRd
+.get_py <- function() {
+    tryCatch({
+        get("py")
+    }, error = function(e) {
+        stop("Failed to get variable 'py'. Is the 'reticulate' package loaded?")
+    })
+}
+
+#' @importFrom reticulate py_has_attr
+.exists_py_var <- function(x) {
+    py_has_attr(.get_py(), x)
+}
+
+#' Checks if the variable with the name `x` **exists** in Python (if
+#' `is_in_py = TRUE`) or in R (if `is_in_py = FALSE`). It throws and error
+#' if there is none.
+#'
+#' @noRd
+.check_py_var_exists <- function(x, is_in_py = TRUE) {
+    if ((is_in_py && !.exists_py_var(x)) |
+        (!is_in_py && !length(get0(x))))
+        stop("No variable of name \"", x, "\" found",
+             " in the Python or R environment.")
+    TRUE
+}
+
+.check_py_var <- function(x, is_in_py = TRUE) {
+    var <- .get_py_var(x, is_in_py)
+    if (!is(var, "python.builtin.list"))
+        stop("Variable \"", x, "\" is supposed to be a Python list, ",
+             "but it is a ", class(x)[1L])
+        TRUE
+}
+
+#' Check that all indices are within the range of the data in Python.
+#'
+#' @param object `MsBackendPy` object.
+#'
+#' @return `TRUE` if all is OK - otherwise it throws an error
+#'
+#' @noRd
+.check_i <- function(object) {
+    l <- .py_var_length(object)
+    if (l > 0 && max(object@i) > l)
+        stop("Indices are out of bound. Use `reindex()` to update indices ",
+             "of 'object' if \"", object@py_var, "\" was subset by ",
+             "another process.", call. = FALSE)
+    TRUE
+}
+
+#' Helper function to get the variable with the Python data. Can be either
+#' in R or in Python.
+#'
+#' @param x `character(1)` with the name of the variable.
+#'
+#' @param is_in_py `logical(1)` whether the variable is stored in the `py`
+#'     module (`is_in_py = TRUE`, the default) or in the R environment
+#'     (`is_in_py = FALSE`).
+#'
+#' @return the variable for which then name was provided.
+#'
+#' @noRd
+#'
+#' @importFrom reticulate py_get_attr
+.get_py_var <- function(x, is_in_py = TRUE) {
+    if (is_in_py) {
+        py_get_attr(.get_py(), x)
+    } else get0(x)
+}
+
+#' @importFrom reticulate py_run_string py_eval
+.py_var_length <- function(x) {
+    if (length(x@py_var)) {
+        if (x@is_in_py) py_eval(paste0("len(", x@py_var, ")"))
+        else length(.get_py_var(x@py_var, FALSE))
+    } else 0L
+}
+
+#' Get the names of the metadata fields from the referenced Python object.
+#' Returns a named vector, elements being the metadata names in Python and
+#' names the respective spectra variable names, i.e. the names that should
+#' be used in R.
+#'
+#' @param x `MsBackendPy`
+#'
+#' @noRd
+.py_get_metadata_names <- function(x) {
+    var <- .get_py_var(x@py_var, x@is_in_py)
+    if (length(var)) {
+        mt <- names(var[0L]$metadata)
+        names(mt) <- names(
+            x@spectraVariableMapping)[match(mt, x@spectraVariableMapping)]
+        nas <- is.na(names(mt))
+        names(mt)[nas] <- mt[nas]
+        mt
+    }
+    else character()
+}
+
 #' TODO:
 #'
 #' - backendInitialize providing data -> convert to Python and store data there
@@ -650,7 +659,7 @@ reindex <- function(object) {
 #' - [X] `spectraNames()`
 #' - [X] `tic()`
 #'
-#' - [ ] ensure data types in `spectraData()` are of the correct type.
-#' - [ ] check mapping: seems that variables are not properly/correctly renamed?
+#' - [X] ensure data types in `spectraData()` are of the correct type.
+#' - [X] check mapping: seems that variables are not properly/correctly renamed?
 #' @noRd
 NULL

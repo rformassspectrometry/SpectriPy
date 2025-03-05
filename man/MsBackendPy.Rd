@@ -44,9 +44,10 @@ reindex(object)
 name of the variable/Python attribute that contains the list of
 \code{matchms.Spectrum} objects with the MS data.}
 
-\item{spectraVariableMapping}{For \code{backendInitialize()}: the mapping between
-spectra variable names and (\code{matchms.Spectrum}) metadata names. See
-\code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} for more information and details.}
+\item{spectraVariableMapping}{For \code{backendInitialize()}: named \code{character}
+with the mapping between spectra variable names and (\code{matchms.Spectrum})
+metadata names. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} for more
+information and details.}
 
 \item{...}{Additional parameters.}
 
@@ -55,15 +56,17 @@ spectra variable names and (\code{matchms.Spectrum}) metadata names. See
 
 \item{x}{A \code{MsBackendPy} object}
 
-\item{columns}{For \code{spectraData()}: names of columns (spectra variables) to
-retrieve. Defaults to \code{spectraVariables(object)}. For \code{peaksData()}:
+\item{columns}{For \code{spectraData()}: \code{character} with the names of
+columns (spectra variables) to retrieve. Defaults to
+\code{spectraVariables(object)}. For \code{peaksData()}: \code{character} with the
 names of the peaks variables to retrieve.}
 
-\item{drop}{For \code{spectraData()} and \code{peaksData()}: if, when a single column
-is requested, the data should be returned as a \code{vector} instead of a
-\code{data.frame} or \code{matrix}.}
+\item{drop}{For \code{spectraData()} and \code{peaksData()}: \code{logical(1)} whether,
+when a single column is requested, the data should be returned as a
+\code{vector} instead of a \code{data.frame} or \code{matrix}.}
 
-\item{name}{For \code{$}: the name of the variable to retrieve.}
+\item{name}{For \code{$}: \code{character(1)} with the name of the variable to
+retrieve.}
 
 \item{value}{Replacement value(s).}
 }
@@ -90,7 +93,7 @@ a data container. All changes to the MS data in the Python variable
 pointing to this variable.
 
 Special care must be taken if the MS data structure in Python is subset or
-it's order is changed (e.g. by another process). In that case it might be
+its order is changed (e.g. by another process). In that case it might be
 needed to re-index the backend using the \code{reindex()} function:
 \code{object <- reindex(object)}. This will update (replace) the index to the
 individual spectra in Python which is stored within the backend.

@@ -621,6 +621,17 @@ plot(sim, py$sim, pch = 21, col = "#000000ce", bg = "#00000060",
 grid()
 ```
 
+## Summary
+
+By translating between R and Python MS data structures, the *SpectriPy* package
+enables data analyses that combine functionalities from both programming
+language. In terms of (memory) efficiency, usage of the `MsBackendPy` backend
+for `Spectra` objects has clear advantages over the repeated translation and
+copying of the MS data.
+
+
+# Appendix
+
 ## General comments
 
 - Be careful accessing Python attributes using `py$<attribute name>`: base
