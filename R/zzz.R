@@ -66,11 +66,11 @@ matchms_filtering <- NULL
             py_install(c("matchms==0.28.2"),
                        envname = envname,
                        method = "conda", pip = TRUE,
-                       channels = c("conda-forge"), ...)
+                       channel = c("conda-forge"), ...)
         } else {
             py_install(c("matchms==0.28.2", "numpy==2.0.2"),
                        envname = envname, method = "virtualenv",
-                       channels = c("conda-forge"), ...)
+                       channel = c("conda-forge"), ...)
         }
         packageStartupMessage(
             "\nPlease restart R to load the freshly installed packages.\n")
