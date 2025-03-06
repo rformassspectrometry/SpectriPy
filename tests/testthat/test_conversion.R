@@ -140,6 +140,27 @@ test_that(".py_matchms_spectrum_peaks_data works", {
     expect_equal(res, peaksData(sps)[[2L]])
 })
 
+test_that(".py_matchms_spectrum_peaks_data_columns works", {
+    p <- r_to_py(sps)
+    res <- .py_matchms_spectrum_peaks_data_columns(p[[1]])
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("mz", "intensity"))
+    expect_equal(res, peaksData(sps)[[2L]])
+    res <- .py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity", "mz"))
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("intensity", "mz"))
+    res <- .py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity"))
+    expect_true(is.matrix(res))
+    expect_equal(colnames(res), c("intensity"))
+
+    res <- .py_matchms_spectrum_peaks_data_columns(
+                           p[[1]], columns = c("intensity"), drop = TRUE)
+    expect_true(is.numeric(res))
+    expect_false(is.matrix(res))
+})
+
 test_that("pyspec_to_rspec and .single_pyspec_to_rspec work", {
     p <- r_to_py(sps)
     res <- pyspec_to_rspec(p[0])
@@ -184,4 +205,43 @@ test_that("pyspec_to_rspec works", {
     expect_true(all(is.na(res$msLevel)))
     expect_true(all(is.na(res$rtime)))
     expect_equal(spectraVariableMapping(), .SPECTRA_2_MATCHMS)
+})
+
+test_that(".py_matchms_peaks_data works", {
+    ## Python variable in R
+    p <- r_to_py(sps)
+    res <- .py_matchms_peaks_data("r.p", (1:3 - 1L))
+    expect_true(is.list(res))
+    expect_equal(length(res), length(sps))
+    expect_true(is.matrix(res[[1L]]))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend))
+
+    res <- .py_matchms_peaks_data("r.p", (c(3, 1, 3) - 1L))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend)[c(3, 1, 3)])
+
+    ## Python variable in Python
+    rm("p")
+    py_set_attr(py, "p", r_to_py(sps))
+    res <- .py_matchms_peaks_data("p", (1:3 - 1L))
+    expect_true(is.list(res))
+    expect_equal(length(res), length(sps))
+    expect_true(is.matrix(res[[1L]]))
+    res <- lapply(res, function(z) {
+        colnames(z) <- c("mz", "intensity")
+        z
+    })
+    expect_equal(res, peaksData(sps@backend))
+})
+
+test_that(".py_matchms_peaks_data_cmd works", {
+    res <- .py_matchms_peaks_data_cmd("AAA")
+    expect_match(res, "AAA")
 })

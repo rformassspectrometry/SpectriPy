@@ -39,7 +39,7 @@ env:
   run_pkgdown: 'true'
   has_RUnit: 'false'
   has_BiocCheck: 'false'
-  cache-version: 'cache-v1'
+  cache-version: 'cache-v4'
 
 jobs:
   build-check:
@@ -113,11 +113,17 @@ jobs:
 
       - name: Fix conda for macOS
         if: runner.os == 'macOS'
-        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> .Rprofile
+        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> ~/.Rprofile
+
+      - name: Install libraries for macOS
+        if: runner.os == 'macOS'
+        run: |
+          Rscript -e "reticulate::conda_create('r-spectripy')"
+          Rscript -e "reticulate::conda_install(envname = 'r-spectripy', packages = c('matchms==0.28.2'), channel = c('bioconda', 'conda-forge'))"
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -125,7 +131,7 @@ jobs:
 
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /home/runner/work/_temp/Library
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -141,19 +147,10 @@ jobs:
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-          ## Enable installing XML from source if needed
-          brew install libxml2
-          echo "XML_CONFIG=/usr/local/opt/libxml2/bin/xml2-config" >> $GITHUB_ENV
-
-          ## Required to install magick as noted at
-          ## https://github.com/r-lib/usethis/commit/f1f1e0d10c1ebc75fd4c18fa7e2de4551fd9978f#diff-9bfee71065492f63457918efcd912cf2
-          brew install imagemagick@6
-
-          ## For textshaping, required by ragg, and required by pkgdown
-          brew install harfbuzz fribidi
-
-          ## For installing usethis's dependency gert
-          brew install libgit2
+          Rscript -e "reticulate:::miniconda_path()"
+          export RETICULATE_MINICONDA_PATH='/Users/runner/Library/r-miniconda-arm64/'
+          Rscript -e 'remotes::install_github("RforMassSpectrometry/SpectriPy",args = "--no-manual", build_args = "--no-build-vignettes")'
+        shell: bash {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'

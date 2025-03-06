@@ -8,20 +8,31 @@ matchms_filtering <- NULL
     envname <- .spectripy_env()
     use_conda <- .spectripy_use_conda()
     use_system <- .spectripy_use_system()
-    if (use_conda) {
-        if (!(envname %in% conda_list()$name)) {
-            conda_create(envname)
+    if (use_system) {
+        packageStartupMessage("Using system Python")
+    } else {
+        if (use_conda) {
+            if (!(envname %in% conda_list()$name)) {
+                packageStartupMessage("Creating conda environment '",
+                                      envname, "'")
+                conda_create(envname)
+            }
+            packageStartupMessage("Using conda environment '", envname, "'")
+            use_condaenv(envname, required = TRUE)
+            .install_python_packages(envname, use_conda)
+        } else {
+            if (!virtualenv_exists(envname)) {
+                packageStartupMessage("Creating virtual environment '",
+                                     envname, "'")
+                virtualenv_create(envname)
+            }
+            packageStartupMessage("Using virtual environment '", envname, "'")
+            use_virtualenv(envname, required = TRUE)
+            .install_python_packages(envname, use_conda)
         }
-        use_condaenv(envname, required = TRUE)
-    } else if (!use_system) {
-        if (!virtualenv_exists(envname)) {
-            virtualenv_create(envname)
-        }
-        use_virtualenv(envname)
     }
-    .install_python_packages(
-        envname = envname, use_conda = use_conda, use_system = use_system
-    )
+    if (!py_module_available("matchms"))
+        warning("Required Python library 'matchms' not available!")
     matchms <<- import("matchms", delay_load = TRUE, convert = FALSE)
     matchms_similarity <<- import("matchms.similarity", delay_load = TRUE,
                                   convert = FALSE)
@@ -35,36 +46,32 @@ matchms_filtering <- NULL
 }
 
 .spectripy_use_conda <- function() {
-    getOption(
+    as.logical(getOption(
         "spectripy.use_conda",
-        as.logical(Sys.getenv("SPECTRIPY_USE_CONDA", unset = "TRUE")))
+        Sys.getenv("SPECTRIPY_USE_CONDA", unset = "TRUE")))
 }
 
 .spectripy_use_system <- function() {
-    getOption(
+    as.logical(getOption(
         "spectripy.use_system",
-        as.logical(Sys.getenv("SPECTRIPY_USE_SYSTEM", unset = "FALSE")))
+        Sys.getenv("SPECTRIPY_USE_SYSTEM", unset = "FALSE")))
 }
 
 #' @importFrom reticulate py_install py_module_available
-.install_python_packages <- function(..., envname = .spectripy_env(),
-                                     use_conda = .spectripy_use_conda(),
-                                     use_system = .spectripy_use_system()) {
-    ## We don't want to modify the system Python, users are expected to manage
-    ## dependencies themselves.
-    if (use_system) {
-        return()
-    } else if (!py_module_available("matchms")) {
+.install_python_packages <- function(envname = .spectripy_env(),
+                                     use_conda = .spectripy_use_conda(), ...) {
+    if (!py_module_available("matchms")) {
+        packageStartupMessage("Installing required libraries")
         if (use_conda) {
-            py_install(c("matchms==0.28.2"), envname = envname,
-                       method = "conda", pip = TRUE,
-                       channels = c("conda-forge"), ...)
-        } else {
-            ## Somehow an old version of numpy gets installed and installation
-            ## fails in the end.
             py_install(c("matchms==0.28.2"),
+                       envname = envname, method = "conda", pip = FALSE,
+                       channel = c("bioconda", "conda-forge"), ...)
+        } else {
+            py_install(c("matchms==0.28.2", "numpy==2.0.2"),
                        envname = envname, method = "virtualenv",
-                       channels = c("conda-forge"), ...)
+                       channel = c("conda-forge"), ...)
         }
+        packageStartupMessage(
+            "\nPlease restart R to load the freshly installed packages.\n")
     }
 }

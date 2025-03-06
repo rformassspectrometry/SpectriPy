@@ -1,0 +1,140 @@
+## First tests to access data in Python
+
+
+```{r}
+#| warning: false
+
+#' R MS packages
+library(Spectra)
+library(msdata)
+
+#' libraries for integration with Python; in interactive mode, use
+#' `repl_python()` to start a Python shell to execute the Python code
+#' blocks and return to R using `exit`
+library(reticulate)
+
+#' To translate between R and Python MS data classes
+library(SpectriPy)
+
+#' To retrieve data from Bioconductor's AnnotationHub
+library(AnnotationHub)
+```
+
+Load a test data set with LC-MS/MS DDA data of a pesticide mix provided by the
+*matchms* library.
+
+```{r}
+fl <- system.file("TripleTOF-SWATH/PestMix1_DDA.mzML", package = "msdata")
+pest_dda <- Spectra(fl)
+pest_dda$msLevel |>
+    table()
+```
+
+Load required python libraries. Note: if the IDE/editor does not directly
+support quarto documents (i.e. switches from R to Python session when moving to
+the respective code chunk), the `repl_python()` function needs to be called in
+the R session. This changes to the Python session. Type `quit` or `exit` in the
+Python session to change back to R.
+
+```{python}
+import matchms
+import spectrum_utils
+```
+
+Next we extract the MS2 spectra from the `pest_dda` data set and *translate* the
+`Spectra` to Python.
+
+```{r}
+pest_ms2 <- filterMsLevel(pest_dda, 2L)
+system.time(
+    pest_ms2_py <- rspec_to_pyspec(pest_ms2)
+)
+pest_ms2_py
+```
+
+Re-using the `pest_ms2_py` variable above.
+
+```{r}
+class(pest_ms2_py)
+```
+
+So, seems to be maybe something we could stuff into a S4 class slot?
+
+From R, can we access values/entries in that?
+
+```{r}
+pest_ms2_py[1]$mz
+```
+
+Get that back into R:
+
+```{r}
+pest_ms2_py[1]$mz |>
+    py_to_r()
+```
+
+get the full peaks data?
+
+```{r}
+pest_ms2_py[1]$peaks
+```
+
+```{r}
+pest_ms2_py[1]$peaks$to_numpy |> py_to_r()
+```
+
+so, that's indeed possible. The question is if we can prepare/process the data
+more efficiently in Python to then get the data nicely formatted in R. In theory
+we should be able to call a python script on the variable.
+
+```{r}
+py_run_string("vals = r.pest_ms2_py[0].peaks.to_numpy")$vals
+```
+
+We can also assign the variable directly in python (assume it gets copied?).
+
+```{r}
+py$ms2 <- pest_ms2_py
+py_run_string("vals = ms2[0].peaks.to_numpy")$vals
+```
+
+Is one of the two approaches faster?
+
+```{r}
+library(microbenchmark)
+microbenchmark(
+    py_to_r(pest_ms2_py[1]$peaks$to_numpy),
+    py_run_string("vals = r.pest_ms2_py[1].peaks.to_numpy")$vals,
+    py_run_string("vals = ms2[1].peaks.to_numpy")$vals,
+    py_to_r(py_run_string("vals = ms2[1].peaks.to_numpy",
+                          convert = FALSE)$vals),
+    {
+        py$ms2 <- pest_ms2_py
+        py_run_string("vals = ms2[1].peaks.to_numpy")$vals
+    }
+)
+## Unit: microseconds
+##     min      lq      mean  median       uq     max neval  cld
+##  35.147 39.4140  46.60518 45.7210  51.4025  91.996   100 a
+##  82.108 92.6455 101.60560 97.9660 106.4465 273.128   100  b
+##  22.122 23.4480  27.58793 26.3805  30.0915  58.566   100   c
+##  25.367 26.9460  29.91650 28.6350  32.2730  45.102   100   c
+##  26.641 30.2340  36.45712 33.4740  39.1500 215.666   100    d
+
+```
+
+So, seems directly accessing the `ms2` variable in Python through
+`py_run_string()` is fastest. TODO: check memory and timing using `profvis()`
+(note: can't use `profvis()` as function call is too fast).
+
+What happens if we delete the related variable in R - does the Python variable
+still exist?
+
+```{r}
+rm(pest_ms2_py)
+gc()
+py_run_string("vals = ms2[15].peaks.to_numpy")$vals
+```
+
+So, yes. We could thus convert the R object to Python. So all data will be
+purely represented in R.
