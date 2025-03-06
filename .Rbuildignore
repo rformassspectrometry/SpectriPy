@@ -11,3 +11,4 @@ _pkgdown.yml
 ^\.vscode
 devnotes.md
 temp_doc/*
+pkgdown/*
