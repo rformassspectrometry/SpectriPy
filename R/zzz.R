@@ -64,8 +64,7 @@ matchms_filtering <- NULL
         packageStartupMessage("Installing required libraries")
         if (use_conda) {
             py_install(c("matchms==0.28.2"),
-                       envname = envname,
-                       method = "conda",
+                       envname = envname, method = "conda", pip = FALSE,
                        channel = c("bioconda", "conda-forge"), ...)
         } else {
             py_install(c("matchms==0.28.2", "numpy==2.0.2"),
