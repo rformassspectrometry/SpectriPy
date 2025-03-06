@@ -272,10 +272,12 @@ jobs:
         run: R CMD INSTALL .
 
       - name: Build site
+        if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         env:
           QUARTO_PRINT_STACK: true
           QUARTO_LOG_LEVEL: DEBUG
         run: |
+          options(quarto.quiet = FALSE)
           install.packages("unixtools", repos = "http://www.rforge.net/")
           unixtools::set.tempdir("/__w/Rtmp")
           pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
