@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Integrating Spectra with Python's matchms • SpectriPy</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -23,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +39,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/SpectriPy.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/detailed-installation-configuration.html">Detailed information on installation and configuration</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -228,12 +239,12 @@
 <span><span class="va">res_r</span></span></code></pre></div>
 <p>Thus, <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra()</a></code> returned the pairwise similarity scores (by default calculated using the normalized dot-product function) between all spectra in <code>all</code> (rows) and all spectra in <code>caf</code> (columns). <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> works similar, with the difference that we need to specify and configure the similarity function (from <em>matchms</em>) using a dedicated parameter object. Below we calculate the similarity using the <em>CosineGreedy</em> function changing the <code>tolerance</code> to a value of <code>0.05</code> (instead of the default <code>0.1</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">CosineGreedyParam</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu">CosineGreedyParam</span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">res</span></span></code></pre></div>
 <p>As a result <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> returns also a numeric matrix of similarities. Note also that the first <code><a href="reference/compareSpectriPy.html">compareSpectriPy()</a></code> call takes usually a little longer because the Python setup has to be initialized.</p>
 <p>Next we use the <em>ModifiedCosine</em> algorithm that considers also differences between the spectra’s precursor m/z in the calculation.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu">ModifiedCosineParam</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">res</span></span></code></pre></div>
 <p>Note that for this calculation all spectra precursor m/z values need to be available, otherwise an error will be thrown. Thus, we should always ensure to remove spectra without precursor m/z values prior to similarity scoring with this similarity method. Below we remove the precursor m/z from one of our input spectra and then show how the <code>Spectra</code> object could be subsetted to <em>valid</em> spectra for this method.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -243,7 +254,7 @@
 <span><span class="co">## Filter the input spectra removing those with missing precursor.</span></span>
 <span><span class="va">all</span> <span class="op">&lt;-</span> <span class="va">all</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">all</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu"><a href="reference/compareSpectriPy.html">ModifiedCosineParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/compareSpectriPy.html">compareSpectriPy</a></span><span class="op">(</span><span class="va">all</span>, <span class="va">caf</span>, param <span class="op">=</span> <span class="fu">ModifiedCosineParam</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -284,10 +295,12 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Michael Witting <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1462-4426" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Johannes Rainer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-6977-7147" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Carolin Huber <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9355-8948" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Helge Hecht <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-6744-996X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Michael Witting <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1462-4426" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Johannes Rainer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-6977-7147" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Carolin Huber <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9355-8948" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Marilyn De Graeve <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-6916-401X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Wout Bittremieux <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-3105-1359" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Thomas Naake <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-7917-5580" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -299,7 +312,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Michael Witting, Johannes Rainer, Carolin Huber, Helge Hecht.</p>
+  <p>Developed by Michael Witting, Johannes Rainer, Carolin Huber, Marilyn De Graeve, Wout Bittremieux, Thomas Naake.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -1,14 +1,16 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/404.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/articles/index.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/authors.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/devnotes.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/index.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/news/index.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.html</loc></url>
+<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/conversion.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/filterSpectriPy.html</loc></url>
 <url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/index.html</loc></url>
-<url><loc>https://rformassspectrometry.github.io/SpectriPy/reference/rspec_to_pyspec.html</loc></url>
 </urlset>
 
