@@ -84,6 +84,7 @@ session:` or `#' Python session:` to label the R and Python code chunks,
 respectively.
 
 ```{r}
+#| message: false
 #' R session:
 
 library(Spectra)
