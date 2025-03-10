@@ -12,3 +12,4 @@ _pkgdown.yml
 devnotes.md
 temp_doc/*
 pkgdown/*
+paper/*
