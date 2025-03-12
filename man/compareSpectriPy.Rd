@@ -6,8 +6,8 @@
 \alias{CosineHungarian}
 \alias{ModifiedCosine}
 \alias{NeutralLossesCosine}
-\alias{compareSpectriPy,Spectra,Spectra,CosineGreedyParam-method}
-\alias{compareSpectriPy,Spectra,missing,CosineGreedyParam-method}
+\alias{compareSpectriPy,Spectra,Spectra,CosineGreedy-method}
+\alias{compareSpectriPy,Spectra,missing,CosineGreedy-method}
 \title{Spectra similarity calculations using Python's matchms library}
 \usage{
 CosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
@@ -23,9 +23,9 @@ NeutralLossesCosine(
   ignore_peaks_above_precursor = TRUE
 )
 
-\S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedyParam}(x, y, param, ...)
+\S4method{compareSpectriPy}{Spectra,Spectra,CosineGreedy}(x, y, param, ...)
 
-\S4method{compareSpectriPy}{Spectra,missing,CosineGreedyParam}(x, y, param, ...)
+\S4method{compareSpectriPy}{Spectra,missing,CosineGreedy}(x, y, param, ...)
 }
 \arguments{
 \item{tolerance}{\code{numeric(1)}: tolerated differences in the peaks' m/z. Peaks
@@ -60,7 +60,7 @@ equal to \code{length(y)}.
 }
 \description{
 The \code{compareSpectriPy()} function allows to calculate spectral similarity
-scores using the \verb{calculate_scores function} of the Python
+scores using the \code{calculate_scores()} function of the Python
 \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html}{matchms.similarity}.
 module.
 

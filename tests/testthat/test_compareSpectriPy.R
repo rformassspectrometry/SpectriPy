@@ -34,55 +34,55 @@ test_that("param constructors work", {
         ignore_peaks_above_precursor = c(TRUE, FALSE)), "length 1")
 })
 
-test_that("CosineGreedyParam constructor works", {
+test_that("CosineGreedy constructor works", {
     res <- CosineGreedy(tolerance = 5)
-    expect_s4_class(res, "CosineGreedyParam")
+    expect_s4_class(res, "CosineGreedy")
     expect_equal(res@tolerance, 5)
 })
 
-test_that("CosineHungarianParam constructor works", {
+test_that("CosineHungarian constructor works", {
     res <- CosineHungarian(intensity_power = 1.3)
-    expect_s4_class(res, "CosineGreedyParam")
+    expect_s4_class(res, "CosineGreedy")
     expect_equal(res@intensityPower, 1.3)
 })
 
-test_that("ModifiedCosineParam constructor works", {
+test_that("ModifiedCosine constructor works", {
     res <- ModifiedCosine(mz_power = 4.3)
-    expect_s4_class(res, "ModifiedCosineParam")
+    expect_s4_class(res, "ModifiedCosine")
     expect_equal(res@mzPower, 4.3)
 })
 
-test_that("NeutralLossesCosineParam constructor works", {
+test_that("NeutralLossesCosine constructor works", {
     res <- NeutralLossesCosine(ignore_peaks_above_precursor = FALSE)
-    expect_s4_class(res, "NeutralLossesCosineParam")
+    expect_s4_class(res, "NeutralLossesCosine")
     expect_false(res@ignorePeaksAbovePrecursor)
 })
 
 test_that(".fun_name works", {
     a <- CosineGreedy()
-    expect_equal(SpectriPy:::.fun_name(a), "CosineGreedy")
+    expect_equal(.fun_name(a), "CosineGreedy")
     a <- CosineHungarian()
-    expect_equal(SpectriPy:::.fun_name(a), "CosineHungarian")
+    expect_equal(.fun_name(a), "CosineHungarian")
     a <- ModifiedCosine()
-    expect_equal(SpectriPy:::.fun_name(a), "ModifiedCosine")
+    expect_equal(.fun_name(a), "ModifiedCosine")
     a <- NeutralLossesCosine()
-    expect_equal(SpectriPy:::.fun_name(a), "NeutralLossesCosine")
+    expect_equal(.fun_name(a), "NeutralLossesCosine")
 })
 
 test_that("py_fun works", {
-    res <- SpectriPy:::py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
+    res <- py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(class(res)[1L],
                  "matchms.similarity.CosineGreedy.CosineGreedy")
-    res <- SpectriPy:::py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
+    res <- py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(
         class(res)[1L], "matchms.similarity.CosineHungarian.CosineHungarian")
-    res <- SpectriPy:::py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
+    res <- py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(
         class(res)[1L], "matchms.similarity.ModifiedCosine.ModifiedCosine")
-    res <- SpectriPy:::py_fun(NeutralLossesCosine(tolerance = 0.1, mz_power = 0.3,
+    res <- py_fun(NeutralLossesCosine(tolerance = 0.1, mz_power = 0.3,
                                                   intensity_power = 0.2,
                                                   ignore_peaks_above_precursor = FALSE))
     expect_equal(
@@ -92,7 +92,7 @@ test_that("py_fun works", {
 
 test_that(".compare_spectra_python works", {
     all <- c(caf, mhd)
-    res <- SpectriPy:::.compare_spectra_python(all, caf, CosineGreedy())
+    res <- .compare_spectra_python(all, caf, CosineGreedy())
     expect_true(nrow(res) == 4)
     expect_true(ncol(res) == 2)
     expect_equal(res[1, 1], 1)
@@ -104,22 +104,22 @@ test_that(".compare_spectra_python works", {
     expect_true(all(diffs < 0.01))
 
     ## only one spectra
-    res <- SpectriPy:::.compare_spectra_python(all, param = CosineGreedy())
-    res_2 <- SpectriPy:::.compare_spectra_python(all, all, param = CosineGreedy())
+    res <- .compare_spectra_python(all, param = CosineGreedy())
+    res_2 <- .compare_spectra_python(all, all, param = CosineGreedy())
     expect_equal(res, res_2)
 
     ## try with empty Spectra
-    res <- SpectriPy:::.compare_spectra_python(all, all[integer()], CosineGreedy())
+    res <- .compare_spectra_python(all, all[integer()], CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == length(all))
     expect_true(ncol(res) == 0)
 
-    res <- SpectriPy:::.compare_spectra_python(all[integer()], param = CosineGreedy())
+    res <- .compare_spectra_python(all[integer()], param = CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == 0)
     expect_true(ncol(res) == 0)
 
-    res <- SpectriPy:::.compare_spectra_python(all[integer()], all, CosineGreedy())
+    res <- .compare_spectra_python(all[integer()], all, CosineGreedy())
     expect_true(is.numeric(res))
     expect_true(nrow(res) == 0)
     expect_true(ncol(res) == length(all))
@@ -132,29 +132,6 @@ test_that("compareSpectriPy works", {
     expect_true(nrow(res_all) == length(all))
     expect_true(ncol(res_all) == length(all))
     expect_equal(diag(res_all), c(1, 1, 1, 1))
-
-    ## Test python call. LLLLLLL
-    ## cl <- basiliskStart(SpectriPy:::matchms_env)
-    ## p <- CosineGreedyParam()
-    ## cmd <- SpectriPy:::python_command(p)
-    ## py$py_x <- rspec_to_pyspec(caf, mapping = c(precursorMz = "precursor_mz"))
-    ## py$py_y <- rspec_to_pyspec(mhd, mapping = c(precursorMz = "precursor_mz"))
-    ## strng <- paste0("import matchms\n",
-    ##                 "from matchms.similarity import CosineGreedy\n",
-    ##                 "res = matchms.calculate_scores(py_x, py_y, CosineGreedy(), is_symmetric = False)\n")
-    ## py_run_string(strng)
-    ## basiliskStop(cl)
-    ## res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
-    ## WHY is this not working??? Seems to be some python issue, maybe a bug
-    ## in CosineGreedy?
-    ##
-    ## WORKS res <- compareSpectriPy(caf, caf, param = CosineGreedyParam())
-    ## WORKS res <- compareSpectriPy(mhd, mhd, param = CosineGreedyParam())
-    ## NOT res <- compareSpectriPy(mhd, caf, param = CosineGreedyParam())
-    ## NOT res <- compareSpectriPy(caf, mhd, param = CosineGreedyParam())
-    ## Maybe the issue is with spectra without any similarity (score = 0) and
-    ## having a result matrix with more than 1 column or row.
-    ## Seems to be the case:
 
     ## CosineGreedy
     res <- compareSpectriPy(caf, mhd, param = CosineGreedy())

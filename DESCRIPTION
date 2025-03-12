@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.3.1
+Version: 0.4.0
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python's matchms Spectrum objects. In addition, SpectriPy integrates
@@ -41,16 +41,25 @@ Authors@R: c(person(given = "Michael", family = "Witting",
              person(given = "Matthias", family = "Anagho-Mattanovich",
                     email = "matthias.mattanovich@sund.ku.dk",
                     role = c("ctb"),
-                    comment = c(ORCID = "0000-0001-7561-7898"))
+                    comment = c(ORCID = "0000-0001-7561-7898")),
+             person(given = "Pierre", family = "Marchal",
+                    email = "pierre.marchal@unibe.ch",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0006-6567-6257")),
+             person(given = "Philippine", family = "Louail",
+                    email = "philippine.louail@eurac.edu",
+                    role = c("ctb"),
+                    comment = c(ORCID = "0009-0007-5429-6846"))
              )
 Depends:
     R (>= 4.1.0),
     reticulate
 Imports:
-    Spectra (>= 1.5.8),
+    Spectra (>= 1.17.7),
     IRanges,
     S4Vectors,
     MsCoreUtils,
+    ProtGenerics,
     methods
 Suggests:
     testthat,
@@ -58,6 +67,7 @@ Suggests:
     MsBackendMgf,
     msdata,
     mzR,
+    knitr,
     BiocStyle
 License: Artistic-2.0
 BugReports: https://github.com/RforMassSpectrometry/SpectriPy/issues
@@ -70,3 +80,9 @@ SystemRequirements:
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Collate:
+    'conversion.R'
+    'MsBackendPython.R'
+    'compareSpectriPy.R'
+    'filterSpectriPy.R'
+    'zzz.R'

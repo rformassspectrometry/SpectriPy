@@ -43,7 +43,7 @@ Python and its parameters.}
 
 \item{mapping}{named \code{character()} defining which spectra variables/metadata
 should be converted between R and Python and how they should be renamed.
-Defaults to \code{spectraVariableMapping()}. See \code{\link[=spectraVariableMapping]{spectraVariableMapping()}}
+Defaults to \code{spectraVariableMapping()}. See \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}}
 for more information.}
 
 \item{...}{ignored.}
@@ -83,7 +83,7 @@ the Python environment needs to be first set up.
 filter functions from the \emph{matchms} Python libraries and then translates
 the filtered data back to a \code{Spectra} object. Thus, any spectra variables
 other than those that are translated between R and Python will be lost
-during the processing. Use \code{\link[=selectSpectraVariables]{selectSpectraVariables()}} to define which
+during the processing. Use \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} to define which
 spectra variables should be transferred/converted between R and Python.
 See also examples below for more information.
 

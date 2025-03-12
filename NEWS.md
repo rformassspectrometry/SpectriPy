@@ -1,3 +1,9 @@
+# SpectriPy 0.4
+
+## Changes in 0.4.0
+
+- Add a `MsBackendPython` backend referencing to MS data residing in Python.
+
 # SpectriPy 0.3
 
 ## Changes in 0.3.1

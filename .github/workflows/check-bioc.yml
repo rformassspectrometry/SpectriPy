@@ -39,7 +39,7 @@ env:
   run_pkgdown: 'true'
   has_RUnit: 'false'
   has_BiocCheck: 'false'
-  cache-version: 'cache-v1'
+  cache-version: 'cache-v4'
 
 jobs:
   build-check:
@@ -71,13 +71,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           mkdir /__w/_temp/Library
+          mkdir /__w/Rtmp
           echo ".libPaths('/__w/_temp/Library')" > ~/.Rprofile
 
       ## Most of these steps are the same as the ones in
       ## https://github.com/r-lib/actions/blob/master/examples/check-standard.yaml
       ## If they update their steps, we will also need to update ours.
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       ## R is already included in the Bioconductor docker images
       - name: Setup R from r-lib
@@ -85,6 +86,11 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+
+      ## Install R dependencies using R-lib
+      - name: Setup R dependencies from r-lib
+        if: runner.os != 'Linux'
+        uses: r-lib/actions/setup-r-dependencies@v2
 
       ## pandoc is already included in the Bioconductor docker images
       - name: Setup pandoc from r-lib
@@ -108,11 +114,17 @@ jobs:
 
       - name: Fix conda for macOS
         if: runner.os == 'macOS'
-        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> .Rprofile
+        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> ~/.Rprofile
+
+      - name: Install libraries for macOS
+        if: runner.os == 'macOS'
+        run: |
+          Rscript -e "reticulate::conda_create('r-spectripy')"
+          Rscript -e "reticulate::conda_install(envname = 'r-spectripy', packages = c('matchms==0.28.2'), channel = c('bioconda', 'conda-forge'))"
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -120,7 +132,7 @@ jobs:
 
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /home/runner/work/_temp/Library
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
@@ -132,26 +144,17 @@ jobs:
           sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
+          ## To build the quarto vignette with pkgdown
+          Rscript -e "install.packages('unixtools', repos = 'http://www.rforge.net/')"
+        shell: bash {0}
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-          ## Enable installing XML from source if needed
-          brew install libxml2
-          echo "XML_CONFIG=/usr/local/opt/libxml2/bin/xml2-config" >> $GITHUB_ENV
-
-          ## Required to install magick as noted at
-          ## https://github.com/r-lib/usethis/commit/f1f1e0d10c1ebc75fd4c18fa7e2de4551fd9978f#diff-9bfee71065492f63457918efcd912cf2
-          brew install imagemagick@6
-
-          ## For textshaping, required by ragg, and required by pkgdown
-          brew install harfbuzz fribidi
-
-          ## For installing usethis's dependency gert
-          brew install libgit2
-
-          ## Python
-          ## brew install python@3.12
+          Rscript -e "reticulate:::miniconda_path()"
+          export RETICULATE_MINICONDA_PATH='/Users/runner/Library/r-miniconda-arm64/'
+          Rscript -e 'remotes::install_github("RforMassSpectrometry/SpectriPy",args = "--no-manual", build_args = "--no-build-vignettes")'
+        shell: bash {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
@@ -219,6 +222,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         run: |
           remotes::install_github("r-lib/pkgdown")
+          remotes::install_github("quarto-dev/quarto-r")
         shell: Rscript {0}
 
       - name: Session info
@@ -233,7 +237,7 @@ jobs:
           _R_CHECK_CRAN_INCOMING_: false
         run: |
           rcmdcheck::rcmdcheck(
-              args = c("--no-build-vignettes", "--no-manual", "--timings"),
+              args = c("--no-manual", "--timings"),
               build_args = c("--no-manual", "--no-resave-data"),
               error_on = "warning",
               check_dir = "check"
@@ -272,13 +276,33 @@ jobs:
         if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         run: R CMD INSTALL .
 
+      # - name: Build site
+      #   if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
+      #   env:
+      #     QUARTO_PRINT_STACK: true
+      #     QUARTO_LOG_LEVEL: DEBUG
+      #   run: |
+      #     options(quarto.quiet = FALSE)
+      #     install.packages("unixtools", repos = "http://www.rforge.net/")
+      #     unixtools::set.tempdir("/__w/Rtmp")
+      #     pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+      #   shell: Rscript {0}
+
+      # - name: Deploy to GitHub pages 🚀
+      #   if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
+      #   uses: JamesIves/github-pages-deploy-action@v4.5.0
+      #   with:
+      #     clean: false
+      #     branch: gh-pages
+      #     folder: docs
+
       - name: Deploy package
         if: github.ref == 'refs/heads/main' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git config --global --add safe.directory /__w/SpectriPy/SpectriPy
-          Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)"
+          Rscript -e "install.packages('unixtools', repos = 'http://www.rforge.net/');unixtools::set.tempdir('/__w/Rtmp');options(quarto.quiet = FALSE);pkgdown::deploy_to_branch(new_process = FALSE)"
         shell: bash {0}
         ## Note that you need to run pkgdown::deploy_to_branch(new_process = FALSE)
         ## at least one locally before this will work. This creates the gh-pages

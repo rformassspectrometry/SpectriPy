@@ -44,12 +44,27 @@ BiocManager::install(c("Spectra", "msdata", "AnnotationHub", "CompoundDb"))
 
 - Install *miniconda*
 - Create a new environment with required python libraries: `conda create -c
-  bioconda -c conda-forge -n matchms matchms=0.28.2 spectrum_utils`
+  bioconda -c conda-forge -n matchms matchms=0.28.2
+  spectrum_utils`. Alternatively, the conda environment can also be installed
+  directly from R using:
+
+```{r}
+#| eval: false
+library(reticulate)
+conda_create("matchms", package = c("matchms=0.28.2", "spectrum_utils"),
+             channel = c("bioconda", "conda-forge"), forge = FALSE)
+```
+
 - Define and export a system variable `RETICULATE_PYTHON` that points to the
   folder where this environment is installed. Alternatively, it is also possible
   to define this in a *.Rprofile* file in the user's home folder by adding
   e.g. a line `Sys.setenv("RETICULATE_PYTHON" = "~/miniconda/envs/matchms/bin")`
-  to that file.
+  to that file. Alternatively, it should also be possible to select and activate
+  the conda environment using `reticulate::use_condaenv("matchms")`. See also
+  the [reticulate
+  documentation](https://rstudio.github.io/reticulate/articles/python_packages.html)
+
+
 
 # Use case 1
 
@@ -155,6 +170,7 @@ or supported by *spectrum_utils*.
 r.pd[0]
 r.precursor_mz[0]
 ```
+
 
 
 # General observations

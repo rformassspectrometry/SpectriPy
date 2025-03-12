@@ -5,7 +5,7 @@
 #' @description
 #'
 #' The `compareSpectriPy()` function allows to calculate spectral similarity
-#' scores using the `calculate_scores function` of the Python
+#' scores using the `calculate_scores()` function of the Python
 #' [matchms.similarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html).
 #' module.
 #'
@@ -145,7 +145,7 @@ setGeneric("compareSpectriPy", function(x, y, param, ...) {
     standardGeneric("compareSpectriPy")
 })
 
-setClass("CosineGreedyParam",
+setClass("CosineGreedy",
     slots = c(
         tolerance = "numeric", mzPower = "numeric", intensityPower = "numeric"
     ),
@@ -164,10 +164,10 @@ setClass("CosineGreedyParam",
         msg
     }
 )
-setClass("CosineHungarianParam", contains = "CosineGreedyParam")
-setClass("ModifiedCosineParam", contains = "CosineGreedyParam")
-setClass("NeutralLossesCosineParam",
-    contains = "CosineGreedyParam",
+setClass("CosineHungarian", contains = "CosineGreedy")
+setClass("ModifiedCosine", contains = "CosineGreedy")
+setClass("NeutralLossesCosine",
+    contains = "CosineGreedy",
     slots = c(ignorePeaksAbovePrecursor = "logical"),
     prototype = prototype(ignorePeaksAbovePrecursor = TRUE),
     validity = function(object) {
@@ -179,7 +179,7 @@ setClass("NeutralLossesCosineParam",
         msg
     }
 )
-setClass("FingerprintSimilarityParam", contains = "CosineGreedyParam",
+setClass("FingerprintSimilarity", contains = "CosineGreedy",
          slots = c(similarityMeasure = "character"),
          prototype = prototype(similarityMeasure = "jaccard"))
 
@@ -190,7 +190,7 @@ setClass("FingerprintSimilarityParam", contains = "CosineGreedyParam",
 #' @export
 CosineGreedy <- function(tolerance = 0.1, mz_power = 0.0,
                          intensity_power = 1.0) {
-    new("CosineGreedyParam",
+    new("CosineGreedy",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
         intensityPower = as.numeric(intensity_power)
@@ -202,7 +202,7 @@ CosineGreedy <- function(tolerance = 0.1, mz_power = 0.0,
 #' @export
 CosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
                             intensity_power = 1.0) {
-    new("CosineHungarianParam",
+    new("CosineHungarian",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
         intensityPower = as.numeric(intensity_power)
@@ -214,7 +214,7 @@ CosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
 #' @export
 ModifiedCosine <- function(tolerance = 0.1, mz_power = 0.0,
                                 intensity_power = 1.0) {
-    new("ModifiedCosineParam",
+    new("ModifiedCosine",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
         intensityPower = as.numeric(intensity_power)
@@ -227,7 +227,7 @@ ModifiedCosine <- function(tolerance = 0.1, mz_power = 0.0,
 NeutralLossesCosine <- function(tolerance = 0.1, mz_power = 0.0,
                                 intensity_power = 1.0,
                                 ignore_peaks_above_precursor = TRUE) {
-    new("NeutralLossesCosineParam",
+    new("NeutralLossesCosine",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
         intensityPower = as.numeric(intensity_power),
@@ -239,7 +239,7 @@ NeutralLossesCosine <- function(tolerance = 0.1, mz_power = 0.0,
 ## #'
 ## #' @export
 ## FingerprintSimilarity <- function(similarity_measure = "jaccard") {
-##     new("FingerprintSimilarityParam",
+##     new("FingerprintSimilarity",
 ##         similarityMeasure = similarity_measure
 ##         )
 ## }
@@ -249,7 +249,7 @@ NeutralLossesCosine <- function(tolerance = 0.1, mz_power = 0.0,
 #' @exportMethod compareSpectriPy
 setMethod(
     "compareSpectriPy",
-    signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedyParam"),
+    signature = c(x = "Spectra", y = "Spectra", param = "CosineGreedy"),
     function(x, y, param, ...) {
         .compare_spectra_python(x, y, param)
     }
@@ -258,7 +258,7 @@ setMethod(
 #' @rdname compareSpectriPy
 setMethod(
     "compareSpectriPy",
-    signature = c(x = "Spectra", y = "missing", param = "CosineGreedyParam"),
+    signature = c(x = "Spectra", y = "missing", param = "CosineGreedy"),
     function(x, y, param, ...) {
         .compare_spectra_python(x, y = NULL, param)
     }
@@ -267,26 +267,29 @@ setMethod(
 #' Method to construct a python function name for a param object.
 #'
 #' @noRd
-setGeneric("py_fun", function(x, ...) {
+setGeneric("py_fun", function(object, ...) {
     standardGeneric("py_fun")
 })
-setMethod("py_fun", "CosineGreedyParam", function(x) {
-    matchms_similarity$CosineGreedy(x@tolerance, x@mzPower, x@intensityPower)
+setMethod("py_fun", "CosineGreedy", function(object) {
+    matchms_similarity$CosineGreedy(object@tolerance, object@mzPower,
+                                    object@intensityPower)
 })
-setMethod("py_fun", "CosineHungarianParam", function(x) {
-    matchms_similarity$CosineHungarian(x@tolerance, x@mzPower, x@intensityPower)
+setMethod("py_fun", "CosineHungarian", function(object) {
+    matchms_similarity$CosineHungarian(object@tolerance, object@mzPower,
+                                       object@intensityPower)
 })
-setMethod("py_fun", "ModifiedCosineParam", function(x) {
-    matchms_similarity$ModifiedCosine(x@tolerance, x@mzPower, x@intensityPower)
+setMethod("py_fun", "ModifiedCosine", function(object) {
+    matchms_similarity$ModifiedCosine(object@tolerance, object@mzPower,
+                                      object@intensityPower)
 })
-setMethod("py_fun", "NeutralLossesCosineParam", function(x) {
-    matchms_similarity$NeutralLossesCosine(x@tolerance, x@mzPower,
-                                           x@intensityPower,
-                                           x@ignorePeaksAbovePrecursor)
+setMethod("py_fun", "NeutralLossesCosine", function(object) {
+    matchms_similarity$NeutralLossesCosine(object@tolerance, object@mzPower,
+                                           object@intensityPower,
+                                           object@ignorePeaksAbovePrecursor)
 })
 
 .fun_name <- function(x) {
-    sub("Param$", "", class(x)[1L])
+    class(x)[1L]
 }
 
 #' Internal function to calculate similarities with Python's matchms. `Spectra`

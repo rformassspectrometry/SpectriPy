@@ -37,7 +37,7 @@
 #' filter functions from the *matchms* Python libraries and then translates
 #' the filtered data back to a `Spectra` object. Thus, any spectra variables
 #' other than those that are translated between R and Python will be lost
-#' during the processing. Use [selectSpectraVariables()] to define which
+#' during the processing. Use [setSpectraVariableMapping()] to define which
 #' spectra variables should be transferred/converted between R and Python.
 #' See also examples below for more information.
 #'
@@ -54,7 +54,7 @@
 #'
 #' @param mapping named `character()` defining which spectra variables/metadata
 #'     should be converted between R and Python and how they should be renamed.
-#'     Defaults to `spectraVariableMapping()`. See [spectraVariableMapping()]
+#'     Defaults to `spectraVariableMapping()`. See [setSpectraVariableMapping()]
 #'     for more information.
 #'
 #' @param intensity_from `numeric(1)`: Set lower threshold for peak intensity.
@@ -253,28 +253,28 @@ setMethod(
 #' @importFrom reticulate py_dict
 #'
 #' @noRd
-setMethod("py_fun", "select_by_intensity", function(x) {
+setMethod("py_fun", "select_by_intensity", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$select_by_intensity,
         py_dict(c("intensity_from", "intensity_to"),
-                c(x@intensity_from, x@intensity_to)))
+                c(object@intensity_from, object@intensity_to)))
 })
 
-setMethod("py_fun", "select_by_mz", function(x) {
+setMethod("py_fun", "select_by_mz", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$select_by_mz,
         py_dict(c("mz_from", "mz_to"),
-                c(x@mz_from, x@mz_to)))
+                c(object@mz_from, object@mz_to)))
 })
 
-setMethod("py_fun", "remove_peaks_around_precursor_mz", function(x) {
+setMethod("py_fun", "remove_peaks_around_precursor_mz", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$remove_peaks_around_precursor_mz,
         py_dict(c("mz_tolerance"),
-                c(x@mz_tolerance)))
+                c(object@mz_tolerance)))
 })
 
-setMethod("py_fun", "normalize_intensities", function(x) {
+setMethod("py_fun", "normalize_intensities", function(object) {
     matchms_filtering$SpectrumProcessor$create_partial_function(
         matchms_filtering$normalize_intensities)
 })
