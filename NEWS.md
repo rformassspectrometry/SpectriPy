@@ -8,7 +8,7 @@
 
 ## Changes in 0.3.0
 
-- Add changes and results introduced a the EuBIC 2024 r-python hackathon in
+- Add changes and results introduced a the EuBIC 2025 r-python hackathon in
   Neustift, Italy.
 - Remove dependency from *basilisk* and base the package entirely on
   *reticulate*.
