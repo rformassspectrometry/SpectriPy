@@ -6,3 +6,4 @@ local_data
 ..Rcheck
 check
 .html
+/.quarto/
