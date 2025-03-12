@@ -1,0 +1,288 @@
+---
+title: "Tutorial: Annotation of LC-MS/MS spectra"
+authors: "<add your name>, Marilyn De Graeve, Johannes Rainer"
+date: last-modified
+format:
+    html:
+        code-fold: true
+        code-overflow: wrap
+        code-tools: true
+        graphics: yes
+        toc: true
+        toc-location: left-body
+        toc-title: "Outline"
+---
+
+# Introduction
+
+In this tutorial, we want to perform the annotation of LC-MS/MS spectra using a 
+reference library (mgf format) and the CosineGreedy spectral similarity 
+algorithm from matchms. The mgf reference library is in this tutorial originates
+from the GNPS repository, but can be replaced by an in-house reference database. 
+Similarily, the spectral similarity algorithm used in this tutorial is the 
+CosineGreedy from matchms, but can be changed for another calculation from 
+matchms, or other R/python spectral silimilatity algorithms. 
+
+# steps to do
+
+Potential example: annotation of LC-MS/MS
+
+- R: Perform LC-MS/MS data preprocessing in R with xcms } part in the metabonaut already
+- R: Extract MS2 spectra for features as a Spectra object-    } idem, so maybe refer and load ‘res’ instead?
+- Python: Load reference database, e.g. from a GNPS MGF file
+- R: translate Spectra object to Python.
+- Python: process and filter the data, both the reference database and the experimental data
+- Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
+- ?? maybe some last step eg translate back to R and visual network graph?
+
+# R libraries
+
+Load required R packages.
+
+```{r}
+#' R MS packages
+library(Spectra)
+library(msdata)
+
+#' libraries for integration with Python; in interactive mode, use
+#' `repl_python()` to start a Python shell to execute the Python code
+#' blocks and return to R using `exit`
+library(reticulate)
+
+#' To translate between R and Python MS data classes
+library(SpectriPy)
+
+#' To retrieve data from Bioconductor's AnnotationHub
+library(AnnotationHub)
+```
+
+
+
+# LC-MS/MS data preprocessing
+
+Instructions to LC-MS/MS data preprocessing is performed in R with xcms are 
+described below, from source
+[A Complete End-to-End Workflow for untargeted LC-MS/MS Metabolomics Data Analysis in R](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html).
+
+```{r}
+print('FINDME, copy/paste or refer only?? TODO!!!')
+
+```
+
+## Test data
+
+For this, we first make some test data.
+
+```{r, message = FALSE, echo = FALSE, warning = FALSE}
+library(Spectra)
+library(SpectriPy)
+
+## Create a Spectra object with two MS2 spectra for Caffeine.
+caf <- DataFrame(
+    msLevel = c(2L, 2L),
+    name = "Caffeine",
+    precursorMz = c(195.0877, 195.0877),
+    smiles = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C',
+    inchi = '1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3',
+    parent_mass = 195.08
+)
+caf$intensity <- list(
+    c(340.0, 416, 2580, 412),
+    c(388.0, 3270, 85, 54, 10111))
+caf$mz <- list(
+    c(135.0432, 138.0632, 163.0375, 195.0880),
+    c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864))
+caf <- Spectra(caf)
+
+
+## Create a Spectra object with two MS2 spectra for 1-Methylhistidine
+mhd <- DataFrame(
+    msLevel = c(2L, 2L),
+    precursorMz = c(170.0924, 170.0924),
+    id = c("HMDB0000001", "HMDB0000001"),
+    name = c("1-Methylhistidine", "1-Methylhistidine"),
+    smiles = 'CN1C=C(N=C1)C[C@@H](C(=O)O)N',
+    inchi = '1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1',
+    parent_mass = 170.09)
+mhd$mz <- list(
+    c(109.2, 124.2, 124.5, 170.16, 170.52),
+    c(83.1, 96.12, 97.14, 109.14, 124.08, 125.1, 170.16))
+mhd$intensity <- list(
+    c(3.407, 47.494, 3.094, 100.0, 13.240),
+    c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
+mhd <- Spectra(mhd)
+
+
+#' merge the caffeine and 1-Methylhistidine Spectra objects
+#' we have 2 spectra from caf and 2 spectra from 1-methylhis
+all <- c(caf, mhd)
+
+```
+
+
+# Extract MS2 spectra
+
+Instructions to extract MS2 spectra as a Spectra object are 
+described below, from source
+[A Complete End-to-End Workflow for untargeted LC-MS/MS Metabolomics Data Analysis in R](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html).
+
+```{r}
+print('FINDME, copy/paste or refer only?? TODO!!!')
+
+```
+
+copy/paste from metabonaut 
+
+OR
+
+ask and load the object from metabolnaut at the stage: "After normalizing", see 
+section "Quality control: Feature prefiltering".
+
+```{r load_ms_objects, eval = FALSE}
+load("SumExp_afternorm.RData")
+load("data_afternorm.RData")
+
+#' Number of features before filtering
+nrow(res)
+```
+
+or from after "Annotation" section, so you can showcase the inchikey search etc...
+
+
+# Translate Spectra object to Python
+
+## Conversion to Spectrum object
+
+First, we check if the r Spectra object can be accessed in python using the 'r.' 
+prefix.
+
+```{python}
+# check if the r Spectra object can be accessed in python using the 'r.' 
+# prefix
+r.all
+
+```
+
+Second, we filter to only keeping the MS2 level and translate the Spectra 
+object 'all' to the py Spectrum object 'all_ms2_py'.
+
+```{r}
+#' filter Spectra object to retain only MS2 level 
+all_ms2 <- filterMsLevel(all, 2L)
+
+#' convert to py Spectrum
+#' pass via 'mapping' the r = 'py' names if needed
+system.time(
+    all_ms2_py <- rspec_to_pyspec(all_ms2, mapping = c(smiles = 'smiles', 
+                                                       inchi = 'inchi', 
+                                                       name = 'compound_name',
+                                                       parent_mass = 'parent_mass',
+                                                       precursorMz = 'precursor_mz')) 
+)
+all_ms2_py
+
+```
+
+Third, we check if the "r convertend Spectrum" object can be accessed in python using the 'r.' 
+prefix.
+
+```{python}
+# check if the "r convertend Spectrum" object can be accessed in python using 
+# the 'r.' prefix
+r.all_ms2_py
+
+```
+
+
+# Load reference database
+
+The mgf reference library is in this tutorial originates
+from the GNPS repository, but can be replaced by an in-house reference database. 
+
+```{python load-refenrce-datadase}
+from matchms.importing import load_from_mgf
+
+# Read spectra from a MGF formatted file, for other formats see https://matchms.readthedocs.io/en/latest/api/matchms.importing.html
+file = load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/vignettes/pesticides.mgf")
+
+```
+
+
+# Process and filter the data
+
+```{python}
+
+print('todo!!!')
+
+```
+
+
+# MS2 spectral similarity calculation
+
+We calculate the pairwise similarity between the experimental spectra and 
+reference.
+Here, we use the spectral similarity algorithm CosineGreedy from matchms, but 
+this can easily be changed for another calculation from matchms, or other 
+R/python spectral silimilatity algorithms. See the TEMP? TODO!!! 
+cross-language-ms-analysis.qmd for other examples.
+
+from source 
+https://github.com/matchms/matchms/blob/master/README.rst
+
+```{python spectral-similarity-calculation}
+
+from matchms.importing import load_from_mgf
+from matchms.filtering import default_filters, normalize_intensities
+from matchms import calculate_scores
+from matchms.similarity import CosineGreedy
+
+# Read spectra from a MGF formatted file, for other formats see https://matchms.readthedocs.io/en/latest/api/matchms.importing.html
+file = load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/vignettes/pesticides.mgf")
+
+# Apply filters to clean and enhance each spectrum
+spectra = []
+for spectrum in file:
+    # Apply default filter to standardize ion mode, correct charge and more.
+    # Default filter is fully explained at https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html .
+    spectrum = default_filters(spectrum)
+    # Scale peak intensities to maximum of 1
+    spectrum = normalize_intensities(spectrum)
+    spectra.append(spectrum)
+
+# Calculate Cosine similarity scores between all spectra
+# For other similarity score methods see https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html .
+scores = calculate_scores(references=spectra,
+                          queries=spectra,
+                          similarity_function=CosineGreedy())
+
+# Matchms allows to get the best matches for any query using scores_by_query
+query = spectra[15]  # just an example
+best_matches = scores.scores_by_query(query, 'CosineGreedy_score', sort=True)
+
+# Print the calculated scores for each spectrum pair
+for (reference, score) in best_matches[:10]:
+    # Ignore scores between same spectra
+    if reference is not query:
+        print(f"Reference scan id: {reference.metadata['scans']}")
+        print(f"Query scan id: {query.metadata['scans']}")
+        print(f"Score: {score[0]:.4f}")
+        print(f"Number of matching peaks: {score[1]}")
+        print("----------------------------")
+
+
+
+```
+
+ 
+ # ?? maybe some last step eg translate back to R and visual network graph?
+
+```{r}
+print('something??')
+
+```
+
+# Session information
+
+```{r}
+sessionInfo()
+```

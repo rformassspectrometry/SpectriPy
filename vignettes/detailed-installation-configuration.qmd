@@ -110,11 +110,6 @@ library(SpectriPy)
 ```
 
 
-# Configuration
-
-- which reticulate?
-
-
 # Appendix
 
 ## Installation instructions for first-time R users{#sec-first}

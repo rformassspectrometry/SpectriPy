@@ -63,7 +63,8 @@ See the extensive documentation for the use of SpectriPy:
 
 - The rendered [SpectriPy package’s vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html), 
 - The code of the [SpectriPy vignette](vignettes/SpectriPy.qmd), 
-- A [tutorial](vignettes/SpectriPy_tutorial.qmd). TODO!!!
+- A [tutorial](vignettes/SpectriPy_tutorial.qmd) for the annotation of LC-MS/MS 
+spectra using an MGF library and the CosineGreedy algirithm from matchms.
 
 TLDR:
 
