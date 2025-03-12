@@ -45,9 +45,75 @@ install.packages("reticulate")
 reticulate::install_miniconda()
 ```
 
+
+## SpectriPy pre-requisites and installation instructions
+
+### Installing Bioconductor
+
+Bioconductor is required to install SpectriPy, as described below and from
+source [https://bioconductor.org/install/](https://bioconductor.org/install/).
+
+The current release of Bioconductor is version 3.20; it works with R version
+4.4.0. Users of older R and Bioconductor must update their installation to take
+advantage of new features and to access packages that have been added to
+Bioconductor since the last release.
+
+The development version of Bioconductor is version 3.21; it works with R version
+4.5.0. More recent ‘devel’ versions of R (if available) will be supported during
+the next Bioconductor release cycle.
+
+Once R has been installed, get the latest version of Bioconductor by starting R
+and entering the following commands.
+
+It may be possible to change the Bioconductor version of an existing
+installation; see the *Changing version* section of the BiocManager vignette.
+
+Details, including instructions to install additional packages and to update,
+find, and troubleshoot are provided below. A devel version of Bioconductor is
+available. There are good reasons for using `BiocManager::install()` for
+managing Bioconductor resources.
+
+```{r}
+#| eval: false
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.20")
+```
+
+### Installing SpectriPy
+
+Since *SpectriPy* is currently still in development, you will need the *remotes*
+package to install it from GitHub. If you do not have the *remotes* package yet,
+you can install it using the following command:
+
+```{r}
+#| eval: false
+install.packages("remotes")
+```
+
+To install the *SpectriPi* package use
+
+```{r}
+#| eval: false
+BiocManager::install("RforMassSpectrometry/SpectriPy")
+```
+
+### Check installation completed
+
+The status of installation can be easily checked by starting R and entering the
+following commands.
+
+This command loads the *SpectriPy* package, if correct installed.
+
+```{r}
+library(SpectriPy)
+```
+
+
 # Configuration
 
 - which reticulate?
+
 
 # Appendix
 
@@ -197,69 +263,6 @@ Figure 1: The RStudio IDE for R.
 Now that you have both R and RStudio on your computer, you can begin using R by
 opening the RStudio program. Open RStudio just as you would any program, by
 clicking on its icon or by typing “RStudio” at the Windows Run prompt.
-
-## SpectriPy pre-requisites and installation instructions
-
-### Installing Bioconductor
-
-Bioconductor is required to install SpectriPy, as described below and from
-source [https://bioconductor.org/install/](https://bioconductor.org/install/).
-
-The current release of Bioconductor is version 3.20; it works with R version
-4.4.0. Users of older R and Bioconductor must update their installation to take
-advantage of new features and to access packages that have been added to
-Bioconductor since the last release.
-
-The development version of Bioconductor is version 3.21; it works with R version
-4.5.0. More recent ‘devel’ versions of R (if available) will be supported during
-the next Bioconductor release cycle.
-
-Once R has been installed, get the latest version of Bioconductor by starting R
-and entering the following commands.
-
-It may be possible to change the Bioconductor version of an existing
-installation; see the *Changing version* section of the BiocManager vignette.
-
-Details, including instructions to install additional packages and to update,
-find, and troubleshoot are provided below. A devel version of Bioconductor is
-available. There are good reasons for using `BiocManager::install()` for
-managing Bioconductor resources.
-
-```{r}
-#| eval: false
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install(version = "3.20")
-```
-
-### Installing SpectriPy
-
-Since *SpectriPy* is currently still in development, you will need the *remotes*
-package to install it from GitHub. If you do not have the *remotes* package yet,
-you can install it using the following command:
-
-```{r}
-#| eval: false
-install.packages("remotes")
-```
-
-To install the *SpectriPi* package use
-
-```{r}
-#| eval: false
-BiocManager::install("RforMassSpectrometry/SpectriPy")
-```
-
-### Check installation completed
-
-The status of installation can be easily checked by starting R and entering the
-following commands.
-
-This command loads the *SpectriPy* package, if correct installed.
-
-```{r}
-library(SpectriPy)
-```
 
 
 # Session information
