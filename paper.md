@@ -33,6 +33,7 @@ authors:
   - name: Helge Hecht
     affiliation: 9
   - name: Michael Witting
+    orcid: 0000-0002-1462-4426
     affiliation: "10, 11"
   - name: Johannes Rainer
     orcid: 0000-0002-6977-7147
@@ -69,7 +70,7 @@ bibliography: paper.bib
 
 # Summary
 
-Mass spectrometry (MS) is a key technology used across multiple fields, including biomedical research and life sciences. The data is generally large and complex and analyses need to be tailored to the experimental and instrumental setups. Excellent libraries for such data analysis are available in both R and Python, including R packages from the RforMassSpectrometry initiative such as Spectra, MsCoreUtils, MetaboAnnotation and CompoundDb [@rainer_modular_2022], as well as Python libraries like matchms [@huber_matchms_2020], spectrum_utils [@bittremieux_spectrum_utils_2020], Pyteomics [@goloborodko_pyteomics_2013] and pyOpenMS [@rost_pyopenms_2014]. The reticulate R package [@reticulate_2025] provides an R interface to Python and enables interoperability between the two programming languages. The open source SpectriPy R package builds upon reticulate and provides functionality to efficiently translate between R and Python MS data structures. [some info on the bundled functionality from Python?] SpectriPy hence enables and simplifies the integration of R and Python for MS data analysis, empowering data analysts to benefit from the full power of algorithms from both programming languages. Further, software developers can now reuse algorithms across languages rather than re-implementing them, enhancing efficiency and collaboration.
+Mass spectrometry (MS) is a key technology used across multiple fields, including biomedical research and life sciences. The data is generally large and complex and analyses need to be tailored to the experimental and instrumental setups. Excellent libraries for such data analysis are available in both R and Python, including R packages from the RforMassSpectrometry initiative such as Spectra [@rainer_modular_2022], MsCoreUtils [@rainer_modular_2022], MetaboAnnotation [@rainer_modular_2022] and CompoundDb [@rainer_modular_2022], as well as Python libraries like matchms [@huber_matchms_2020], spectrum_utils [@bittremieux_spectrum_utils_2020], Pyteomics [@goloborodko_pyteomics_2013] and pyOpenMS [@rost_pyopenms_2014]. The reticulate R package [@reticulate_2025] provides an R interface to Python and enables interoperability between the two programming languages. The open source SpectriPy R package builds upon reticulate and provides functionality to efficiently translate between R and Python MS data structures. [some info on the bundled functionality from Python?] SpectriPy hence enables and simplifies the integration of R and Python for MS data analysis, empowering data analysts to benefit from the full power of algorithms from both programming languages. Further, software developers can now reuse algorithms across languages rather than re-implementing them, enhancing efficiency and collaboration.
 
 # Statement of need
 
