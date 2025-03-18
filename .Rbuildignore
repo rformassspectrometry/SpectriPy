@@ -1,5 +1,6 @@
 .editorconfig
 README.md
+LICENSE
 local_data/*
 man/figures/*
 ^.*\.Rproj$
