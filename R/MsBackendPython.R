@@ -5,7 +5,9 @@
 #' @description
 #'
 #' The `MsBackendPy` allows to access MS data stored as `matchms.Spectrum`
-#' objects from the [matchms](https://github.com/matchms/matchms) Python
+#' or `spectrum_utils.spectrum.MsmsSpectrum' objects from the
+#' [matchms](https://github.com/matchms/matchms) respectively
+#' [spectrum_utils](https://github.com/bittremieux-lab/spectrum_utils) Python
 #' library directly from R. The MS data (peaks data or spectra variables) are
 #' translated on-the-fly when accessed. Thus, the `MsBackendPy` allows a
 #' seamless integration of Python MS data structures into [Spectra::Spectra()]
@@ -56,7 +58,10 @@
 #'   `spectraVariableMapping` parameter allows to provide additional, or
 #'   alternative, mapping of `Spectra`'s *spectra variables* to metadata in the
 #'   `matchms.Spectrum` objects. See [defaultSpectraVariableMapping()] (the
-#'   default) for more information. The function returns an initialized
+#'   default) for more information. Parameter `pythonLibrary` must be used
+#'   to specify the Python library representing the MS data in Python. It can
+#'   be either `pythonLibrary = "matchms"` (the default) or
+#'   `pythonLibrary = "spectrum_utils"`. The function returns an initialized
 #'   instance of `MsBackendPy`.
 #'
 #' - `peaksData()`: extracts the peaks data matrices from the backend. Python
@@ -102,6 +107,11 @@
 #'     retrieve.
 #'
 #' @param object A `MsBackendPy` object.
+#'
+#' @param pythonLibrary For `backendInitialize()`: `character(1)` specifying
+#'     the Python library used to represent the MS data in Python. Can be
+#'     either `pythonLibrary = "matchms"` (the default) or \
+#'     `pythonLibrary = "spectrum_utils"`.
 #'
 #' @param pythonVariableName For `backendInitialize()`: `character(1)` with the
 #'     name of the variable/Python attribute that contains the list of
@@ -175,6 +185,32 @@
 #' ## Plot the first spectrum
 #' plotSpectra(s_2[1L])
 #'
+#'
+#' ########
+#' ## Using the spectrum_utils Python library
+#'
+#' ## Below we convert the data to a list of `MsmsSpectrum` object from the
+#' ## spectrum_utils library.
+#' py_set_attr(py, "su_p", rspec_to_pyspec(s,
+#'     spectraVariableMapping("spectrum_utils"), "spectrum_utils"))
+#'
+#' ## Create a MsBackendPy representing this data. Importantly, we need to
+#' ## specify the Python library using the `pythonLibrary` parameter and
+#' ## ideally also set the `spectraVariableMapping` to the one specific for
+#' ## that library.
+#' be <- backendInitialize(MsBackendPy(), "su_p",
+#'     spectraVariableMapping = spectraVariableMapping("spectrum_utils"),
+#'     pythonLibrary = "spectrum_utils")
+#' be
+#'
+#' ## Get the peaks data for the first 3 spectra
+#' peaksData(be[1:3])
+#'
+#' ## Get the full spectraData
+#' spectraData(be)
+#'
+#' ## Extract the precursor m/z
+#' be$precursorMz
 NULL
 
 #' @noRd
@@ -217,10 +253,12 @@ MsBackendPy <- function() {
 setMethod("backendInitialize", "MsBackendPy",
           function(object, pythonVariableName = character(),
                    spectraVariableMapping = defaultSpectraVariableMapping(),
+                   pythonLibrary = c("matchms", "spectrum_utils"),
                    ...,
                    data) {
               .check_spectra_variable_mapping(spectraVariableMapping)
               object@spectraVariableMapping <- spectraVariableMapping
+              pythonLibrary <- match.arg(pythonLibrary)
               if (!length(pythonVariableName))
                   stop("'pythonVariableName' has to be provided")
               if (!is.character(pythonVariableName))
@@ -239,6 +277,7 @@ setMethod("backendInitialize", "MsBackendPy",
                   .check_py_var(pythonVariableName, object@is_in_py)
                   object@py_var <- pythonVariableName
                   object <- reindex(object)
+                  object@py_lib <- pythonLibrary
               } else {
                   stop("not yet implemented")
                   ## if data provided -> convert the data to Python.
@@ -294,12 +333,16 @@ setMethod(
         mt <- .py_get_metadata_names(object)
         mt <- mt[names(mt) %in% columns]
         if (length(mt)) {
+            SFUN <- switch(
+                object@py_lib,
+                matchms = .py_matchms_spectrum_spectra_data,
+                spectrum_utils = .py_spectrum_utils_spectrum_spectra_data)
             ## Note: creating a pandas.DataFrame in Python is not faster
             d <- .get_py_var(object@py_var, object@is_in_py)
             if (!is.list(d)) d <- py_to_r(d)
             res <- do.call(
                 rbindFill,
-                lapply(d[object@i], .py_matchms_spectrum_spectra_data, mt))
+                lapply(d[object@i], SFUN, mt))
             ## Ensure correct data type for core variables.
             csv <- coreSpectraVariables()
             for (mtc in intersect(colnames(res), names(csv)))
@@ -339,7 +382,12 @@ setMethod(
                                          columns = c("mz", "intensity"),
                                          drop = FALSE) {
         if (length(object@py_var)) {
-            res <- .py_matchms_peaks_data(object@py_var, (object@i - 1L))
+            res <- switch(
+                object@py_lib,
+                matchms = .py_matchms_peaks_data(
+                    object@py_var, (object@i - 1L)),
+                spectrum_utils = .py_spectrum_utils_peaks_data(
+                    object@py_var, (object@i - 1L)))
             if (identical(as.vector(columns), c("mz", "intensity"))) {
                 res <- lapply(res, function(z) {
                     colnames(z) <- c("mz", "intensity")
@@ -609,12 +657,23 @@ reindex <- function(object) {
 .py_get_metadata_names <- function(x) {
     var <- .get_py_var(x@py_var, x@is_in_py)
     if (length(var)) {
-        mt <- names(var[0L]$metadata)
-        names(mt) <- names(
-            x@spectraVariableMapping)[match(mt, x@spectraVariableMapping)]
-        nas <- is.na(names(mt))
-        names(mt)[nas] <- mt[nas]
-        mt
+        switch(
+            x@py_lib,
+            matchms = {
+                mt <- names(var[0L]$metadata)
+                names(mt) <- names(
+                    x@spectraVariableMapping)[match(
+                                      mt, x@spectraVariableMapping)]
+                nas <- is.na(names(mt))
+                names(mt)[nas] <- mt[nas]
+                mt
+            },
+            spectrum_utils = {
+                mt <- c("identifier", "precursor_mz",
+                        "precursor_charge", "retention_time")
+                mt <- x@spectraVariableMapping[x@spectraVariableMapping %in% mt]
+                mt
+            })
     }
     else character()
 }

@@ -17,6 +17,7 @@
   object,
   pythonVariableName = character(),
   spectraVariableMapping = defaultSpectraVariableMapping(),
+  pythonLibrary = c("matchms", "spectrum_utils"),
   ...,
   data
 )
@@ -49,6 +50,11 @@ with the mapping between spectra variable names and (\code{matchms.Spectrum})
 metadata names. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} for more
 information and details.}
 
+\item{pythonLibrary}{For \code{backendInitialize()}: \code{character(1)} specifying
+the Python library used to represent the MS data in Python. Can be
+either \code{pythonLibrary = "matchms"} (the default) or \
+\code{pythonLibrary = "spectrum_utils"}.}
+
 \item{...}{Additional parameters.}
 
 \item{data}{For \code{backendInitialize()}: \code{DataFrame} with the full MS data
@@ -72,9 +78,7 @@ retrieve.}
 }
 \description{
 The \code{MsBackendPy} allows to access MS data stored as \code{matchms.Spectrum}
-objects from the \href{https://github.com/matchms/matchms}{matchms} Python
-library directly from R. The MS data (peaks data or spectra variables) are
-translated on-the-fly when accessed. Thus, the \code{MsBackendPy} allows a
+or \verb{spectrum_utils.spectrum.MsmsSpectrum' objects from the [matchms](https://github.com/matchms/matchms) respectively [spectrum_utils](https://github.com/bittremieux-lab/spectrum_utils) Python library directly from R. The MS data (peaks data or spectra variables) are translated on-the-fly when accessed. Thus, the }MsBackendPy` allows a
 seamless integration of Python MS data structures into \code{\link[Spectra:Spectra]{Spectra::Spectra()}}
 based analysis workflows.
 
@@ -122,7 +126,10 @@ provided with the \code{pythonVariableName} parameter. The optional
 \code{spectraVariableMapping} parameter allows to provide additional, or
 alternative, mapping of \code{Spectra}'s \emph{spectra variables} to metadata in the
 \code{matchms.Spectrum} objects. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} (the
-default) for more information. The function returns an initialized
+default) for more information. Parameter \code{pythonLibrary} must be used
+to specify the Python library representing the MS data in Python. It can
+be either \code{pythonLibrary = "matchms"} (the default) or
+\code{pythonLibrary = "spectrum_utils"}. The function returns an initialized
 instance of \code{MsBackendPy}.
 \item \code{peaksData()}: extracts the peaks data matrices from the backend. Python
 code is applied to the data structure in Python to
@@ -205,6 +212,32 @@ mz(s_2)
 ## Plot the first spectrum
 plotSpectra(s_2[1L])
 
+
+########
+## Using the spectrum_utils Python library
+
+## Below we convert the data to a list of `MsmsSpectrum` object from the
+## spectrum_utils library.
+py_set_attr(py, "su_p", rspec_to_pyspec(s,
+    spectraVariableMapping("spectrum_utils"), "spectrum_utils"))
+
+## Create a MsBackendPy representing this data. Importantly, we need to
+## specify the Python library using the `pythonLibrary` parameter and
+## ideally also set the `spectraVariableMapping` to the one specific for
+## that library.
+be <- backendInitialize(MsBackendPy(), "su_p",
+    spectraVariableMapping = spectraVariableMapping("spectrum_utils"),
+    pythonLibrary = "spectrum_utils")
+be
+
+## Get the peaks data for the first 3 spectra
+peaksData(be[1:3])
+
+## Get the full spectraData
+spectraData(be)
+
+## Extract the precursor m/z
+be$precursorMz
 }
 \author{
 Johannes Rainer and the EuBIC hackathon team

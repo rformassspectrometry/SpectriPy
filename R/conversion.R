@@ -511,7 +511,7 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
                         precursor_charge = py_to_r(x$precursor_charge),
                         retention_time = py_to_r(x$retention_time),
                         identifier = py_to_r(x$identifier))
-        s <- s[, colnames(s) %in% mapping]
+        s <- s[, colnames(s) %in% mapping, drop = FALSE]
         if (length(s)) {
             colnames(s) <- names(mapping)[match(colnames(s), mapping)]
             s
