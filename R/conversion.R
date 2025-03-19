@@ -56,11 +56,16 @@
 #'   memory.
 #'
 #' - `pyspec_to_rspec()` translates a single, or a list of `matchms.Spectrum`
-#'   objects to a [Spectra::Spectra()] object. Parameter `mapping` allows to
-#'   speficy the metadata variables that should be translated and mapped in
-#'   addition to the peaks data.
+#'   objects (with parameter `pythonLibrary = "matchms"`, the default) or a
+#'   list of `spectrum_utils.spectrum.MsmsSpectrum` objects (with parameter
+#'   `pythonLibrary = "spectrum_utils"`) to a [Spectra::Spectra()] object.
+#'   Parameter `mapping` allows to specify the metadata variables that
+#'   should be translated and mapped in addition to the peaks data. The
+#'   library used to represent the MS data in Python needs to be specified with
+#'   parameter `pythonLibrary`.
 #'
-#' - `r_to_py.Spectra()` is equivalent to `rspec_to_pyspec()`. The spectra
+#' - `r_to_py.Spectra()` is equivalent to
+#'   `rspec_to_pyspec(pythonLibrary = "matchms")`. The spectra
 #'   variables that should be converted can be configures with
 #'   `setSpectraVariableMapping()` (see documentation below).
 #'
@@ -117,8 +122,9 @@
 #'
 #' @param object For `spectraVariableMapping()`: not used.
 #'
-#' @param pythonLibrary  For `rspec_to_pyspec()`: `character(1)` defining the
-#'     Python library to which data structures the data should be converted.
+#' @param pythonLibrary  For `rspec_to_pyspec()` and `pyspec_to_rspec()`:
+#'     `character(1)` defining the Python library to which (or from which)
+#'     data structures the data should be converted.
 #'     Possible options are `"matchms"` or `"spectrum_utils"` with `"matchms"`
 #'     being the default.
 #'
@@ -205,6 +211,9 @@
 #' s_py2 <- rspec_to_pyspec(
 #'     s, mapping = spectraVariableMapping("spectrum_utils"),
 #'     pythonLibrary = "spectrum_utils")
+#'
+#' ## Convert the data back to R
+#' pyspec_to_rspec(s_py2, pythonLibrary = "spectrum_utils")
 #'
 #' #########################
 #' ## Conversion Python to R
@@ -496,6 +505,23 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
         m[, columns, drop = drop]
     }
 
+.py_spectrum_utils_spectrum_spectra_data <-
+    function(x, mapping = spectraVariableMapping(), ...) {
+        s <- data.frame(precursor_mz = py_to_r(x$precursor_mz),
+                        precursor_charge = py_to_r(x$precursor_charge),
+                        retention_time = py_to_r(x$retention_time),
+                        identifier = py_to_r(x$identifier))
+        s <- s[, colnames(s) %in% mapping]
+        if (length(s)) {
+            colnames(s) <- names(mapping)[match(colnames(s), mapping)]
+            s
+        } else data.frame(msLevel = NA_integer_)
+    }
+
+.py_spectrum_utils_spectrum_peaks_data <- function(x, ...) {
+    cbind(mz = py_to_r(x$mz), intensity = py_to_r(x$intensity))
+}
+
 #' @description
 #'
 #' Function to convert a single Python Spectrum object into an R Spectra using
@@ -550,8 +576,12 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #'
 #' @importFrom reticulate iterate
 #'
+#' @importFrom methods slot<-
+#'
 #' @rdname conversion
-pyspec_to_rspec <- function(x, mapping = spectraVariableMapping()) {
+pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
+                            pythonLibrary = c("matchms", "spectrum_utils")) {
+    pythonLibrary <- match.arg(pythonLibrary)
     if (is(x, "matchms.Spectrum.Spectrum"))
         return(.single_pyspec_to_rspec(x, mapping = mapping))
     be <- MsBackendMemory()
@@ -560,12 +590,25 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping()) {
     if (is.list(x))
         ITER <- lapply
     else ITER <- iterate
-    be@peaksData <- ITER(x, .py_matchms_spectrum_peaks_data, simplify = FALSE)
+    switch(pythonLibrary,
+           matchms = {
+               PFUN <- .py_matchms_spectrum_peaks_data
+               SFUN <- .py_matchms_spectrum_spectra_data
+           },
+           spectrum_utils = {
+               PFUN <- .py_spectrum_utils_spectrum_peaks_data
+               SFUN <- .py_spectrum_utils_spectrum_spectra_data
+           })
+    slot(be, "peaksData", check = FALSE) <- ITER(x, PFUN, simplify = FALSE)
     ## Not very efficient and elegant... get the indivudal elements and stuff
     ## into list. pandas.DataFrame can not be easily created unfortunately.
-    be@spectraData <- do.call(
-        rbindFill, ITER(x, .py_matchms_spectrum_spectra_data, simplify = FALSE))
-    be@spectraData$dataStorage <- "<memory>"
+    sdta <- do.call(rbindFill, ITER(x, SFUN, simplify = FALSE))
+    sdta$dataStorage <- "<memory>"
+    ## Ensure correct data type for core variables.
+    csv <- coreSpectraVariables()
+    for (mtc in intersect(colnames(sdta), names(csv)))
+        sdta[[mtc]] <- as(sdta[[mtc]], csv[mtc])
+    slot(be, "spectraData", check = FALSE) <- sdta
     setSpectraVariableMapping(orig_mapping)
     Spectra(be)
 }
@@ -598,6 +641,28 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping()) {
     paste0("_res_ = list()\n",
            "for i in _i_:\n",
            "  _res_.append(", x, "[i].peaks.to_numpy)\n")
+}
+
+#' Function to extract peaks data from a list of
+#' `spectrum_utils.spectrum.MsmsSpectrum` objects. This function can be called
+#' from `pyspec_to_rspec` or from the `MsBackendPy`.
+#'
+#' @noRd
+.py_spectrum_utils_peaks_data <- function(x, i) {
+    if (length(i) > 1)
+        py_set_attr(py, "_i_", as.integer(i))
+    else py_set_attr(py, "_i_", list(as.integer(i)))
+    res <- py_to_r(py_run_string(.py_spectrum_utils_peaks_data_cmd(x),
+                                 local = TRUE, convert = FALSE))[["_res_"]]
+    py_del_attr(py, "_i_")
+    res
+}
+
+.py_spectrum_utils_peaks_data_cmd <- function(x) {
+    paste0("import numpy as np\n",
+           "_res_ = list()\n",
+           "for i in _i_:\n",
+           "  _res_.append(np.column_stack((",x,"[i].mz,",x,"[i].intensity)))")
 }
 
 ## below are functions that would use direct python calls that iterate in

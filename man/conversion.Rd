@@ -27,7 +27,11 @@ rspec_to_pyspec(
   pythonLibrary = c("matchms", "spectrum_utils")
 )
 
-pyspec_to_rspec(x, mapping = spectraVariableMapping())
+pyspec_to_rspec(
+  x,
+  mapping = spectraVariableMapping(),
+  pythonLibrary = c("matchms", "spectrum_utils")
+)
 }
 \arguments{
 \item{object}{For \code{spectraVariableMapping()}: not used.}
@@ -43,8 +47,9 @@ their R equivalent? Defaults to \code{FALSE}.}
 variables/metadata should be translated between R and Python and how
 they should be renamed. Defaults to \code{spectraVariableMapping()}.}
 
-\item{pythonLibrary}{For \code{rspec_to_pyspec()}: \code{character(1)} defining the
-Python library to which data structures the data should be converted.
+\item{pythonLibrary}{For \code{rspec_to_pyspec()} and \code{pyspec_to_rspec()}:
+\code{character(1)} defining the Python library to which (or from which)
+data structures the data should be converted.
 Possible options are \code{"matchms"} or \code{"spectrum_utils"} with \code{"matchms"}
 being the default.}
 }
@@ -110,10 +115,15 @@ Python data structures. A less memory intense operation could be to call
 this function in a loop to only load parts of the data at a time into
 memory.
 \item \code{pyspec_to_rspec()} translates a single, or a list of \code{matchms.Spectrum}
-objects to a \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object. Parameter \code{mapping} allows to
-speficy the metadata variables that should be translated and mapped in
-addition to the peaks data.
-\item \code{r_to_py.Spectra()} is equivalent to \code{rspec_to_pyspec()}. The spectra
+objects (with parameter \code{pythonLibrary = "matchms"}, the default) or a
+list of \code{spectrum_utils.spectrum.MsmsSpectrum} objects (with parameter
+\code{pythonLibrary = "spectrum_utils"}) to a \code{\link[Spectra:Spectra]{Spectra::Spectra()}} object.
+Parameter \code{mapping} allows to specify the metadata variables that
+should be translated and mapped in addition to the peaks data. The
+library used to represent the MS data in Python needs to be specified with
+parameter \code{pythonLibrary}.
+\item \code{r_to_py.Spectra()} is equivalent to
+\code{rspec_to_pyspec(pythonLibrary = "matchms")}. The spectra
 variables that should be converted can be configures with
 \code{setSpectraVariableMapping()} (see documentation below).
 }
@@ -230,6 +240,9 @@ s_py <- rspec_to_pyspec(
 s_py2 <- rspec_to_pyspec(
     s, mapping = spectraVariableMapping("spectrum_utils"),
     pythonLibrary = "spectrum_utils")
+
+## Convert the data back to R
+pyspec_to_rspec(s_py2, pythonLibrary = "spectrum_utils")
 
 #########################
 ## Conversion Python to R
