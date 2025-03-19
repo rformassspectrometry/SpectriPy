@@ -6,15 +6,29 @@
 #'
 #' The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions allow to convert
 #' (translate) MS data structures between R and Python. At present the
-#' R [Spectra::Spectra()] objects are translated into a list of
+#' R [Spectra::Spectra()] objects can be either translated into a list of
 #' [matchms](https://github.com/matchms/matchms) Python `matchms.Spectrum`
-#' objects. For better integration with the *reticulate* R package also a
+#' objects or
+#' [spectrum_utils](https://github.com/bittremieux-lab/spectrum_utils) Python
+#' `spectrum_utils.spectrum.MsmsSpectrum` objects.
+#' For better integration with the *reticulate* R package also a
 #' `r_to_py.Spectra()` method is available.
 #'
 #' The mapping of spectra variables (in R) to (Python) spectra metadata can
 #' be configured and defined with the `setSpectraVariableMapping()` and
 #' `spectraVariableMapping()`. These get and set the *global* (system wide)
 #' setting and are thus also used by the `r_to_py()` method.
+#'
+#' Properties for translation to the MS data objects of the different Python
+#' libraries are:
+#'
+#' - *matchms*: the `matchms.Spectrum` objects support arbitrary metadata, so
+#'   any spectra variable can be translated and stored in these objects.
+#'
+#' - *spectrum_utils*: the `spectrum_utils.spectrum.MsmsSpectrum` object
+#'   supports metadata variables *identifier* (`character`), *precursor_mz*
+#'   (`numeric`), *precursor_charge* (`integer`) and optionally also
+#'   *retention_time* (`numeric`).
 #'
 #' See the indivudual function's documentation for more details.
 #'
@@ -26,11 +40,16 @@
 #' `r_to_py()` method.
 #'
 #' - `rspec_to_pyspec()` translates an R [Spectra::Spectra()] object into a
-#'   list of `matchms.Spectrum` objects. Parameter `mapping` allows to specify
+#'   list of Python MS data objects, which can be, depending on parameter
+#'   `pythonLibrary`, `matchms.Spectrum` objects (for
+#'   `pythonLibrary = "matchms"`, the default) or
+#'   `spectrum_utils.spectrum.MsmsSpectrum` objects (for
+#'   `pythonLibrary = "spectrum_utils"`). Parameter `mapping` allows to specify
 #'   which spectra variables from the `Spectra` object `x` should be converted
 #'   in addition to the peaks data (m/z and intensity values). It defaults to
 #'   `mapping = spectraVariableMapping()` (See the respective help below for
-#'   more information on the variable mapping). While being fast, this function
+#'   more information on the variable mapping).
+#'   While being fast, this function
 #'   first loads all peaks and spectra data into memory before translating to
 #'   Python data structures. A less memory intense operation could be to call
 #'   this function in a loop to only load parts of the data at a time into
@@ -55,14 +74,20 @@
 #' different names and naming conventions are used. The
 #' `spectraVariableMapping()` and `setSpectraVariableMapping()` functions allow
 #' to define how the names of spectra metadata (spectra variables) should be
-#' translated between R and Python. The `r_to_py()` and `py_to_r()` functions
-#' will used these to name the spectra variables accordingly. Also, only
+#' translated between R and Python. To support also the different naming
+#' conventions used by the Python libraries *matchms* and *spectrum_utils*,
+#' `spectraVariableMapping()` defines different mapping schemes for these,
+#' using by default the mapping for *matchms*. Note also that *spectrum_utils*
+#' supports only few selected metadata/spectra variables, so any additional
+#' spectra variables defined by the mapping will be ignored.
+#' The `r_to_py()` and `py_to_r()` functions will use the selected naming
+#' scheme to name the spectra variables accordingly. Also, only
 #' spectra metadata/variables in `spectraVariableMapping()` will be translated.
 #' The initial mapping is based on this
 #' [definition in matchms](https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv).
 #'
 #' - `defaultSpectraVariableMapping()`: returns the *default* mapping between
-#'   spectra variables and *matchms* metadata names.
+#'   spectra variables and Python metadata names for the *matchms* library.
 #'
 #' - `spectraVariableMapping()`: returns the currently defined spectra
 #'   variable mapping as a named character vector, with names representing the
@@ -70,7 +95,11 @@
 #'   of the spectra metadata in Python. Use [Spectra::spectraVariables()] on
 #'   the `Spectra` object that should be converted with `r_to_py()` to list
 #'   all available spectra variables. `r_to_py()` and `py_to_r()` for MS data
-#'   structures will use this mapping.
+#'   structures will use this default mapping. Calling
+#'   `spectraVariableMapping()` defining also the Python library (e.g.,
+#'   `spectraVariableMapping("matchms")` or
+#'   `spectraVariableMapping("spectrum_utils")`) will return the variable
+#'   mapping for the specified Python library.
 #'
 #' - `setSpectraVariableMapping()`: sets/replaces the currently defined mapping
 #'   of spectra variable names to Python metadata names. Setting
@@ -88,14 +117,20 @@
 #'
 #' @param object For `spectraVariableMapping()`: not used.
 #'
+#' @param pythonLibrary  For `rspec_to_pyspec()`: `character(1)` defining the
+#'     Python library to which data structures the data should be converted.
+#'     Possible options are `"matchms"` or `"spectrum_utils"` with `"matchms"`
+#'     being the default.
+#'
 #' @param ... For `spectraVariableMapping()`: not used.
 #'
 #' @return For `r_to_py.Spectra()` and `rspec_to_pyspec()`: Python list of
-#'     `matchms.Spectrum` objects. For `pyspec_to_rspec()`:
+#'     MS data structures, either `matchms.Spectrum` or
+#'     `spectrum_utils.spectrum.MsmsSpectrum` objects. For `pyspec_to_rspec()`:
 #'     [Spectra::Spectra()] with the MS data of all `matchms.Spectrum` objects
 #'     in the submitted `list`.
 #'
-#' @author Michael Witting, Johannes Rainer, Wout Bittremieux
+#' @author Michael Witting, Johannes Rainer, Wout Bittremieux, Thomas Naake
 #'
 #' @importFrom reticulate r_to_py py_to_r
 #'
@@ -166,6 +201,11 @@
 #' s_py <- rspec_to_pyspec(
 #'     s, mapping = c(precursorMz = "precursor_mz", new_col = "new_col"))
 #'
+#' ## Convert to MS data objects from the spectrum_utils Python library
+#' s_py2 <- rspec_to_pyspec(
+#'     s, mapping = spectraVariableMapping("spectrum_utils"),
+#'     pythonLibrary = "spectrum_utils")
+#'
 #' #########################
 #' ## Conversion Python to R
 #'
@@ -194,13 +234,30 @@ NULL
     msLevel = "ms_level"
 )
 
+.SPECTRA_2_SPECTRUM_UTILS <- c(
+    precursorMz = "precursor_mz",
+    precursorCharge = "precursor_charge",
+    rtime = "retention_time",
+    scanIndex = "identifier"
+)
+
+
 #' @importMethodsFrom Spectra spectraVariableMapping
 #'
 #' @exportMethod spectraVariableMapping
 #'
 #' @rdname conversion
 #'
-#' @export
+#' @exportMethod spectraVariableMapping
+setMethod("spectraVariableMapping", "character", function(object, ...) {
+    if (!object %in% c("matchms", "spectrum_utils"))
+        stop("Supported values are \"matchms\" or \"spectrum_utils\"")
+    if (object == "matchms")
+        .SPECTRA_2_MATCHMS
+    else .SPECTRA_2_SPECTRUM_UTILS
+})
+
+#' @rdname conversion
 setMethod("spectraVariableMapping", "missing", function(object, ...) {
     getOption("spectripy.spectra_variable_mapping", .SPECTRA_2_MATCHMS)
 })
@@ -241,7 +298,7 @@ defaultSpectraVariableMapping <- function() {
 #'
 #' @export
 r_to_py.Spectra <- function(x, convert = FALSE) {
-    .rspec_to_pyspec(x, mapping = spectraVariableMapping())
+    .rspec_to_matchms_pyspec(x, mapping = spectraVariableMapping())
 }
 
 #' @rdname conversion
@@ -249,14 +306,20 @@ r_to_py.Spectra <- function(x, convert = FALSE) {
 #' @importFrom methods is
 #'
 #' @export
-rspec_to_pyspec <- function(x, mapping = spectraVariableMapping()) {
+rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
+                            pythonLibrary = c("matchms", "spectrum_utils")) {
     if (!is(x, "Spectra"))
         stop("'x' should be a Spectra object.")
+    pythonLibrary <- match.arg(pythonLibrary)
     ## that could be more memory efficient, but slower.
     ## r_to_py(spectrapply(x, .single_rspec_to_pyspec,
     ##                     spectraVariables = mapping,
     ##                     BPPARAM = BPPARAM))
-    .rspec_to_pyspec(x, mapping = mapping)
+    switch(pythonLibrary,
+           matchms = .rspec_to_matchms_pyspec(x, mapping = mapping),
+           spectrum_utils = .rspec_to_spectrum_utils_pyspec(
+               x, mapping = mapping)
+    )
 }
 
 #' @description
@@ -314,7 +377,7 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping()) {
 #' the data from one spectrum at a time are read.
 #'
 #' @noRd
-.rspec_to_pyspec <- function(x, mapping = spectraVariableMapping()) {
+.rspec_to_matchms_pyspec <- function(x, mapping = spectraVariableMapping()) {
     pks <- peaksData(x, c("mz", "intensity"))
     sv <- mapping[!mapping %in% c("mz", "intensity")]
     if (length(sv)) {
@@ -334,6 +397,58 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping()) {
                              intensities = np_array(z[, 2L]))))
     }
 }
+
+#' spectrum_utils have fixed metadata variables. These are:
+#'
+#' - identifier `character`
+#' - mz
+#' - intensity
+#' - precursor_mz `numeric`
+#' - precursor_charge `integer`
+#' - retention_time `numeric`
+#'
+#' We thus need to either extract these from the `spectraData()` or provide
+#' them as NA. Also, we drop any additional variables.
+#'
+#' @noRd
+.rspec_to_spectrum_utils_pyspec <-
+    function(x, mapping = spectraVariableMapping()) {
+        pks <- peaksData(x, c("mz", "intensity"))
+        l <- length(pks)
+        sv <- mapping[!mapping %in% c("mz", "intensity")]
+        svm <- sv[sv %in% .SPECTRA_2_SPECTRUM_UTILS]
+        if (length(w <- setdiff(
+                       sv, .SPECTRA_2_SPECTRUM_UTILS)))
+            warning("Ignoring variables ",
+                    paste0("\"", names(sv)[sv %in% w] ,"\""))
+        if (length(svm)) {
+            spd <- as.data.frame(spectraData(x, columns = names(svm)))
+            colnames(spd) <- svm[colnames(spd)]
+        }
+        rm(x)
+        if (any(svm == "identifier")) {
+            id <- as.character(spd$identifier)
+        } else id <- rep(NA_character_, l)
+        if (any(svm == "precursor_mz")) {
+            pmz <- spd$precursor_mz
+        } else pmz <- rep(NA_real_, l)
+        if (any(svm == "precursor_charge")) {
+            pch <- spd$precursor_charge
+        } else pch <- rep(NA_integer_, l)
+        if (any(svm == "retention_time")) {
+            rt <- spd$retention_time
+        } else rt <- rep(NA_real_, l)
+        if (length(svm)) rm(spd)
+        r_to_py(mapply(function(z, id, pmz, pch, rt) {
+            spectrum_utils$spectrum$MsmsSpectrum(
+                                        mz = np_array(z[, 1L]),
+                                        intensity = np_array(z[, 2L]),
+                                        identifier = r_to_py(id),
+                                        precursor_mz = r_to_py(pmz),
+                                        precursor_charge = r_to_py(pch),
+                                        retention_time = r_to_py(rt))
+        }, pks, id, pmz, pch, rt, SIMPLIFY = FALSE, USE.NAMES = FALSE))
+    }
 
 ## -------- PY TO R ----------------------------------------------------------##
 
