@@ -151,6 +151,7 @@ jobs:
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
+          brew install netcdf
           Rscript -e "reticulate:::miniconda_path()"
           export RETICULATE_MINICONDA_PATH='/Users/runner/Library/r-miniconda-arm64/'
           Rscript -e 'remotes::install_github("RforMassSpectrometry/SpectriPy",args = "--no-manual", build_args = "--no-build-vignettes")'
