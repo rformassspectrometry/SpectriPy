@@ -14,6 +14,8 @@ vignette: >
 ---
 
 ```{r style, echo = FALSE, results = 'asis', message = FALSE}
+#' R session:
+
 BiocStyle::markdown()
 ```
 
@@ -41,8 +43,46 @@ available):
 
 ```{r}
 #| eval: false
+#' R session:
+
 install.packages("reticulate")
 reticulate::install_miniconda()
+```
+
+
+## Configure reticulate with host system Python environment (optional)
+
+The installation of reticulate can be configured so to use an available Python 
+environment of the host system, instead of using the automatic setup. 
+
+The path to the python3 executable file needs to be specified in the 
+use_python() function of reticulate. A conda environment used in the analysis 
+will also created below, ensuring a specific python environment for reticulate.
+
+```{r}
+#| eval: false
+#' R session:
+
+use_python("~/miniconda3_reticulate/bin/python3")
+conda_create("r-reticulate")
+reticulate::py_config()
+```
+
+In case the host system Python environment is used, the required Python 
+packages can be installed using reticulate in its python environment. To 
+install more python packages, we use conda_install.
+
+Alternatively, if working outside of conda, packages can be installed using the 
+function py_install.
+
+```{r}
+#| eval: false
+#' R session:
+
+conda_install(envname = "r-reticulate","matchms==0.28.2", pip = TRUE, 
+              python_version = "3.12.2")
+conda_install(envname = "r-reticulate","spectrum_utils", pip = TRUE)
+conda_install(envname = "r-reticulate","numpy==2.0.2", pip = FALSE)
 ```
 
 
@@ -75,6 +115,8 @@ managing Bioconductor resources.
 
 ```{r}
 #| eval: false
+#' R session:
+
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.20")
@@ -88,6 +130,8 @@ you can install it using the following command:
 
 ```{r}
 #| eval: false
+#' R session:
+
 install.packages("remotes")
 ```
 
@@ -95,6 +139,8 @@ To install the *SpectriPi* package use
 
 ```{r}
 #| eval: false
+#' R session:
+
 BiocManager::install("RforMassSpectrometry/SpectriPy")
 ```
 
@@ -106,6 +152,8 @@ following commands.
 This command loads the *SpectriPy* package, if correct installed.
 
 ```{r}
+#' R session:
+
 library(SpectriPy)
 ```
 
@@ -263,5 +311,7 @@ clicking on its icon or by typing “RStudio” at the Windows Run prompt.
 # Session information
 
 ```{r}
+#' R session:
+
 sessionInfo()
 ```

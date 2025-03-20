@@ -1,5 +1,5 @@
 ---
-title: "Tutorial: Annotation of LC-MS/MS spectra"
+title: "SpectriPy tutorial: annotation of LC-MS/MS spectra"
 authors: "<add your name>, Marilyn De Graeve, Johannes Rainer"
 date: last-modified
 format:
@@ -15,13 +15,21 @@ format:
 
 # Introduction
 
-In this tutorial, we want to perform the annotation of LC-MS/MS spectra using a 
-reference library (mgf format) and the CosineGreedy spectral similarity 
-algorithm from matchms. The mgf reference library is in this tutorial originates
-from the GNPS repository, but can be replaced by an in-house reference database. 
-Similarily, the spectral similarity algorithm used in this tutorial is the 
-CosineGreedy from matchms, but can be changed for another calculation from 
-matchms, or other R/python spectral silimilatity algorithms. 
+*SpectriPy* enables powerful mass spectrometry (MS) data analysis workflows
+combining the strengths of Python and R MS libraries. To showcase the strength
+of combining functionalities from both programming languages with *SpectriPy*,
+we perform the annotation of LC-MS/MS spectra using a reference library.
+During the tutorial, we use different spectral similarity algorithms from both R
+and Python: normalized dot product similarity from Spectra
+[@rainer_modular_2022], XX from matchms [@huber_matchms_2020], Tanimoto
+score predictions from MS2DeepScore, XX. FINDME!!!
+
+The spectral reference library used in this tutorial originates from the GNPS
+repository (provided in mgf format), which can easily be replaced by the user by
+other public spectral databases or with an in-house reference database.
+Similarily, the spectral similarity algorithms used in this tutorial, can easily
+be extended to other R/python spectral silimilatity algorithms. 
+
 
 # steps to do
 
@@ -31,9 +39,40 @@ Potential example: annotation of LC-MS/MS
 - R: Extract MS2 spectra for features as a Spectra object-    } idem, so maybe refer and load ‘res’ instead?
 - Python: Load reference database, e.g. from a GNPS MGF file
 - R: translate Spectra object to Python.
-- Python: process and filter the data, both the reference database and the experimental data
+- Python: process (min 2 fragm present or matchms cleaning) and filter the data, both the reference database and the experimental data
 - Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
 - ?? maybe some last step eg translate back to R and visual network graph?
+- compare our filtering/... with the rest of metabonaut workkflow (of the significant)
+
+
+# Example workflow
+
+The concepts and examples can be checked by performing some steps from the 
+package’s vignette, from source 
+https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html.
+
+
+[Short example workflow. Maybe loading Python MGF file… example from the vignette? Something else? Ideally linking to actual reproducible results/vignettes]
+
+
+Potential example: annotation of LC-MS/MS
+R: Perform LC-MS/MS data preprocessing in R with xcms } part in the metabonaut already
+R: Extract MS2 spectra for features as a Spectra object-    } idem, so maybe refer and load ‘res’ instead?
+Python: Load reference database, e.g. from a GNPS MGF file
+R: translate Spectra object to Python.
+Python: process and filter the data, both the reference database and the experimental data
+Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
+R: translate back to R
+R: plot, maybe a graph?
+
+
+Maybe a second or other use case? Something that would start with a Python MS data and we could use that with the MsBackendPy?
+The MsBackendPy class that can be used as a data backend for R’s Spectra allows a very efficient and memory save direct access to MS data in Python by translating the data on-the-fly and only when needed.  => we can maybe time the speed of the first tutorial above with a big dataset (the res from metabonaut), then use the fastest strategy in the tutorial and explain these. So we end up with only 1 tutorial as a vignette with best practice tips.
+
+
+Third example can be something using the received annotations eg inchikey, eg after some public MS1 DB matching (metabonaut section “MS1-based annotation”, get inchi from massbank). Maybe can match to found from ms2 or something. Then mention same can be done with the SMILES, name, etc using func matchms. => X less useful than the 1st tutorial, less is more. Also would be better to do something with other py package than matchms.
+
+
 
 # R libraries
 
@@ -116,6 +155,15 @@ mhd <- Spectra(mhd)
 #' merge the caffeine and 1-Methylhistidine Spectra objects
 #' we have 2 spectra from caf and 2 spectra from 1-methylhis
 all <- c(caf, mhd)
+
+```
+
+Metabonaut data:
+
+```{r load-data}
+getwd()
+load('spectra_significant_fts.RData') #object is ms2_ctr_fts
+head(ms2_ctr_fts)
 
 ```
 
@@ -286,3 +334,5 @@ print('something??')
 ```{r}
 sessionInfo()
 ```
+
+# References

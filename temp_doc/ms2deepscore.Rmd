@@ -48,7 +48,8 @@ BiocManager::install(c("ggplot2", "reshape2", "gplots", "Spectra", "MsBackendMgf
 library(reticulate)
 
 # Specify Python 3.10 (Update path)
-use_python("/Users/krv114/Library/r-miniconda-arm64/bin/python3.10", required = TRUE)
+#use_python("/Users/krv114/Library/r-miniconda-arm64/bin/python3.10", required = TRUE)
+use_python("/home/mdegraeve/miniconda3/bin/python", required = TRUE)
 
 # Configure Python
 py_config()
@@ -412,6 +413,7 @@ plot_molecular_network(similarity_scores_named, threshold = 0.7)
 ---
 
 ### **Citation**
+
 If using MS2DeepScore, please cite:  
 `Huber, F., van der Burg, S., van der Hooft, J. J., & Ridder, L. (2021). MS2DeepScore: a novel deep learning similarity measure to compare tandem mass spectra. Journal of cheminformatics, 13(1), 84.`
 

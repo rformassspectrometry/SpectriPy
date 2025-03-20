@@ -37,6 +37,8 @@ TLDR:
 - System requirement: reticulate (i.e. setup Python environment)
 
 ```r
+#' R session:
+
 install.packages("reticulate")
 reticulate::install_miniconda()
 ```
@@ -44,6 +46,8 @@ reticulate::install_miniconda()
 - Package requirements: Bioconductor, remotes
 
 ```r
+#' R session:
+
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.20")
@@ -54,6 +58,8 @@ install.packages("remotes")
 - Package: SpectriPy
 
 ```r
+#' R session:
+
 BiocManager::install("RforMassSpectrometry/SpectriPy")
 ```
 
@@ -69,6 +75,8 @@ spectra using an MGF library and the CosineGreedy algirithm from matchms.
 TLDR:
 
 ```r
+#' R session:
+
 library(Spectra)
 library(SpectriPy)
 ```
@@ -83,10 +91,12 @@ Python packages. For example, the [*CosineGreedy*](https://matchms.readthedocs.i
 1) We create some simple example spectra.
 
 ```r
+#' R session:
+
 library(Spectra)
 library(SpectriPy)
 
-## Create a Spectra object with two MS2 spectra for Caffeine.
+#' Create a Spectra object with two MS2 spectra for Caffeine.
 caf <- DataFrame(
     msLevel = c(2L, 2L),
     name = "Caffeine",
@@ -100,7 +110,7 @@ caf$mz <- list(
     c(110.0710, 138.0655, 138.1057, 138.1742, 195.0864))
 caf <- Spectra(caf)
 
-## Create a Spectra object with two MS2 spectra for 1-Methylhistidine
+#' Create a Spectra object with two MS2 spectra for 1-Methylhistidine
 mhd <- DataFrame(
     msLevel = c(2L, 2L),
     precursorMz = c(170.0924, 170.0924),
@@ -119,6 +129,8 @@ mhd <- Spectra(mhd)
 those of caffeine using *Spectra*'s built-in `compareSpectra()` function.
 
 ```r
+#' R session:
+
 all <- c(caf, mhd)
 res_r <- compareSpectra(all, caf)
 res_r
@@ -128,6 +140,8 @@ res_r
 changing the `tolerance` to a value of `0.05` (instead of the default `0.1`).
 
 ```r
+#' R session:
+
 res <- compareSpectriPy(all, caf, param = CosineGreedy(tolerance = 0.05))
 res
 ```
@@ -156,4 +170,5 @@ conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/Rf
 
 # License
 
-!!!TODO, which, needs to be added for foss, ...
+See the [DESCRIPTION](DESCRIPTION).
+

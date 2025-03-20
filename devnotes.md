@@ -79,9 +79,9 @@ helpful references to code and files for contributors. Preferably read the
 
 **What data could be used in tests?**
 
-- The package does not contain any test data files. Test and example data are
-  created *manually* by defining *m/z* and intensity values of MS peaks. Data
-  files could be added (e.g. in MGF format) if needed and put into a
+- The package contains two test data files. The "test" and "spectra2" example
+  data were created *manually* by defining *m/z* and intensity values of MS
+  peaks. Data files can be added (e.g. in MGF format) if needed and put into a
   *inst/extdata* folder.
 
 - Alternatively, example files in mzML format would be available in
