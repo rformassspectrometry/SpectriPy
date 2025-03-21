@@ -52,7 +52,7 @@ information and details.}
 
 \item{pythonLibrary}{For \code{backendInitialize()}: \code{character(1)} specifying
 the Python library used to represent the MS data in Python. Can be
-either \code{pythonLibrary = "matchms"} (the default) or \
+either \code{pythonLibrary = "matchms"} (the default) or
 \code{pythonLibrary = "spectrum_utils"}.}
 
 \item{...}{Additional parameters.}

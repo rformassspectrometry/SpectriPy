@@ -110,7 +110,7 @@
 #'
 #' @param pythonLibrary For `backendInitialize()`: `character(1)` specifying
 #'     the Python library used to represent the MS data in Python. Can be
-#'     either `pythonLibrary = "matchms"` (the default) or \
+#'     either `pythonLibrary = "matchms"` (the default) or
 #'     `pythonLibrary = "spectrum_utils"`.
 #'
 #' @param pythonVariableName For `backendInitialize()`: `character(1)` with the
