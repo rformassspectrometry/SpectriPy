@@ -1,0 +1,302 @@
+---
+title: "SpectriPy spec2vec"
+author: "Marilyn De Graeve"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SpectriPy spec2vec}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# Introduction
+
+NOTE: please see the spectripy_tutorial for the latest/cleaned up/integrated 
+version. here, just the code to make it work. 
+
+prepare to incorporate spec2vec into SpectriPy. Link:
+
+https://github.com/iomega/spec2vec
+
+This report is based on th Rmd with MS2DeepScore (matchms) and on the README 
+from the github of spec2vec.
+
+
+# Load SpectriPy
+
+! Running this a the first command makes sure correct conda environment is 
+loaded!!!
+Loading required package: reticulate
+Using conda environment 'r-spectripy'
+and not the r-reticulate (default loaded when running 1st py chunk)
+
+Load required R SpectriPy package.
+
+```{r}
+#| warning: false
+#' R session:
+
+library(SpectriPy)
+```
+
+
+# Installation
+
+Before running this vignette, all required R dependencies need to be installed. Use the following command:
+
+```{r installation, eval = FALSE}
+
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+BiocManager::install("reticulate")
+BiocManager::install(c("ggplot2", "reshape2", "gplots", "Spectra", "MsBackendMgf", "rcdk", "fingerprint", "igraph"))
+```
+
+
+# **Setting Up Python Environment**
+
+```{r Setting Up Python Environment, results='hide', eval = FALSE}
+library(reticulate)
+
+# Specify Python 3.10 (Update path)
+use_python("/home/mdegraeve/miniconda3/envs/r-spectripy/bin/python", required = TRUE)
+
+# Configure Python
+py_config()
+```
+
+We also need Python dependencies. Ensure `ms2deepscore`, `matchms`, and `torch` are installed:
+
+```{r Python package installation, results='hide', eval = FALSE}
+system("pip install spec2vec matchms numpy torch", intern = TRUE)
+
+# no, in termial did conda activate r-spectripy and then pip install spec2vec
+```
+
+This ensures that a specified **Python version** is used for compatibility with `matchms` and `spec2vec`.
+
+test if loads
+
+```{python}
+import spec2vec
+```
+
+
+# test data
+
+## reference library
+
+use my favorite "*In-house* spectral library", aka test.mgf data.
+
+We import a test data file in
+MGF format using the Python *matchms* library. This MGF file is provided within
+the *SpectriPy* package so we first define its file name and path in R. The 
+loaded object is a Python's `Spectrum` object.
+
+```{python}
+#| warning: false
+#' Python session:
+
+import matchms
+from matchms.importing import load_from_mgf
+
+# Read spectra from an MGF formatted file, as Spectrum object
+references_mgf_py = list(load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/test.mgf"))
+
+#' Nr of spectra
+len(references_mgf_py)
+
+#' Access the first spectrum
+references_mgf_py[0]
+```
+
+100 spectra
+
+alternatively, we want to use this object `clean_mgf_py`, so it will fit in the 
+spectripy tutorial vignette.
+
+
+## query data
+
+!!!todo, now spectra as query, but here start from mgf too.
+for now, have a caffeine.mgf made.
+
+```{python}
+#| warning: false
+#' Python session:
+
+from matchms.importing import load_from_mgf
+
+# Read spectra from an MGF formatted file, as Spectrum object
+queries_mgf_py = list(load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/caffeine.mgf"))
+
+#' Nr of spectra
+len(queries_mgf_py)
+
+#' Access the first spectrum
+queries_mgf_py[0]
+```
+
+2 spectra
+
+Alternatively, we want to use this object `r.ms2_ctr_fts_py` to make it fit 
+in the tutorial vignette.
+
+
+# spec2vec
+
+from readme
+
+train a new spec2vec model using MS2 spectral reference data.
+
+```{python}
+
+import os
+import matchms.filtering as msfilters
+from spec2vec import SpectrumDocument
+from spec2vec.model_building import train_new_word2vec_model
+
+def spectrum_processing(s):
+    """This is how one would typically design a desired pre- and post-
+    processing pipeline."""
+    s = msfilters.default_filters(s)
+    s = msfilters.add_parent_mass(s)
+    s = msfilters.normalize_intensities(s)
+    s = msfilters.reduce_to_number_of_peaks(s, n_required=10, ratio_desired=0.5, n_max=500)
+    s = msfilters.select_by_mz(s, mz_from=0, mz_to=1000)
+    #s = msfilters.add_losses(s, loss_mz_from=10.0, loss_mz_to=200.0)
+    s = msfilters.require_minimum_number_of_peaks(s, n_required=10)
+    return s
+
+# Load data from MGF file and apply filters
+spectrums = [spectrum_processing(s) for s in references_mgf_py] #replace by clean_mgf_py
+
+# Omit spectrums that didn't qualify for analysis
+spectrums = [s for s in spectrums if s is not None]
+
+# Create spectrum documents
+reference_documents = [SpectrumDocument(s, n_decimals=2) for s in spectrums]
+
+model_file = "references.model"
+model = train_new_word2vec_model(reference_documents, iterations=[10, 20, 30], 
+                                 filename=model_file,
+                                 workers=2, progress_logger=True)
+```
+
+load the query data and find spectral similarities using the trained spec2vel 
+model.
+
+```{python}
+
+import gensim
+from matchms import calculate_scores
+from spec2vec import Spec2Vec
+
+# query_spectrums loaded from files using https://matchms.readthedocs.io/en/latest/api/matchms.importing.load_from_mgf.html
+query_spectrums = [spectrum_processing(s) for s in queries_mgf_py] #replace by r.ms2_ctr_fts_py
+
+# Omit spectrums that didn't qualify for analysis
+query_spectrums = [s for s in query_spectrums if s is not None]
+
+# Import pre-trained word2vec model (see code example above)
+model_file = "references.model"
+model = gensim.models.Word2Vec.load(model_file)
+
+# Define similarity_function
+spec2vec_similarity = Spec2Vec(model=model, intensity_weighting_power=0.5,
+                               allowed_missing_percentage=5.0)
+
+# Calculate scores on all combinations of reference spectrums and queries
+scores = calculate_scores(reference_documents, query_spectrums, spec2vec_similarity)
+
+scores
+```
+
+from the scores object, we can repeat exactly the part of matchms. same object!
+
+evaluation:
+
+```{python}
+#' Python session:
+
+scores
+
+# Convert to array and transpose
+sim_spec2vec = scores.to_array()
+
+len(sim_spec2vec)  #55 ipv 100?? ipv 100*2. only score instead of a value for each in library with each of query... ===> because the processing!!!
+
+sim_spec2vec
+```
+
+need to find the IDs of the reference spectra that are kept in the score
+
+```{python}
+
+#query found
+#before filtering 2 spec
+queries_mgf_py[1].get('compound_name')  #present because in mgt caffeine
+queries_mgf_py[1].get('feature_id') #FUCK empty...
+queries_mgf_py[1].set["feature_id"] = "F1234" #Nooooo, loose
+queries_mgf_py[1].get('feature_id') 
+
+#after processing 
+query_spectrums[0].get('compound_name')
+query_spectrums[1].get('compound_name') #2nd is gone! explains only 1 in 55x1x1
+
+
+#refs found
+#before filtering 100 spec
+references_mgf_py[1].get('compound_name')
+
+#after processing 55
+spectrums[0].get('compound_name')
+spectrums[1].get('compound_name') # 55x1x1
+spectrums[54].get('compound_name') 
+spectrums[55].get('compound_name') 
+
+```
+
+ok, so we need to use these objects instead of our usual 
+`queries_mgf_py`/`r.ms2_ctr_fts_py` -> `query_spectrums` and 
+`references_mgf_py`/`clean_mgf_py` -> `reference_spectrums` 
+(renamed better) to create the table.
+
+silly plots 2 query spectra with 55 remaining references spectra.
+
+```{python}
+
+from matplotlib import pyplot as plt
+
+scores_array = scores.scores.to_array()  # for matchms >= 0.18.0
+
+plt.figure(figsize=(6,6), dpi=150)
+plt.imshow(scores_array[:50, :50], cmap="viridis")
+plt.colorbar(shrink=0.7)
+plt.title("Spec2Vec spectra similarities")
+plt.xlabel("Spectrum #ID")
+plt.ylabel("Spectrum #ID")
+plt.clim(0, 1)  # Spec2Vec scores can be between -1 and 1
+#plt.savefig("spec2vec_scores.png")
+```
+
+
+# Cite
+
+spec2vec:
+
+Huber F, Ridder L, Verhoeven S, Spaaks JH, Diblen F, Rogers S, van der Hooft JJJ, (2021) "Spec2Vec: Improved mass spectral similarity scoring through learning of structural relationships". PLoS Comput Biol 17(2): e1008724. doi:10.1371/journal.pcbi.1008724
+
+and if you use matchms as well: 
+
+F. Huber, S. Verhoeven, C. Meijer, H. Spreeuw, E. M. Villanueva Castilla, C. Geng, J.J.J. van der Hooft, S. Rogers, A. Belloum, F. Diblen, J.H. Spaaks, (2020). "matchms - processing and similarity evaluation of mass spectrometry data". Journal of Open Source Software, 5(52), 2411, https://doi.org/10.21105/joss.02411 
