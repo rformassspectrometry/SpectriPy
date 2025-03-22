@@ -26,7 +26,7 @@ we perform the annotation of LC-MS/MS spectra using a reference library.
 During the tutorial, we use different spectral similarity algorithms from both R
 and Python: normalized dot product similarity from Spectra
 [@rainer_modular_2022], CosineGreedy from matchms [@huber_matchms_2020], 
-Tanimoto score predictions from MS2DeepScore, XX. FINDME!!! TODO
+MS2DeepScore from matchms [@huber_ms2deepscore_2021] and Spec2Vec from spec2vec [@huber_spec2vec_2021].
 
 The spectral reference library used in this tutorial originates from the GNPS
 repository (provided in mgf format), which can easily be replaced by the user by
@@ -40,18 +40,24 @@ be extended to other R/python spectral silimilatity algorithms.
 Potential example: annotation of LC-MS/MS
 +R: Perform LC-MS/MS data preprocessing in R with xcms } part in the metabonaut already
 +R: Extract MS2 spectra for features as a Spectra object-    } idem, so maybe refer and load ‘res’ instead? 
--load/make query ==> test/rdata depending vignette? TODO
+-load/make query ==> test/rdata splitup depending vignette/metabonaut? like the mini tesset to horougly explain and show intermed result steps. ok? TODO
 +Python: Load reference database, e.g. from a GNPS MGF file
 +R: translate Spectra object to Python.
 +Python: process and filter the data, both the reference database and the experimental data = filtering
 +Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
 -py: others cals...!!! TODO
--more from matchms?? cross-language-ms-analysis.qmd for other examples. TODO
+-spec2vec
+    steps before mrd TODO
+    + query spectra() -> mgf (or how describe/logical?) ok
+    - spec2vec add to spectripy? HOW? jo?
+    + codechunks from Marilyn OK
+-more COSINEs from matchms?? cross-language-ms-analysis.qmd for other examples. TODO
 -py bugs in retic!!!! TODO
 +py/r: table with the top1 found names of molec for the query???
 -R: translate back to R !!! TODO
 +R: plot
 -at end (how?), put data in vignette IN package, now via explicit path pc... TODO
+
 
 # Load SpectriPy
 
@@ -121,10 +127,26 @@ mhd$intensity <- list(
     c(6.685, 4.381, 3.022, 16.708, 100.0, 4.565, 40.643))
 mhd <- Spectra(mhd)
 
+#' Create a Spectra object with one MS2 spectra for for unknown compound 3 
+#' (== Roxithromycin)
+rox <- DataFrame(
+    feature_id = "FT03",
+    msLevel = 2L,
+    precursorMz = 837.5318,
+    #name = "Roxithromycin",
+    #smiles = 'CC[C@@H]1[C@@]([C@@H]([C@H](/C(=N/OCOCCOC)/[C@@H](C[C@@]([C@@H]([C@H]([C@@H]([C@H](C(=O)O1)C)O[C@H]2C[C@@]([C@H]([C@@H](O2)C)O)(C)OC)C)O[C@H]3[C@@H]([C@H](C[C@H](O3)C)N(C)C)O)(C)O)C)C)O)(C)O',
+    #inchi = '1S/C41H76N2O15/c1-15-29-41(10,49)34(45)24(4)31(42-53-21-52-17-16-50-13)22(2)19-39(8,48)36(58-38-32(44)28(43(11)12)18-23(3)54-38)25(5)33(26(6)37(47)56-29)57-30-20-40(9,51-14)35(46)27(7)55-30/h22-30,32-36,38,44-46,48-49H,15-21H2,1-14H3/b42-31+/t22-,23-,24+,25+,26-,27+,28+,29-,30+,32-,33+,34-,35+,36-,38+,39-,40-,41-/m1/s1',
+    parent_mass = 170.09)
+rox$mz <- list(
+    c(116.0712, 116.1074, 127.0759, 142.1231, 158.1184, 159.1218, 380.2469, 398.2568, 679.4443, 680.4436))
+rox$intensity <- list(
+    c(15660, 28164, 8616, 4516, 855092, 68248, 6148, 8996, 10596, 5176))
+rox <- Spectra(rox)
+
 
 #' Merge the 2 Spectra objects, containing 2 spectra each into 1 search query 
 #' Spectra object (== 2 spectra from caf and 2 spectra from 1-methylhis)
-ms2_ctr_fts <- c(caf, mhd)
+ms2_ctr_fts <- c(caf, mhd, rox)
 head(ms2_ctr_fts)
 
 #' Print the feature_id of the first spectrum
@@ -144,6 +166,7 @@ after the "Differential abundance analysis", see section
 [MS2-based annotation](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html#differential-abundance-analysis).
 
 ```{r}
+#| eval: false
 #| warning: false
 #' R session:
 
@@ -346,9 +369,9 @@ scores
 
 ### Evaluation
 
- From the calculated spectral similarity scores, we rearange the data to 
- make a dataframe containing the best matched compound name (derived from the 
- reference library) per queried spectrum.
+From the calculated spectral similarity scores, we rearange the data to 
+make a dataframe containing the best matched compound name (derived from the 
+reference library) per queried spectrum.
 
 First, we extract and transpose the scores as a python array. Each row of the 
 array will contain the similarity scores of one spectrum from our query spectra 
@@ -475,7 +498,7 @@ dim(sim_spectra)
 ```
 
 
-## Evaluation
+### Evaluation
 
 To evaluate, we rearange and filter the MS2 spectral similarity matrix as in the 
 previous section, only using R this time.
@@ -520,13 +543,193 @@ The same results, with small deviation score values, are found for the test
 data with 2 unknown features.
 
 
-## Tanimoto score from MS2DeepScore
+## MS2DeepScore from matchms
 
 Here, we calculate the pairwise similarity between the query spectra and the
-reference library spectra using R's Spectra. FINDME!!!
+reference library spectra using R's Spectra. FINDME!!! TODO
+
+X NOT: Tanimoto score IS WITH SMILES... or other fingerprint, so if unknown spectra, how do they have a smiles...?? think in this goal not useful 
+
+steps before mrd
+- query spectra() -> mgf (or how describe/logical?)
+- ok with torch, msdeepscore add to spectripy? HOW? jo?
+- codechunks from Matthias OK
+
+```{r}
 
 
-# Compare similarity scores
+
+```
+
+
+### Evaluation
+
+
+## Spec2Vec from spec2vec
+
+Here, we calculate the pairwise similarity between the query spectra and the
+reference library spectra using Pythons's spec2vec. 
+
+We also apply a stricter filtering processing from matchms. Thhis will be 
+performed on both the reference and query spectra, and for this 
+reason we will have a shorter results table. 
+
+```{python}
+#| warning: false
+#' Python session:
+
+import os
+import matchms.filtering as msfilters
+from spec2vec import SpectrumDocument
+from spec2vec.model_building import train_new_word2vec_model
+
+def spectrum_processing(s):
+    """This is how one would typically design a desired pre- and post-
+    processing pipeline."""
+    s = msfilters.default_filters(s)
+    s = msfilters.add_parent_mass(s)
+    s = msfilters.normalize_intensities(s)
+    s = msfilters.reduce_to_number_of_peaks(s, n_required = 10, 
+                                               ratio_desired = 0.5, 
+                                               n_max = 500)
+    s = msfilters.select_by_mz(s, mz_from = 0, mz_to = 1000)
+    s = msfilters.require_minimum_number_of_peaks(s, n_required = 10)
+    return s
+
+# Apply filters to the Spectrum of refernce
+reference_spectrums = [spectrum_processing(s) for s in clean_mgf_py]
+
+# Omit reference_spectrums that didn't qualify for analysis
+reference_spectrums = [s for s in reference_spectrums if s is not None]
+```
+
+First, we train a new spec2vec model using our MS2 spectral reference library 
+after processing thereof.
+
+```{python}
+# Create spectrum documents
+reference_documents = [SpectrumDocument(s, n_decimals=2) for s in reference_spectrums]
+
+model_file = "references.model"
+model = train_new_word2vec_model(reference_documents, iterations = [10, 20, 30], 
+                                 filename = model_file,
+                                 workers=2, progress_logger=True)
+```
+
+load the query data, filter the spectra and find spectral similarities using 
+the trained spec2vec model.
+
+```{python}
+#' Python session:
+
+import gensim
+from matchms import calculate_scores
+from spec2vec import Spec2Vec
+
+# query_spectrums
+query_spectrums = [spectrum_processing(s) for s in r.ms2_ctr_fts_py]
+
+# Omit spectrums that didn't qualify for analysis
+query_spectrums = [s for s in query_spectrums if s is not None]
+
+# Import pre-trained word2vec model (see code example above)
+model_file = "references.model"
+model = gensim.models.Word2Vec.load(model_file)
+
+# Define similarity_function
+spec2vec_similarity = Spec2Vec(model = model,
+                               intensity_weighting_power = 0.5, #Default 0.5
+                               allowed_missing_percentage = 5.0)  #Default 5.0
+
+# Calculate scores on all combinations of reference spectrums and queries
+scores = calculate_scores(reference_documents, query_spectrums, spec2vec_similarity)
+
+scores
+```
+
+from the scores object, we can repeat exactly the part of matchms to get to 
+the matches for out unknown query MS2 spectra.
+
+
+### Evaluation
+
+From the calculated spectral similarity scores, we rearange the data to 
+make a dataframe containing the best matched compound name (derived from the 
+reference library) per queried spectrum.
+
+First, we extract and transpose the scores as a python array. Each row of the 
+array will contain the similarity scores of one spectrum from our query spectra 
+`r.ms2_ctr_fts_py` against the cleaned reference library `clean_mgf_py`. 
+
+```{python}
+#' Python session:
+
+# Convert to array and transpose
+sim_spec2vec = scores.to_array()
+sim_spec2vec = sim_spec2vec.T
+
+# Contains 1 row for each spectrum in query 
+sim_spec2vec.shape
+```
+
+Next, we create a dataframe with per queried spectrum from our unknown 
+variables, the compound name of the higest matching spectra from the reference 
+library and the corresponding similarity score.
+
+Because the processing of the query and reference spectra, less than 4 and 100
+spectra, respectively, are left. Therefore, we use the filtered python's 
+Spectrum objects `r.ms2_ctr_fts_py` -> `query_spectrums` and `clean_mgf_py` 
+-> `reference_spectrums` in the next code chunk.
+
+```{python}
+#' Python session:
+
+import numpy as np
+import pandas as pd
+
+# Prepare results list
+results = []
+for i in range(sim_spec2vec.shape[0]):
+
+    #row is the query, keep nr in the results instead of replacing by eg id
+    name_row = query_spectrums[i].get('feature_id')
+    
+    row_values = sim_spec2vec[i].copy()
+    
+    # match with higest col nr from the references
+    max_col = np.argmax(row_values)  # Find column index of max value
+    max_value = row_values[max_col]  # Get max value
+
+    # replace the nr of refererences with the name
+    name_max_col = reference_spectrums[max_col].get('compound_name') 
+
+    results.append({"query": i + 1, #count from 1
+                    "query_feature_id": name_row, 
+                    "reference": max_col,
+                    "reference_compound_name": name_max_col, 
+                    "Spec2Vec_score": max_value})
+
+# Convert to DataFrame
+df = pd.DataFrame(results)
+```
+
+The result list contains less of the query and library spectra. After findering
+this table with a score > 0.7 we get:
+
+```{python}
+# Keep only rows where score > 0.7
+df_filtered = df[df["Spec2Vec_score"] > 0.7]
+
+# Print the filtered DataFrame
+df_filtered
+```
+
+The results from spec2vec are much stricter, due to the strict filtering prior 
+to the spectral similarity calculation. The perfect matching caffeine in the 
+first spectra of the query test data was omited now.
+
+
+# Compare different similarity scores
 
 To conclude, we want to see how much the spectral similarity scores differ 
 between the different algoritms preformed above. The score matrix from matchms
@@ -543,6 +746,9 @@ grid()
 
 ```
 
+TODO change so now we have 4 comps... maybe a heatmap with 1st spectrum (caffeine)
+and the scores of each??
+
 
 # Adding annotated spectra to R
 
@@ -556,7 +762,7 @@ this new info will only be added in the original Spectra object.
 #' R session:
 
 #' Print the feature_id of the first spectrum
-#ms2_ctr_fts$name[1] <- "Caffeine" #FINDME, how to add??
+#ms2_ctr_fts$name[1] <- "Caffeine" #FINDME, how to add?? idea is for user to stay in r, eg mirror plot with name on top or so....
 
 #spectraVariables(ms2_ctr_fts)
 
