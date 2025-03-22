@@ -46,16 +46,25 @@ Potential example: annotation of LC-MS/MS
 +Python: process and filter the data, both the reference database and the experimental data = filtering
 +Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
 -py: others cals...!!! TODO
+-MS2DeepScore
+    X NOT: Tanimoto score IS WITH SMILES... or other fingerprint, so if unknown spectra, how do they have a smiles...?? think in this goal not useful 
+    steps before mrd
+    - query spectra() -> mgf (or how describe/logical?)
+    - ok with torch, msdeepscore add to spectripy? HOW? jo?
+    - codechunks from Matthias OK, nok in here because needs own py-chunks...
+    - change object to use, 
 -spec2vec
     steps before mrd TODO
     + query spectra() -> mgf (or how describe/logical?) ok
     - spec2vec add to spectripy? HOW? jo?
     + codechunks from Marilyn OK
 -more COSINEs from matchms?? cross-language-ms-analysis.qmd for other examples. TODO
--py bugs in retic!!!! TODO
+-py bugs in retic!!!! see TODO, ok if render but not 'handy' for py users
 +py/r: table with the top1 found names of molec for the query???
--R: translate back to R !!! TODO
+-R: translate back to R !!! TODO how?
 +R: plot
+-TODO change so now we have 4 comps... maybe a heatmap with 1st spectrum (caffeine)
+and the scores of each??
 -at end (how?), put data in vignette IN package, now via explicit path pc... TODO
 
 
@@ -546,23 +555,149 @@ data with 2 unknown features.
 ## MS2DeepScore from matchms
 
 Here, we calculate the pairwise similarity between the query spectra and the
-reference library spectra using R's Spectra. FINDME!!! TODO
+reference library spectra using R's Spectra. FINDME!!! TODO NOT OK
 
-X NOT: Tanimoto score IS WITH SMILES... or other fingerprint, so if unknown spectra, how do they have a smiles...?? think in this goal not useful 
+Firs, we setuo and load the requirements for MS2DeepScore to work.
 
-steps before mrd
-- query spectra() -> mgf (or how describe/logical?)
-- ok with torch, msdeepscore add to spectripy? HOW? jo?
-- codechunks from Matthias OK
+```{python}
+#' Python session:
 
-```{r}
+import torch
+
+# Patch `torch.load()` globally to set `weights_only=False`
+original_load = torch.load
+def patched_load(*args, **kwargs):
+    if 'weights_only' not in kwargs:
+        kwargs['weights_only'] = False  # Force weights_only=False
+    return original_load(*args, **kwargs)
+
+torch.load = patched_load
 
 
+from matchms.Pipeline import Pipeline, create_workflow
+from matchms.filtering.default_pipelines import DEFAULT_FILTERS
+from ms2deepscore import MS2DeepScore
 
 ```
 
 
+```{python}
+# Define file paths
+model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/temp_doc/download_test.pt"
+spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"
+
+```
+
+Once the Python environment is ready, we can load the pre-trained 
+MS2DeepScore model.
+
+```{r}
+initialize_ms2deepscore <- function(python_env = NULL) {
+  if (!is.null(python_env)) {
+    use_virtualenv(python_env, required = TRUE)
+  }
+
+  # Import Python modules
+  torch <- import("torch", convert = FALSE)
+  ms2ds <- import("ms2deepscore", convert = FALSE)
+  matchms <- import("matchms", convert = FALSE)
+
+  # Patch PyTorch to Allow Full Model Loading
+  cat("Patching PyTorch to allow full model loading...\n")
+  py_run_string("
+import torch
+
+# Patch `torch.load()` globally to set `weights_only=False`
+original_load = torch.load
+def patched_load(*args, **kwargs):
+    if 'weights_only' not in kwargs:
+        kwargs['weights_only'] = False  # Force weights_only=False
+    return original_load(*args, **kwargs)
+
+torch.load = patched_load
+  ")
+
+  # Import matchms and MS2DeepScore
+  py_run_string("
+from matchms.Pipeline import Pipeline, create_workflow
+from matchms.filtering.default_pipelines import DEFAULT_FILTERS
+from ms2deepscore import MS2DeepScore
+")
+
+  return(list(ms2ds = ms2ds, matchms = matchms))
+}
+
+load_ms2deepscore_model <- function(model_file, env) {
+  ms2ds <- env$ms2ds
+  cat("Loading MS2DeepScore model...\n")
+
+  model <- ms2ds$models$load_model(model_file)
+
+  if (is.null(model)) {
+    stop("ERROR: Model failed to load.")
+  } else {
+    cat("Model loaded successfully!\n")
+  }
+
+  return(model)
+}
+
+run_ms2deepscore_pipeline <- function(spectrum_path, model, env) {
+  matchms <- env$matchms
+  ms2ds <- env$ms2ds
+
+  cat("Setting up MS2DeepScore pipeline...\n")
+
+  # Run MS2DeepScore in Python
+  py_run_string("
+pipeline = Pipeline(create_workflow(
+    query_filters=DEFAULT_FILTERS,
+    score_computations=[[MS2DeepScore, {'model': r.model}]]
+))
+report = pipeline.run(r.spectrum_path)
+similarity_matrix = pipeline.scores.to_array()
+")
+
+  # Retrieve results
+  cat("Running pipeline...\n")
+  similarity_matrix <- py$similarity_matrix 
+
+  cat("Pipeline run successfully!\n")
+  return(similarity_matrix)
+}
+```
+
+
+```{python}
+
+
+```
+
+```{r run Full Workflow example 2 in R}
+# Define file paths
+model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/pt/ms2deepscore_model.pt"
+spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/caffeine.mgf"  #*In-house* spectral library, incl 2 caff
+
+# Initialize Python environment
+env <- initialize_ms2deepscore()
+
+# Load the MS2DeepScore model
+model <- load_ms2deepscore_model(model_path, env)
+
+# Run the pipeline and get similarity scores
+similarity_scores <- run_ms2deepscore_pipeline(spectrum_path, model, env)
+
+dim(similarity_scores)
+```
+
+
 ### Evaluation
+
+
+```{python}
+
+
+```
 
 
 ## Spec2Vec from spec2vec
@@ -746,8 +881,7 @@ grid()
 
 ```
 
-TODO change so now we have 4 comps... maybe a heatmap with 1st spectrum (caffeine)
-and the scores of each??
+TODO
 
 
 # Adding annotated spectra to R
