@@ -112,3 +112,43 @@
 	keywords = {Metabolomics, {LC}-{MS}/{MS}, Turorials, xcms},
 }
 
+@article{huber_ms2deepscore_2021,
+	title = {{MS}2DeepScore: a novel deep learning similarity measure to compare tandem mass spectra},
+	volume = {13},
+	issn = {1758-2946},
+	url = {https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00558-4},
+	doi = {10.1186/s13321-021-00558-4},
+	shorttitle = {{MS}2DeepScore},
+	abstract = {Abstract
+            Mass spectrometry data is one of the key sources of information in many workflows in medicine and across the life sciences. Mass fragmentation spectra are generally considered to be characteristic signatures of the chemical compound they originate from, yet the chemical structure itself usually cannot be easily deduced from the spectrum. Often, spectral similarity measures are used as a proxy for structural similarity but this approach is strongly limited by a generally poor correlation between both metrics. Here, we propose {MS}2DeepScore: a novel Siamese neural network to predict the structural similarity between two chemical structures solely based on their {MS}/{MS} fragmentation spectra. Using a cleaned dataset of {\textgreater} 100,000 mass spectra of about 15,000 unique known compounds, we trained {MS}2DeepScore to predict structural similarity scores for spectrum pairs with high accuracy. In addition, sampling different model varieties through Monte-Carlo Dropout is used to further improve the predictions and assess the model’s prediction uncertainty. On 3600 spectra of 500 unseen compounds, {MS}2DeepScore is able to identify highly-reliable structural matches and to predict Tanimoto scores for pairs of molecules based on their fragment spectra with a root mean squared error of about 0.15. Furthermore, the prediction uncertainty estimate can be used to select a subset of predictions with a root mean squared error of about 0.1. Furthermore, we demonstrate that {MS}2DeepScore outperforms classical spectral similarity measures in retrieving chemically related compound pairs from large mass spectral datasets, thereby illustrating its potential for spectral library matching. Finally, {MS}2DeepScore can also be used to create chemically meaningful mass spectral embeddings that could be used to cluster large numbers of spectra. Added to the recently introduced unsupervised Spec2Vec metric, we believe that machine learning-supported mass spectral similarity measures have great potential for a range of metabolomics data processing pipelines.},
+	pages = {84},
+	number = {1},
+	journaltitle = {Journal of Cheminformatics},
+	shortjournal = {J Cheminform},
+	author = {Huber, Florian and Van Der Burg, Sven and Van Der Hooft, Justin J. J. and Ridder, Lars},
+	urldate = {2025-03-21},
+	date = {2021-12},
+	langid = {english},
+	file = {Full Text:/home/mdegraeve/snap/zotero-snap/common/Zotero/storage/QFMPJRUS/Huber et al. - 2021 - MS2DeepScore a novel deep learning similarity measure to compare tandem mass spectra.pdf:application/pdf},
+}
+
+@article{huber_spec2vec_2021,
+	title = {Spec2Vec: Improved mass spectral similarity scoring through learning of structural relationships},
+	volume = {17},
+	issn = {1553-7358},
+	url = {https://dx.plos.org/10.1371/journal.pcbi.1008724},
+	doi = {10.1371/journal.pcbi.1008724},
+	shorttitle = {Spec2Vec},
+	abstract = {Spectral similarity is used as a proxy for structural similarity in many tandem mass spectrometry ({MS}/{MS}) based metabolomics analyses such as library matching and molecular networking. Although weaknesses in the relationship between spectral similarity scores and the true structural similarities have been described, little development of alternative scores has been undertaken. Here, we introduce Spec2Vec, a novel spectral similarity score inspired by a natural language processing algorithm—Word2Vec. Spec2Vec learns fragmental relationships within a large set of spectral data to derive abstract spectral embeddings that can be used to assess spectral similarities. Using data derived from {GNPS} {MS}/{MS} libraries including spectra for nearly 13,000 unique molecules, we show how Spec2Vec scores correlate better with structural similarity than cosine-based scores. We demonstrate the advantages of Spec2Vec in library matching and molecular networking. Spec2Vec is computationally more scalable allowing structural analogue searches in large databases within seconds.},
+	pages = {e1008724},
+	number = {2},
+	journaltitle = {{PLOS} Computational Biology},
+	shortjournal = {{PLoS} Comput Biol},
+	author = {Huber, Florian and Ridder, Lars and Verhoeven, Stefan and Spaaks, Jurriaan H. and Diblen, Faruk and Rogers, Simon and Van Der Hooft, Justin J. J.},
+	editor = {Jensen, Lars Juhl},
+	urldate = {2025-03-21},
+	date = {2021-02-16},
+	langid = {english},
+	file = {Full Text:/home/mdegraeve/snap/zotero-snap/common/Zotero/storage/7S2X5583/Huber et al. - 2021 - Spec2Vec Improved mass spectral similarity scoring through learning of structural relationships.pdf:application/pdf},
+}
+
