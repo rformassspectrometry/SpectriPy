@@ -30,7 +30,7 @@ This vignette demonstrates how to use **MS2DeepScore** within `SpectriPy`, by us
 
 Before running this vignette, all required R dependencies need to be installed. Use the following command:
 
-```{r installation}
+```{r installation, eval = FALSE}
 
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
@@ -57,7 +57,7 @@ py_config()
 
 We also need Python dependencies. Ensure `ms2deepscore`, `matchms`, and `torch` are installed:
 
-```{r Python package installation, results='hide'}
+```{r Python package installation, results='hide', eval = FALSE}
 system("pip install ms2deepscore matchms numpy torch", intern = TRUE)
 ```
 
@@ -65,8 +65,8 @@ This ensures that a specified **Python version** is used for compatibility with 
 
 And finally, we need to download the MS2DeepScore model and a test dataset. if the download times-out, you can increase the timeout limit by changing the options with the commented-out code below.
 
-```{r download needed files}
-#options(timeout = 1000)
+```{r download needed files, eval = FALSE}
+options(timeout = 1000)
 download.file("https://zenodo.org/records/13897744/files/ms2deepscore_model.pt?download=1", "download_test.pt")
 download.file("https://raw.githubusercontent.com/matchms/ms2deepscore/refs/heads/main/tests/resources/pesticides_processed.mgf", "pesticides.mgf")
 ```
@@ -175,10 +175,10 @@ similarity_matrix = pipeline.scores.to_array()
 
 Now, let’s run the full **MS2DeepScore workflow** in **R**.
 
-```{r Running the Full Workflow in R, results='hide'}
+```{r Running the Full Workflow in R, results='hide', eval = FALSE}
 # Define file paths
-model_path <- "/Users/krv114/Desktop/MS/R_python_hackathon/ms2deepscore_model.pt"
-spectrum_path <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/temp_doc/download_test.pt"
+spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"
 
 # Initialize Python environment
 env <- initialize_ms2deepscore()
@@ -188,6 +188,31 @@ model <- load_ms2deepscore_model(model_path, env)
 
 # Run the pipeline and get similarity scores
 similarity_scores <- run_ms2deepscore_pipeline(spectrum_path, model, env)
+
+dim(similarity_scores)
+
+print(similarity_scores) #looks like not compared to ref, but within query...
+
+```
+
+
+Run again with the mini test dataset:
+
+```{r run Full Workflow example 2 in R}
+# Define file paths
+model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/pt/ms2deepscore_model.pt"
+spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/caffeine.mgf"  #*In-house* spectral library, incl 2 caff
+
+# Initialize Python environment
+env <- initialize_ms2deepscore()
+
+# Load the MS2DeepScore model
+model <- load_ms2deepscore_model(model_path, env)
+
+# Run the pipeline and get similarity scores
+similarity_scores <- run_ms2deepscore_pipeline(spectrum_path, model, env)
+
+dim(similarity_scores)
 ```
 
 ---
@@ -245,6 +270,7 @@ plot_clustered_heatmap(similarity_scores)
 
 # **Conclusion**
 This vignette demonstrated how to:
+
 **Install and configure MS2DeepScore in R**  
 **Load a pre-trained model**  
 **Run a similarity scoring pipeline**  
@@ -259,7 +285,7 @@ By integrating **MS2DeepScore** within `SpectriPy`, we can achieve **accurate MS
 - Apply **clustering techniques** to group similar spectra.
 
 
-```{r Plot similarity distribution among the tested compounds and comparison of similarity scores to Tanimoto scores, fig.show='hold', results='hide'}
+```{r Plot similarity distribution among the tested compounds and comparison of similarity scores to Tanimoto scores, fig.show='hold', results='hide', eval = FALSE}
 # Function to plot similarity score distribution
 plot_similarity_distribution <- function(similarity_matrix) {
   similarity_values <- as.vector(similarity_matrix)  # Convert to vector
@@ -307,7 +333,7 @@ extract_smiles_from_mgf <- function(mgf_file) {
 }
 
 # Run the function
-mgf_file <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+mgf_file <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"
 smiles_list <- extract_smiles_from_mgf(mgf_file)
 
 
@@ -362,7 +388,7 @@ plot_score_comparison(similarity_scores, tanimoto_scores)
 ```
 
 
-```{r Plot molecular similarity network, fig.show='hold', results='hide'}
+```{r Plot molecular similarity network, fig.show='hold', results='hide', eval = FALSE}
 # Function to extract NAME from MGF with manual backend setup
 extract_names_from_mgf <- function(mgf_file) {
   # Manually initialize the MGF backend
@@ -380,7 +406,7 @@ extract_names_from_mgf <- function(mgf_file) {
   return(names_list)
 }
 # Run the function
-mgf_file <- "/Users/krv114/Desktop/MS/R_python_hackathon/pesticides.mgf"
+mgf_file <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"
 names_list <- extract_names_from_mgf(mgf_file)
 # Print extracted NAME
 print(names_list)
