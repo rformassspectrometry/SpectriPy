@@ -2,6 +2,7 @@
 matchms <- NULL
 matchms_similarity <- NULL
 matchms_filtering <- NULL
+spectrum_utils <- NULL
 
 #' @importFrom reticulate import use_virtualenv use_condaenv py_available py_install virtualenv_exists virtualenv_create virtualenv_remove conda_list conda_create
 .onLoad <- function(libname, pkgname) {
@@ -38,6 +39,8 @@ matchms_filtering <- NULL
                                   convert = FALSE)
     matchms_filtering <<- import("matchms.filtering", delay_load = TRUE,
                                  convert = FALSE)
+    spectrum_utils <<- import("spectrum_utils", delay_load = TRUE,
+                              convert = FALSE)
 }
 
 .spectripy_env <- function() {
@@ -61,13 +64,29 @@ matchms_filtering <- NULL
 .install_python_packages <- function(envname = .spectripy_env(),
                                      use_conda = .spectripy_use_conda(), ...) {
     if (!py_module_available("matchms")) {
-        packageStartupMessage("Installing required libraries")
+        packageStartupMessage("Installing required 'matchms' library")
         if (use_conda) {
             py_install(c("matchms==0.28.2"),
                        envname = envname, method = "conda", pip = FALSE,
                        channel = c("bioconda", "conda-forge"), ...)
         } else {
-            py_install(c("matchms==0.28.2", "numpy==2.0.2"),
+            py_install(c("matchms==0.28.2", "spectrum_utils==0.3.2-0",
+                         "numpy==2.0.2"),
+                       envname = envname, method = "virtualenv",
+                       channel = c("conda-forge"), ...)
+        }
+        packageStartupMessage(
+            "\nPlease restart R to load the freshly installed packages.\n")
+    }
+    if (!py_module_available("spectrum_utils")) {
+        packageStartupMessage("Installing required 'spectrum_utils' library")
+        if (use_conda) {
+            py_install(c("spectrum_utils==0.3.2-0"),
+                       envname = envname, method = "conda", pip = FALSE,
+                       channel = c("bioconda", "conda-forge"), ...)
+        } else {
+            py_install(c("spectrum_utils==0.3.2-0",
+                         "numpy==2.0.2"),
                        envname = envname, method = "virtualenv",
                        channel = c("conda-forge"), ...)
         }

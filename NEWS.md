@@ -1,3 +1,9 @@
+# SpectriPy 0.5
+
+## Changes in 0.5.0
+
+- Add support for *spectrum_utils* library.
+
 # SpectriPy 0.4
 
 ## Changes in 0.4.0

@@ -1,3 +1,4 @@
+SPECTRUM_UTILS_TOLERANCE <- 1e-7
 df <- DataFrame(msLevel = c(1L, 2L, 1L), rtime = c(1.2, 3.2, 5.2))
 df$mz <- list(
     c(34.3, 45.6, 199.1),
@@ -24,6 +25,11 @@ test_that("spectraVariableMapping, spectraVariableMapping<- works", {
     expect_equal(spectraVariableMapping(),
                  .SPECTRA_2_MATCHMS)
     expect_equal(defaultSpectraVariableMapping(), .SPECTRA_2_MATCHMS)
+
+    res <- spectraVariableMapping("spectrum_utils")
+    expect_equal(res, .SPECTRA_2_SPECTRUM_UTILS)
+
+    expect_error(spectraVariableMapping("other"), "Supported values")
 })
 
 #############
@@ -45,8 +51,8 @@ test_that(".single_rspec_to_pyspec works", {
     expect_equal(names(res$metadata), character())
 })
 
-test_that(".rspec_to_pyspec works", {
-    res <- .rspec_to_pyspec(sps)
+test_that(".rspec_to_matchms_pyspec works", {
+    res <- .rspec_to_matchms_pyspec(sps)
     expect_true(is(res, "python.builtin.list"))
     expect_true(length(res) == length(sps))
 
@@ -54,10 +60,42 @@ test_that(".rspec_to_pyspec works", {
     expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
     expect_true(all(.SPECTRA_2_MATCHMS %in% names(res[[1]]$metadata)))
 
-    res <- .rspec_to_pyspec(sps, character())
+    res <- .rspec_to_matchms_pyspec(sps, character())
     expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
     expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
     expect_equal(names(res[[1]]$metadata), character())
+})
+
+test_that(".rspec_to_spectrum_utils_pyspec works", {
+    res <- expect_warning(.rspec_to_spectrum_utils_pyspec(sps),
+                          "Ignoring variables")
+    expect_equal(length(res), length(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
+    expect_true(is.na(py_to_r(res[[1L]]$precursor_mz)))
+    expect_equal(py_to_r(res[[1L]]$retention_time), sps$rtime[2L])
+
+    res <- .rspec_to_spectrum_utils_pyspec(sps, c())
+    expect_equal(length(res), length(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
+    expect_true(is.na(py_to_r(res[[1L]]$precursor_mz)))
+    expect_true(is.na(py_to_r(res[[1L]]$retention_time)))
+
+    sps$my_id <- c("a", "b", "c")
+    res <- .rspec_to_spectrum_utils_pyspec(sps, c(my_id = "identifier"))
+    expect_equal(length(res), length(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
+    expect_true(is.na(py_to_r(res[[1L]]$precursor_mz)))
+    expect_true(is.na(py_to_r(res[[1L]]$retention_time)))
+    expect_equal(py_to_r(res[[1L]]$identifier), "b")
+
+    res <- .rspec_to_spectrum_utils_pyspec(sps, .SPECTRA_2_SPECTRUM_UTILS)
+    expect_equal(length(res), length(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
+    expect_true(is.na(py_to_r(res[[1L]]$precursor_mz)))
 })
 
 test_that("rspec_to_pyspec works", {
@@ -105,6 +143,14 @@ test_that("rspec_to_pyspec works", {
     expect_equal(names(res[0]$metadata), character())
 
     setSpectraVariableMapping(.SPECTRA_2_MATCHMS)
+
+    ## spectrum_utils
+    expect_error(rspec_to_pyspec(sps, pythonLibrary = "other"))
+    res <- rspec_to_pyspec(sps, spectraVariableMapping("spectrum_utils"),
+                           "spectrum_utils")
+    expect_equal(length(res), length(sps))
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
 })
 
 #############
@@ -177,6 +223,18 @@ test_that("pyspec_to_rspec and .single_pyspec_to_rspec work", {
     res <- .single_pyspec_to_rspec(p[1L], mapping = character())
     expect_true(is.na(res$rtime))
     expect_true(is.na(res$msLevel))
+
+    ## spectrum_utils
+    map <- spectraVariableMapping("spectrum_utils")
+    p <- rspec_to_pyspec(sps, map, "spectrum_utils")
+    res <- expect_warning(pyspec_to_rspec(p, map, "spectrum_utils"), "NAs")
+    expect_s4_class(res, "Spectra")
+    expect_s4_class(res@backend, "MsBackendMemory")
+    expect_equal(rtime(res), rtime(sps))
+    expect_true(validObject(res))
+    expect_equal(peaksData(res, return.type = "list"),
+                 peaksData(sps, return.type = "list"),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
 })
 
 test_that("pyspec_to_rspec works", {
@@ -244,4 +302,69 @@ test_that(".py_matchms_peaks_data works", {
 test_that(".py_matchms_peaks_data_cmd works", {
     res <- .py_matchms_peaks_data_cmd("AAA")
     expect_match(res, "AAA")
+})
+
+## spectrum_utils
+
+test_that(".py_spectrum_utils_peaks_data_cmd works", {
+    res <- .py_spectrum_utils_peaks_data_cmd("BB")
+    expect_match(res, "BB")
+})
+
+test_that(".py_spectrum_utils_peaks_data works", {
+    py_set_attr(py, "p", rspec_to_pyspec(sps, pythonLibrary = "spectrum_utils"))
+
+    res <- .py_spectrum_utils_peaks_data("p", 0:2)
+    expect_true(is.list(res))
+    expect_true(is.matrix(res[[1L]]))
+    expect_true(ncol(res[[1L]]) == 2)
+    expect_equal(res[[1L]][, 2L], 1:3)
+    expect_equal(res[[1L]], unname(peaksData(sps)[[1L]]),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    a <- .py_spectrum_utils_peaks_data("p", 0)
+    expect_equal(a[[1L]], res[[1L]])
+    a <- .py_spectrum_utils_peaks_data("p", 1)
+    expect_equal(a[[1L]], res[[2L]])
+    a <- .py_spectrum_utils_peaks_data("p", 2)
+    expect_equal(a[[1L]], res[[3L]])
+})
+
+test_that(".py_spectrum_utils_spectrum_peaks_data works", {
+    tmp <- rspec_to_pyspec(sps, spectraVariableMapping("spectrum_utils"),
+                           "spectrum_utils")
+    res <- .py_spectrum_utils_spectrum_peaks_data(tmp[0])
+    expect_true(is.matrix(res))
+    expect_true(ncol(res) == 2)
+    expect_equal(colnames(res), c("mz", "intensity"))
+    expect_equal(res, peaksData(sps)[[1L]],
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    res <- .py_spectrum_utils_spectrum_peaks_data(tmp[1])
+    expect_true(is.matrix(res))
+    expect_true(ncol(res) == 2)
+    expect_equal(colnames(res), c("mz", "intensity"))
+    expect_equal(res, peaksData(sps)[[2L]],
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    rm(tmp)
+})
+
+test_that(".py_spectrum_utils_spectrum_spectra_data works", {
+    map <- spectraVariableMapping("spectrum_utils")
+    tmp <- rspec_to_pyspec(sps, map, "spectrum_utils")
+    res <- .py_spectrum_utils_spectrum_spectra_data(tmp[0])
+    expect_true(is.data.frame(res))
+    expect_true(nrow(res) == 1)
+    expect_true(ncol(res) == 2)
+    expect_equal(colnames(res), c("precursorMz", "rtime"))
+    expect_equal(res$rtime, sps$rtime[1L])
+    expect_equal(res$precursorMz, sps$precursorMz[1L])
+
+    res <- .py_spectrum_utils_spectrum_spectra_data(tmp[1], map)
+    expect_true(is.data.frame(res))
+    expect_true(nrow(res) == 1)
+    expect_true(ncol(res) == 4)
+    expect_equal(colnames(res), c("precursorMz", "precursorCharge", "rtime",
+                                  "scanIndex"))
+    expect_identical(res$precursorCharge, NA_integer_)
+    expect_equal(res$rtime, sps$rtime[2L])
 })

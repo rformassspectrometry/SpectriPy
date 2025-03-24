@@ -11,6 +11,12 @@ py_set_attr(py, "s_p", rspec_to_pyspec(s, c(defaultSpectraVariableMapping(),
                                             spectrum_index = "spctrm_idx")))
 expect_true(any(names(py$s_p[[1]]$metadata) == "spctrm_idx"))
 
+## Convert the data also to spectrum_utils
+py_set_attr(py, "su_p", rspec_to_pyspec(
+                            s, spectraVariableMapping("spectrum_utils"),
+                            "spectrum_utils"))
+SPECTRUM_UTILS_TOLERANCE <- 1e-7
+
 test_that("MsBackendPy constructor works", {
     res <- MsBackendPy()
     expect_s4_class(res, "MsBackendPy")
@@ -105,6 +111,21 @@ test_that("spectraVariables and .py_get_metadata_names works", {
     res <- spectraVariables(be)
     expect_true(all(names(coreSpectraVariables()) %in% res))
     expect_true("spectrum_index" %in% res)
+
+    ## spectrum_utils
+    be <- backendInitialize(MsBackendPy(), "su_p",
+                            pythonLibrary = "spectrum_utils")
+    m <- .py_get_metadata_names(be)
+    expect_equal(unname(m), c("precursor_mz", "retention_time"))
+    be <- backendInitialize(
+        MsBackendPy(), "su_p",
+        spectraVariableMapping = spectraVariableMapping("spectrum_utils"),
+        pythonLibrary = "spectrum_utils")
+    m <- .py_get_metadata_names(be)
+    expect_equal(unname(m), c("precursor_mz", "precursor_charge",
+                      "retention_time", "identifier"))
+    res <- spectraVariables(be)
+    expect_true(all(names(m) %in% res))
 })
 
 test_that("peaksData,MsBackendPy works", {
@@ -132,6 +153,17 @@ test_that("peaksData,MsBackendPy works", {
     expect_equal(length(res), 100L)
     expect_true(is.numeric(res[[1L]]))
     expect_false(is.matrix(res[[1L]]))
+
+    ## spectrum_utils
+    be <- backendInitialize(MsBackendPy(), "su_p",
+                            pythonLibrary = "spectrum_utils")
+    res <- peaksData(be)
+    expect_true(is.list(res))
+    expect_equal(length(res), length(be))
+    expect_equal(res, peaksData(s, return.type = "list"),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    a <- peaksData(be[4])
+    expect_equal(a, res[4])
 })
 
 test_that("spectraData,MsBackendPy works", {
@@ -212,6 +244,15 @@ test_that("spectraData,MsBackendPy works", {
     res <- spectraData(be)
     expect_true(all(names(m) %in% colnames(res)))
     expect_equal(res$spectrum_index, seq_along(be))
+
+    ## spectrum_utils
+    be <- backendInitialize(
+        MsBackendPy(), "su_p", pythonLibrary = "spectrum_utils",
+        spectraVariableMapping("spectrum_utils"))
+    res <- spectraData(be)
+    expect_s4_class(res, "DataFrame")
+    expect_equal(res$dataStorage, rep("su_p", length(be)))
+    expect_equal(res$precursorMz, s$precursorMz)
 })
 
 test_that(".check_i works", {
@@ -252,6 +293,12 @@ test_that("$,MsBackendPy works", {
     expect_equal(be$msLevel, s$msLevel)
     expect_equal(be$precursorMz, s$precursorMz)
     expect_error(be$not_exists, "not available")
+
+    be <- backendInitialize(
+        MsBackendPy(), "su_p",
+        spectraVariableMapping = spectraVariableMapping("spectrum_utils"),
+        pythonLibrary = "spectrum_utils")
+    expect_equal(be$precursorMz, s$precursorMz)
 })
 
 test_that("lengths,MsBackendPy works", {
