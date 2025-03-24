@@ -9,32 +9,33 @@
 
 The *SpectriPy* package allows integration of Python MS packages into a
 [*Spectra*](https://github.com/RforMassSpectrometry/Spectra)-based MS analysis
-in R. By wrapping Python functionality into R functions, SpectriPy allows a 
-seamless integration of Python libraries into R. For example, SpectriPy can 
-leverage the spectral similarity, filtering, normalization etc. calculations 
-from the Python [*matchms*](https://github.com/matchms/) library and contains 
-functions to convert between R's `Spectra::Spectra` objects and Python's 
-`matchms.Spectrum` objects. R and Python spectral objects are easily translated 
-and available in one workflow (i.e. a quarto document), enabling the advanced 
-user or developer to create custom functions or workflows on `Spectra` objects 
-in Python and executing them in R using the *reticulate* R package, and vice 
-versa.
+in R. By wrapping Python functionality into R functions, *SpectriPy* allows a
+seamless integration of Python libraries into R. For example, *SpectriPy* can
+leverage the spectral similarity, filtering, normalization etc. calculations
+from the Python [*matchms*](https://github.com/matchms/) library and contains
+functions to convert between R's `Spectra::Spectra` objects and Python's
+`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects. R and
+Python spectral objects are easily translated  and available in one workflow
+(i.e. a quarto document), enabling the advanced  user or developer to create
+custom functions or workflows on `Spectra` objects in Python and executing
+them in R using the *reticulate* R package, and vice versa.
 
-If you use SpectriPy in your research, please cite:
+If you use *SpectriPy* in your research, please cite:
 
-_SpectriPy: Enhancing Cross-Language Mass Spectrometry Data Analysis with R and 
+_SpectriPy: Enhancing Cross-Language Mass Spectrometry Data Analysis with R and
 Python. IN PREPARATION._
 
 
 # Installation
 
-Detailed information on the [installation and configuration of SpectriPy](detailed-installation-configuration.qmd), 
+Detailed information on the [installation and configuration of SpectriPy](detailed-installation-configuration.qmd),
 including guidelines for first time R users can be found under the "vignettes".
 
 TLDR:
 
 - Prerequisites: R >= 4.4.0.
-- System requirement: reticulate (i.e. setup Python environment)
+- System requirement: *reticulate* (i.e., setup Python environment if not
+  already available)
 
 ```r
 #' R session:
@@ -43,7 +44,7 @@ install.packages("reticulate")
 reticulate::install_miniconda()
 ```
 
-- Package requirements: Bioconductor, remotes
+- Package requirements: Bioconductor's *BiocManager*, *remotes*
 
 ```r
 #' R session:
@@ -55,7 +56,7 @@ BiocManager::install(version = "3.20")
 install.packages("remotes")
 ```
 
-- Package: SpectriPy
+- Package: *SpectriPy*
 
 ```r
 #' R session:
@@ -65,12 +66,12 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 
 # Documentation for users
 
-See the extensive documentation for the use of SpectriPy: 
+See the extensive documentation for the use of *SpectriPy*:
 
-- The rendered [SpectriPy package’s vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html), 
-- The code of the [SpectriPy vignette](vignettes/SpectriPy.qmd), 
-- A [tutorial](vignettes/SpectriPy_tutorial.qmd) for the annotation of LC-MS/MS 
-spectra using an MGF library and the CosineGreedy algirithm from matchms.
+- The rendered [SpectriPy package’s vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html),
+- The code of the [SpectriPy vignette](vignettes/SpectriPy.qmd),
+- A [tutorial](vignettes/SpectriPy_tutorial.qmd) for the annotation of LC-MS/MS
+spectra using an MGF library and the CosineGreedy algorithm from *matchms*.
 
 TLDR:
 
@@ -170,5 +171,4 @@ conduct](https://rformassspectrometry.github.io/RforMassSpectrometry/articles/Rf
 
 # License
 
-See the [DESCRIPTION](DESCRIPTION).
-
+See the [DESCRIPTION](DESCRIPTION) and [LICENSE](LICENSE) file.
