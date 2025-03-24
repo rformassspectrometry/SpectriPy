@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 
 
 
-    <p><strong>Compiled</strong>: Tue Mar 18 13:07:38 2025</p>
+    <p><strong>Compiled</strong>: Mon Mar 24 10:52:06 2025</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between Python and R. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
@@ -143,7 +143,7 @@
 file(s):
 PestMix1_DDA.mzML
 Processing:
- Filter: select MS level(s) 2 [Tue Mar 18 13:07:48 2025] </code></pre>
+ Filter: select MS level(s) 2 [Mon Mar 24 10:52:16 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -334,19 +334,19 @@ Processing:
 <span><span class="va">mgf_r</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MSn data (Spectra) with 100 spectra in a MsBackendMemory backend:
-        msLevel     rtime scanIndex
-    &lt;character&gt; &lt;numeric&gt; &lt;integer&gt;
-1             2        NA        NA
-2             2        NA        NA
-3             2        NA        NA
-4             2        NA        NA
-5             2        NA        NA
-...         ...       ...       ...
-96            2        NA        NA
-97            2        NA        NA
-98            2        NA        NA
-99            2        NA        NA
-100          NA        NA        NA
+      msLevel     rtime scanIndex
+    &lt;integer&gt; &lt;numeric&gt; &lt;integer&gt;
+1           2        NA        NA
+2           2        NA        NA
+3           2        NA        NA
+4           2        NA        NA
+5           2        NA        NA
+...       ...       ...       ...
+96          2        NA        NA
+97          2        NA        NA
+98          2        NA        NA
+99          2        NA        NA
+100        NA        NA        NA
  ... 16 more variables/columns.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb44"><pre class="downlit sourceCode r">
@@ -738,7 +738,7 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] SpectriPy_0.4.0     reticulate_1.41.0.1 Spectra_1.17.9
+[1] SpectriPy_0.5.0     reticulate_1.41.0.1 Spectra_1.17.9
 [4] BiocParallel_1.41.2 S4Vectors_0.45.4    BiocGenerics_0.53.6
 [7] generics_0.1.3
 
@@ -749,7 +749,7 @@ loaded via a namespace (and not attached):
 [10] IRanges_2.41.3         png_0.1-8              yaml_2.3.10
 [13] fastmap_1.2.0          lattice_0.22-6         ProtGenerics_1.39.2
 [16] knitr_1.50             MASS_7.3-65            rlang_1.1.5
-[19] xfun_0.51              fs_1.6.5               MsCoreUtils_1.19.1
+[19] xfun_0.51              fs_1.6.5               MsCoreUtils_1.19.2
 [22] cli_3.6.4              withr_3.0.2            digest_0.6.37
 [25] grid_4.5.0             ncdf4_1.23             mzR_2.41.4
 [28] MetaboCoreUtils_1.15.0 rappdirs_0.3.3         clue_0.3-66
