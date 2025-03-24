@@ -287,6 +287,7 @@ added new to the Spectra object
 smiles       | *5
 inchi        | *6
 parent_mass  | *7
+charge       | *8
 
 subvars under the metadata in Spectrum py
 *2            | precursor_mz
@@ -296,13 +297,16 @@ subvars under the metadata in Spectrum py
 *6            | inchi
 *7            | parent_mass
               | peak_comments
-              | charge
+*8            | charge
               | instrument_type
               | ...
 
               | scans
 
 with Spectrum examples in python.
+get all from  spectra object in r by: `defaultSpectraVariableMapping()`
+get all from spectrum object in py by: `mgf_py[0].metadata.keys()`
+
 
 ```{python}
 import numpy as np

@@ -15,48 +15,65 @@ vignette: >
 # Introduction
 
 *SpectriPy* enables powerful mass spectrometry (MS) data analysis workflows
-combining the strengths of Python and R MS libraries. 
-The concepts and examples can be checked by performing some steps from the 
-package’s vignette, from source 
+combining the strengths of Python and R MS libraries. The concepts and examples
+can be checked by performing some steps from the package’s vignette, from source
 https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html.
 
-To showcase the strength
-of combining functionalities from both programming languages with *SpectriPy*,
-we perform the annotation of LC-MS/MS spectra using a reference library.
-During the tutorial, we use different spectral similarity algorithms from both R
-and Python: normalized dot product similarity from Spectra
-[@rainer_modular_2022], CosineGreedy from matchms [@huber_matchms_2020], 
-MS2DeepScore from matchms [@huber_ms2deepscore_2021] and Spec2Vec from spec2vec [@huber_spec2vec_2021].
+To showcase the strength of combining functionalities from both programming
+languages with *SpectriPy*, we perform the annotation of LC-MS/MS spectra using
+a reference library. During the tutorial, we use different MS2 filtering and
+spectral similarity algorithms from both R and Python.
 
-The spectral reference library used in this tutorial originates from the GNPS
-repository (provided in mgf format), which can easily be replaced by the user by
-other public spectral databases or with an in-house reference database.
-Similarily, the spectral similarity algorithms used in this tutorial, can easily
-be extended to other R/python spectral silimilatity algorithms. 
+The three different filtering methods which will be demonstrated throughout this
+tutorial are: default filtering (`filterMsLevel`) from Spectra
+[@rainer_modular_2022], default filtering (`default_filters`,
+`normalize_intensities`) from matchms [@huber_matchms_2020], and using a pre-
+and post-processing pipeline from matchms's `msfilters`.
+
+The four MS2 spectral similarity algorithms which are demonstrated below are: 
+`compareSpectra` from Spectra [@rainer_modular_2022], `CosineGreedy` from
+matchms [@huber_matchms_2020], `MS2DeepScore` from matchms 
+[@huber_ms2deepscore_2021] and `Spec2Vec` from spec2vec [@huber_spec2vec_2021].
+
+The spectral reference library used for the annotation of the unknown features 
+in this tutorial originates from an *in-house* reference library (provided in 
+mgf format), but can easily be replaced by other (public) MS2 spectral libraries 
+such as mgf file from the GNPS repository or even with a pre-trained model 
+containing spectra from multiple public sources. For a demonstration of using 
+pre-trained models, see the MS2DeepScore section. We also showcase how to make 
+your own model with using an *in-house* reference library in the Spec2Vec
+section.
+
+The spectral filtering and similarity algorithms used in this 
+tutorial, can easily be extended to other R/python spectral filtering and 
+silimilatity algorithms. Including similarity algorithms comparing metadata, 
+e.g. to compare SMILES across spectra, such as the `MetadataMatch` from matchms 
+and the Tanimoto similarity search with rdkit and fingerprint R packages.
 
 
 # steps to do = to be removed TODO
 
 Potential example: annotation of LC-MS/MS
+
 +R: Perform LC-MS/MS data preprocessing in R with xcms } part in the metabonaut already
 +R: Extract MS2 spectra for features as a Spectra object-    } idem, so maybe refer and load ‘res’ instead? 
 -load/make query ==> test/rdata splitup depending vignette/metabonaut? like the mini tesset to horougly explain and show intermed result steps. ok? TODO
 +Python: Load reference database, e.g. from a GNPS MGF file
 +R: translate Spectra object to Python.
 +Python: process and filter the data, both the reference database and the experimental data = filtering
-+Python: calculate pairwise similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
++Python: calculate pairwise spectral similarity (= CosineGreedy from matchms) between the experimental spectra and reference.
 -py: others cals...!!! TODO
 -MS2DeepScore
     X NOT: Tanimoto score IS WITH SMILES... or other fingerprint, so if unknown spectra, how do they have a smiles...?? think in this goal not useful 
     steps before mrd
     - query spectra() -> mgf (or how describe/logical?)
-    - ok with torch, msdeepscore add to spectripy? HOW? jo?
+    - ok with torch, msdeepscore dependencies add to spectripy? HOW? jo?
     - codechunks from Matthias OK, nok in here because needs own py-chunks...
     - change object to use, 
 -spec2vec
     steps before mrd TODO
     + query spectra() -> mgf (or how describe/logical?) ok
-    - spec2vec add to spectripy? HOW? jo?
+    - spec2vec dependencies add to spectripy? HOW? jo?
     + codechunks from Marilyn OK
 -more COSINEs from matchms?? cross-language-ms-analysis.qmd for other examples. TODO
 -py bugs in retic!!!! see TODO, ok if render but not 'handy' for py users
@@ -65,12 +82,30 @@ Potential example: annotation of LC-MS/MS
 +R: plot
 -TODO change so now we have 4 comps... maybe a heatmap with 1st spectrum (caffeine)
 and the scores of each??
--at end (how?), put data in vignette IN package, now via explicit path pc... TODO
+-at end (how?), put data in vignette IN package, now via explicit path pc... TODO, ask Jo how?
+- WE CAN easily add 2 SMILES search examples too, but not really our usecase 
+(we start with unknown...), maybe only in the paper. since have the 2 code 
+chuncks, just not fit here.
+
+change to 2 vignettes at end, select only needed FINDME and describe. TODO: 
+
+- [] this vignette with test, test 3 different filtering/processing 
+  (of both query/ref) + 4 similariy
+  scores, plus describe this can be expanded to other algorithms and even to 
+  comarison with other metadate. eg SMILES somparison with matchms 
+  (see cross-...) abd with the Tomo... from MS2Deep/matchms.
+- [] metabonaut with load her object, only 1 ex filtering and 1 matchms algo.
+  end is the table eval and the give info back into the spectra object.
 
 
 # Load SpectriPy
 
-Load required R SpectriPy package.
+Load required R SpectriPy package. If you already have a Python environment 
+opened, please restart your Integrated Development Environment and run this
+as a first comment, to load the required package reticulate and setup the conda 
+environment 'r-spectripy' correctly. Please see the 
+[Detailed information on installation and configuration](detailed-installation-configuration.qmd)
+for other options.
 
 ```{r}
 #| warning: false
@@ -82,8 +117,7 @@ library(SpectriPy)
 
 # Load query MS2 data
 
-for now, select only needed FINDME and describe. TODO: vignette with test, 
-metabonaut with load
+change to 2 vignettes at end, select only needed FINDME and describe. TODO
 
 ## Test MS2 data
 
@@ -165,14 +199,15 @@ ms2_ctr_fts$feature_id[1]
 
 ## Query MS2 data with significant features
 
-The LC-MS/MS query data used in this tutorial, are derived from the Metabonaut 
-resource [@louail_metabonaut_2025]. Introduction and a thorough description of the preliminariry 
-steps performed are described there, from source
-[A Complete End-to-End Workflow for untargeted LC-MS/MS Metabolomics Data Analysis in R](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html).
+The LC-MS/MS query data used in this tutorial, are derived from the Metabonaut
+resource [@louail_metabonaut_2025]. Introduction and a thorough description of
+the preliminariry steps performed are described there, from source [A Complete
+End-to-End Workflow for untargeted LC-MS/MS Metabolomics Data Analysis in
+R](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html).
 
-First, we load the MS2 spectra of the unknown features found to be significant 
-after the "Differential abundance analysis", see section 
-[MS2-based annotation](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html#differential-abundance-analysis).
+First, we load the MS2 spectra of the unknown features found to be significant
+after the "Differential abundance analysis", see section [MS2-based
+annotation](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html#differential-abundance-analysis).
 
 ```{r}
 #| eval: false
@@ -197,7 +232,8 @@ ms2_ctr_fts$feature_id[1]
 # Filter query data
 
 To ensure this `Spectra` object only contains MS2 data, we filter to only MS2 
-spectra with more than 2 fragment peaks per spectrum.
+spectra with more than 2 fragment peaks per spectrum using some classical 
+filtering in Spectra (processing method 1).
 
 ```{r}
 #' R session:
@@ -215,9 +251,9 @@ head(ms2_ctr_fts)
 
 ## GNPS spectral library
 
-The MS2 spectral reference library in this tutorial originates
-from the GNPS repository, and is provided as an MGF formatted file. 
-To load other file formats, see 
+The MS2 spectral reference library in this tutorial originates from the GNPS
+repository, and is provided as an MGF formatted file.  To load other file
+formats, see
 [link](https://matchms.readthedocs.io/en/latest/api/matchms.importing.html)
 
 ```{python}
@@ -227,17 +263,17 @@ To load other file formats, see
 
 from matchms.importing import load_from_mgf
 
-# Read spectra from an MGF formatted file
+#' Read spectra from an MGF formatted file
 mgf_py = list(load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"))
 ```
 
 
 ## *In-house* spectral library
 
-We import a test data file in
-MGF format using the Python *matchms* library. This MGF file is provided within
-the *SpectriPy* package so we first define its file name and path in R. The 
-loaded object is a Python's `Spectrum` object.
+We import a test data file in MGF format using the Python *matchms*
+library. This MGF file is provided within the *SpectriPy* package so we first
+define its file name and path in R. The loaded object is a Python's `Spectrum`
+object.
 
 ```{python}
 #| warning: false
@@ -245,7 +281,7 @@ loaded object is a Python's `Spectrum` object.
 
 from matchms.importing import load_from_mgf
 
-# Read spectra from an MGF formatted file, as Spectrum object
+#' Read spectra from an MGF formatted file, as Spectrum object
 mgf_py = list(load_from_mgf("/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/test.mgf"))
 
 #' Nr of spectra
@@ -276,9 +312,12 @@ accessed in python using the 'r.' prefix.
 ```{python}
 #' Python session:
 
-# check if the r Spectra object can be accessed in python using the 'r.' 
-# prefix
+#' check if the r Spectra object can be accessed in python using the 'r.' 
+#' prefix
 r.ms2_ctr_fts
+
+#' Show which metadata is available in the first spectrum
+r.ms2_ctr_fts[0].metadata.keys()
 ```
 
 Second, we translate the Spectra 
@@ -289,7 +328,7 @@ object 'ms2_ctr_fts' to the py Spectrum object 'ms2_ctr_fts_py'.
 
 #' Add mapping for additional spectra variables to the default mapping in R and
 #' python, respectively
-map = c(defaultSpectraVariableMapping(), 
+map = c(defaultSpectraVariableMapping(),
         feature_id = 'feature_id')
 
 #' Convert to py Spectrum
@@ -306,18 +345,24 @@ using the 'r.' prefix.
 ```{python}
 #' Python session:
 
-# check if the "r convertend Spectrum" object can be accessed in python using 
-# the 'r.' prefix
+#' check if the "r convertend Spectrum" object can be accessed in python using 
+#' the 'r.' prefix
 r.ms2_ctr_fts_py
+
+
+r.ms2_ctr_fts_py[0].get('charge') #NOK!!
+r.ms2_ctr_fts_py[0].metadata.keys()
+
 ```
 
 
 # Filter py Spectrum reference library
 
 Before we run the spectral comparisons of our query data to the MGF reference
-library, we apply some filtering from matchms. Default filtering was performed 
-to standardize ion mode, correct charge and more. See the 
-[matchms filtering documentation](https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html).
+library, we apply some filtering from matchms (processing method 2).  Default
+filtering from matchms was performed to standardize ion mode, correct charge and
+more. See the [matchms filtering
+documentation](https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html).
 
 ```{python}
 #| warning: false
@@ -325,13 +370,13 @@ to standardize ion mode, correct charge and more. See the
 
 from matchms.filtering import default_filters, normalize_intensities
 
-# Apply filters to clean and enhance each spectrum
+#' Apply filters to clean and enhance each spectrum
 clean_mgf_py = []
 for spectrum in mgf_py:
-    # Apply default filter to standardize ion mode, correct charge and more.
-    # Default filter is fully explained at https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html
+    #' Apply default filter to standardize ion mode, correct charge and more.
+    #' Default filter is fully explained at https://matchms.readthedocs.io/en/latest/api/matchms.filtering.html
     spectrum = default_filters(spectrum)
-    # Scale peak intensities to maximum of 1
+    #' Scale peak intensities to maximum of 1
     spectrum = normalize_intensities(spectrum)
     clean_mgf_py.append(spectrum)
 
@@ -342,23 +387,22 @@ len(clean_mgf_py)
 
 # Evaluation of different spectral similarity algorithms
 
-We calculate the pairwise similarity between the query spectra and the
-reference library spectra using different approaches, using spectral 
-objects (Spectra, Spectrum) accross both languages and using algoritms from
-multiple libraries.
+We calculate the pairwise spectral similarity between the query spectra and the reference
+library spectra using different approaches, using spectral objects (Spectra,
+Spectrum) accross both languages and using algoritms from multiple libraries.
 
 
 ## CosineGreedy from matchms
 
-next, we calculate the pairwise similarity between the query spectra and the
+next, we calculate the pairwise spectral similarity between the query spectra and the
 reference library spectra using Python's matchms.
 
-Here, we use the spectral similarity algorithm CosineGreedy from matchms, from 
+Here, we use the spectral similarity algorithm CosineGreedy from matchms, from
 source [matchms](https://github.com/matchms/matchms/blob/master/README.rst).  
-This algorithm can easily be exchanged for another spectral similarity 
-calculation from matchms. See 
-[here](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html) 
-for other similarity score methods.
+This algorithm can easily be exchanged for another spectral similarity
+calculation from matchms. See
+[here](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html) for
+other similarity score methods.
 
 ```{python}
 #' Python session:
@@ -366,9 +410,9 @@ for other similarity score methods.
 from matchms import calculate_scores
 from matchms.similarity import CosineGreedy
 
-# Calculate Cosine similarity scores between all spectra
-# For other similarity score methods see https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html
-similarity_score = CosineGreedy(tolerance = 0.1)  # Change this for other algorithm
+#' Calculate Cosine similarity scores between all spectra
+#' For other similarity score methods see https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html
+similarity_score = CosineGreedy(tolerance = 0.1)  #' Change this for other algorithm
 scores = calculate_scores(references = clean_mgf_py,
                           queries = r.ms2_ctr_fts_py,
                           similarity_function = similarity_score)
@@ -389,11 +433,11 @@ array will contain the similarity scores of one spectrum from our query spectra
 ```{python}
 #' Python session:
 
-# Convert to array and transpose
+#' Convert to array and transpose
 sim_matchms = scores.to_array()["CosineGreedy_score"]
 sim_matchms = sim_matchms.T
 
-# Contains 1 row for each spectrum in query 
+#' Contains 1 row for each spectrum in query 
 sim_matchms.shape
 ```
 
@@ -404,12 +448,12 @@ library and the corresponding similarity score.
 ```{python}
 #' Python session:
 
-# not correct when run through reticulate... TODO FINDEME!!!! sure correct code!!!!!!
+#' not correct when run through reticulate... TODO FINDEME!!!! sure correct code!!!!!!
 
 import numpy as np
 import pandas as pd
 
-# Prepare results list
+#' Prepare results list
 results = []
 for i in range(sim_matchms.shape[0]):
 
@@ -418,11 +462,11 @@ for i in range(sim_matchms.shape[0]):
     
     row_values = sim_matchms[i].copy()
     
-    # match with higest col nr from the references
-    max_col = np.argmax(row_values)  # Find column index of max value
-    max_value = row_values[max_col]  # Get max value
+    #' match with higest col nr from the references
+    max_col = np.argmax(row_values)  #' Find column index of max value
+    max_value = row_values[max_col]  #' Get max value
 
-    # replace the nr of refererences with the name
+    #' replace the nr of refererences with the name
     name_max_col = clean_mgf_py[max_col].get('compound_name') 
 
     results.append({"query": i + 1, #count from 1
@@ -431,10 +475,10 @@ for i in range(sim_matchms.shape[0]):
                     "reference_compound_name": name_max_col, 
                     "CosineGreedy_score": max_value})
 
-# Convert to DataFrame
+#' Convert to DataFrame
 df = pd.DataFrame(results)
 
-# Print the full DataFrame
+#' Print the full DataFrame
 df
 ```
 
@@ -454,10 +498,10 @@ commercial standards.
 ```{python}
 #' Python session:
 
-# Keep only rows where score > 0.7
+#' Keep only rows where score > 0.7
 df_filtered = df[df["CosineGreedy_score"] > 0.7]
 
-# Print the filtered DataFrame
+#' Print the filtered DataFrame
 df_filtered
 ```
 
@@ -470,14 +514,16 @@ In the case of our second unknown feature FT02, no trustworthy matches were
 made. This spectra is was actually derived from 1-Methylhistidine, which is not 
 present in the in-house spectral library. Therefore, no matches should be found.
 
-To visually inspect how well the query qnd reference spectra match, we refer to 
-the [Metabonaut resource](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html) on how to generate the mirror plots.
+To visually inspect how well the query qnd reference spectra match, we refer to
+the [Metabonaut
+resource](https://rformassspectrometry.github.io/Metabonaut/articles/end-to-end-untargeted-metabolomics.html)
+on how to generate the mirror plots.
 
 
-## Dot product from Spectra
+## compareSpectra from Spectra
 
-Here, we calculate the pairwise similarity between the query spectra and the
-reference library spectra using R's Spectra.
+Here, we calculate the pairwise spectral similarity between the query spectra 
+and the reference library spectra using R's Spectra.
 
 In R we can use the `compareSpectra()` function that by default calculates the
 normalized dot product similarity between the compared spectra. The MS data from
@@ -496,7 +542,7 @@ library(Spectra)
 #' attribute "clean_mgf_py"
 clean_mgf_r <- Spectra("clean_mgf_py", source = MsBackendPy())
 
-#' Calculate the pairwise similarity between spectra
+#' Calculate the pairwise spectral similarity between spectra
 sim_spectra <- compareSpectra(clean_mgf_r, #reference
                               ms2_ctr_fts,  #query
                               tolerance = 0.1)
@@ -515,23 +561,23 @@ previous section, only using R this time.
 ```{r}
 #' R session:
 
-# Initialize results dataframe
+#' Initialize results dataframe
 results <- data.frame(query = numeric(), query_feature_id = character(), 
                       reference = numeric(), 
                       reference_compound_name = character(), 
                       dot_score = numeric(), stringsAsFactors = FALSE)
 
-# Loop over rows to find highest value
+#' Loop over rows to find highest value
 for (i in 1:nrow(sim_spectra)) {
   row_values <- sim_spectra[i, ]
   
   #row is the query, keep nr in the results instead of replacing by eg id
   name_row = ms2_ctr_fts$feature_id[i]
 
-  max_col <- which.max(row_values)  # Find column index of max value, ! r counts from 1
-  max_value <- row_values[max_col]  # Extract max value
+  max_col <- which.max(row_values)  #' Find column index of max value, ! r counts from 1
+  max_value <- row_values[max_col]  #' Extract max value
   
-  # replce the nr of refererences with the name
+  #' replce the nr of refererences with the name
   name_max_col = clean_mgf_r$compound_name[max_col] #check count in R from 1
 
   results <- rbind(results, data.frame(query = i, 
@@ -541,10 +587,10 @@ for (i in 1:nrow(sim_spectra)) {
                                        score = max_value))
 }
 
-# Keep only ows where score > 0.7
+#' Keep only ows where score > 0.7
 results <- results[results$score > 0.7, ]
 
-# Print the results
+#' Print the results
 print(results)
 ```
 
@@ -554,10 +600,28 @@ data with 2 unknown features.
 
 ## MS2DeepScore from matchms
 
-Here, we calculate the pairwise similarity between the query spectra and the
-reference library spectra using R's Spectra. FINDME!!! TODO NOT OK
+Here, we calculate the pairwise spectral similarity between the query spectra 
+and the pre-trained model from MS2DeepScore. This model called 
+"ms2deepscore_model.pt" was trained on > 500,000 MS/MS combined spectra from 
+GNPS, Mona, MassBank and MSnLib, by the developers of MS2DeepScore. See 
+[here](https://github.com/matchms/ms2deepscore) for more information.
+No MS2 spectral filtering is performed in this example.
 
-Firs, we setuo and load the requirements for MS2DeepScore to work.
+```{python}
+#' Python session:
+
+from ms2deepscore.models import load_model
+
+#' Define file path to the pre-trained model from MS2DeepScore
+model_file_name = "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/pt/ms2deepscore_model.pt"
+
+#' Load in the ms2deepscore model
+model = load_model(model_file_name)
+```
+
+Using the trained model, binned spectrums will be converted into spectrum
+vectors using a deep neural network. The MS2DeepScore similarity is then
+the cosine similarity score between two spectrum vectors.
 
 ```{python}
 #' Python session:
@@ -573,141 +637,126 @@ def patched_load(*args, **kwargs):
 
 torch.load = patched_load
 
-
-from matchms.Pipeline import Pipeline, create_workflow
-from matchms.filtering.default_pipelines import DEFAULT_FILTERS
 from ms2deepscore import MS2DeepScore
+from matchms import calculate_scores
 
+#' Run MS2DeepScore in Python
+similarity_score = MS2DeepScore(model = model)
+#scores = calculate_scores(references = clean_mgf_py,
+#                          queries = r.ms2_ctr_fts_py,
+#                          similarity_function = similarity_score)
+#scores
 ```
 
+TODO, FINDME, NOK!!! should work, see https://github.com/matchms/ms2deepscore/blob/main/ms2deepscore/MS2DeepScore.py
 
 ```{python}
-# Define file paths
-model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/temp_doc/download_test.pt"
-spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/pesticides.mgf"
+#' Python session:
 
-```
+#TypeError: Expected float or int, got None, for precursor_mz
+#=> precursor_mz also not found, while there:
+r.ms2_ctr_fts_py[0].get('precursor_mz')
+clean_mgf_py[0].get('precursor_mz')
 
-Once the Python environment is ready, we can load the pre-trained 
-MS2DeepScore model.
-
-```{r}
-initialize_ms2deepscore <- function(python_env = NULL) {
-  if (!is.null(python_env)) {
-    use_virtualenv(python_env, required = TRUE)
-  }
-
-  # Import Python modules
-  torch <- import("torch", convert = FALSE)
-  ms2ds <- import("ms2deepscore", convert = FALSE)
-  matchms <- import("matchms", convert = FALSE)
-
-  # Patch PyTorch to Allow Full Model Loading
-  cat("Patching PyTorch to allow full model loading...\n")
-  py_run_string("
-import torch
-
-# Patch `torch.load()` globally to set `weights_only=False`
-original_load = torch.load
-def patched_load(*args, **kwargs):
-    if 'weights_only' not in kwargs:
-        kwargs['weights_only'] = False  # Force weights_only=False
-    return original_load(*args, **kwargs)
-
-torch.load = patched_load
-  ")
-
-  # Import matchms and MS2DeepScore
-  py_run_string("
-from matchms.Pipeline import Pipeline, create_workflow
-from matchms.filtering.default_pipelines import DEFAULT_FILTERS
-from ms2deepscore import MS2DeepScore
-")
-
-  return(list(ms2ds = ms2ds, matchms = matchms))
-}
-
-load_ms2deepscore_model <- function(model_file, env) {
-  ms2ds <- env$ms2ds
-  cat("Loading MS2DeepScore model...\n")
-
-  model <- ms2ds$models$load_model(model_file)
-
-  if (is.null(model)) {
-    stop("ERROR: Model failed to load.")
-  } else {
-    cat("Model loaded successfully!\n")
-  }
-
-  return(model)
-}
-
-run_ms2deepscore_pipeline <- function(spectrum_path, model, env) {
-  matchms <- env$matchms
-  ms2ds <- env$ms2ds
-
-  cat("Setting up MS2DeepScore pipeline...\n")
-
-  # Run MS2DeepScore in Python
-  py_run_string("
-pipeline = Pipeline(create_workflow(
-    query_filters=DEFAULT_FILTERS,
-    score_computations=[[MS2DeepScore, {'model': r.model}]]
-))
-report = pipeline.run(r.spectrum_path)
-similarity_matrix = pipeline.scores.to_array()
-")
-
-  # Retrieve results
-  cat("Running pipeline...\n")
-  similarity_matrix <- py$similarity_matrix 
-
-  cat("Pipeline run successfully!\n")
-  return(similarity_matrix)
-}
-```
-
-
-```{python}
+#=> pos/neg but 'CHARGE=1+' everywhere present! works sep ref_path too, just not both!!
+#ValueError: Feature should be ['positive'] or ['negative'], not None
+clean_mgf_py[0].get('charge')
+r.ms2_ctr_fts_py[0].get('charge') #NOK!!
+#also think I need this in the mgf file while load:
+# IONMODE=positive
 
 
 ```
 
-```{r run Full Workflow example 2 in R}
-# Define file paths
-model_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/pt/ms2deepscore_model.pt"
-spectrum_path <- "/home/mdegraeve/Documents/Files/Work_Eurac/Projects/SpectriPy/inst/extdata/mgf/caffeine.mgf"  #*In-house* spectral library, incl 2 caff
-
-# Initialize Python environment
-env <- initialize_ms2deepscore()
-
-# Load the MS2DeepScore model
-model <- load_ms2deepscore_model(model_path, env)
-
-# Run the pipeline and get similarity scores
-similarity_scores <- run_ms2deepscore_pipeline(spectrum_path, model, env)
-
-dim(similarity_scores)
-```
+from the scores object, we can repeat exactly the part of matchms to get to 
+the matches for out unknown query MS2 spectra.
 
 
 ### Evaluation
 
+From the calculated spectral similarity scores, we rearange the data to 
+make a dataframe containing the best matched compound name (derived from the 
+reference library) per queried spectrum.
+
+First, we extract and transpose the scores as a python array. Each row of the 
+array will contain the similarity scores of one spectrum from our query spectra 
+`r.ms2_ctr_fts_py` against the cleaned reference library `clean_mgf_py`. 
 
 ```{python}
+#' Python session:
 
+#' Convert to array and transpose
+sim_ms2deepscore = scores.to_array()
+sim_ms2deepscore = sim_ms2deepscore.T
 
+#' Contains 1 row for each spectrum in query
+sim_ms2deepscore.shape
+```
+
+Next, we create a dataframe with per queried spectrum from our unknown 
+variables, the compound name of the higest matching spectra from the reference 
+library and the corresponding similarity score.
+
+```{python}
+#' Python session:
+
+#' not correct when run through reticulate... TODO FINDEME!!!! sure correct code!!!!!!
+
+import numpy as np
+import pandas as pd
+
+#' Prepare results list
+results = []
+for i in range(sim_matchms.shape[0]):
+
+    #row is the query, keep nr in the results instead of replacing by eg id
+    name_row = r.ms2_ctr_fts_py[i].get('feature_id') 
+    
+    row_values = sim_matchms[i].copy()
+    
+    #' match with higest col nr from the references
+    max_col = np.argmax(row_values)  #' Find column index of max value
+    max_value = row_values[max_col]  #' Get max value
+
+    #' replace the nr of refererences with the name
+    name_max_col = clean_mgf_py[max_col].get('compound_name') 
+
+    results.append({"query": i + 1, #count from 1
+                    "query_feature_id": name_row, 
+                    "reference": max_col,
+                    "reference_compound_name": name_max_col, 
+                    "CosineGreedy_score": max_value})
+
+#' Convert to DataFrame
+df = pd.DataFrame(results)
+
+#' Print the full DataFrame
+df
+```
+
+Apply the 0.7 threshold.
+
+```{python}
+#' Python session:
+
+#' Keep only rows where score > 0.7
+df_filtered = df[df["CosineGreedy_score"] > 0.7]
+
+#' Print the filtered DataFrame
+df_filtered
 ```
 
 
 ## Spec2Vec from spec2vec
 
-Here, we calculate the pairwise similarity between the query spectra and the
-reference library spectra using Pythons's spec2vec. 
+Here, we calculate the pairwise spectral similarity between the query spectra 
+and the reference library spectra using Pythons's spec2vec.
 
-We also apply a stricter filtering processing from matchms. Thhis will be 
-performed on both the reference and query spectra, and for this 
-reason we will have a shorter results table. 
+We also apply a stricter filtering processing from matchms (processing method
+3). This time we will use a more advance filtering, in a pre- and
+post-processing pipeline uing `msfilters` from `matchms`.  The filtering will be
+performed on both the reference and query spectra, and for this reason we will
+have a shorter results table.
 
 ```{python}
 #| warning: false
@@ -731,10 +780,10 @@ def spectrum_processing(s):
     s = msfilters.require_minimum_number_of_peaks(s, n_required = 10)
     return s
 
-# Apply filters to the Spectrum of refernce
+#' Apply filters to the Spectrum of refernce
 reference_spectrums = [spectrum_processing(s) for s in clean_mgf_py]
 
-# Omit reference_spectrums that didn't qualify for analysis
+#' Omit reference_spectrums that didn't qualify for analysis
 reference_spectrums = [s for s in reference_spectrums if s is not None]
 ```
 
@@ -742,7 +791,13 @@ First, we train a new spec2vec model using our MS2 spectral reference library
 after processing thereof.
 
 ```{python}
-# Create spectrum documents
+#| warning: false
+#' Python session:
+
+from spec2vec import SpectrumDocument
+from spec2vec.model_building import train_new_word2vec_model
+
+#' Create spectrum documents
 reference_documents = [SpectrumDocument(s, n_decimals=2) for s in reference_spectrums]
 
 model_file = "references.model"
@@ -761,23 +816,25 @@ import gensim
 from matchms import calculate_scores
 from spec2vec import Spec2Vec
 
-# query_spectrums
+#' query_spectrums
 query_spectrums = [spectrum_processing(s) for s in r.ms2_ctr_fts_py]
 
-# Omit spectrums that didn't qualify for analysis
+#' Omit spectrums that didn't qualify for analysis
 query_spectrums = [s for s in query_spectrums if s is not None]
 
-# Import pre-trained word2vec model (see code example above)
+#' Import pre-trained word2vec model (see code example above)
 model_file = "references.model"
 model = gensim.models.Word2Vec.load(model_file)
 
-# Define similarity_function
+#' Define similarity_function
 spec2vec_similarity = Spec2Vec(model = model,
                                intensity_weighting_power = 0.5, #Default 0.5
                                allowed_missing_percentage = 5.0)  #Default 5.0
 
-# Calculate scores on all combinations of reference spectrums and queries
-scores = calculate_scores(reference_documents, query_spectrums, spec2vec_similarity)
+#' Calculate scores on all combinations of reference spectrums and queries
+scores = calculate_scores(reference_documents, 
+                          query_spectrums, 
+                          spec2vec_similarity)
 
 scores
 ```
@@ -799,11 +856,11 @@ array will contain the similarity scores of one spectrum from our query spectra
 ```{python}
 #' Python session:
 
-# Convert to array and transpose
+#' Convert to array and transpose
 sim_spec2vec = scores.to_array()
 sim_spec2vec = sim_spec2vec.T
 
-# Contains 1 row for each spectrum in query 
+#' Contains 1 row for each spectrum in query 
 sim_spec2vec.shape
 ```
 
@@ -822,7 +879,7 @@ Spectrum objects `r.ms2_ctr_fts_py` -> `query_spectrums` and `clean_mgf_py`
 import numpy as np
 import pandas as pd
 
-# Prepare results list
+#' Prepare results list
 results = []
 for i in range(sim_spec2vec.shape[0]):
 
@@ -831,11 +888,11 @@ for i in range(sim_spec2vec.shape[0]):
     
     row_values = sim_spec2vec[i].copy()
     
-    # match with higest col nr from the references
-    max_col = np.argmax(row_values)  # Find column index of max value
-    max_value = row_values[max_col]  # Get max value
+    #' match with higest col nr from the references
+    max_col = np.argmax(row_values)  #' Find column index of max value
+    max_value = row_values[max_col]  #' Get max value
 
-    # replace the nr of refererences with the name
+    #' replace the nr of refererences with the name
     name_max_col = reference_spectrums[max_col].get('compound_name') 
 
     results.append({"query": i + 1, #count from 1
@@ -844,7 +901,7 @@ for i in range(sim_spec2vec.shape[0]):
                     "reference_compound_name": name_max_col, 
                     "Spec2Vec_score": max_value})
 
-# Convert to DataFrame
+#' Convert to DataFrame
 df = pd.DataFrame(results)
 ```
 
@@ -852,10 +909,12 @@ The result list contains less of the query and library spectra. After findering
 this table with a score > 0.7 we get:
 
 ```{python}
-# Keep only rows where score > 0.7
+#' Python session:
+
+#' Keep only rows where score > 0.7
 df_filtered = df[df["Spec2Vec_score"] > 0.7]
 
-# Print the filtered DataFrame
+#' Print the filtered DataFrame
 df_filtered
 ```
 
