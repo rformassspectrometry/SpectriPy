@@ -48,8 +48,7 @@
 #'   which spectra variables from the `Spectra` object `x` should be converted
 #'   in addition to the peaks data (m/z and intensity values). It defaults to
 #'   `mapping = spectraVariableMapping()` (See the respective help below for
-#'   more information on the variable mapping).
-#'   While being fast, this function
+#'   more information on the variable mapping). While being fast, this function
 #'   first loads all peaks and spectra data into memory before translating to
 #'   Python data structures. A less memory intense operation could be to call
 #'   this function in a loop to only load parts of the data at a time into

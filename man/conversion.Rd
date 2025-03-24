@@ -108,8 +108,7 @@ list of Python MS data objects, which can be, depending on parameter
 which spectra variables from the \code{Spectra} object \code{x} should be converted
 in addition to the peaks data (m/z and intensity values). It defaults to
 \code{mapping = spectraVariableMapping()} (See the respective help below for
-more information on the variable mapping).
-While being fast, this function
+more information on the variable mapping). While being fast, this function
 first loads all peaks and spectra data into memory before translating to
 Python data structures. A less memory intense operation could be to call
 this function in a loop to only load parts of the data at a time into

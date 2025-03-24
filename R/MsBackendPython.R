@@ -5,7 +5,7 @@
 #' @description
 #'
 #' The `MsBackendPy` allows to access MS data stored as `matchms.Spectrum`
-#' or `spectrum_utils.spectrum.MsmsSpectrum' objects from the
+#' or `spectrum_utils.spectrum.MsmsSpectrum` objects from the
 #' [matchms](https://github.com/matchms/matchms) respectively
 #' [spectrum_utils](https://github.com/bittremieux-lab/spectrum_utils) Python
 #' library directly from R. The MS data (peaks data or spectra variables) are
