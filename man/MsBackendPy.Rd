@@ -76,6 +76,9 @@ retrieve.}
 
 \item{value}{Replacement value(s).}
 }
+\value{
+See description of individual functions for their return values.
+}
 \description{
 The \code{MsBackendPy} allows to access MS data stored as \code{matchms.Spectrum}
 or \code{spectrum_utils.spectrum.MsmsSpectrum} objects from the

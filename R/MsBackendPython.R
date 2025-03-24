@@ -132,6 +132,9 @@
 #'
 #' @name MsBackendPy
 #'
+#' @return
+#'
+#' See description of individual functions for their return values.
 #'
 #' @examples
 #'
@@ -279,9 +282,8 @@ setMethod("backendInitialize", "MsBackendPy",
                   object <- reindex(object)
                   object@py_lib <- pythonLibrary
               } else {
-                  stop("not yet implemented")
+                  stop("Support for 'data' parameter is not yet implemented")
                   ## if data provided -> convert the data to Python.
-                  ## Overwriting variable...
               }
               object
           })
@@ -677,48 +679,3 @@ reindex <- function(object) {
     }
     else character()
 }
-
-#' TODO:
-#'
-#' - backendInitialize providing data -> convert to Python and store data there
-#'   using py_set_attr(py, ...)
-#'
-#' ## Required methods:
-#'
-#' - [ ] `dataStorage()`
-#' - [X] `length()`
-#' - [X] `backendInitialize()`
-#' - [X] `spectraVariables()`
-#' - [X] `spectraData()`
-#' - [X] `peaksData()`
-#' - [X] `extractByIndex()`
-#' - [X] `[`
-#' - [ ] `backendMerge()`
-#' - [X] `$`
-#' - [X] `lengths()`
-#' - [X] `isEmpty()`
-#' - [X] `acquisitionNum()`
-#' - [X] `centroided()`
-#' - [X] `collisionEnergy()`
-#' - [X] `dataOrigin()`
-#' - [X] `intensity()`
-#' - [X] `isolationWindowLowerMz()`
-#' - [X] `isolationWindowTargetMz()`
-#' - [X] `isolationWindowUpperMz()`
-#' - [X] `msLevel()`
-#' - [X] `mz()`
-#' - [X] `polarity()`
-#' - [X] `precScanNum()`
-#' - [X] `precursorCharge()`
-#' - [X] `precursorIntensity()`
-#' - [X] `precursorMz()`
-#' - [X] `rtime()`
-#' - [X] `scanIndex()`
-#' - [X] `smoothed()`
-#' - [X] `spectraNames()`
-#' - [X] `tic()`
-#'
-#' - [X] ensure data types in `spectraData()` are of the correct type.
-#' - [X] check mapping: seems that variables are not properly/correctly renamed?
-#' @noRd
-NULL
