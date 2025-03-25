@@ -76,7 +76,8 @@ biocViews: Infrastructure, Metabolomics, MassSpectrometry
 Encoding: UTF-8
 SystemRequirements:
     python (>= 3.10),
-    pandoc
+    pandoc,
+    quarto
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
