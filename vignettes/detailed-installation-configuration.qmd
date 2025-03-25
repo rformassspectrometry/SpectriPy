@@ -181,7 +181,7 @@ describes your operating system: Windows, Mac, or Linux.
 
 To install R on Windows, click the “Download R for Windows” link. Then click the
 *base* link. Next, click the first link at the top of the new page. This link
-should say something like *Download R 3.0.3 for Windows,* except the `3.0.3`
+should say something like *Download R 3.0.3 for Windows*, except the `3.0.3`
 will be replaced by the most current version of R. The link downloads an
 installer program, which installs the most up-to-date version of R for
 Windows. Run this program and step through the installation wizard that
