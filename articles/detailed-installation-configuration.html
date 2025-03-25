@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,20 +74,9 @@
 
 
 
-    <script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-  document.querySelector("h1").className = "title";
-});
-</script><script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-  var links = document.links;
-  for (var i = 0, linksLength = links.length; i < linksLength; i++)
-    if (links[i].hostname != window.location.hostname)
-      links[i].target = '_blank';
-});
-</script><section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+    <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This document provides detailed installation and configuration instructions for the <a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link"><em>SpectriPy</em></a> package. For first time R users see also section <a href="#sec-first" class="quarto-xref">Section 4.1</a> in the appendix.</p>
+<p>This document provides detailed installation and configuration instructions for the <a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link"><em>SpectriPy</em></a> package. For first time R users see also section <a href="#sec-first" class="quarto-xref">Section 3.1</a> in the appendix.</p>
 </section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <section class="level2"><h3 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
@@ -95,14 +84,86 @@ document.addEventListener("DOMContentLoaded", function() {
 <p><em>SpectriPy</em> relies on, and extends, the <a href="https://rstudio.github.io/reticulate/index.html" class="external-link"><em>reticulate</em></a> package for interoperability between Python and R. For installation of <em>SpectriPy</em>, Python needs to be installed on the system. See also the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">Install Python Packages</a> documentation from the <em>reticulate</em> package for information on installing Python. Ideally <em>miniconda</em> should be installed on the system. The code below shows how <em>miniconda</em> can be installed with the <em>reticulate</em> package (which needs to be first installed with <code>install.package("reticulate")</code> if not already available):</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reticulate"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reticulate"</span><span class="op">)</span></span>
 <span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
-</section></section><section class="section level2"><h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
-</h2>
-<ul>
-<li>which reticulate?</li>
-</ul></section><section class="section level2"><h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
+</section><section class="level2"><h3 id="configure-reticulate-with-host-system-python-environment-optional">Configure reticulate with host system Python environment (optional)<a class="anchor" aria-label="anchor" href="#configure-reticulate-with-host-system-python-environment-optional"></a>
+</h3>
+<p>The installation of <em>reticulate</em> can be configured to use an available Python environment of the host system, instead of using the automatic setup.</p>
+<p>The path to the python3 executable file needs to be specified in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> function of <em>reticulate</em>. A conda environment used in the analysis will also created below, ensuring a specific Python environment for <em>reticulate</em>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">"~/miniconda3_reticulate/bin/python3"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create</a></span><span class="op">(</span><span class="st">"r-reticulate"</span><span class="op">)</span></span>
+<span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_config.html" class="external-link">py_config</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<p>In case the host system Python environment is used, the required Python packages can be installed using <em>reticulate</em> in its Python environment. To install more Python packages, we use <code><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install()</a></code>.</p>
+<p>Alternatively, if working outside of conda, packages can be installed using the function <code><a href="https://rstudio.github.io/reticulate/reference/py_install.html" class="external-link">py_install()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"matchms==0.28.2"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>              python_version <span class="op">=</span> <span class="st">"3.12.2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"spectrum_utils"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"numpy==2.0.2"</span>, pip <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</div>
+</section><section class="level2"><h3 id="spectripy-pre-requisites-and-installation-instructions">SpectriPy pre-requisites and installation instructions<a class="anchor" aria-label="anchor" href="#spectripy-pre-requisites-and-installation-instructions"></a>
+</h3>
+<section class="level3"><h4 id="installing-bioconductor">Installing Bioconductor<a class="anchor" aria-label="anchor" href="#installing-bioconductor"></a>
+</h4>
+<p>Bioconductor is required to install <em>SpectriPy</em>, as described below and from source <a href="https://bioconductor.org/install/" class="external-link">https://bioconductor.org/install/</a>.</p>
+<p>The current release of Bioconductor is version 3.20; it works with R version 4.4.0. Users of older R and Bioconductor must update their installation to take advantage of new features and to access packages that have been added to Bioconductor since the last release.</p>
+<p>The development version of Bioconductor is version 3.21; it works with R version 4.5.0. More recent <em>devel</em> versions of R (if available) will be supported during the next Bioconductor release cycle.</p>
+<p>Once R has been installed, get the latest version of Bioconductor by starting R and entering the following commands.</p>
+<p>It may be possible to change the Bioconductor version of an existing installation; see the <em>Changing version</em> section of the BiocManager vignette.</p>
+<p>Details, including instructions to install additional packages and to update, find, and troubleshoot are provided below. A devel version of Bioconductor is available. There are good reasons for using <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> for managing Bioconductor resources.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</section><section class="level3"><h4 id="installing-spectripy">Installing <em>SpectriPy</em>
+<a class="anchor" aria-label="anchor" href="#installing-spectripy"></a>
+</h4>
+<p>Since <em>SpectriPy</em> is currently still in development, you will need the <em>remotes</em> package to install it from GitHub. If you do not have the <em>remotes</em> package yet, you can install it using the following command:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<p>To install the <em>SpectriPy</em> package use</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/SpectriPy"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</section><section class="level3"><h4 id="check-installation-completed">Check installation completed<a class="anchor" aria-label="anchor" href="#check-installation-completed"></a>
+</h4>
+<p>The status of installation can be easily checked by starting R and entering the following commands.</p>
+<p>This command loads the <em>SpectriPy</em> package, if correct installed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: reticulate</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using conda environment 'r-spectripy'</code></pre>
+</div>
+</div>
+</section></section></section><section class="section level2"><h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
 </h2>
 <section class="level2"><h3 id="sec-first">Installation instructions for first-time R users<a class="anchor" aria-label="anchor" href="#sec-first"></a>
 </h3>
@@ -116,17 +177,17 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>R is maintained by an international team of developers who make the language available through the web page of The Comprehensive R Archive Network. The top of the web page provides three links for downloading R. Follow the link that describes your operating system: Windows, Mac, or Linux.</p>
 <section class="level4"><h5 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
 </h5>
-<p>To install R on Windows, click the “Download R for Windows” link. Then click the “base” link. Next, click the first link at the top of the new page. This link should say something like “Download R 3.0.3 for Windows,” except the <code>3.0.3</code> will be replaced by the most current version of R. The link downloads an installer program, which installs the most up-to-date version of R for Windows. Run this program and step through the installation wizard that appears. The wizard will install R into your program files folders and place a shortcut in your Start menu. Note that you’ll need to have all of the appropriate administration privileges to install new software on your machine.</p>
+<p>To install R on Windows, click the “Download R for Windows” link. Then click the <em>base</em> link. Next, click the first link at the top of the new page. This link should say something like <em>Download R 3.0.3 for Windows</em>, except the <code>3.0.3</code> will be replaced by the most current version of R. The link downloads an installer program, which installs the most up-to-date version of R for Windows. Run this program and step through the installation wizard that appears. The wizard will install R into your program files folders and place a shortcut in your Start menu. Note that you’ll need to have all of the appropriate administration privileges to install new software on your machine.</p>
 </section><section class="level4"><h5 id="mac">Mac<a class="anchor" aria-label="anchor" href="#mac"></a>
 </h5>
-<p>To install R on a Mac, click the “Download R for Mac” link. Next, click on the <code>R-3.0.3</code> package link (or the package link for the most current release of R). An installer will download to guide you through the installation process, which is very easy. The installer lets you customize your installation, but the defaults will be suitable for most users. I’ve never found a reason to change them. If your computer requires a password before installing new progams, you’ll need it here.</p>
+<p>To install R on a Mac, click the <em>Download R for Mac</em> link. Next, click on the <code>R-3.0.3</code> package link (or the package link for the most current release of R). An installer will download to guide you through the installation process, which is very easy. The installer lets you customize your installation, but the defaults will be suitable for most users. I’ve never found a reason to change them. If your computer requires a password before installing new progams, you’ll need it here.</p>
 <blockquote>
 <p><strong>Binaries Versus Source</strong></p>
 <p>R can be installed from precompiled binaries or built from source on any operating system. For Windows and Mac machines, installing R from binaries is extremely easy. The binary comes preloaded in its own installer. Although you can build R from source on these platforms, the process is much more complicated and won’t provide much benefit for most users. For Linux systems, the opposite is true. Precompiled binaries can be found for some systems, but it is much more common to build R from source files when installing on Linux. The download pages on <a href="https://cran.r-project.org/" class="external-link">CRAN’s website</a> provide information about building R from source for the Windows, Mac, and Linux platforms.</p>
 </blockquote>
 </section><section class="level4"><h5 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
 </h5>
-<p>R comes preinstalled on many Linux systems, but you’ll want the newest version of R if yours is out of date. The <a href="https://cran.r-project.org/" class="external-link">CRAN website</a> provides files to build R from source on Debian, Redhat, SUSE, and Ubuntu systems under the link “Download R for Linux.” Click the link and then follow the directory trail to the version of Linux you wish to install on. The exact installation procedure will vary depending on the Linux system you use. CRAN guides the process by grouping each set of source files with documentation or README files that explain how to install on your system.</p>
+<p>R comes preinstalled on many Linux systems, but you’ll want the newest version of R if yours is out of date. The <a href="https://cran.r-project.org/" class="external-link">CRAN website</a> provides files to build R from source on Debian, Redhat, SUSE, and Ubuntu systems under the link <em>Download R for Linux.</em> Click the link and then follow the directory trail to the version of Linux you wish to install on. The exact installation procedure will vary depending on the Linux system you use. CRAN guides the process by grouping each set of source files with documentation or README files that explain how to install on your system.</p>
 <blockquote>
 <p><strong>32-bit Versus 64-bit</strong></p>
 <p>R comes in both 32-bit and 64-bit versions. Which should you use? In most cases, it won’t matter. Both versions use 32-bit integers, which means they compute numbers to the same numerical precision. The difference occurs in the way each version manages memory. 64-bit R uses 64-bit memory pointers, and 32-bit R uses 32-bit memory pointers. This means 64-bit R has a larger memory space to use (and search through). As a rule of thumb, 32-bit builds of R are faster than 64-bit builds, though not always. On the other hand, 64-bit builds can handle larger files and data sets with fewer memory management problems. In either version, the maximum allowable vector size tops out at around 2 billion elements. If your operating system doesn’t support 64-bit programs, or your RAM is less than 4 GB, 32-bit R is for you. The Windows and Mac installers will automatically install both versions if your system supports 64-bit R.</p>
@@ -143,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </section><section class="level3"><h4 id="rstudio">RStudio<a class="anchor" aria-label="anchor" href="#rstudio"></a>
 </h4>
 <p>RStudio is an application like Microsoft Word—except that instead of helping you write in English, RStudio helps you write in R. I use RStudio throughout the book because it makes using R much easier. Also, the RStudio interface looks the same for Windows, Mac OS, and Linux. That will help me match the book to your personal experience.</p>
-<p>You can download <a href="https://posit.co/products/open-source/rstudio/" class="external-link">RStudio</a> for free. Just click the “Download RStudio” button and follow the simple instructions that follow. Once you’ve installed RStudio, you can open it like any other program on your computer—usually by clicking an icon on your desktop.</p>
+<p>You can download <a href="https://posit.co/products/open-source/rstudio/" class="external-link">RStudio</a> for free. Just click the <em>Download RStudio</em> button and follow the simple instructions that follow. Once you’ve installed RStudio, you can open it like any other program on your computer—usually by clicking an icon on your desktop.</p>
 <blockquote>
 <p><strong>The R GUIs</strong></p>
 <p>Windows and Mac users usually do not program from a terminal window, so the Windows and Mac downloads for R come with a simple program that opens a terminal-like window for you to run R code in. This is what opens when you click the R icon on your Windows or Mac computer. These programs do a little more than the basic terminal window, but not much. You may hear people refer to them as the Windows or Mac R GUIs.</p>
@@ -160,54 +221,14 @@ document.addEventListener("DOMContentLoaded", function() {
 </blockquote>
 </section><section class="level3"><h4 id="opening-r">Opening R<a class="anchor" aria-label="anchor" href="#opening-r"></a>
 </h4>
-<p>Now that you have both R and RStudio on your computer, you can begin using R by opening the RStudio program. Open RStudio just as you would any program, by clicking on its icon or by typing “RStudio” at the Windows Run prompt.</p>
-</section></section><section class="level2"><h3 id="spectripy-pre-requisites-and-installation-instructions">SpectriPy pre-requisites and installation instructions<a class="anchor" aria-label="anchor" href="#spectripy-pre-requisites-and-installation-instructions"></a>
-</h3>
-<section class="level3"><h4 id="installing-bioconductor">Installing Bioconductor<a class="anchor" aria-label="anchor" href="#installing-bioconductor"></a>
-</h4>
-<p>Bioconductor is required to install SpectriPy, as described below and from source <a href="https://bioconductor.org/install/" class="external-link">https://bioconductor.org/install/</a>.</p>
-<p>The current release of Bioconductor is version 3.20; it works with R version 4.4.0. Users of older R and Bioconductor must update their installation to take advantage of new features and to access packages that have been added to Bioconductor since the last release.</p>
-<p>The development version of Bioconductor is version 3.21; it works with R version 4.5.0. More recent ‘devel’ versions of R (if available) will be supported during the next Bioconductor release cycle.</p>
-<p>Once R has been installed, get the latest version of Bioconductor by starting R and entering the following commands.</p>
-<p>It may be possible to change the Bioconductor version of an existing installation; see the <em>Changing version</em> section of the BiocManager vignette.</p>
-<p>Details, including instructions to install additional packages and to update, find, and troubleshoot are provided below. A devel version of Bioconductor is available. There are good reasons for using <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> for managing Bioconductor resources.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h4 id="installing-spectripy">Installing SpectriPy<a class="anchor" aria-label="anchor" href="#installing-spectripy"></a>
-</h4>
-<p>Since <em>SpectriPy</em> is currently still in development, you will need the <em>remotes</em> package to install it from GitHub. If you do not have the <em>remotes</em> package yet, you can install it using the following command:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>To install the <em>SpectriPi</em> package use</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/SpectriPy"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h4 id="check-installation-completed">Check installation completed<a class="anchor" aria-label="anchor" href="#check-installation-completed"></a>
-</h4>
-<p>The status of installation can be easily checked by starting R and entering the following commands.</p>
-<p>This command loads the <em>SpectriPy</em> package, if correct installed.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: reticulate</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using conda environment 'r-spectripy'</code></pre>
-</div>
-</div>
+<p>Now that you have both R and RStudio on your computer, you can begin using R by opening the RStudio program. Open RStudio just as you would any program, by clicking on its icon or by typing <em>RStudio</em> at the Windows Run prompt.</p>
 </section></section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R Under development (unstable) (2025-02-24 r87814)
 Platform: x86_64-pc-linux-gnu
@@ -232,7 +253,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base
 
 other attached packages:
-[1] SpectriPy_0.5.0     reticulate_1.41.0.1 BiocStyle_2.35.0
+[1] SpectriPy_0.5.1     reticulate_1.41.0.1
 
 loaded via a namespace (and not attached):
  [1] Spectra_1.17.9         cli_3.6.4              knitr_1.50
@@ -242,12 +263,11 @@ loaded via a namespace (and not attached):
 [13] stats4_4.5.0           rappdirs_0.3.3         rmarkdown_2.29
 [16] grid_4.5.0             evaluate_1.0.3         MASS_7.3-65
 [19] fastmap_1.2.0          yaml_2.3.10            IRanges_2.41.3
-[22] BiocManager_1.30.25    MsCoreUtils_1.19.2     cluster_2.1.8.1
-[25] compiler_4.5.0         codetools_0.2-20       fs_1.6.5
-[28] Rcpp_1.0.14            MetaboCoreUtils_1.15.0 BiocParallel_1.41.2
-[31] lattice_0.22-6         digest_0.6.37          parallel_4.5.0
-[34] Matrix_1.7-3           withr_3.0.2            tools_4.5.0
-[37] BiocGenerics_0.53.6   </code></pre>
+[22] MsCoreUtils_1.19.2     cluster_2.1.8.1        compiler_4.5.0
+[25] codetools_0.2-20       fs_1.6.5               Rcpp_1.0.14
+[28] MetaboCoreUtils_1.15.0 BiocParallel_1.41.2    lattice_0.22-6
+[31] digest_0.6.37          parallel_4.5.0         Matrix_1.7-3
+[34] withr_3.0.2            tools_4.5.0            BiocGenerics_0.53.6   </code></pre>
 </div>
 </div>
 </section><script id="quarto-html-after-body" type="application/javascript">
