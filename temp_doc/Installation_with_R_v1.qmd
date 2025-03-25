@@ -73,9 +73,9 @@ conda_install(envname = "r-reticulate","numpy==2.0.2",pip = FALSE)
 -   If needed, install Bioconductor's *BiocManager* package from CRAN:
 
     ```{r}
-if (!require("BiocManager", quietly = TRUE))
+    if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(version = "3.20")
+    BiocManager::install(version = "3.20")
     ```
 
 -   Install all required R/Bioconductor packages: The *option(timeout = 600)* makes sure no error messages are returned if the packages are too long to install

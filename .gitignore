@@ -5,3 +5,5 @@ local_data
 .vscode
 ..Rcheck
 check
+.html
+/.quarto/
