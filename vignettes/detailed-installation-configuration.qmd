@@ -1,6 +1,10 @@
 ---
 title: "Detailed information on installation and configuration"
 package: SpectriPy
+format:
+  html:
+    minimal: true
+    theme: flatly
 vignette: >
   %\VignetteIndexEntry{Detailed information on installation and configuration}
   %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative}

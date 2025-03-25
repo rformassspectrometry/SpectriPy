@@ -70,8 +70,7 @@ spectrum_utils <- NULL
                        envname = envname, method = "conda", pip = FALSE,
                        channel = c("bioconda", "conda-forge"), ...)
         } else {
-            py_install(c("matchms==0.28.2", "spectrum_utils==0.3.2-0",
-                         "numpy==2.0.2"),
+            py_install(c("matchms==0.28.2", "numpy==2.0.2"),
                        envname = envname, method = "virtualenv",
                        channel = c("conda-forge"), ...)
         }
