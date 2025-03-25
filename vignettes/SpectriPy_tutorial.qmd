@@ -105,6 +105,7 @@ packages/dependencies in the docker image. Generally, would avoid having
 duplicated examples. So, either having this here, or in metabonaut, not in
 both? Another reason is maintenance, if it's in SpectriPy we have to ensure it
 does not fail - otherwise we have issue with Bioconductor.]
+=> TBD
 
 # Load SpectriPy
 
@@ -260,7 +261,12 @@ head(ms2_ctr_fts)
 [jo: do we need to import from mgf? or should we use the MassBank database as in
 the end-to-end? for mgf, we would need to download e.g. GNPS and then load
 it. For MassBank we could load the data in R as a `Spectra` and translate that
-to Python.]
+to Python.] => end-to-end: ancy way. this is to really understand it, so much 
+easier because can actually see what is a spectral libr.
+GNPS Library List
+GNPS Library 	Library Type 	Browse at GNPS 	MGF Download 	MSP Download 	JSON Download
+GNPS-LIBRARY 	GNPS 	Browse 	Download 	Download 	Download
+https://external.gnps2.org/gnpslibrary
 
 ## GNPS spectral library
 
@@ -622,6 +628,8 @@ No MS2 spectral filtering is performed in this example.
 
 [jo: we would need to get this model.pt somehow downloaded automatically - is it
 maybe on Zenodo? or github?]
+Available on Zenodo: https://zenodo.org/records/13897744
+and also on the https://github.com/matchms/ms2deepscore github
 
 ```{python}
 #' Python session:
