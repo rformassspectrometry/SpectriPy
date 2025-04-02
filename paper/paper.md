@@ -83,19 +83,20 @@ including biomedical research and life sciences. The data is generally large and
 complex, and analyses must be tailored to the experimental and instrumental
 setups. Excellent libraries for such data analysis are available in both R and
 Python, including R packages from the RforMassSpectrometry initiative such as
-Spectra, MsCoreUtils, MetaboAnnotation, and CompoundDb [@rainer_modular_2022],
-as well as Python libraries like matchms [@huber_matchms_2020], spectrum_utils
-[@bittremieux_spectrum_utils_2020], Pyteomics [@goloborodko_pyteomics_2013] and
-pyOpenMS [@rost_pyopenms_2014]. The reticulate R package [@reticulate_2025]
-provides an R interface to Python enabling interoperability between the two
-programming languages. The open-source SpectriPy R package builds upon
-reticulate and provides functionality to efficiently translate between R and
-Python MS data structures. It can convert between R’s Spectra::Spectra and
-Python’s matchms.Spectrum and spectrum_utils.spectrum.MsmsSpectrum objects and
+`Spectra`, `MsCoreUtils`, `MetaboAnnotation`, and `CompoundDb`
+[@rainer_modular_2022], as well as Python libraries like `matchms`
+[@huber_matchms_2020], `spectrum_utils` [@bittremieux_spectrum_utils_2020],
+`Pyteomics` [@goloborodko_pyteomics_2013] and `pyOpenMS`
+[@rost_pyopenms_2014]. The `reticulate` R package [@reticulate_2025] provides an
+R interface to Python enabling interoperability between the two programming
+languages. The open-source `SpectriPy` R package builds upon reticulate and
+provides functionality to efficiently translate between R and Python MS data
+structures. It can convert between R’s `Spectra::Spectra` and Python’s
+`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects and
 includes functionality to directly apply spectral similarity, filtering,
-normalization, etc. routines from the Python matchms library on MS data in
-R. SpectriPy hence enables and simplifies the integration of R and Python for MS
-data analysis, empowering data analysts to benefit from the full power of
+normalization, etc. routines from the Python `matchms` library on MS data in
+R. `SpectriPy` hence enables and simplifies the integration of R and Python for
+MS data analysis, empowering data analysts to benefit from the full power of
 algorithms in both programming languages. Furthermore, software developers can
 reuse algorithms across languages rather than re-implementing them, enhancing
 efficiency and collaboration.
@@ -108,7 +109,7 @@ these software covers different and in part complementary aspects in the
 analysis of MS data, but their integration into a single workflow remains a
 challenge, in particular across programming languages. To avoid the need for
 repeated implementation of algorithms in different programming languages we
-developed the SpectriPy package. By leveraging R's `reticulate` package, and
+developed the `SpectriPy` package. By leveraging R's `reticulate` package, and
 translating between R and Python MS data structures, this package enables
 seamless cross-language integration of MS data analysis algorithms within
 unified analysis workflows.
