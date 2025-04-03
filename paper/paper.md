@@ -14,7 +14,7 @@ authors:
     orcid: 0000-0001-6916-401X
     affiliation: 1
   - name: Wout Bittremieux
-    Orcid: 0000-0002-3105-1359
+    orcid: 0000-0002-3105-1359
     affiliation: 2
   - name: Thomas Naake
     orcid: 0000-0001-7917-5580
@@ -60,28 +60,28 @@ affiliations:
     index: 5
   - name: Institute for Bio- and Geosciences (IBG-5), Forschungszentrum Jülich GmbH, Jülich, Germany.
     index: 6
-  - name: Department of medical oncology, University of Bern, Bern, Switzerland.
+  - name: Department of Medical Oncology, University of Bern, Bern, Switzerland.
     index: 7
   - name: Alphalyse, Odense, Denmark.
     index: 8
-  - name: Faculty of Science, Masaryk University, Brno, Czech Republic.
+  - name: RECETOX, Faculty of Science, Masaryk University, Brno, Czech Republic.
     index: 9
   - name: Metabolomics and Proteomics Core, Helmholtz Zentrum München, Munich, Germany.
     index: 10
   - name: Chair of Analytical Food Chemistry, TUM School of Life Sciences, Technical University of Munich, Freising-Weihenstephan, Germany.
     index: 11
-date: 25 March 2025
+date: 03 April 2025
 bibliography: paper.bib
 ---
 
-![SpectriPy_logo](logo.png){height="150pt"}
+![SpectriPy_logo](../logo.png){height="150pt"}
 
 # Summary
 
 Mass spectrometry (MS) is a key technology used across multiple fields,
-including biomedical research and life sciences. The data is generally large and
+including biomedical research and life sciences. The data is often times large and
 complex, and analyses must be tailored to the experimental and instrumental
-setups. Excellent libraries for such data analysis are available in both R and
+setups. Excellent software libraries for such data analysis are available in both R and
 Python, including R packages from the RforMassSpectrometry initiative such as
 `Spectra`, `MsCoreUtils`, `MetaboAnnotation`, and `CompoundDb`
 [@rainer_modular_2022], as well as Python libraries like `matchms`
@@ -217,7 +217,17 @@ data analysis workflows, reduce redundancy and promote innovation in the field.
 The authors declare to not have any competing financial or personal interests
 that could have influenced the work reported in this paper. Part of this work
 was supported by the European Union HORIZON-MSCA-2021 project 101073062:
-“HUMAN - Harmonizing and unifying blood metabolic analysis networks” to
-Philippine Louail, Johannes Rainer and Micheal Witting.
+"HUMAN - Harmonizing and unifying blood metabolic analysis networks" to
+Philippine Louail, Johannes Rainer and Micheal Witting. Helge Hecht thanks the
+RECETOX Research Infrastructure (No LM2023069) financed by the Ministry of
+Education, Youth and Sports for supportive background. Part of this project was
+supported from the European Union’s Horizon 2020 research and innovation
+programme under grant agreement 857560 (CETOCOEN Excellence) and from the
+Horizon Europe programme under grant agreement 101079789 (EIRENE PPP). Views and
+opinions expressed are however those of the author(s) only and do not
+necessarily reflect those of the European Union or European Research Executive
+Agency (REA). Neither the European Union nor the granting authority can be held
+responsible for any use that may be made of the information it contains.
+
 
 # References
