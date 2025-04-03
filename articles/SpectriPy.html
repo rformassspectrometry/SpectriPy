@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 
 
 
-    <p><strong>Compiled</strong>: Wed Apr 2 08:59:22 2025</p>
+    <p><strong>Compiled</strong>: Thu Apr 3 08:08:32 2025</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between Python and R. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
@@ -146,7 +146,7 @@
 file(s):
 PestMix1_DDA.mzML
 Processing:
- Filter: select MS level(s) 2 [Wed Apr  2 08:59:32 2025] </code></pre>
+ Filter: select MS level(s) 2 [Thu Apr  3 08:08:42 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -742,13 +742,13 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] SpectriPy_0.5.1     reticulate_1.42.0   Spectra_1.17.9
-[4] BiocParallel_1.41.4 S4Vectors_0.45.4    BiocGenerics_0.53.6
+[1] SpectriPy_0.5.2     reticulate_1.42.0   Spectra_1.17.9
+[4] BiocParallel_1.41.5 S4Vectors_0.45.4    BiocGenerics_0.53.6
 [7] generics_0.1.3
 
 loaded via a namespace (and not attached):
  [1] cli_3.6.4              knitr_1.50             rlang_1.1.5
- [4] xfun_0.51              ncdf4_1.24             ProtGenerics_1.39.2
+ [4] xfun_0.52              ncdf4_1.24             ProtGenerics_1.39.2
  [7] png_0.1-8              jsonlite_2.0.0         clue_0.3-66
 [10] mzR_2.41.4             BiocStyle_2.35.0       htmltools_0.5.8.1
 [13] Biobase_2.67.0         rappdirs_0.3.3         rmarkdown_2.29
@@ -756,7 +756,7 @@ loaded via a namespace (and not attached):
 [19] fastmap_1.2.0          yaml_2.3.10            IRanges_2.41.3
 [22] BiocManager_1.30.25    MsCoreUtils_1.19.2     cluster_2.1.8.1
 [25] compiler_4.5.0         codetools_0.2-20       fs_1.6.5
-[28] Rcpp_1.0.14            MetaboCoreUtils_1.15.0 lattice_0.22-6
+[28] Rcpp_1.0.14            MetaboCoreUtils_1.15.0 lattice_0.22-7
 [31] digest_0.6.37          parallel_4.5.0         Matrix_1.7-3
 [34] withr_3.0.2            tools_4.5.0           </code></pre>
 </div>
