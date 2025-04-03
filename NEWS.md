@@ -1,5 +1,9 @@
 # SpectriPy 0.5
 
+## Changes in 0.5.2
+
+- Fix *spectrum_utils* version.
+
 ## Changes in 0.5.1
 
 - Add additional vignettes and update/fix documentation.

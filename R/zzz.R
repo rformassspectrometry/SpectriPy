@@ -80,11 +80,11 @@ spectrum_utils <- NULL
     if (!py_module_available("spectrum_utils")) {
         packageStartupMessage("Installing required 'spectrum_utils' library")
         if (use_conda) {
-            py_install(c("spectrum_utils==0.3.2-0"),
+            py_install(c("spectrum_utils==0.3.2"),
                        envname = envname, method = "conda", pip = FALSE,
                        channel = c("bioconda", "conda-forge"), ...)
         } else {
-            py_install(c("spectrum_utils==0.3.2-0",
+            py_install(c("spectrum_utils==0.3.2",
                          "numpy==2.0.2"),
                        envname = envname, method = "virtualenv",
                        channel = c("conda-forge"), ...)
