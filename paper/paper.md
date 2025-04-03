@@ -79,11 +79,11 @@ bibliography: paper.bib
 # Summary
 
 Mass spectrometry (MS) is a key technology used across multiple fields,
-including biomedical research and life sciences. The data is often times large and
-complex, and analyses must be tailored to the experimental and instrumental
-setups. Excellent software libraries for such data analysis are available in both R and
-Python, including R packages from the RforMassSpectrometry initiative such as
-`Spectra`, `MsCoreUtils`, `MetaboAnnotation`, and `CompoundDb`
+including biomedical research and life sciences. The data is often times large
+and complex, and analyses must be tailored to the experimental and instrumental
+setups. Excellent software libraries for such data analysis are available in
+both R and Python, including R packages from the RforMassSpectrometry initiative
+such as `Spectra`, `MsCoreUtils`, `MetaboAnnotation`, and `CompoundDb`
 [@rainer_modular_2022], as well as Python libraries like `matchms`
 [@huber_matchms_2020], `spectrum_utils` [@bittremieux_spectrum_utils_2020],
 `Pyteomics` [@goloborodko_pyteomics_2013] and `pyOpenMS`
