@@ -31,10 +31,10 @@ interoperability between Python and R. For installation of *SpectriPy*, Python
 needs to be installed on the system. See also the [Install Python
 Packages](https://rstudio.github.io/reticulate/articles/python_packages.html)
 documentation from the *reticulate* package for information on installing
-Python. Ideally *miniconda* should be installed on the system. The code below
-shows how *miniconda* can be installed with the *reticulate* package (which
-needs to be first installed with `install.package("reticulate")` if not already
-available):
+Python. By default, *SpectriPy* uses *miniconda* to configure and setup a Python
+environment specific to the package. The code below shows how *miniconda* can be
+installed with the *reticulate* package (which needs to be first installed with
+`install.package("reticulate")` if not already available):
 
 ```{r}
 #| eval: false
@@ -80,6 +80,15 @@ conda_install(envname = "r-reticulate","matchms==0.28.2", pip = TRUE,
 conda_install(envname = "r-reticulate","spectrum_utils", pip = TRUE)
 conda_install(envname = "r-reticulate","numpy==2.0.2", pip = FALSE)
 ```
+
+To use *SpectriPy* with the system Python, the R option `"spectripy.use_system"`
+needs to be set to `TRUE` by calling `options(spectripy.use_system = TRUE)`
+**before** loading *SpectriPy* with `library(SpectriPy)`. In addition, option
+`"spectripy.env"` has to be set to use the miniconda environment defined above
+with `options(spectripy.env = "r-reticulate")` (also before loading the
+*SpectriPy* library). These options can also be configured with system
+environment variables (see the *Startup and Python configuration* section in the
+main *SpectriPy* vignette).
 
 
 ## SpectriPy pre-requisites and installation instructions
