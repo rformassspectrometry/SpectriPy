@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 
 
 
-    <p><strong>Compiled</strong>: Thu Apr 3 10:24:12 2025</p>
+    <p><strong>Compiled</strong>: Fri Apr 4 08:12:56 2025</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between Python and R. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
@@ -85,7 +85,7 @@
 <p>The <em>SpectriPy</em> package builds on <em>reticulate</em> providing in addition the functionality to translate data structures for MS data between the two languages. Specifically, the package translates between R’s <code>Spectra</code> objects (from the <em><a href="https://bioconductor.org/packages/3.21/Spectra" class="external-link">Spectra</a></em> package) and Python’s <code>matchms.Spectrum</code> and <code>spectrum_utils.spectrum.MsmsSpectrum</code> objects from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries, respectively.</p>
 </section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>If the <em>BiocManager</em> package is not already available, please install it with <code>install.packages("BiocManager")</code>. To install the development version of <em>SpectriPy</em> from GitHub, please install in addition the <em>remotes</em> package with <code>install.packages("remotes")</code>. As a system dependency, the package requires Python (version &gt;= 2.10) to be available. During package installation, <em>SpectriPy</em> will install also all required Python libraries into a new Conda environment <em>r-spectripy</em>. See also section <a href="#sec-python" class="quarto-xref">Section 5.2</a> for options to skip this and use the system Python environment instead.</p>
+<p>If the <em>BiocManager</em> package is not already available, please install it with <code>install.packages("BiocManager")</code>. To install the development version of <em>SpectriPy</em> from GitHub, please install in addition the <em>remotes</em> package with <code>install.packages("remotes")</code>. As a system dependency, the package requires Python (version &gt;= 2.10) to be available. During package installation, <em>SpectriPy</em> will install also all required Python libraries using <em>miniconda</em> (which will also installed if not already available) into a new Python environment <em>r-spectripy</em>. See also section <a href="#sec-python" class="quarto-xref">Section 5.2</a> for options to skip this and use either <em>virtualenv</em> or system Python environment instead.</p>
 <p>To install the package use the code below:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
@@ -146,7 +146,7 @@
 file(s):
 PestMix1_DDA.mzML
 Processing:
- Filter: select MS level(s) 2 [Thu Apr  3 10:24:23 2025] </code></pre>
+ Filter: select MS level(s) 2 [Fri Apr  4 08:13:05 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -701,7 +701,7 @@ Data stored in the "mgf_py" variable in Python</code></pre>
 <li><p>Be aware that, since the <code>MsBackendPy</code> backend does not contain any MS data but simply interfaces the MS data in Python, any changes to this data in Python affect also the <code>Spectra</code> object using that backend.</p></li>
 </ul></section><section class="level2"><h3 id="sec-python">Startup and Python configuration<a class="anchor" aria-label="anchor" href="#sec-python"></a>
 </h3>
-<p>During package startup, <em>SpectriPy</em> loads the required <em>reticulate</em> library and configures the Python environment. If the package-specific environment does not exist it creates one and installs all required libraries. By default, <em>SpectriPy</em> will use <em>conda</em> to setup and use a package-specific Python which includes all required Python libraries (i.e. <em>matchms</em> version 0.28.2, loaded from <em>conda-forge</em>). The Python setup can also be configured with three package options that can also be set <em>via</em> environment variables. These are:</p>
+<p>During package startup, <em>SpectriPy</em> loads the required <em>reticulate</em> library and configures the Python environment. If the package-specific environment does not exist it creates one and installs all required libraries. By default, <em>SpectriPy</em> will use <em>miniconda</em> to setup and use a package-specific Python which includes all required Python libraries (i.e. <em>matchms</em> version 0.28.2 and <em>spectrum_utils</em> version 0.3.2, loaded from <em>conda-forge</em>). The Python setup can also be configured with three package options that can also be set <em>via</em> environment variables. These are:</p>
 <ul>
 <li><p><code>"spectripy.use_system"</code> (environment variable <code>SPECTRIPY_USE_SYSTEM</code>): whether the system Python should be used. Default is <code>"FALSE"</code>. If set to <code>"TRUE"</code> <em>SpectriPy</em> will not check or install any packages but simply use the user’s system setup and will ignore the other options below. Users are thus expected to manage the dependencies themselves.</p></li>
 <li><p><code>"spectripy.use_conda"</code> (environment variable <code>SPECTRIPY_USE_CONDA</code>): whether conda should be used to install and manage the package-specific Python environment. If <code>"FALSE"</code> <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/virtualenv-tools.html" class="external-link">virtualenv_create()</a></code> and <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_virtualenv()</a></code> functions are used. If set to <code>"TRUE"</code> (the default), <code><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create()</a></code> and <code>use_conda()</code> are used instead. It is suggested to use the conda-based installation.</p></li>
@@ -742,7 +742,7 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] SpectriPy_0.5.2     reticulate_1.42.0   Spectra_1.17.9
+[1] SpectriPy_0.5.3     reticulate_1.42.0   Spectra_1.17.9
 [4] BiocParallel_1.41.5 S4Vectors_0.45.4    BiocGenerics_0.53.6
 [7] generics_0.1.3
 

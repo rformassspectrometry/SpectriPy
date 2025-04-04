@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +81,7 @@
 </h2>
 <section class="level2"><h3 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
 </h3>
-<p><em>SpectriPy</em> relies on, and extends, the <a href="https://rstudio.github.io/reticulate/index.html" class="external-link"><em>reticulate</em></a> package for interoperability between Python and R. For installation of <em>SpectriPy</em>, Python needs to be installed on the system. See also the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">Install Python Packages</a> documentation from the <em>reticulate</em> package for information on installing Python. Ideally <em>miniconda</em> should be installed on the system. The code below shows how <em>miniconda</em> can be installed with the <em>reticulate</em> package (which needs to be first installed with <code>install.package("reticulate")</code> if not already available):</p>
+<p><em>SpectriPy</em> relies on, and extends, the <a href="https://rstudio.github.io/reticulate/index.html" class="external-link"><em>reticulate</em></a> package for interoperability between Python and R. For installation of <em>SpectriPy</em>, Python needs to be installed on the system. See also the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">Install Python Packages</a> documentation from the <em>reticulate</em> package for information on installing Python. By default, <em>SpectriPy</em> uses <em>miniconda</em> to configure and setup a Python environment specific to the package. The code below shows how <em>miniconda</em> can be installed with the <em>reticulate</em> package (which needs to be first installed with <code>install.package("reticulate")</code> if not already available):</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
@@ -112,6 +112,7 @@
 <span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"spectrum_utils"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"numpy==2.0.2"</span>, pip <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
+<p>To use <em>SpectriPy</em> with the system Python, the R option <code>"spectripy.use_system"</code> needs to be set to <code>TRUE</code> by calling <code>options(spectripy.use_system = TRUE)</code> <strong>before</strong> loading <em>SpectriPy</em> with <code><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">library(SpectriPy)</a></code>. In addition, option <code>"spectripy.env"</code> has to be set to use the miniconda environment defined above with <code>options(spectripy.env = "r-reticulate")</code> (also before loading the <em>SpectriPy</em> library). These options can also be configured with system environment variables (see the <em>Startup and Python configuration</em> section in the main <em>SpectriPy</em> vignette).</p>
 </section><section class="level2"><h3 id="spectripy-pre-requisites-and-installation-instructions">SpectriPy pre-requisites and installation instructions<a class="anchor" aria-label="anchor" href="#spectripy-pre-requisites-and-installation-instructions"></a>
 </h3>
 <section class="level3"><h4 id="installing-bioconductor">Installing Bioconductor<a class="anchor" aria-label="anchor" href="#installing-bioconductor"></a>
@@ -253,7 +254,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base
 
 other attached packages:
-[1] SpectriPy_0.5.2   reticulate_1.42.0
+[1] SpectriPy_0.5.3   reticulate_1.42.0
 
 loaded via a namespace (and not attached):
  [1] Spectra_1.17.9         cli_3.6.4              knitr_1.50
