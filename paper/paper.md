@@ -74,7 +74,7 @@ date: 03 April 2025
 bibliography: paper.bib
 ---
 
-![SpectriPy_logo](../logo.png){height="150pt"}
+![SpectriPy package logo](../logo.png){height="150pt"}
 
 # Summary
 
