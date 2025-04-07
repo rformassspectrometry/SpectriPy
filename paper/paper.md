@@ -136,7 +136,7 @@ As its core functionality, *SpectriPy* allows translation between R and Python
 MS data structures. In particular, *SpectriPy* provides the functions
 `rspec_to_pyspec()` and `pyspec_to_rspec()` to convert between R’s
 `Spectra::Spectra` and Python’s `matchms.Spectrum` and
-`spectrum_utils.MsmsSpectrum` objects. These functions also handle the
+`spectrum_utils.spectrum.MsmsSpectrum` objects. These functions also handle the
 conversion, and any required renaming and reformatting of spectra metadata, such
 as MS level, retention times, or any other arbitrary metadata available in the
 MS data object. For more efficient integration of Python MS data objects into R,
@@ -155,6 +155,7 @@ below, MS data are imported and processed.
 
 ```python
 #' Python session:
+
 #' Import data and perform initial processing
 import matchms
 import matchms.filtering as mms_filt
@@ -174,6 +175,7 @@ strategy ensures memory efficiency and minimizes the number of data copies.
 
 ```r
 #' R session:
+
 #' Create an R data object for the MS data in the associated Python session
 library(Spectra)
 library(SpectriPy)
