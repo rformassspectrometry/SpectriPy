@@ -4,6 +4,7 @@
 [![R-CMD-check-bioc](https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc)
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
+[![status](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f/status.svg)](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f)
 
 ![SpectriPy_logo](logo.png){height="150pt"}
 
