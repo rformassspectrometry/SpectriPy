@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
 [![status](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f/status.svg)](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f)
 
-![SpectriPy_logo](logo.png){height="150pt"}
+![SpectriPy_logo](man/figures/logo_100.png)
 
 The *SpectriPy* package allows integration of Python MS packages into a
 [*Spectra*](https://github.com/RforMassSpectrometry/Spectra)-based MS analysis
