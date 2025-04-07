@@ -155,14 +155,13 @@ below, MS data are imported and processed.
 
 ```python
 #' Python session:
-#’ Import data and perform initial processing
+#' Import data and perform initial processing
 import matchms
 import matchms.filtering as mms_filt
 from matchms.importing import load_from_mgf
 mgf_py = list(load_from_mgf(<MGF file>))
 
-
-#’ Scale intensities
+#' Scale intensities
 for i in range(len(mgf_p)):
   mgf_py[i] = mms_filt.normalize_intensities(mgf_py[i])
 ```
@@ -175,13 +174,12 @@ strategy ensures memory efficiency and minimizes the number of data copies.
 
 ```r
 #' R session:
-#’ Create an R data object for the MS data in the associated Python session
+#' Create an R data object for the MS data in the associated Python session
 library(Spectra)
 library(SpectriPy)
 sps <- Spectra(“mgf_py”, source = MsBackendPy())
 
-
-#’ Retrieve the MS peaks data for the 1st spectrum
+#' Retrieve the MS peaks data for the 1st spectrum
 peaksData(sps[1])
 ```
 
