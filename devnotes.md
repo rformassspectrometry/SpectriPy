@@ -54,17 +54,13 @@ helpful references to code and files for contributors. Preferably read the
 	  the `python_command()` method, which returns the python command that is
 	  specific to the new algorithm/Python functionality to run in Python.
 
-	- *R/basilisk.R* cointains the Python environment definition and
-	  required/used Python libraries (see below for more information).
-
 - The *tests* folder contains all unit tests. A general *testthat.R* file that
   configures and sets up the tests and a unit test file for each R source file
   (named *test_<R-source-file>.R*) within the *testthat* folder.
 
-- The *vignettes* folder contains an R markdown document that explains the use
+- The *vignettes* folder contains an quarto documents that explains the use
   of the SpectriPy package using examples. This is a good starting point to
   explore the package and its functionality.
-
 
 
 ## Python setup and configuration
@@ -72,33 +68,20 @@ helpful references to code and files for contributors. Preferably read the
 **Where are python libraries defined?**
 
 - *SpectriPy* uses the R *reticulate* package for conversion between (basic) R
-  and Python data types.and relies on Bioconductor's
-  [*basilisk*](https://bioconductor.org/packages/basilisk) package to setup and
-  manage the Python envrionment.
-
-- The Python environment and required libraries are defined in the
-  *R/basilisk.R* file. Different environments can be defined in that file with
-  the required libraries (including versions).
-
-- To execute Python code from a certain library, the `basiliscRun()` function is
-  used, with the respective environment providing this library being enabled
-  and disabled with the `basiliskStart()` and `basiliskStop()` functions.
+  and Python data types.
 
 - The *reticulate* `r_to_py()` and `py_to_r()` functions are used for conversion
   of basic data types between R and Python and *vice versa*. To use these
-  functions, an Python environment with the *matchms* library must be used (or
-  the one defined in *SpectriPy* and managed by *basilisk* needs to be activated
-  first using `cl <- basiliskStart(SpectriPy:::matchms_env)` (see package
-  vignette for an example).
+  functions, an Python environment with the *matchms* library must be used.
 
 
 ## Test data
 
 **What data could be used in tests?**
 
-- The package does not contain any test data files. Test and example data are
-  created *manually* by defining *m/z* and intensity values of MS peaks. Data
-  files could be added (e.g. in MGF format) if needed and put into a
+- The package contains two test data files. The "test" and "spectra2" example
+  data were created *manually* by defining *m/z* and intensity values of MS
+  peaks. Data files can be added (e.g. in MGF format) if needed and put into a
   *inst/extdata* folder.
 
 - Alternatively, example files in mzML format would be available in
@@ -115,38 +98,22 @@ helpful references to code and files for contributors. Preferably read the
 
 **What could be implemented?**
 
-- Add some new similarity calculation functionality to `SpectriPy`. See also
-  [issue #19](https://github.com/rformassspectrometry/SpectriPy/issues/19).
+See the open issues, here are some major topics.
 
 - Integrate other Python libraries? More a discussion - see [issue
   #24](https://github.com/rformassspectrometry/SpectriPy/issues/24).
 
 - Integrate functionality for spectra processing, downstream analysis
-  (e.g. cleaning), ... See also
-  [issue #20](https://github.com/rformassspectrometry/SpectriPy/issues/20).
+  (e.g. cleaning), ... See also [issue 
+  #20](https://github.com/rformassspectrometry/SpectriPy/issues/20).
 
 - Ability to translate additional data structures. See also [issue
   #18](https://github.com/rformassspectrometry/SpectriPy/issues/18).
 
-- More efficient translation of data structures. Better handling of
-  metadata. See also [issue
-  #17](https://github.com/rformassspectrometry/SpectriPy/issues/17).
-
-- Improve documentation. See also [issue
-  #25](https://github.com/rformassspectrometry/SpectriPy/issues/25).
-
 - Define a use case analysis (or ideally several): show how data can be analyzed
-  with the *SpectriPy* package and contrast that with a "quarto" or "Jupyter
-  Notebook" document directly combining the R and Python code: is there really
-  need for additional convenience functionality within an R package, or can the
-  same, or more, be achieved with e.g. "quarto"? What are the benefits of
-  *bundling*/wrapping Python functionality into R functions? See also [issue
+  with the *SpectriPy* package using a "quarto" document directly combining the 
+  R and Python code: See also [issue
   #21](https://github.com/rformassspectrometry/SpectriPy/issues/21).
-
-- Add more use cases and examples to the package vignette
-
-  (*vignettes/SpectriPy.Rmd*) file. See also [issue
-  #26](https://github.com/rformassspectrometry/SpectriPy/issues/26).
 
 
 ## Contributing

@@ -1,9 +1,10 @@
 ---
 title: "Detailed information on installation and configuration"
 package: SpectriPy
-output:
-  BiocStyle::html_document:
-    toc_float: true
+format:
+  html:
+    minimal: true
+    theme: flatly
 vignette: >
   %\VignetteIndexEntry{Detailed information on installation and configuration}
   %\VignetteKeywords{Mass Spectrometry, MS, MSMS, Metabolomics, Infrastructure, Quantitative}
@@ -12,10 +13,6 @@ vignette: >
   %\VignetteEngine{quarto::html}
   %\VignetteDepends{BiocStyle,SpectriPy,reticulate}
 ---
-
-```{r style, echo = FALSE, results = 'asis', message = FALSE}
-BiocStyle::markdown()
-```
 
 # Introduction
 
@@ -34,20 +31,137 @@ interoperability between Python and R. For installation of *SpectriPy*, Python
 needs to be installed on the system. See also the [Install Python
 Packages](https://rstudio.github.io/reticulate/articles/python_packages.html)
 documentation from the *reticulate* package for information on installing
-Python. Ideally *miniconda* should be installed on the system. The code below
-shows how *miniconda* can be installed with the *reticulate* package (which
-needs to be first installed with `install.package("reticulate")` if not already
-available):
+Python. By default, *SpectriPy* uses *miniconda* to configure and setup a Python
+environment specific to the package. The code below shows how *miniconda* can be
+installed with the *reticulate* package (which needs to be first installed with
+`install.package("reticulate")` if not already available):
 
 ```{r}
 #| eval: false
+#' R session:
+
 install.packages("reticulate")
 reticulate::install_miniconda()
 ```
 
-# Configuration
 
-- which reticulate?
+## Configure reticulate with host system Python environment (optional)
+
+The installation of *reticulate* can be configured to use an available Python
+environment of the host system, instead of using the automatic setup.
+
+The path to the python3 executable file needs to be specified in the
+`use_python()` function of *reticulate*. A conda environment used in the
+analysis will also created below, ensuring a specific Python environment for
+*reticulate*.
+
+```{r}
+#| eval: false
+#' R session:
+
+use_python("~/miniconda3_reticulate/bin/python3")
+conda_create("r-reticulate")
+reticulate::py_config()
+```
+
+In case the host system Python environment is used, the required Python
+packages can be installed using *reticulate* in its Python environment. To
+install more Python packages, we use `conda_install()`.
+
+Alternatively, if working outside of conda, packages can be installed using the
+function `py_install()`.
+
+```{r}
+#| eval: false
+#' R session:
+
+conda_install(envname = "r-reticulate","matchms==0.28.2", pip = TRUE,
+              python_version = "3.12.2")
+conda_install(envname = "r-reticulate","spectrum_utils", pip = TRUE)
+conda_install(envname = "r-reticulate","numpy==2.0.2", pip = FALSE)
+```
+
+To use *SpectriPy* with the system Python, the R option `"spectripy.use_system"`
+needs to be set to `TRUE` by calling `options(spectripy.use_system = TRUE)`
+**before** loading *SpectriPy* with `library(SpectriPy)`. In addition, option
+`"spectripy.env"` has to be set to use the miniconda environment defined above
+with `options(spectripy.env = "r-reticulate")` (also before loading the
+*SpectriPy* library). These options can also be configured with system
+environment variables (see the *Startup and Python configuration* section in the
+main *SpectriPy* vignette).
+
+
+## SpectriPy pre-requisites and installation instructions
+
+### Installing Bioconductor
+
+Bioconductor is required to install *SpectriPy*, as described below and from
+source [https://bioconductor.org/install/](https://bioconductor.org/install/).
+
+The current release of Bioconductor is version 3.20; it works with R version
+4.4.0. Users of older R and Bioconductor must update their installation to take
+advantage of new features and to access packages that have been added to
+Bioconductor since the last release.
+
+The development version of Bioconductor is version 3.21; it works with R version
+4.5.0. More recent *devel* versions of R (if available) will be supported during
+the next Bioconductor release cycle.
+
+Once R has been installed, get the latest version of Bioconductor by starting R
+and entering the following commands.
+
+It may be possible to change the Bioconductor version of an existing
+installation; see the *Changing version* section of the BiocManager vignette.
+
+Details, including instructions to install additional packages and to update,
+find, and troubleshoot are provided below. A devel version of Bioconductor is
+available. There are good reasons for using `BiocManager::install()` for
+managing Bioconductor resources.
+
+```{r}
+#| eval: false
+#' R session:
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.20")
+```
+
+### Installing *SpectriPy*
+
+Since *SpectriPy* is currently still in development, you will need the *remotes*
+package to install it from GitHub. If you do not have the *remotes* package yet,
+you can install it using the following command:
+
+```{r}
+#| eval: false
+#' R session:
+
+install.packages("remotes")
+```
+
+To install the *SpectriPy* package use
+
+```{r}
+#| eval: false
+#' R session:
+
+BiocManager::install("RforMassSpectrometry/SpectriPy")
+```
+
+### Check installation completed
+
+The status of installation can be easily checked by starting R and entering the
+following commands.
+
+This command loads the *SpectriPy* package, if correct installed.
+
+```{r}
+#' R session:
+
+library(SpectriPy)
+```
+
 
 # Appendix
 
@@ -75,8 +189,8 @@ describes your operating system: Windows, Mac, or Linux.
 #### Windows
 
 To install R on Windows, click the “Download R for Windows” link. Then click the
-“base” link. Next, click the first link at the top of the new page. This link
-should say something like “Download R 3.0.3 for Windows,” except the `3.0.3`
+*base* link. Next, click the first link at the top of the new page. This link
+should say something like *Download R 3.0.3 for Windows*, except the `3.0.3`
 will be replaced by the most current version of R. The link downloads an
 installer program, which installs the most up-to-date version of R for
 Windows. Run this program and step through the installation wizard that
@@ -86,7 +200,7 @@ appropriate administration privileges to install new software on your machine.
 
 #### Mac
 
-To install R on a Mac, click the “Download R for Mac” link. Next, click on the
+To install R on a Mac, click the *Download R for Mac* link. Next, click on the
 `R-3.0.3` package link (or the package link for the most current release of
 R). An installer will download to guide you through the installation process,
 which is very easy. The installer lets you customize your installation, but the
@@ -112,7 +226,7 @@ need it here.
 R comes preinstalled on many Linux systems, but you’ll want the newest version
 of R if yours is out of date. The [CRAN website](https://cran.r-project.org/)
 provides files to build R from source on Debian, Redhat, SUSE, and Ubuntu
-systems under the link “Download R for Linux.” Click the link and then follow
+systems under the link *Download R for Linux.* Click the link and then follow
 the directory trail to the version of Linux you wish to install on. The exact
 installation procedure will vary depending on the Linux system you use. CRAN
 guides the process by grouping each set of source files with documentation or
@@ -161,7 +275,7 @@ same for Windows, Mac OS, and Linux. That will help me match the book to your
 personal experience.
 
 You can download [RStudio](https://posit.co/products/open-source/rstudio/) for
-free. Just click the “Download RStudio” button and follow the simple
+free. Just click the *Download RStudio* button and follow the simple
 instructions that follow. Once you’ve installed RStudio, you can open it like
 any other program on your computer—usually by clicking an icon on your desktop.
 
@@ -196,74 +310,13 @@ Figure 1: The RStudio IDE for R.
 
 Now that you have both R and RStudio on your computer, you can begin using R by
 opening the RStudio program. Open RStudio just as you would any program, by
-clicking on its icon or by typing “RStudio” at the Windows Run prompt.
-
-## SpectriPy pre-requisites and installation instructions
-
-### Installing Bioconductor
-
-Bioconductor is required to install SpectriPy, as described below and from
-source [https://bioconductor.org/install/](https://bioconductor.org/install/).
-
-The current release of Bioconductor is version 3.20; it works with R version
-4.4.0. Users of older R and Bioconductor must update their installation to take
-advantage of new features and to access packages that have been added to
-Bioconductor since the last release.
-
-The development version of Bioconductor is version 3.21; it works with R version
-4.5.0. More recent ‘devel’ versions of R (if available) will be supported during
-the next Bioconductor release cycle.
-
-Once R has been installed, get the latest version of Bioconductor by starting R
-and entering the following commands.
-
-It may be possible to change the Bioconductor version of an existing
-installation; see the *Changing version* section of the BiocManager vignette.
-
-Details, including instructions to install additional packages and to update,
-find, and troubleshoot are provided below. A devel version of Bioconductor is
-available. There are good reasons for using `BiocManager::install()` for
-managing Bioconductor resources.
-
-```{r}
-#| eval: false
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install(version = "3.20")
-```
-
-### Installing SpectriPy
-
-Since *SpectriPy* is currently still in development, you will need the *remotes*
-package to install it from GitHub. If you do not have the *remotes* package yet,
-you can install it using the following command:
-
-```{r}
-#| eval: false
-install.packages("remotes")
-```
-
-To install the *SpectriPi* package use
-
-```{r}
-#| eval: false
-BiocManager::install("RforMassSpectrometry/SpectriPy")
-```
-
-### Check installation completed
-
-The status of installation can be easily checked by starting R and entering the
-following commands.
-
-This command loads the *SpectriPy* package, if correct installed.
-
-```{r}
-library(SpectriPy)
-```
+clicking on its icon or by typing *RStudio* at the Windows Run prompt.
 
 
 # Session information
 
 ```{r}
+#' R session:
+
 sessionInfo()
 ```

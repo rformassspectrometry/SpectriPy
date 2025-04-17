@@ -199,13 +199,13 @@ The following algorithms are already incorporated, and added to the vignette
   - [X] NeutralLossesCosine using NeutralLossesCosineParam
 
  The following algorithms are not yet incorporated or added to the vignette,
- but can(not) run in Quarto using `reticulate` in the background:
+ but can run in Quarto using `reticulate` in the background:
 
   - [X] FingerprintSimilarity using the Quarto extension
   - [X] IntersectMz using the Quarto extension
-  - [ ] MetadataMatch using the Quarto extension
-  - [ ] ParentMassMatch using the Quarto extension
-  - [ ] PrecursorMzMatch using the Quarto extension
+  - [X] MetadataMatch using the Quarto extension
+  - [X] ParentMassMatch using the Quarto extension
+  - [X] PrecursorMzMatch using the Quarto extension
 
 See code chunks below (instead of in the vignette using
 the `Basilisk` environment).
@@ -280,11 +280,14 @@ name          | *4
 mz            | mz
 intensity     | intensities
               | metadata
+scanIndex     | Index?
+feature_id    | ?
 
 added new to the Spectra object
 smiles       | *5
 inchi        | *6
 parent_mass  | *7
+charge       | *8
 
 subvars under the metadata in Spectrum py
 *2            | precursor_mz
@@ -294,11 +297,16 @@ subvars under the metadata in Spectrum py
 *6            | inchi
 *7            | parent_mass
               | peak_comments
-              | charge
+*8            | charge
               | instrument_type
               | ...
 
+              | scans
+
 with Spectrum examples in python.
+get all from  spectra object in r by: `defaultSpectraVariableMapping()`
+get all from spectrum object in py by: `mgf_py[0].metadata.keys()`
+
 
 ```{python}
 import numpy as np

@@ -7,6 +7,18 @@
 
 # SpectriPy 0.5
 
+## Changes in 0.5.3
+
+- Vignette updates.
+
+## Changes in 0.5.2
+
+- Fix *spectrum_utils* version.
+
+## Changes in 0.5.1
+
+- Add additional vignettes and update/fix documentation.
+
 ## Changes in 0.5.0
 
 - Add support for *spectrum_utils* library.
@@ -27,7 +39,7 @@
 
 ## Changes in 0.3.0
 
-- Add changes and results introduced a the EuBIC 2024 r-python hackathon in
+- Add changes and results introduced a the EuBIC 2025 r-python hackathon in
   Neustift, Italy.
 - Remove dependency from *basilisk* and base the package entirely on
   *reticulate*.
