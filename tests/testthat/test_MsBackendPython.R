@@ -79,6 +79,20 @@ test_that("backendInitialize,MsBackendPy works", {
         "not yet implemented")
 })
 
+test_that("backendInitialize,MsBackendPy works with providing data", {
+    expect_error(
+        backendInitialize(MsBackendPy(), pythonVariableName = "ttt", data = 4),
+        "'DataFrame'")
+    d <- spectraData(s)
+    expect_error(
+        backendInitialize(MsBackendPy(), pythonVariableName = "ttt", data = d),
+        "are required")
+    d <- spectraData(s@backend)
+    res <- backendInitialize(LLLLLLL
+                             MsBackendPy(), pythonVariableName = "ttt", data = d)
+    ## Repeat with spectrum_utils.
+})
+
 test_that("show,MsBackendPy works", {
     be <- backendInitialize(MsBackendPy(), "s_p")
     expect_output(show(be), "MsBackendPy")

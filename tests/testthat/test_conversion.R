@@ -64,6 +64,20 @@ test_that(".rspec_to_matchms_pyspec works", {
     expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
     expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
     expect_equal(names(res[[1]]$metadata), character())
+
+    ## passing a `DataFrame` or `data.frame` instead
+    x <- spectraData(sps@backend)
+    res <- .rspec_to_matchms_pyspec(x)
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(length(res) == length(sps))
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
+    expect_true(all(.SPECTRA_2_MATCHMS %in% names(res[[1]]$metadata)))
+
+    res <- .rspec_to_matchms_pyspec(x, character())
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)))
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensities)))
+    expect_equal(names(res[[1]]$metadata), character())
 })
 
 test_that(".rspec_to_spectrum_utils_pyspec works", {

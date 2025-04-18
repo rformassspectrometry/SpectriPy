@@ -281,11 +281,24 @@ setMethod("backendInitialize", "MsBackendPy",
                   object@py_var <- pythonVariableName
                   object <- reindex(object)
                   object@py_lib <- pythonLibrary
+                  object
               } else {
-                  stop("Support for 'data' parameter is not yet implemented")
-                  ## if data provided -> convert the data to Python.
+                  if (!is(data, "DataFrame"))
+                      stop("'data' is expected to be a 'DataFrame'")
+                  if (!all(c("mz", "intensity") %in% colnames(data)))
+                      stop("Columns \"mz\" and \"intensity\" are required")
+                  py_set_attr(
+                      py, pythonVariableName,
+                      switch(pythonLibrary,
+                             matchms = .rspec_to_matchms_pyspec(
+                                 data, mapping = spectraVariableMapping),
+                             spectrum_utils = .rspec_to_spectrum_utils_pyspec(
+                                 data, mapping = spectraVariableMapping)))
+                  backendInitialize(
+                      object, pythonVariableName = character(),
+                      spectraVariableMapping = spectraVariableMapping,
+                      pythonLibrary = pythonLibrary)
               }
-              object
           })
 
 #' @importMethodsFrom methods show
