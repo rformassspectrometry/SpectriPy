@@ -73,10 +73,6 @@ test_that("backendInitialize,MsBackendPy works", {
     expect_error(backendInitialize(MsBackendPy(), "r"), "Python list")
     res <- backendInitialize(MsBackendPy(), "s_p")
     expect_s4_class(res, "MsBackendPy")
-
-    expect_error(backendInitialize(
-        MsBackendPy(), "some", data = data.frame(msLevel = 1L)),
-        "not yet implemented")
 })
 
 test_that("backendInitialize,MsBackendPy works with providing data", {
@@ -88,9 +84,27 @@ test_that("backendInitialize,MsBackendPy works with providing data", {
         backendInitialize(MsBackendPy(), pythonVariableName = "ttt", data = d),
         "are required")
     d <- spectraData(s@backend)
-    res <- backendInitialize(LLLLLLL
-                             MsBackendPy(), pythonVariableName = "ttt", data = d)
-    ## Repeat with spectrum_utils.
+    res <- backendInitialize(
+        MsBackendPy(), pythonVariableName = "ttt", data = d)
+    expect_s4_class(res, "MsBackendPy")
+    expect_equal(res@py_var, "ttt")
+    expect_true(res@is_in_py)
+    expect_equal(nrow(d), length(res))
+    expect_equal(rtime(s), rtime(res))
+    expect_equal(intensity(s), intensity(res))
+    expect_equal(mz(s), mz(res))
+    ## Repeat with spectrum_utils
+    py_del_attr(py, "ttt")
+    res <- backendInitialize(MsBackendPy(), pythonVariableName = "ttt",
+                             data = d, pythonLibrary = "spectrum_utils")
+    expect_s4_class(res, "MsBackendPy")
+    expect_equal(res@py_var, "ttt")
+    expect_true(res@is_in_py)
+    expect_equal(nrow(d), length(res))
+    expect_equal(rtime(s), rtime(res))
+    expect_equal(intensity(s), intensity(res),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    expect_equal(mz(s), mz(res), tolerance = SPECTRUM_UTILS_TOLERANCE)
 })
 
 test_that("show,MsBackendPy works", {

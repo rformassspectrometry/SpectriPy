@@ -54,13 +54,20 @@
 #' - `backendInitialize()`: initializes the backend with information from the
 #'   referenced Python variable (attribute). The name of this attribute,
 #'   ideally stored in the associated Python session, is expected to be
-#'   provided with the `pythonVariableName` parameter. The optional
-#'   `spectraVariableMapping` parameter allows to provide additional, or
-#'   alternative, mapping of `Spectra`'s *spectra variables* to metadata in the
-#'   `matchms.Spectrum` objects. See [defaultSpectraVariableMapping()] (the
-#'   default) for more information. Parameter `pythonLibrary` must be used
-#'   to specify the Python library representing the MS data in Python. It can
-#'   be either `pythonLibrary = "matchms"` (the default) or
+#'   provided with the `pythonVariableName` parameter. This variable is
+#'   expected to contain or represent the full MS data. Alternatively, by
+#'   providing the full MS data with the `data` parameter, this MS data will
+#'   be first converted to the respective Python MS data representation and
+#'   the `MsBackendPy` object will be initialized as described before. This
+#'   allows to initialize the Python-based MS backend with data initially
+#'   available in R.
+#'   The optional `spectraVariableMapping` parameter allows to provide
+#'   additional, or alternative, mapping of `Spectra`'s *spectra variables*
+#'   to metadata in the `matchms.Spectrum` objects. See
+#'   [defaultSpectraVariableMapping()] (the default) for more information.
+#'   Parameter `pythonLibrary` must be used to specify the Python library
+#'   representing the MS data in Python. It can be either
+#'   `pythonLibrary = "matchms"` (the default) or
 #'   `pythonLibrary = "spectrum_utils"`. The function returns an initialized
 #'   instance of `MsBackendPy`.
 #'
@@ -97,7 +104,10 @@
 #'     names of the peaks variables to retrieve.
 #'
 #' @param data For `backendInitialize()`: `DataFrame` with the full MS data
-#'     (peaks data and spectra data). Currently not supported.
+#'     (peaks data and spectra data) such as extracted with the
+#'     [Spectra::spectraData()] method on another `MsBackend` instance.
+#'     Importantly, the `DataFrame` must have columns `"mz"` and
+#'     `"intensity"` with the full MS data.
 #'
 #' @param drop For `spectraData()` and `peaksData()`: `logical(1)` whether,
 #'     when a single column is requested, the data should be returned as a
@@ -163,6 +173,12 @@
 #' ## "s_p" variable in Python:
 #' be <- backendInitialize(MsBackendPy(), "s_p")
 #' be
+#'
+#' ## Alternatively, by passing the full MS data with parameter `data`, the
+#' ## data is first converted to Python and the backend is initialized with
+#' ## that data.
+#' be <- backendInitialize(MsBackendPy(), "s_p2",
+#'     data = spectraData(s, c(spectraVariables(s), "mz", "intensity")))
 #'
 #' ## Create a Spectra object which this backend:
 #' s_2 <- Spectra(be)
@@ -257,8 +273,7 @@ setMethod("backendInitialize", "MsBackendPy",
           function(object, pythonVariableName = character(),
                    spectraVariableMapping = defaultSpectraVariableMapping(),
                    pythonLibrary = c("matchms", "spectrum_utils"),
-                   ...,
-                   data) {
+                   ..., data) {
               .check_spectra_variable_mapping(spectraVariableMapping)
               object@spectraVariableMapping <- spectraVariableMapping
               pythonLibrary <- match.arg(pythonLibrary)
@@ -295,7 +310,7 @@ setMethod("backendInitialize", "MsBackendPy",
                              spectrum_utils = .rspec_to_spectrum_utils_pyspec(
                                  data, mapping = spectraVariableMapping)))
                   backendInitialize(
-                      object, pythonVariableName = character(),
+                      object, pythonVariableName = pythonVariableName,
                       spectraVariableMapping = spectraVariableMapping,
                       pythonLibrary = pythonLibrary)
               }

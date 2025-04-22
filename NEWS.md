@@ -1,5 +1,7 @@
 # SpectriPy 0.99
 
+- Add support for parameter `data` to `backendInitialize()`.
+
 ## Changes in 0.99.0
 
 - Prepare for Bioconductor submission.

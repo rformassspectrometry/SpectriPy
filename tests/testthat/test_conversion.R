@@ -110,6 +110,24 @@ test_that(".rspec_to_spectrum_utils_pyspec works", {
     expect_true(is(res, "python.builtin.list"))
     expect_true(is(res[[1L]], "spectrum_utils.spectrum.MsmsSpectrum"))
     expect_true(is.na(py_to_r(res[[1L]]$precursor_mz)))
+
+    ## passing a `DataFrame` or `data.frame` instead
+    x <- spectraData(sps@backend)
+    res <- .rspec_to_spectrum_utils_pyspec(x)
+    expect_true(is(res, "python.builtin.list"))
+    expect_true(length(res) == length(sps))
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensity)))
+    expect_equal(sps$rtime[2], py_to_r(res[[1]]$retention_time))
+    expect_equal(sps$precursorMz[2], py_to_r(res[[1]]$precursor_mz))
+
+    res <- .rspec_to_spectrum_utils_pyspec(x, character())
+    expect_equal(sps$mz[[2L]], as.vector(py_to_r(res[[1]]$mz)),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    expect_equal(sps$intensity[[2L]], as.vector(py_to_r(res[[1]]$intensity)))
+    expect_true(is.na(py_to_r(res[[1]]$retention_time)))
+    expect_true(is.na(py_to_r(res[[1]]$precursor_mz)))
 })
 
 test_that("rspec_to_pyspec works", {

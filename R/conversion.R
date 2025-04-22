@@ -429,7 +429,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #' @noRd
 .rspec_to_spectrum_utils_pyspec <-
     function(x, mapping = spectraVariableMapping()) {
-        pks <- peaksData(x, c("mz", "intensity"))
+        if (is(x, "Spectra"))
+            pks <- peaksData(x, c("mz", "intensity"))
+        else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind)
         l <- length(pks)
         sv <- mapping[!mapping %in% c("mz", "intensity")]
         svm <- sv[sv %in% .SPECTRA_2_SPECTRUM_UTILS]
@@ -438,7 +440,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
             warning("Ignoring variables ",
                     paste0("\"", names(sv)[sv %in% w] ,"\""))
         if (length(svm)) {
-            spd <- as.data.frame(spectraData(x, columns = names(svm)))
+            if (is(x, "Spectra"))
+                spd <- as.data.frame(spectraData(x, columns = names(svm)))
+            else spd <- as.data.frame(x[, names(svm), drop = FALSE])
             colnames(spd) <- svm[colnames(spd)]
         }
         rm(x)
