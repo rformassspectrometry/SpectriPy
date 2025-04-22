@@ -145,7 +145,8 @@ setGeneric("compareSpectriPy", function(x, y, param, ...) {
     standardGeneric("compareSpectriPy")
 })
 
-setClass("CosineGreedy",
+setClass(
+    "CosineGreedy",
     slots = c(
         tolerance = "numeric", mzPower = "numeric", intensityPower = "numeric"
     ),
@@ -164,9 +165,14 @@ setClass("CosineGreedy",
         msg
     }
 )
-setClass("CosineHungarian", contains = "CosineGreedy")
-setClass("ModifiedCosine", contains = "CosineGreedy")
-setClass("NeutralLossesCosine",
+setClass(
+    "CosineHungarian",
+    contains = "CosineGreedy")
+setClass(
+    "ModifiedCosine",
+    contains = "CosineGreedy")
+setClass(
+    "NeutralLossesCosine",
     contains = "CosineGreedy",
     slots = c(ignorePeaksAbovePrecursor = "logical"),
     prototype = prototype(ignorePeaksAbovePrecursor = TRUE),
@@ -179,9 +185,11 @@ setClass("NeutralLossesCosine",
         msg
     }
 )
-setClass("FingerprintSimilarity", contains = "CosineGreedy",
-         slots = c(similarityMeasure = "character"),
-         prototype = prototype(similarityMeasure = "jaccard"))
+setClass(
+    "FingerprintSimilarity",
+    contains = "CosineGreedy",
+    slots = c(similarityMeasure = "character"),
+    prototype = prototype(similarityMeasure = "jaccard"))
 
 #' @rdname compareSpectriPy
 #'

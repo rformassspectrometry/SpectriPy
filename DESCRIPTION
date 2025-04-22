@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Integrating Spectra with Python's matchms
-Version: 0.5.3
+Version: 0.99.0
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python's matchms Spectrum objects. In addition, SpectriPy integrates

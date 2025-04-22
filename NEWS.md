@@ -1,3 +1,10 @@
+# SpectriPy 0.99
+
+## Changes in 0.99.0
+
+- Prepare for Bioconductor submission.
+
+
 # SpectriPy 0.5
 
 ## Changes in 0.5.3
