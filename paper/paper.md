@@ -194,6 +194,29 @@ and convert the results to R data types, enabling the integration of
 functionality from the *matchms* Python library directly into R-based analysis
 workflows.
 
+As such, *SpectriPy* provides an easy possibility to compare spectral
+similarity functions from commonly-used R and python libraries, e.g. during
+LC-MS/MS data annotation.  As an example, the Cosine (i.e. Dot product) and
+Cosine Hungarian similarity scores were compared between two sets of spectra,
+calculated with *Spectra*'s built-in `compareSpectra()` and *SpectriPy*'s
+`compareSpectriPy()` calling the `CosineHungarian` function from *matchms*,
+respectively.
+
+```r
+#' R session:
+#' Calculate similarity scores
+res_cosine <- compareSpectra(sps1, sps2)
+res_cosinehungarian <- compareSpectriPy(sps1, sps2,
+                                       param = CosineHungarian(tolerance = 0.1))
+
+#' Plot the similarity scores
+plot(res_cosine, res_cosinehungarian, pch = 21, col = "#000000ce",
+     bg = "#00000060", xlab = "Dot product", ylab = "Cosine Hungarian")
+grid()
+```
+
+![SpectriPy spectral_similarity_comparison](../spectral_similarity_comparison.png){height="300pt"}
+
 # Perspective
 
 *SpectriPy* started as a collaboration of R and Python developers, with the
