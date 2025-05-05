@@ -23,11 +23,14 @@ both Python and R, covering specific and sometimes distinct aspects in the
 analysis of proteomics and metabolomics data. R's *reticulate* package converts
 basic data types between Python and R and enables a seamless interoperability of
 both programming languages. The *SpectriPy* package extends *reticulate*
-allowing to translate MS data data structures between Python and R. In addition,
-functionality from Python's *matchms* library is directly wrapped into R
-functions allowing a seamless integration into R based workflows. *SpectriPy*
-thus enables powerful proteomics or metabolomics analysis workflows combining
-the strengths of Python and R MS libraries.
+allowing to translate MS data data structures between R and Python,
+specifically, between R's `Spectra` objects and Python MS data structures from
+the [*matchms*](https://github.com/matchms/matchms) and
+[*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) Python
+libraries. In addition, functionality from Python's *matchms* library is
+directly wrapped into R functions allowing a seamless integration into R based
+workflows. *SpectriPy* thus enables powerful proteomics or metabolomics analysis
+workflows combining the strengths of Python and R MS libraries.
 
 This vignette provides information on how to share and translate MS data
 structures between R and Python to enable combined Python and R-based analysis
