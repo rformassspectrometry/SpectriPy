@@ -13,10 +13,10 @@ The *SpectriPy* package allows integration of Python MS packages into a
 in R. By wrapping Python functionality into R functions, *SpectriPy* allows a
 seamless integration of Python libraries into R. For example, *SpectriPy* can
 leverage the spectral similarity, filtering, normalization etc. calculations
-from the Python [*matchms*](https://github.com/matchms/) library and contains
+from the Python [*matchms*](https://github.com/matchms) library and contains
 functions to convert between R's `Spectra::Spectra` objects and
 `matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects from the
-Python [*matchms*](https://github.com/matchms/) and
+Python [*matchms*](https://github.com/matchms) and
 [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) libraries,
 respectively. R and Python spectral objects are easily translated and available
 in one workflow (i.e., a quarto document), enabling the advanced user or
