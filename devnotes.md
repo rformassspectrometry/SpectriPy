@@ -18,13 +18,15 @@ helpful references to code and files for contributors. Preferably read the
   vignette for a description of the data structure).
 
 - Powerful MS data algorithms algorithms are also available in Python,
-  e.g. provided by the [matchms](https://github.com/matchms/matchms) library.
+  e.g. provided by the [*matchms*](https://github.com/matchms) and
+  [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) libraries.
 
 - Why re-implement what's already available?
 
-- This package *translates* an R `Spectra` object into the *matchms* Python
-  `Spectrum` data structure and allows you to call functions of the *matchms*
-  package and translate the results back into R data objects.
+- This package *translates* an R `Spectra` object into Python MS
+  data structures and allows you to call similarity scoring and processing/filtering
+  functions of the *matchms* package and translate the results back into R data
+  objects.
 
 
 ## General package structure
