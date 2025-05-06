@@ -200,13 +200,14 @@ workflows.
 # Perspective
 
 *SpectriPy* started as a collaboration of R and Python developers, with the
-latest contributions added during the EuBIC-MS Developers Meeting
-in 2025. Collaborative development will be further encouraged to extend
-*SpectriPy* with additional functionality, support for additional libraries, and
-data structures. New use cases will be integrated into larger interactive
-tutorial frameworks such as the Metabonaut resource [@louail_metabonaut_2025],
-enabling users to seamlessly integrate R and Python into their MS data analysis
-pipelines.
+latest contributions added during the EuBIC-MS Developers Meeting in
+2025. Collaborative development will be further encouraged to extend *SpectriPy*
+with additional functionality (e.g. advanced spectra similarity matching methods
+*spec2vec* and *ms2deepscore*), support for additional libraries
+(e.g. *Pyteomics*, *pyOpenMS*), and data structures. New use cases will be
+integrated into larger interactive tutorial frameworks such as the Metabonaut
+resource [@louail_metabonaut_2025], enabling users to seamlessly integrate R and
+Python into their MS data analysis pipelines.
 
 Ultimately, the long-term goal is to promote cross-language compatibility and
 reproducibility in computational mass spectrometry. By leveraging the strengths
