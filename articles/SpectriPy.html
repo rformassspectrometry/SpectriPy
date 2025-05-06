@@ -74,10 +74,10 @@
 
 
 
-    <p><strong>Compiled</strong>: Tue Apr 22 11:34:49 2025</p>
+    <p><strong>Compiled</strong>: Tue May 6 14:27:09 2025</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between Python and R. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
+<p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between R and Python, specifically, between R’s <code>Spectra</code> objects and Python MS data structures from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
 <p>This vignette provides information on how to share and translate MS data structures between R and Python to enable combined Python and R-based analysis workflows. For an example use case analysis, see the <em>SpectriPy tutorial: Annotation of LC-MS/MS spectra</em> vignette.</p>
 </section><section class="section level2"><h2 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
 </h2>
@@ -146,7 +146,7 @@
 file(s):
 PestMix1_DDA.mzML
 Processing:
- Filter: select MS level(s) 2 [Tue Apr 22 11:34:59 2025] </code></pre>
+ Filter: select MS level(s) 2 [Tue May  6 14:27:18 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -747,7 +747,7 @@ other attached packages:
 [7] generics_0.1.3
 
 loaded via a namespace (and not attached):
- [1] cli_3.6.4              knitr_1.50             rlang_1.1.6
+ [1] cli_3.6.5              knitr_1.50             rlang_1.1.6
  [4] xfun_0.52              ncdf4_1.24             ProtGenerics_1.41.0
  [7] png_0.1-8              jsonlite_2.0.0         clue_0.3-66
 [10] mzR_2.43.0             BiocStyle_2.37.0       htmltools_0.5.8.1
@@ -872,7 +872,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer>
