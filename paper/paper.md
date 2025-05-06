@@ -119,10 +119,10 @@ unified analysis workflows.
 Reproducible examples and use case analyses on how to share and translate MS
 data structures between R and Python, and combined Python and R-based analysis
 workflows for LC-MS/MS data annotation enabled by *SpectriPy* can be found in
-the package’s vignette and the Metabonaut resource at
-[https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html](https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html)
-[@louail_metabonaut_2025]. In this paper, we primarily focus on the technical
-details and features of the package.
+the package’s vignette and in one of the [example
+workflows](https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html)
+of the Metabonaut resource [@louail_metabonaut_2025]. In this paper, we
+primarily focus on the technical details and features of the package.
 
 ## Installation
 
