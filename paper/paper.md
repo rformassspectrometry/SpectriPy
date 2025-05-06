@@ -180,7 +180,7 @@ strategy ensures memory efficiency and minimizes the number of data copies.
 #'  Create an R data object for the MS data in the associated Python session
 library(Spectra)
 library(SpectriPy)
-sps <- Spectra(“mgf_py”, source = MsBackendPy())
+sps <- Spectra("mgf_py", source = MsBackendPy())
 
 #'  Retrieve the MS peaks data for the 1st spectrum
 peaksData(sps[1])
@@ -196,6 +196,30 @@ respective Python MS data structures, execute the Python functions, and collect
 and convert the results to R data types, enabling the integration of
 functionality from the *matchms* Python library directly into R-based analysis
 workflows.
+
+As such, *SpectriPy* provides an easy possibility to compare spectra
+similarity functions from commonly-used R and Python libraries, e.g. during
+LC-MS/MS data annotation. As an example, the Cosine (i.e. Dot product) and
+Cosine Hungarian similarity scores are compared between two sets of spectra,
+calculated with *Spectra*'s built-in `compareSpectra()` and *SpectriPy*'s
+`compareSpectriPy()` calling the `CosineHungarian` function from *matchms*,
+respectively.
+
+```r
+#' R session:
+#'  Calculate similarity scores
+res_cosine <- compareSpectra(sps1, sps2)
+res_cosinehungarian <- compareSpectriPy(
+    sps1, sps2, param = CosineHungarian(tolerance = 0.1))
+
+#'  Plot the similarity scores
+plot(res_cosine, res_cosinehungarian, pch = 21, col = "#000000ce",
+     bg = "#00000060", xlab = "Dot product", ylab = "Cosine Hungarian")
+grid()
+```
+
+![Comparison of different spectra similarity scores calculated with either the
+*Spectra* R package or the Python *matchms* library.](spectral_similarity_comparison.png){height="300pt"}
 
 # Perspective
 
