@@ -82,8 +82,8 @@ See description of individual functions for their return values.
 \description{
 The \code{MsBackendPy} allows to access MS data stored as \code{matchms.Spectrum}
 or \code{spectrum_utils.spectrum.MsmsSpectrum} objects from the
-\href{https://github.com/matchms/matchms}{matchms} respectively
-\href{https://github.com/bittremieux-lab/spectrum_utils}{spectrum_utils} Python
+\href{https://github.com/matchms/matchms}{\emph{matchms}} respectively
+\href{https://github.com/bittremieux-lab/spectrum_utils}{\emph{spectrum_utils}} Python
 library directly from R. The MS data (peaks data or spectra variables) are
 translated on-the-fly when accessed. Thus, the \code{MsBackendPy} allows a
 seamless integration of Python MS data structures into \code{\link[Spectra:Spectra]{Spectra::Spectra()}}

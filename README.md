@@ -1,4 +1,4 @@
-# Integrating [*Spectra*](https://github.com/RforMassSpectrometry/Spectra) with Python's *matchms* library
+# Enhancing Cross-Language Mass Spectrometry Data Analysis with R and Python
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check-bioc](https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc)
@@ -13,13 +13,15 @@ The *SpectriPy* package allows integration of Python MS packages into a
 in R. By wrapping Python functionality into R functions, *SpectriPy* allows a
 seamless integration of Python libraries into R. For example, *SpectriPy* can
 leverage the spectral similarity, filtering, normalization etc. calculations
-from the Python [*matchms*](https://github.com/matchms/) library and contains
-functions to convert between R's `Spectra::Spectra` objects and Python's
-`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects. R and
-Python spectral objects are easily translated  and available in one workflow
-(i.e. a quarto document), enabling the advanced  user or developer to create
-custom functions or workflows on `Spectra` objects in Python and executing
-them in R using the *reticulate* R package, and vice versa.
+from the Python [*matchms*](https://github.com/matchms) library and contains
+functions to convert between R's `Spectra::Spectra` objects and
+`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects from the
+Python [*matchms*](https://github.com/matchms) and
+[*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) libraries,
+respectively. R and Python spectral objects are easily translated and available
+in one workflow (i.e., a quarto document), enabling the advanced user or
+developer to create custom functions or workflows on `Spectra` objects in Python
+and executing them in R using the *reticulate* R package, and vice versa.
 
 If you use *SpectriPy* in your research, please cite:
 
