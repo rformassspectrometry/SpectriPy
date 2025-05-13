@@ -31,8 +31,13 @@ Python. IN PREPARATION._
 
 # Installation
 
-Detailed information on the [installation and configuration of SpectriPy](detailed-installation-configuration.qmd),
-including guidelines for first time R users can be found under the "vignettes".
+Detailed installation instructions can be found in the [installation and
+configuration](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html)
+vignette. More advanced instructions and Python configuration, e.g. to use
+*virtualenv* instead of the default *miniconda*-based setup can be found in
+the [Startup and Python
+configuration](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
+section of the main vignette.
 
 TLDR:
 
