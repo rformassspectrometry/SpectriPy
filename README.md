@@ -77,9 +77,9 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 See the extensive documentation for the use of *SpectriPy*:
 
 - The rendered [SpectriPy package’s vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html),
-- The code of the [SpectriPy vignette](vignettes/SpectriPy.qmd),
-- A [tutorial](vignettes/SpectriPy_tutorial.qmd) for the annotation of LC-MS/MS
-spectra using an MGF library and the CosineGreedy algorithm from *matchms*.
+- The [function reference](https://rformassspectrometry.github.io/SpectriPy/reference/index.html),
+- A [tutorial](https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html) for the annotation of LC-MS/MS
+spectra using an MGF library and the ModifiedCosine algorithm from *matchms*.
 
 TLDR:
 
