@@ -4,7 +4,7 @@ pkgdown_sha: 99457e7fa7f36696ae743b06aca59c0fdd97a7d6
 articles:
   detailed-installation-configuration: detailed-installation-configuration.html
   SpectriPy: SpectriPy.html
-last_built: 2025-05-06T14:26Z
+last_built: 2025-05-13T08:56Z
 urls:
   reference: https://rformassspectrometry.github.io/SpectriPy/reference
   article: https://rformassspectrometry.github.io/SpectriPy/articles
