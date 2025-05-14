@@ -179,7 +179,7 @@ sps <- Spectra("mgf_py", source = MsBackendPy())
 peaksData(sps[1])
 ```
 
-The use of the `MsBackenPy` enables thus seamless and, compared to the
+The use of the `MsBackendPy` enables thus seamless and, compared to the
 alternative `pyspec_to_rspec()`, more memory-efficient integration of Python MS
 data objects into R for powerful cross-language analysis workflows.
 
