@@ -143,7 +143,7 @@ MS data structures. In particular, *SpectriPy* provides the functions
 conversion, and any required renaming and reformatting of spectra metadata, such
 as MS level, retention times, or any other arbitrary metadata available in the
 MS data object. An example combined R-Python data analysis workflow, which can
-be realized e.g. using the Quarto system is provided in the following code
+be realized using the Quarto system is provided in the following code
 snippets. In this particular example we start the analysis in Python, loading
 and processing the MS data with functions from the *matchms* library.
 
