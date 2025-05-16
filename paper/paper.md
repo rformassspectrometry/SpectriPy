@@ -48,27 +48,27 @@ authors:
     corresponding: true
     affiliation: 1
 affiliations:
-  - name: Institute for Biomedicine, Eurac Research, Bolzano, Italy.
+  - name: Institute for Biomedicine, Eurac Research, Bolzano, Italy
     index: 1
-  - name: Department of Computer Science, University of Antwerp, Antwerpen, Belgium.
+  - name: Department of Computer Science, University of Antwerp, Antwerpen, Belgium
     index: 2
-  - name: Genome Biology Unit, European Molecular Biology Laboratory (EMBL), Heidelberg, Germany.
+  - name: Genome Biology Unit, European Molecular Biology Laboratory (EMBL), Heidelberg, Germany
     index: 3
-  - name: Department of Exposure Science, Helmholtz Centre for Environmental Research - UFZ, Leipzig, Germany.
+  - name: Department of Exposure Science, Helmholtz Centre for Environmental Research - UFZ, Leipzig, Germany
     index: 4
-  - name: Novo Nordisk Foundation Center for Basic Metabolic Research, University of Copenhagen, Copenhagen, Denmark.
+  - name: Novo Nordisk Foundation Center for Basic Metabolic Research, University of Copenhagen, Copenhagen, Denmark
     index: 5
-  - name: Institute for Bio- and Geosciences (IBG-5), Forschungszentrum Jülich GmbH, Jülich, Germany.
+  - name: Institute for Bio- and Geosciences (IBG-5), Forschungszentrum Jülich GmbH, Jülich, Germany
     index: 6
-  - name: Department of Medical Oncology, University of Bern, Bern, Switzerland.
+  - name: Department of Medical Oncology, University of Bern, Bern, Switzerland
     index: 7
-  - name: Alphalyse, Odense, Denmark.
+  - name: Alphalyse, Odense, Denmark
     index: 8
-  - name: RECETOX, Faculty of Science, Masaryk University, Brno, Czech Republic.
+  - name: RECETOX, Faculty of Science, Masaryk University, Brno, Czech Republic
     index: 9
-  - name: Metabolomics and Proteomics Core, Helmholtz Zentrum München, Munich, Germany.
+  - name: Metabolomics and Proteomics Core, Helmholtz Zentrum München, Munich, Germany
     index: 10
-  - name: Chair of Analytical Food Chemistry, TUM School of Life Sciences, Technical University of Munich, Freising-Weihenstephan, Germany.
+  - name: Chair of Analytical Food Chemistry, TUM School of Life Sciences, Technical University of Munich, Freising-Weihenstephan, Germany
     index: 11
 date: 03 April 2025
 bibliography: paper.bib
@@ -86,7 +86,7 @@ both R and Python, including R packages from the RforMassSpectrometry initiative
 such as *Spectra*, *MsCoreUtils*, *MetaboAnnotation*, and *CompoundDb*
 [@rainer_modular_2022], as well as Python libraries like *matchms*
 [@huber_matchms_2020], *spectrum_utils* [@bittremieux_spectrum_utils_2020],
-*Pyteomics* [@goloborodko_pyteomics_2013] and *pyOpenMS*
+*Pyteomics* [@goloborodko_pyteomics_2013], and *pyOpenMS*
 [@rost_pyopenms_2014]. The *reticulate* R package [@reticulate_2025] provides an
 R interface to Python enabling interoperability between the two programming
 languages. The open-source *SpectriPy* R package builds upon *reticulate* and
@@ -105,7 +105,7 @@ efficiency and collaboration.
 
 Over the past decade, tremendous efforts have been made to develop powerful
 algorithms and excellent data analysis software for MS data analysis. Each of
-these software covers different and in part complementary aspects in the
+these software packages covers different and in part complementary aspects in the
 analysis of MS data, but their integration into a single workflow remains a
 challenge, in particular across programming languages. To avoid the need for
 repeated implementation of algorithms in different programming languages we
@@ -195,9 +195,9 @@ and convert the results to R data types, enabling the integration of
 functionality from the *matchms* Python library directly into R-based analysis
 workflows.
 
-As such, *SpectriPy* provides an easy possibility to compare spectra
+As such, *SpectriPy* provides an easy way to compare spectra
 similarity functions from commonly-used R and Python libraries, e.g. during
-LC-MS/MS data annotation. As an example, the Cosine (i.e. Dot product) and
+LC-MS/MS data annotation. As an example, the Cosine (i.e., Dot product) and
 Cosine Hungarian similarity scores are compared between two sets of spectra,
 calculated with *Spectra*'s built-in `compareSpectra()` and *SpectriPy*'s
 `compareSpectriPy()` calling the `CosineHungarian` function from *matchms*,
@@ -224,9 +224,9 @@ grid()
 *SpectriPy* started as a collaboration of R and Python developers, with the
 latest contributions added during the EuBIC-MS Developers Meeting in
 2025. Collaborative development will be further encouraged to extend *SpectriPy*
-with additional functionality (e.g. advanced spectra similarity matching methods
+with additional functionality (e.g., advanced spectra similarity matching methods
 *spec2vec* and *ms2deepscore*), support for additional libraries
-(e.g. *Pyteomics*, *pyOpenMS*), and data structures. New use cases will be
+(e.g., *Pyteomics*, *pyOpenMS*), and data structures. New use cases will be
 integrated into larger interactive tutorial frameworks such as the Metabonaut
 resource [@louail_metabonaut_2025], enabling users to seamlessly integrate R and
 Python into their MS data analysis pipelines.
@@ -238,7 +238,7 @@ data analysis workflows, reduce redundancy and promote innovation in the field.
 
 # Acknowledgements
 
-The authors declare to not have any competing financial or personal interests
+The authors declare that they do not have any competing financial or personal interests
 that could have influenced the work reported in this paper. Part of this work
 was supported by the European Union HORIZON-MSCA-2021 project 101073062:
 "HUMAN - Harmonizing and unifying blood metabolic analysis networks" to
