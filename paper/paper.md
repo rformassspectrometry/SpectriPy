@@ -142,19 +142,10 @@ MS data structures. In particular, *SpectriPy* provides the functions
 `spectrum_utils.spectrum.MsmsSpectrum` objects. These functions also handle the
 conversion, and any required renaming and reformatting of spectra metadata, such
 as MS level, retention times, or any other arbitrary metadata available in the
-MS data object. For more efficient integration of Python MS data objects into R,
-*SpectriPy* implements a dedicated backend class for `Spectra::Spectra`
-objects. Such backend classes handle the MS data for `Spectra::Spectra`
-objects. Through different backend implementations, `Spectra::Spectra` can gain
-support for additional data and file formats or memory-efficient on-disk or
-remote data storage modes. *SpectriPy*’s `MsBackendPy` backend keeps only a
-reference to the original data object in Python and retrieves and translates MS
-data, or subsets thereof, only upon request from that object. This enables
-seamless and memory-efficient integration of Python MS data objects into R for
-more powerful cross-language analysis workflows. An example of such a combined
-R-Python data analysis workflow, which can be realized e.g. using the Quarto
-system, is provided in the following code snippets. In the Python code block
-below, MS data are imported and processed.
+MS data object. An example combined R-Python data analysis workflow, which can
+be realized using the Quarto system is provided in the following code
+snippets. In this particular example we start the analysis in Python, loading
+and processing the MS data with functions from the *matchms* library.
 
 ```python
 #' Python session:
@@ -169,11 +160,14 @@ for i in range(len(mgf_p)):
   mgf_py[i] = mms_filt.normalize_intensities(mgf_py[i])
 ```
 
-To continue the analysis in R, a `Spectra::Spectra` object with a `MsBackendPy`
-backend class is created, referring to the Python data object defined in the
-associated Python session. All data from this data object is accessible in R,
-with the entire or subsets of the data translated on-the-fly upon request. This
-strategy ensures memory efficiency and minimizes the number of data copies.
+To continue the analysis in R, we could either translate to full MS data to R
+using the `pyspec_to_rspec()` function, or, as shown in the code block below,
+create a `Spectra::Spectra` object using *SpectriPy*'s `MsBackendPy` *backend*
+class. This class acts as an interface to the MS data in the associated Python
+session. All data from the referenced Python data object is accessible in R,
+with the entire or subsets of the data translated on-the-fly from Python to R
+only upon request. This strategy ensures memory efficiency and minimizes the
+number of data copies.
 
 ```r
 #' R session:
@@ -185,6 +179,10 @@ sps <- Spectra("mgf_py", source = MsBackendPy())
 #'  Retrieve the MS peaks data for the 1st spectrum
 peaksData(sps[1])
 ```
+
+The use of the `MsBackendPy` enables thus seamless and, compared to the
+alternative `pyspec_to_rspec()`, more memory-efficient integration of Python MS
+data objects into R for powerful cross-language analysis workflows.
 
 ## Integrated functionality from the *matchms* Python library
 
