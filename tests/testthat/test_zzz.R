@@ -38,10 +38,94 @@ test_that(".spectripy_use_system works", {
 })
 
 test_that(".install_python_packages works", {
-    #' mock for `py_module_available)_`, `py_install()`
+    py_install_mock <- function(packages, envname = NULL,
+                                method = c("auto", "virtualenv", "conda"),
+                                conda = "auto", python_version = NULL,
+                                pip = FALSE, ..., pip_ignore_installed = TRUE,
+                                ignore_installed = FALSE) {
+        list(packages = packages, envname = envname, method = method,
+             pip = pip)
+    }
+    py_module_available_mock <- function(module) {
+        if (module == "matchms")
+            FALSE
+        else TRUE
+    }
     res <- with_mocked_bindings(
-        "py_module_available" = function() {},
-        "py_install" = function() {## return what happened.},
-        code = alalalal
+        "py_module_available" = py_module_available_mock,
+        "py_install" = py_install_mock,
+        .package = "reticulate",
+        code = .install_python_packages("mytest", use_conda = TRUE)
     )
+    expect_equal(res, list(packages = "matchms==0.28.2",
+                           envname = "mytest",
+                           method = "conda",
+                           pip = FALSE))
+
+    res <- with_mocked_bindings(
+        "py_module_available" = py_module_available_mock,
+        "py_install" = py_install_mock,
+        .package = "reticulate",
+        code = .install_python_packages("mytest", use_conda = FALSE)
+    )
+    expect_equal(res, list(packages = c("matchms==0.28.2", "numpy==2.0.2"),
+                           envname = "mytest",
+                           method = "virtualenv",
+                           pip = FALSE))
+
+    ## spectrum_utils missing
+    py_module_available_mock <- function(module) {
+        if (module == "matchms")
+            TRUE
+        else FALSE
+    }
+    res <- with_mocked_bindings(
+        "py_module_available" = py_module_available_mock,
+        "py_install" = py_install_mock,
+        .package = "reticulate",
+        code = .install_python_packages("mytest2", use_conda = TRUE)
+    )
+    expect_equal(res, list(packages = "spectrum_utils==0.3.2",
+                           envname = "mytest2",
+                           method = "conda",
+                           pip = FALSE))
+    res <- with_mocked_bindings(
+        "py_module_available" = py_module_available_mock,
+        "py_install" = py_install_mock,
+        .package = "reticulate",
+        code = .install_python_packages("mytest2", use_conda = FALSE)
+    )
+    expect_equal(res,
+                 list(packages = c("spectrum_utils==0.3.2", "numpy==2.0.2"),
+                      envname = "mytest2",
+                      method = "virtualenv",
+                      pip = FALSE))
 })
+
+## test_that(".onLoad works", {
+##     py_install_mock <- function(packages, envname = NULL,
+##                                 method = c("auto", "virtualenv", "conda"),
+##                                 conda = "auto", python_version = NULL,
+##                                 pip = FALSE, ..., pip_ignore_installed = TRUE,
+##                                 ignore_installed = FALSE) {
+##         list(packages = packages, envname = envname, method = method,
+##              pip = pip)
+##     }
+##     expect_message(
+##         with_mocked_bindings(
+##             "py_install" = py_install_mock,
+##             ".spectripy_env" = function() "a",
+##             ".spectripy_use_conda" = function() FALSE,
+##             ".spectripy_use_system" = function() TRUE,
+##             code = .onLoad(libname = "SpectriPy", pkgname = "SpectriPy")
+##         ), "Using system Python")
+##     expect_message(
+##         with_mocked_bindings(
+##             ".spectripy_env" = function() "a",
+##             ".spectripy_use_conda" = function() TRUE,
+##             ".spectripy_use_system" = function() FALSE,
+##             .package = "SpectriPy",
+##             code = .onLoad(libname = "SpectriPy", pkgname = "SpectriPy")
+##         ), "Using conda environment 'a'")
+
+## })

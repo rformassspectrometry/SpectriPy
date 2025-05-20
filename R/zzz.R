@@ -67,16 +67,19 @@ spectrum_utils <- NULL
 #' @importFrom reticulate py_install py_module_available
 .install_python_packages <- function(envname = .spectripy_env(),
                                      use_conda = .spectripy_use_conda(), ...) {
+    res <- character()
     if (!py_module_available("matchms")) {
         packageStartupMessage("Installing required 'matchms' library")
         if (use_conda) {
-            py_install(c("matchms==0.28.2"),
-                       envname = envname, method = "conda", pip = FALSE,
-                       channel = c("bioconda", "conda-forge"), ...)
+            res <- c(res, py_install(
+                              c("matchms==0.28.2"),
+                              envname = envname, method = "conda", pip = FALSE,
+                              channel = c("bioconda", "conda-forge"), ...))
         } else {
-            py_install(c("matchms==0.28.2", "numpy==2.0.2"),
-                       envname = envname, method = "virtualenv",
-                       channel = c("conda-forge"), ...)
+            res <- c(res, py_install(
+                              c("matchms==0.28.2", "numpy==2.0.2"),
+                              envname = envname, method = "virtualenv",
+                              channel = c("conda-forge"), ...))
         }
         packageStartupMessage(
             "\nPlease restart R to load the freshly installed packages.\n")
@@ -84,15 +87,18 @@ spectrum_utils <- NULL
     if (!py_module_available("spectrum_utils")) {
         packageStartupMessage("Installing required 'spectrum_utils' library")
         if (use_conda) {
-            py_install(c("spectrum_utils==0.3.2"),
-                       envname = envname, method = "conda", pip = FALSE,
-                       channel = c("bioconda", "conda-forge"), ...)
-        } else {
-            py_install(c("spectrum_utils==0.3.2", "numpy==2.0.2"),
-                       envname = envname, method = "virtualenv",
-                       channel = c("conda-forge"), ...)
-        }
+            res <- c(res, py_install(
+                              c("spectrum_utils==0.3.2"),
+                              envname = envname, method = "conda", pip = FALSE,
+                              channel = c("bioconda", "conda-forge"), ...))
+            } else {
+                res <- c(res, py_install(
+                                  c("spectrum_utils==0.3.2", "numpy==2.0.2"),
+                                  envname = envname, method = "virtualenv",
+                                  channel = c("conda-forge"), ...))
+                }
         packageStartupMessage(
             "\nPlease restart R to load the freshly installed packages.\n")
     }
+    invisible(res)
 }
