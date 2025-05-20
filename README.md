@@ -4,7 +4,7 @@
 [![R-CMD-check-bioc](https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc)
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
-[![status](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f/status.svg)](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
 
 ![SpectriPy_logo](man/figures/logo_100.png)
 
@@ -25,8 +25,8 @@ and executing them in R using the *reticulate* R package, and vice versa.
 
 If you use *SpectriPy* in your research, please cite:
 
-_SpectriPy: Enhancing Cross-Language Mass Spectrometry Data Analysis with R and
-Python. IN PREPARATION._
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
+
 
 
 # Installation
