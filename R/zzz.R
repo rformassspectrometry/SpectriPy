@@ -55,7 +55,7 @@ spectrum_utils <- NULL
 .spectripy_use_conda <- function() {
     as.logical(getOption(
         "spectripy.use_conda",
-        Sys.getenv("SPECTRIPY_USE_CONDA", unset = "TRUE")))
+        Sys.getenv("SPECTRIPY_USE_CONDA", unset = "FALSE")))
 }
 
 .spectripy_use_system <- function() {
