@@ -1,0 +1,98 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Graeve
+  given-names: Marilyn De
+  orcid: "https://orcid.org/0000-0001-6916-401X"
+- family-names: Bittremieux
+  given-names: Wout
+  orcid: "https://orcid.org/0000-0002-3105-1359"
+- family-names: Naake
+  given-names: Thomas
+  orcid: "https://orcid.org/0000-0001-7917-5580"
+- family-names: Huber
+  given-names: Carolin
+  orcid: "https://orcid.org/0000-0002-9355-8948"
+- family-names: Anagho-Mattanovich
+  given-names: Matthias
+  orcid: "https://orcid.org/0000-0001-7561-7898"
+- family-names: Hoffmann
+  given-names: Nils
+  orcid: "https://orcid.org/0000-0002-6540-6875"
+- family-names: Marchal
+  given-names: Pierre
+  orcid: "https://orcid.org/0009-0006-6567-6257"
+- family-names: Chrone
+  given-names: Victor
+  orcid: "https://orcid.org/0009-0007-2121-4066"
+- family-names: Louail
+  given-names: Philippine
+  orcid: "https://orcid.org/0009-0007-5429-6846"
+- family-names: Hecht
+  given-names: Helge
+  orcid: "https://orcid.org/0000-0001-6744-996X"
+- family-names: Witting
+  given-names: Michael
+  orcid: "https://orcid.org/0000-0002-1462-4426"
+- family-names: Rainer
+  given-names: Johannes
+  orcid: "https://orcid.org/0000-0002-6977-7147"
+contact:
+- family-names: Rainer
+  given-names: Johannes
+  orcid: "https://orcid.org/0000-0002-6977-7147"
+doi: 10.5281/zenodo.15461604
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Graeve
+    given-names: Marilyn De
+    orcid: "https://orcid.org/0000-0001-6916-401X"
+  - family-names: Bittremieux
+    given-names: Wout
+    orcid: "https://orcid.org/0000-0002-3105-1359"
+  - family-names: Naake
+    given-names: Thomas
+    orcid: "https://orcid.org/0000-0001-7917-5580"
+  - family-names: Huber
+    given-names: Carolin
+    orcid: "https://orcid.org/0000-0002-9355-8948"
+  - family-names: Anagho-Mattanovich
+    given-names: Matthias
+    orcid: "https://orcid.org/0000-0001-7561-7898"
+  - family-names: Hoffmann
+    given-names: Nils
+    orcid: "https://orcid.org/0000-0002-6540-6875"
+  - family-names: Marchal
+    given-names: Pierre
+    orcid: "https://orcid.org/0009-0006-6567-6257"
+  - family-names: Chrone
+    given-names: Victor
+    orcid: "https://orcid.org/0009-0007-2121-4066"
+  - family-names: Louail
+    given-names: Philippine
+    orcid: "https://orcid.org/0009-0007-5429-6846"
+  - family-names: Hecht
+    given-names: Helge
+    orcid: "https://orcid.org/0000-0001-6744-996X"
+  - family-names: Witting
+    given-names: Michael
+    orcid: "https://orcid.org/0000-0002-1462-4426"
+  - family-names: Rainer
+    given-names: Johannes
+    orcid: "https://orcid.org/0000-0002-6977-7147"
+  date-published: 2025-05-19
+  doi: 10.21105/joss.08070
+  issn: 2475-9066
+  issue: 109
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 8070
+  title: "SpectriPy: Enhancing Cross-Language Mass Spectrometry Data
+    Analysis with R and Python"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.08070"
+  volume: 10
+title: "SpectriPy: Enhancing Cross-Language Mass Spectrometry Data
+  Analysis with R and Python"

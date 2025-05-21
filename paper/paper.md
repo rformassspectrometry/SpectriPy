@@ -48,27 +48,27 @@ authors:
     corresponding: true
     affiliation: 1
 affiliations:
-  - name: Institute for Biomedicine, Eurac Research, Bolzano, Italy.
+  - name: Institute for Biomedicine, Eurac Research, Bolzano, Italy
     index: 1
-  - name: Department of Computer Science, University of Antwerp, Antwerpen, Belgium.
+  - name: Department of Computer Science, University of Antwerp, Antwerpen, Belgium
     index: 2
-  - name: Genome Biology Unit, European Molecular Biology Laboratory (EMBL), Heidelberg, Germany.
+  - name: Genome Biology Unit, European Molecular Biology Laboratory (EMBL), Heidelberg, Germany
     index: 3
-  - name: Department of Exposure Science, Helmholtz Centre for Environmental Research - UFZ, Leipzig, Germany.
+  - name: Department of Exposure Science, Helmholtz Centre for Environmental Research - UFZ, Leipzig, Germany
     index: 4
-  - name: Novo Nordisk Foundation Center for Basic Metabolic Research, University of Copenhagen, Copenhagen, Denmark.
+  - name: Novo Nordisk Foundation Center for Basic Metabolic Research, University of Copenhagen, Copenhagen, Denmark
     index: 5
-  - name: Institute for Bio- and Geosciences (IBG-5), Forschungszentrum Jülich GmbH, Jülich, Germany.
+  - name: Institute for Bio- and Geosciences (IBG-5), Forschungszentrum Jülich GmbH, Jülich, Germany
     index: 6
-  - name: Department of Medical Oncology, University of Bern, Bern, Switzerland.
+  - name: Department of Medical Oncology, University of Bern, Bern, Switzerland
     index: 7
-  - name: Alphalyse, Odense, Denmark.
+  - name: Alphalyse, Odense, Denmark
     index: 8
-  - name: RECETOX, Faculty of Science, Masaryk University, Brno, Czech Republic.
+  - name: RECETOX, Faculty of Science, Masaryk University, Brno, Czech Republic
     index: 9
-  - name: Metabolomics and Proteomics Core, Helmholtz Zentrum München, Munich, Germany.
+  - name: Metabolomics and Proteomics Core, Helmholtz Zentrum München, Munich, Germany
     index: 10
-  - name: Chair of Analytical Food Chemistry, TUM School of Life Sciences, Technical University of Munich, Freising-Weihenstephan, Germany.
+  - name: Chair of Analytical Food Chemistry, TUM School of Life Sciences, Technical University of Munich, Freising-Weihenstephan, Germany
     index: 11
 date: 03 April 2025
 bibliography: paper.bib
@@ -86,7 +86,7 @@ both R and Python, including R packages from the RforMassSpectrometry initiative
 such as *Spectra*, *MsCoreUtils*, *MetaboAnnotation*, and *CompoundDb*
 [@rainer_modular_2022], as well as Python libraries like *matchms*
 [@huber_matchms_2020], *spectrum_utils* [@bittremieux_spectrum_utils_2020],
-*Pyteomics* [@goloborodko_pyteomics_2013] and *pyOpenMS*
+*Pyteomics* [@goloborodko_pyteomics_2013], and *pyOpenMS*
 [@rost_pyopenms_2014]. The *reticulate* R package [@reticulate_2025] provides an
 R interface to Python enabling interoperability between the two programming
 languages. The open-source *SpectriPy* R package builds upon *reticulate* and
@@ -105,7 +105,7 @@ efficiency and collaboration.
 
 Over the past decade, tremendous efforts have been made to develop powerful
 algorithms and excellent data analysis software for MS data analysis. Each of
-these software covers different and in part complementary aspects in the
+these software packages covers different and in part complementary aspects in the
 analysis of MS data, but their integration into a single workflow remains a
 challenge, in particular across programming languages. To avoid the need for
 repeated implementation of algorithms in different programming languages we
@@ -116,10 +116,13 @@ unified analysis workflows.
 
 # Description
 
-Reproducible examples and use case analyses enabled by *SpectriPy* can be found
-in the package’s vignette and the Metabonaut resource
-[@louail_metabonaut_2025]. In this paper, we focus on the technical details and
-features of the package.
+Reproducible examples and use case analyses on how to share and translate MS
+data structures between R and Python, and combined Python and R-based analysis
+workflows for LC-MS/MS data annotation enabled by *SpectriPy* can be found in
+the package’s vignette and in one of the [example
+workflows](https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html)
+of the Metabonaut resource [@louail_metabonaut_2025]. In this paper, we
+primarily focus on the technical details and features of the package.
 
 ## Installation
 
@@ -139,19 +142,10 @@ MS data structures. In particular, *SpectriPy* provides the functions
 `spectrum_utils.spectrum.MsmsSpectrum` objects. These functions also handle the
 conversion, and any required renaming and reformatting of spectra metadata, such
 as MS level, retention times, or any other arbitrary metadata available in the
-MS data object. For more efficient integration of Python MS data objects into R,
-*SpectriPy* implements a dedicated backend class for `Spectra::Spectra`
-objects. Such backend classes handle the MS data for `Spectra::Spectra`
-objects. Through different backend implementations, `Spectra::Spectra` can gain
-support for additional data and file formats or memory-efficient on-disk or
-remote data storage modes. *SpectriPy*’s `MsBackendPy` backend keeps only a
-reference to the original data object in Python and retrieves and translates MS
-data, or subsets thereof, only upon request from that object. This enables
-seamless and memory-efficient integration of Python MS data objects into R for
-more powerful cross-language analysis workflows. An example of such a combined
-R-Python data analysis workflow, which can be realized e.g. using the Quarto
-system, is provided in the following code snippets. In the Python code block
-below, MS data are imported and processed.
+MS data object. An example combined R-Python data analysis workflow, which can
+be realized using the Quarto system is provided in the following code
+snippets. In this particular example we start the analysis in Python, loading
+and processing the MS data with functions from the *matchms* library.
 
 ```python
 #' Python session:
@@ -166,22 +160,29 @@ for i in range(len(mgf_p)):
   mgf_py[i] = mms_filt.normalize_intensities(mgf_py[i])
 ```
 
-To continue the analysis in R, a `Spectra::Spectra` object with a `MsBackendPy`
-backend class is created, referring to the Python data object defined in the
-associated Python session. All data from this data object is accessible in R,
-with the entire or subsets of the data translated on-the-fly upon request. This
-strategy ensures memory efficiency and minimizes the number of data copies.
+To continue the analysis in R, we could either translate to full MS data to R
+using the `pyspec_to_rspec()` function, or, as shown in the code block below,
+create a `Spectra::Spectra` object using *SpectriPy*'s `MsBackendPy` *backend*
+class. This class acts as an interface to the MS data in the associated Python
+session. All data from the referenced Python data object is accessible in R,
+with the entire or subsets of the data translated on-the-fly from Python to R
+only upon request. This strategy ensures memory efficiency and minimizes the
+number of data copies.
 
 ```r
 #' R session:
 #'  Create an R data object for the MS data in the associated Python session
 library(Spectra)
 library(SpectriPy)
-sps <- Spectra(“mgf_py”, source = MsBackendPy())
+sps <- Spectra("mgf_py", source = MsBackendPy())
 
 #'  Retrieve the MS peaks data for the 1st spectrum
 peaksData(sps[1])
 ```
+
+The use of the `MsBackendPy` enables thus seamless and, compared to the
+alternative `pyspec_to_rspec()`, more memory-efficient integration of Python MS
+data objects into R for powerful cross-language analysis workflows.
 
 ## Integrated functionality from the *matchms* Python library
 
@@ -194,16 +195,41 @@ and convert the results to R data types, enabling the integration of
 functionality from the *matchms* Python library directly into R-based analysis
 workflows.
 
+As such, *SpectriPy* provides an easy way to compare spectra
+similarity functions from commonly-used R and Python libraries, e.g. during
+LC-MS/MS data annotation. As an example, the Cosine (i.e., Dot product) and
+Cosine Hungarian similarity scores are compared between two sets of spectra,
+calculated with *Spectra*'s built-in `compareSpectra()` and *SpectriPy*'s
+`compareSpectriPy()` calling the `CosineHungarian` function from *matchms*,
+respectively.
+
+```r
+#' R session:
+#'  Calculate similarity scores
+res_cosine <- compareSpectra(sps1, sps2)
+res_cosinehungarian <- compareSpectriPy(
+    sps1, sps2, param = CosineHungarian(tolerance = 0.1))
+
+#'  Plot the similarity scores
+plot(res_cosine, res_cosinehungarian, pch = 21, col = "#000000ce",
+     bg = "#00000060", xlab = "Dot product", ylab = "Cosine Hungarian")
+grid()
+```
+
+![Comparison of different spectra similarity scores calculated with either the
+*Spectra* R package or the Python *matchms* library.](spectral_similarity_comparison.png){height="300pt"}
+
 # Perspective
 
 *SpectriPy* started as a collaboration of R and Python developers, with the
-latest contributions added during the EuBIC-MS Developers Meeting
-in 2025. Collaborative development will be further encouraged to extend
-*SpectriPy* with additional functionality, support for additional libraries, and
-data structures. New use cases will be integrated into larger interactive
-tutorial frameworks such as the Metabonaut resource [@louail_metabonaut_2025],
-enabling users to seamlessly integrate R and Python into their MS data analysis
-pipelines.
+latest contributions added during the EuBIC-MS Developers Meeting in
+2025. Collaborative development will be further encouraged to extend *SpectriPy*
+with additional functionality (e.g., advanced spectra similarity matching methods
+*spec2vec* and *ms2deepscore*), support for additional libraries
+(e.g., *Pyteomics*, *pyOpenMS*), and data structures. New use cases will be
+integrated into larger interactive tutorial frameworks such as the Metabonaut
+resource [@louail_metabonaut_2025], enabling users to seamlessly integrate R and
+Python into their MS data analysis pipelines.
 
 Ultimately, the long-term goal is to promote cross-language compatibility and
 reproducibility in computational mass spectrometry. By leveraging the strengths
@@ -212,7 +238,7 @@ data analysis workflows, reduce redundancy and promote innovation in the field.
 
 # Acknowledgements
 
-The authors declare to not have any competing financial or personal interests
+The authors declare that they do not have any competing financial or personal interests
 that could have influenced the work reported in this paper. Part of this work
 was supported by the European Union HORIZON-MSCA-2021 project 101073062:
 "HUMAN - Harmonizing and unifying blood metabolic analysis networks" to

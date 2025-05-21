@@ -6,8 +6,8 @@
 #'
 #' The `MsBackendPy` allows to access MS data stored as `matchms.Spectrum`
 #' or `spectrum_utils.spectrum.MsmsSpectrum` objects from the
-#' [matchms](https://github.com/matchms/matchms) respectively
-#' [spectrum_utils](https://github.com/bittremieux-lab/spectrum_utils) Python
+#' [*matchms*](https://github.com/matchms/matchms) respectively
+#' [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) Python
 #' library directly from R. The MS data (peaks data or spectra variables) are
 #' translated on-the-fly when accessed. Thus, the `MsBackendPy` allows a
 #' seamless integration of Python MS data structures into [Spectra::Spectra()]

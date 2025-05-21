@@ -12,7 +12,7 @@ spectrum_utils <- NULL
 #'
 #' @importFrom reticulate py_install virtualenv_exists virtualenv_create
 #'
-#' @importFrom reticulate conda_list conda_create install_miniconda()
+#' @importFrom reticulate conda_list conda_create install_miniconda
 .onLoad <- function(libname, pkgname) {
     envname <- .spectripy_env()
     use_conda <- .spectripy_use_conda()
@@ -81,7 +81,7 @@ spectrum_utils <- NULL
                               use_conda = .spectripy_use_conda()) {
     any_install <- FALSE
     for (pkg in pkgs) {
-        if (!py_module_available(pkg)) {
+        if (!py_module_available(sub("(>|=).*$", "", pkg))) {
             any_install <- TRUE
             message("Installing required library '", pkg,"'")
             if (use_conda)

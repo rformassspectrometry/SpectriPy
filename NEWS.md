@@ -1,11 +1,17 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.2
+
 - Add support for parameter `data` to `backendInitialize()`.
+
+## Changes in 0.99.1
+
+- Check for presence of conda and eventually install miniconda through
+  *reticulate*.
 
 ## Changes in 0.99.0
 
 - Prepare for Bioconductor submission.
-
 
 # SpectriPy 0.5
 

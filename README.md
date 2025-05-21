@@ -1,10 +1,10 @@
-# Integrating [*Spectra*](https://github.com/RforMassSpectrometry/Spectra) with Python's *matchms* library
+# Enhancing Cross-Language Mass Spectrometry Data Analysis with R and Python
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check-bioc](https://github.com/RforMassSpectrometry/SpectriPy/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/RforMassSpectrometry/SpectriPy/actions?query=workflow%3AR-CMD-check-bioc)
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
-[![status](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f/status.svg)](https://joss.theoj.org/papers/58765b0ffd655f01192ba3660b35900f)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
 
 ![SpectriPy_logo](man/figures/logo_100.png)
 
@@ -13,24 +13,31 @@ The *SpectriPy* package allows integration of Python MS packages into a
 in R. By wrapping Python functionality into R functions, *SpectriPy* allows a
 seamless integration of Python libraries into R. For example, *SpectriPy* can
 leverage the spectral similarity, filtering, normalization etc. calculations
-from the Python [*matchms*](https://github.com/matchms/) library and contains
-functions to convert between R's `Spectra::Spectra` objects and Python's
-`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects. R and
-Python spectral objects are easily translated  and available in one workflow
-(i.e. a quarto document), enabling the advanced  user or developer to create
-custom functions or workflows on `Spectra` objects in Python and executing
-them in R using the *reticulate* R package, and vice versa.
+from the Python [*matchms*](https://github.com/matchms) library and contains
+functions to convert between R's `Spectra::Spectra` objects and
+`matchms.Spectrum` and `spectrum_utils.spectrum.MsmsSpectrum` objects from the
+Python [*matchms*](https://github.com/matchms) and
+[*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) libraries,
+respectively. R and Python spectral objects are easily translated and available
+in one workflow (i.e., a quarto document), enabling the advanced user or
+developer to create custom functions or workflows on `Spectra` objects in Python
+and executing them in R using the *reticulate* R package, and vice versa.
 
 If you use *SpectriPy* in your research, please cite:
 
-_SpectriPy: Enhancing Cross-Language Mass Spectrometry Data Analysis with R and
-Python. IN PREPARATION._
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
+
 
 
 # Installation
 
-Detailed information on the [installation and configuration of SpectriPy](detailed-installation-configuration.qmd),
-including guidelines for first time R users can be found under the "vignettes".
+Detailed installation instructions can be found in the [installation and
+configuration](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html)
+vignette. More advanced instructions and Python configuration, e.g. to use
+*virtualenv* instead of the default *miniconda*-based setup can be found in
+the [Startup and Python
+configuration](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
+section of the main vignette.
 
 TLDR:
 
@@ -70,9 +77,9 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 See the extensive documentation for the use of *SpectriPy*:
 
 - The rendered [SpectriPy package’s vignette](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html),
-- The code of the [SpectriPy vignette](vignettes/SpectriPy.qmd),
-- A [tutorial](vignettes/SpectriPy_tutorial.qmd) for the annotation of LC-MS/MS
-spectra using an MGF library and the CosineGreedy algorithm from *matchms*.
+- The [function reference](https://rformassspectrometry.github.io/SpectriPy/reference/index.html),
+- A [tutorial](https://rformassspectrometry.github.io/Metabonaut/articles/SpectriPy_tutorial_metabonaut.html) for the annotation of LC-MS/MS
+spectra using an MGF library and the ModifiedCosine algorithm from *matchms*.
 
 TLDR:
 
