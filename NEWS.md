@@ -1,5 +1,10 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.1
+
+- Check for presence of conda and eventually install miniconda through
+  *reticulate*.
+
 ## Changes in 0.99.0
 
 - Prepare for Bioconductor submission.
