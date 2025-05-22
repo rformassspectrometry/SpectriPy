@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.2
+
+- Use Python virtualenv instead of miniconda.
+
 ## Changes in 0.99.1
 
 - Check for presence of conda and eventually install miniconda through
