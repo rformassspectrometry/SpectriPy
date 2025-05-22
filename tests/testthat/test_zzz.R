@@ -93,102 +93,88 @@ test_that(".py_check_install works", {
     )
 })
 
-## test_that(".install_python_packages works", {
-##     py_install_mock <- function(packages, envname = NULL,
-##                                 method = c("auto", "virtualenv", "conda"),
-##                                 conda = "auto", python_version = NULL,
-##                                 pip = FALSE, ..., pip_ignore_installed = TRUE,
-##                                 ignore_installed = FALSE) {
-##         list(packages = packages, envname = envname, method = method,
-##              pip = pip)
-##     }
-##     .is_matchms_available_mock <- function() FALSE
-##     py_module_available_mock <- function(module) {
-##         return(FALSE)
-##     }
-
-##     res <- with_mocked_bindings(
-##         "py_module_available" = py_module_available_mock,
-##         .package = "reticulate",
-##         code = py_module_available("numpy")
-##     )
-##     expect_false(res)
-
-##     res <- with_mocked_bindings(
-##         ".is_matchms_available" = function() FALSE,
-##         "py_install" = py_install_mock,
-##         .package = "reticulate",
-##         code = SpectriPy:::.install_python_packages("mytest", use_conda = TRUE)
-##     )
-##     expect_equal(res, list(packages = "matchms==0.28.2",
-##                            envname = "mytest",
-##                            method = "conda",
-##                            pip = FALSE))
-
-##     res <- with_mocked_bindings(
-##         "py_module_available" = py_module_available_mock,
-##         "py_install" = py_install_mock,
-##         .package = "reticulate",
-##         code = SpectriPy:::.install_python_packages("mytest", use_conda = FALSE)
-##     )
-##     expect_equal(res, list(packages = c("matchms==0.28.2", "numpy==2.0.2"),
-##                            envname = "mytest",
-##                            method = "virtualenv",
-##                            pip = FALSE))
-
-##     ## spectrum_utils missing
-##     py_module_available_mock <- function(module) {
-##         if (module == "matchms")
-##             TRUE
-##         else FALSE
-##     }
-##     res <- with_mocked_bindings(
-##         "py_module_available" = py_module_available_mock,
-##         "py_install" = py_install_mock,
-##         .package = "reticulate",
-##         code = SpectriPy:::.install_python_packages("mytest2", use_conda = TRUE)
-##     )
-##     expect_equal(res, list(packages = "matchms==0.28.2",
-##                            envname = "mytest2",
-##                            method = "conda",
-##                            pip = FALSE))
-##     res <- with_mocked_bindings(
-##         "py_module_available" = py_module_available_mock,
-##         "py_install" = py_install_mock,
-##         .package = "reticulate",
-##         code = SpectriPy:::.install_python_packages("mytest2", use_conda = FALSE)
-##     )
-##     expect_equal(res,
-##                  list(packages = c("spectrum_utils==0.3.2", "numpy==2.0.2"),
-##                       envname = "mytest2",
-##                       method = "virtualenv",
-##                       pip = FALSE))
-## })
-
 ## test_that(".onLoad works", {
-##     py_install_mock <- function(packages, envname = NULL,
-##                                 method = c("auto", "virtualenv", "conda"),
-##                                 conda = "auto", python_version = NULL,
-##                                 pip = FALSE, ..., pip_ignore_installed = TRUE,
-##                                 ignore_installed = FALSE) {
-##         list(packages = packages, envname = envname, method = method,
-##              pip = pip)
-##     }
-##     expect_message(
-##         with_mocked_bindings(
-##             "py_install" = py_install_mock,
-##             ".spectripy_env" = function() "a",
-##             ".spectripy_use_conda" = function() FALSE,
-##             ".spectripy_use_system" = function() TRUE,
-##             code = .onLoad(libname = "SpectriPy", pkgname = "SpectriPy")
-##         ), "Using system Python")
-##     expect_message(
-##         with_mocked_bindings(
-##             ".spectripy_env" = function() "a",
-##             ".spectripy_use_conda" = function() TRUE,
-##             ".spectripy_use_system" = function() FALSE,
-##             .package = "SpectriPy",
-##             code = .onLoad(libname = "SpectriPy", pkgname = "SpectriPy")
-##         ), "Using conda environment 'a'")
-
+##     matchms <- NULL
+##     res <- .onLoad("SpectriPy", "SpectriPy")
 ## })
+
+test_that(".initialize_conda works", {
+    ## Define mock functions for *reticulate*
+    conda_create_mock <- function(envname = NULL, packages = NULL, ...,
+                                  forge = TRUE, channel = character(),
+                                  environment = NULL, conda = "auto",
+                                  python_version = miniconda_python_version(),
+                                  additional_create_args = character()) {
+        TRUE
+    }
+    use_condaenv_mock <- function(condaenv = NULL, conda = "auto",
+                                  required = NULL) {
+        TRUE
+    }
+    ## Run test
+    expect_message(
+        res <- with_mocked_bindings(
+            "conda_list" = function(conda = "auto") list(),
+            "conda_create" = conda_create_mock,
+            "use_condaenv" = use_condaenv_mock,
+            ".py_check_install" = function(pkgs, envname = .spectripy_env(),
+                                           use_conda = .spectripy_use_conda()) {
+                c(pkgs, envname, use_conda)
+            },
+            code = SpectriPy:::.initialize_conda("aa")
+        ), "Creating conda environment 'aa'")
+    expect_equal(res, c(matchms = "matchms==0.28.2",
+                        spectrum_utils = "spectrum_utils==0.3.2",
+                        "aa", TRUE))
+})
+
+test_that(".initialize_virtualenv works", {
+    ## Define mock functions for *reticulate*
+    virtualenv_create_mock <-
+        function(envname = NULL, python = virtualenv_starter(version),
+                 ..., version = NULL, packages = "numpy", requirements = NULL,
+                 force = FALSE,
+                 module = getOption("reticulate.virtualenv.module"),
+                 system_site_packages = getOption(
+                     "reticulate.virtualenv.system_site_packages",
+                     default = FALSE),
+                 pip_version = getOption("reticulate.virtualenv.pip_version",
+                                         default = NULL),
+                 setuptools_version = getOption(
+                     "reticulate.virtualenv.setuptools_version",
+                     default = NULL),
+                 extra = getOption("reticulate.virtualenv.extra",
+                                   default = NULL)) TRUE
+    virtualenv_exists_mock <- function(envname = NULL) FALSE
+    use_virtualenv_mock <- function(virtualenv = NULL, required = NULL) TRUE
+    ## Run test
+    expect_message(
+        res <- with_mocked_bindings(
+            "virtualenv_create" = virtualenv_create_mock,
+            "virtualenv_exists" = virtualenv_exists_mock,
+            "use_virtualenv" = use_virtualenv_mock,
+            ".py_check_install" = function(pkgs, envname = .spectripy_env(),
+                                           use_conda = .spectripy_use_conda()) {
+                c(pkgs, envname, use_conda)
+            },
+            code = SpectriPy:::.initialize_virtualenv("bb")
+        ), "Creating virtual environment 'bb'")
+    expect_equal(res, c(matchms = "matchms==0.28.2",
+                        spectrum_utils = "spectrum_utils==0.3.2",
+                        "bb", FALSE))
+})
+
+test_that(".initialize_libraries works", {
+    matchms <- NULL
+    matchms_similarity <- NULL
+    matchms_filtering <- NULL
+    spectrum_utils <- NULL
+    ## import_mock <- function(module, as = NULL, convert = TRUE,
+    ##                         delay_load = FALSE) module
+    ## with_mocked_bindings(
+    ##     "import" = import_mock,
+    ##     .package = "reticulate",
+    ##     code = .initialize_libraries()
+    ## )
+    ## expect_equal(matchms, "matchms")
+})
