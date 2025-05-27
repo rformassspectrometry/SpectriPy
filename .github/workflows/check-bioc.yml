@@ -113,21 +113,6 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
 
-      - name: Install Miniconda
-        run: |
-          Rscript -e "install.packages('reticulate')"
-          Rscript -e "reticulate::install_miniconda()"
-
-      - name: Fix conda for macOS
-        if: runner.os == 'macOS'
-        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> ~/.Rprofile
-
-      - name: Install libraries for macOS
-        if: runner.os == 'macOS'
-        run: |
-          Rscript -e "reticulate::conda_create('r-spectripy')"
-          Rscript -e "reticulate::conda_install(envname = 'r-spectripy', packages = c('matchms==0.28.2'), channel = c('bioconda', 'conda-forge'))"
-
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
         uses: actions/cache@v4
@@ -157,9 +142,6 @@ jobs:
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-          Rscript -e "reticulate:::miniconda_path()"
-          export RETICULATE_MINICONDA_PATH='/Users/runner/Library/r-miniconda-arm64/'
-          Rscript -e 'remotes::install_github("RforMassSpectrometry/SpectriPy",args = "--no-manual", build_args = "--no-build-vignettes")'
         shell: bash {0}
 
       - name: Install Windows system dependencies
