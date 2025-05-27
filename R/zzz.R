@@ -4,7 +4,7 @@ matchms_similarity <- NULL
 matchms_filtering <- NULL
 spectrum_utils <- NULL
 
-.PY_PKGS <- c(matchms = "matchms==0.28.2",
+.PY_PKGS <- c(matchms = "matchms==0.30.0",
               spectrum_utils = "spectrum_utils==0.3.2",
               numpy = "numpy==2.0.2")
 

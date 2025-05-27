@@ -123,7 +123,7 @@ test_that(".initialize_conda works", {
             },
             code = SpectriPy:::.initialize_conda("aa")
         ), "Creating conda environment 'aa'")
-    expect_equal(res, c(matchms = "matchms==0.28.2",
+    expect_equal(res, c(matchms = "matchms==0.30.0",
                         spectrum_utils = "spectrum_utils==0.3.2",
                         "aa", TRUE))
 })
@@ -159,7 +159,7 @@ test_that(".initialize_virtualenv works", {
             },
             code = SpectriPy:::.initialize_virtualenv("bb")
         ), "Creating virtual environment 'bb'")
-    expect_equal(res, c(matchms = "matchms==0.28.2",
+    expect_equal(res, c(matchms = "matchms==0.30.0",
                         spectrum_utils = "spectrum_utils==0.3.2",
                         "bb", FALSE))
 })
