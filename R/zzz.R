@@ -12,7 +12,7 @@ spectrum_utils <- NULL
 #'
 #' @importFrom reticulate py_install virtualenv_exists virtualenv_create
 #'
-#' @importFrom reticulate conda_list conda_create install_miniconda
+#' @importFrom reticulate conda_list conda_create
 .onLoad <- function(libname, pkgname) {
     if (!.spectripy_use_system()) {
         if (.spectripy_use_conda()) .initialize_conda()
