@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,12 +87,13 @@
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reticulate"</span><span class="op">)</span></span>
-<span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </section><section class="level2"><h3 id="configure-reticulate-with-host-system-python-environment-optional">Configure reticulate with host system Python environment (optional)<a class="anchor" aria-label="anchor" href="#configure-reticulate-with-host-system-python-environment-optional"></a>
 </h3>
 <p>The installation of <em>reticulate</em> can be configured to use an available Python environment of the host system, instead of using the automatic setup.</p>
-<p>The path to the python3 executable file needs to be specified in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> function of <em>reticulate</em>. A conda environment used in the analysis will also created below, ensuring a specific Python environment for <em>reticulate</em>.</p>
+<p>The path to the python3 executable file needs to be specified in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> function of <em>reticulate</em>. A conda environment used in the analysis will also created below, ensuring a specific Python environment for <em>reticulate</em>. Note that the path specified below in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> call might be different depending on the operating system or setup. Eventually refer to the installation log/output from the previous code block if miniconda was installed with the <code><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda()</a></code> function.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
@@ -254,7 +255,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base
 
 other attached packages:
-[1] SpectriPy_0.99.2  reticulate_1.42.0
+[1] SpectriPy_0.99.3  reticulate_1.42.0
 
 loaded via a namespace (and not attached):
  [1] Spectra_1.19.2         cli_3.6.5              knitr_1.50
@@ -266,7 +267,7 @@ loaded via a namespace (and not attached):
 [19] yaml_2.3.10            IRanges_2.43.0         MsCoreUtils_1.21.0
 [22] cluster_2.1.8.1        compiler_4.5.0         codetools_0.2-20
 [25] fs_1.6.6               Rcpp_1.0.14            MetaboCoreUtils_1.17.1
-[28] BiocParallel_1.43.2    lattice_0.22-7         digest_0.6.37
+[28] BiocParallel_1.43.3    lattice_0.22-7         digest_0.6.37
 [31] parallel_4.5.0         Matrix_1.7-3           tools_4.5.0
 [34] BiocGenerics_0.55.0   </code></pre>
 </div>
