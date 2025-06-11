@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.3
+
+- Address Bioconductor review comments.
+
 ## Changes in 0.99.2
 
 - Use Python virtualenv instead of miniconda.

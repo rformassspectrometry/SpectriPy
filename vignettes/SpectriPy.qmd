@@ -75,8 +75,7 @@ To install the package use the code below:
 ```{r}
 #| eval: false
 install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager::install("SpectriPy")
 ```
 
 
@@ -115,6 +114,15 @@ library(SpectriPy)
 In this section we show how MS data can be converted from R to Python. Below we
 first define the name and path of a data file in mzML format (provided by the
 `r BiocStyle::Biocpkg("msdata")` package) and load that data as an R `Spectra`
+object. We thus first ensure that the package *msdata* is installed. If the line
+below results in an error you need to first install *msdata* using
+`BiocManager::install("msdata")`.
+
+```{r}
+stopifnot(require("msdata"))
+```
+
+Next, we define the file path to the test file and load the data as a `Spectra`
 object.
 
 ```{r}

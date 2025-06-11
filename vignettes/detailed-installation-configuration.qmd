@@ -42,7 +42,8 @@ installed with the *reticulate* package (which needs to be first installed with
 #' R session:
 
 install.packages("reticulate")
-reticulate::install_miniconda()
+library(reticulate)
+install_miniconda()
 ```
 
 
@@ -54,7 +55,10 @@ environment of the host system, instead of using the automatic setup.
 The path to the python3 executable file needs to be specified in the
 `use_python()` function of *reticulate*. A conda environment used in the
 analysis will also created below, ensuring a specific Python environment for
-*reticulate*.
+*reticulate*. Note that the path specified below in the `use_python()` call
+might be different depending on the operating system or setup. Eventually refer
+to the installation log/output from the previous code block if miniconda was
+installed with the `install_miniconda()` function.
 
 ```{r}
 #| eval: false
