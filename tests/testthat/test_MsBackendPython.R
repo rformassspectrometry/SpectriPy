@@ -35,6 +35,15 @@ test_that(".check_spectra_variable_mapping works", {
 test_that(".get_py works", {
     res <- .get_py()
     expect_true(is(res, "python.builtin.module"))
+
+    ## expect_error(
+    ##     with_mocked_bindings(
+    ##         "base::get" = function(x, pos = -1L, envir = as.environment(pos),
+    ##                          mode = "any", inherits = TRUE) stop("aaaa"),
+    ##         code = .get_py()
+    ##     ),
+    ##     "Failed to get variable"
+    ## )
 })
 
 test_that(".exists_py_var works", {
@@ -90,6 +99,12 @@ test_that(".py_var_length, length,MsBackendPy works", {
     expect_equal(.py_var_length(MsBackendPy()), 0L)
     expect_equal(length(be), 100L)
     expect_equal(length(MsBackendPy()), 0L)
+
+    ## dddd <- 1:10
+    ## be2 <- MsBackendPy()
+    ## be2@is_in_py <- FALSE
+    ## be2@py_var <- "dddd"
+    ## expect_equal(SpectriPy:::.py_var_length(be2), 10L)
 })
 
 test_that("spectraVariables and .py_get_metadata_names works", {
@@ -126,6 +141,12 @@ test_that("spectraVariables and .py_get_metadata_names works", {
                       "retention_time", "identifier"))
     res <- spectraVariables(be)
     expect_true(all(names(m) %in% res))
+
+    be2 <- MsBackendPy()
+    be2@py_var <- "hey"
+    be2@is_in_py <- FALSE
+    hey <- integer()
+    expect_equal(.py_get_metadata_names(be2), character())
 })
 
 test_that("peaksData,MsBackendPy works", {
@@ -429,6 +450,13 @@ test_that("rtime,MsBackendPy works", {
     res <- rtime(be)
     expect_true(is.numeric(res))
     expect_equal(res, rtime(s@backend))
+
+    s2 <- s[1:4]
+    s2$rtime <- c(1.2, 3.4, 5.3, 5.9)
+    py_set_attr(py, "s_p2",
+                rspec_to_pyspec(s2, defaultSpectraVariableMapping()))
+    be <- backendInitialize(MsBackendPy(), "s_p2")
+    expect_equal(rtime(be), rtime(s2))
 })
 
 test_that("scanIndex,MsBackendPy works", {
@@ -459,4 +487,36 @@ test_that("tic,MsBackendPy works", {
     res <- tic(be, initial = FALSE)
     expect_true(is.numeric(res))
     expect_equal(res, tic(s@backend, initial = FALSE))
+
+    s2 <- s[1:4]
+    s2$totIonCurrent <- 123.2
+    py_set_attr(py, "s_p2",
+                rspec_to_pyspec(s2, c(defaultSpectraVariableMapping(),
+                                      totIonCurrent = "totIonCurrent")))
+    be <- backendInitialize(
+        MsBackendPy(), "s_p2",
+        spectraVariableMapping = c(defaultSpectraVariableMapping(),
+                                   totIonCurrent = "totioncurrent"))
+    expect_equal(tic(be, initial = TRUE), c(123.2, 123.2, 123.2, 123.2))
+})
+
+test_that("spectraVariableMapping,spectraVariableMapping<- works", {
+    s2 <- s[1:4]
+    s2$totIonCurrent <- 123.2
+    py_set_attr(py, "s_p2",
+                rspec_to_pyspec(s2, c(defaultSpectraVariableMapping(),
+                                      totIonCurrent = "tot_ion_current")))
+    be <- backendInitialize(MsBackendPy(), "s_p2")
+    expect_equal(spectraVariableMapping(be), defaultSpectraVariableMapping())
+
+    expect_false("totIonCurrent" %in% spectraVariables(be))
+    spectraVariableMapping(be) <- c(spectraVariableMapping(be),
+                                    totIonCurrent = "tot_ion_current")
+    expect_true("totIonCurrent" %in% spectraVariables(be))
+
+    s3 <- Spectra(be)
+    expect_error(spectraVariableMapping(s3) <- "rtime", "needs to be a named")
+    spectraVariableMapping(s3) <- c(rtime = "retention_time")
+    expect_equal(spectraVariableMapping(s3@backend),
+                 c(rtime = "retention_time"))
 })

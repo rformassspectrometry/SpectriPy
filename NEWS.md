@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.4
+
+- Refactor functions to initialize Python libraries.
+
 ## Changes in 0.99.3
 
 - Address Bioconductor review comments.

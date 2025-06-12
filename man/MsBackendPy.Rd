@@ -10,6 +10,7 @@
 \alias{$,MsBackendPy-method}
 \alias{spectraVariableMapping<-,MsBackendPy-method}
 \alias{spectraVariableMapping<-,Spectra-method}
+\alias{spectraVariableMapping,MsBackendPy-method}
 \alias{reindex}
 \title{A MS data backend for MS data stored in Python}
 \usage{
@@ -35,6 +36,8 @@
 \S4method{spectraVariableMapping}{MsBackendPy}(object) <- value
 
 \S4method{spectraVariableMapping}{Spectra}(object) <- value
+
+\S4method{spectraVariableMapping}{MsBackendPy}(object, value)
 
 reindex(object)
 }
@@ -152,6 +155,8 @@ retrieved and added to the returned \code{DataFrame} (with eventually missing
 \item \code{spectraVariables()}: retrieves available spectra variables, which include
 the names of all metadata attributes in the \code{matchms.Spectrum} objects
 and the \emph{core} spectra variables \code{\link[Spectra:spectraData]{Spectra::coreSpectraVariables()}}.
+\item \code{spectraVariableMapping()}: get the currently defined mapping for
+\code{spectraVariables()} of the backend.
 \item \verb{spectraVariableMapping<-}: replaces the \code{spectraVariableMapping} of the
 backend (see \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} for details and description
 of the expected format).

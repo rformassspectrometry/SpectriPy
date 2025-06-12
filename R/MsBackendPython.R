@@ -81,6 +81,9 @@
 #'   the names of all metadata attributes in the `matchms.Spectrum` objects
 #'   and the *core* spectra variables [Spectra::coreSpectraVariables()].
 #'
+#' - `spectraVariableMapping()`: get the currently defined mapping for
+#'   `spectraVariables()` of the backend.
+#'
 #' - `spectraVariableMapping<-`: replaces the `spectraVariableMapping` of the
 #'   backend (see [setSpectraVariableMapping()] for details and description
 #'   of the expected format).
@@ -537,6 +540,8 @@ setMethod("tic", "MsBackendPy", function(object, initial = TRUE) {
 #' @importMethodsFrom Spectra spectraVariableMapping<-
 #'
 #' @rdname MsBackendPy
+#'
+#' @export
 setReplaceMethod(
     "spectraVariableMapping", "MsBackendPy", function(object, value) {
         .check_spectra_variable_mapping(value)
@@ -548,6 +553,15 @@ setReplaceMethod(
 setReplaceMethod("spectraVariableMapping", "Spectra", function(object, value) {
     spectraVariableMapping(object@backend) <- value
     object
+})
+
+#' @importMethodsFrom Spectra spectraVariableMapping
+#'
+#' @exportMethod spectraVariableMapping
+#'
+#' @rdname MsBackendPy
+setMethod("spectraVariableMapping", "MsBackendPy", function(object, value) {
+    object@spectraVariableMapping
 })
 
 #' @rdname MsBackendPy

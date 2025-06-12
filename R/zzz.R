@@ -18,27 +18,26 @@ spectrum_utils <- NULL
         if (.spectripy_use_conda()) .initialize_conda()
         else .initialize_virtualenv()
     }
-    .initialize_libraries(delay_load = TRUE, convert = FALSE)
+    .initialize_libraries2(TRUE, FALSE, asNamespace(pkgname))
 }
 
-#' Load all required Python libraries and assign it to global variables
+#' Load all required Python libraries and assign it to package-internal
+#' variables
 #'
 #' @noRd
-.initialize_libraries <- function(delay_load = TRUE, convert = FALSE) {
-    if (.spectripy_use_system())
-        packageStartupMessage("Using system Python")
-    matchms <<- import("matchms",
-                       delay_load = delay_load,
-                       convert = convert)
-    matchms_similarity <<- import("matchms.similarity",
-                                  delay_load = delay_load,
-                                  convert = convert)
-    matchms_filtering <<- import("matchms.filtering",
-                                 delay_load = delay_load,
-                                 convert = convert)
-    spectrum_utils <<- import("spectrum_utils",
-                              delay_load = delay_load,
-                              convert = convert)
+.initialize_libraries2 <- function(delay_load = TRUE, convert = FALSE,
+                                   envir = new.env()) {
+    assign("matchms", import("matchms", delay_load = delay_load,
+                             convert = convert), envir = envir)
+    assign("matchms_similarity",
+           import("matchms.similarity", delay_load = delay_load,
+                  convert = convert), envir = envir)
+    assign("matchms_filtering",
+           import("matchms.filtering", delay_load = delay_load,
+                  convert = convert), envir = envir)
+    assign("spectrum_utils",
+           import("spectrum_utils", delay_load = delay_load,
+                  convert = convert), envir = envir)
 }
 
 #' Initialize the conda environment creating it if not already present
@@ -102,5 +101,6 @@ spectrum_utils <- NULL
         }
     }
     if (any_install)
-        packageStartupMessage("\nPlease restart R to load the freshly installed packages.\n")
+        packageStartupMessage("\nPlease restart R to load the freshly ",
+                              "installed packages.\n")
 }
