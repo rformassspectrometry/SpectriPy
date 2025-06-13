@@ -90,7 +90,7 @@ jobs:
       - name: Install macOS system dependencies part 1
         if: matrix.config.os == 'macOS-latest'
         run: |
-          brew install netcdf
+          brew install netcdf pyenv
         shell: bash {0}
 
         ## Install R dependencies using R-lib
