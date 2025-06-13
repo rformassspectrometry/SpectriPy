@@ -142,7 +142,10 @@ jobs:
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-        shell: bash {0}
+          install.packages('reticulate', dependencies = c('Depends','Imports'))
+          library(reticulate)
+          reticulate::install_python()
+        shell: Rscript {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
