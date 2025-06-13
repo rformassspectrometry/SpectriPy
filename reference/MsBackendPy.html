@@ -27,7 +27,7 @@ directly change the data in the referenced Python variable."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,6 +103,9 @@ directly change the data in the referenced Python variable.</p>
 <span></span>
 <span><span class="co"># S4 method for class 'Spectra'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -234,6 +237,8 @@ retrieved and added to the returned <code>DataFrame</code> (with eventually miss
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables()</a></code>: retrieves available spectra variables, which include
 the names of all metadata attributes in the <code>matchms.Spectrum</code> objects
 and the <em>core</em> spectra variables <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">Spectra::coreSpectraVariables()</a></code>.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: get the currently defined mapping for
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables()</a></code> of the backend.</p></li>
 <li><p><code>spectraVariableMapping&lt;-</code>: replaces the <code>spectraVariableMapping</code> of the
 backend (see <code><a href="conversion.html">setSpectraVariableMapping()</a></code> for details and description
 of the expected format).</p></li>
