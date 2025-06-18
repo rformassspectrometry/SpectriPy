@@ -171,16 +171,26 @@
 #' ## conversions.
 #' py_set_attr(py, "s_p", rspec_to_pyspec(s))
 #'
-#'
 #' ## Create a `MsBackendPy` representing an interface to the data in the
 #' ## "s_p" variable in Python:
 #' be <- backendInitialize(MsBackendPy(), "s_p")
 #' be
 #'
+#' ## An easier way to change the data representation of a `Spectra` object
+#' ## from R to Python is to use the `Spectra`'s `setBackend()` method
+#' ## selecting a `MsBackendPy` as the target backend representation:
+#' s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2")
+#' s_2
+#'
+#' ## This moved the data from R to Python, storing it in a Python variable
+#' ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
+#' ## with all MS data however stored in Python.
+#'
 #' ## Alternatively, by passing the full MS data with parameter `data`, the
 #' ## data is first converted to Python and the backend is initialized with
-#' ## that data.
-#' be <- backendInitialize(MsBackendPy(), "s_p2",
+#' ## that data. The `setBackend()` call from above internally uses this
+#' ## code to convert the data.
+#' be <- backendInitialize(MsBackendPy(), "s_p3",
 #'     data = spectraData(s, c(spectraVariables(s), "mz", "intensity")))
 #'
 #' ## Create a Spectra object which this backend:
@@ -281,10 +291,10 @@ setMethod("backendInitialize", "MsBackendPy",
               object@spectraVariableMapping <- spectraVariableMapping
               pythonLibrary <- match.arg(pythonLibrary)
               if (!length(pythonVariableName))
-                  stop("'pythonVariableName' has to be provided")
+                  stop("'pythonVariableName' has to be provided", call. = FALSE)
               if (!is.character(pythonVariableName))
                   stop("'pythonVariableName' is expected to be the name ",
-                       "of the variable with the data.")
+                       "of the variable with the data.", call. = FALSE)
               if (missing(data)) {
                   ## 1) Check if the variable exists - and whether it's in py or
                   ##    in R. Set the `is_in_py` variable depending on that.
@@ -302,9 +312,11 @@ setMethod("backendInitialize", "MsBackendPy",
                   object
               } else {
                   if (!is(data, "DataFrame"))
-                      stop("'data' is expected to be a 'DataFrame'")
+                      stop("'data' is expected to be a 'DataFrame'",
+                           call. = FALSE)
                   if (!all(c("mz", "intensity") %in% colnames(data)))
-                      stop("Columns \"mz\" and \"intensity\" are required")
+                      stop("Columns \"mz\" and \"intensity\" are required",
+                           call. = FALSE)
                   py_set_attr(
                       py, pythonVariableName,
                       switch(pythonLibrary,

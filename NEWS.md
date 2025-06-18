@@ -2,7 +2,9 @@
 
 ## Changes in 0.99.5
 
-- Add support for parameter `data` to `backendInitialize()`.
+- Add support for parameter `data` to `backendInitialize()`: this enables to
+  change the backend from a `Spectra` object to `MsBackendPy` using the
+  `setBackend()` method.
 
 ## Changes in 0.99.4
 

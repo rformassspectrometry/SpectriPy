@@ -27,8 +27,6 @@ spectrum_utils <- NULL
 #' @noRd
 .initialize_libraries2 <- function(delay_load = TRUE, convert = FALSE,
                                    envir = new.env()) {
-    if (.spectripy_use_system())
-        packageStartupMessage("Using system Python")
     assign("matchms", import("matchms", delay_load = delay_load,
                              convert = convert), envir = envir)
     assign("matchms_similarity",

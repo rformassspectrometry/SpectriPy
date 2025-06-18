@@ -116,6 +116,16 @@ test_that("backendInitialize,MsBackendPy works with providing data", {
     expect_equal(mz(s), mz(res), tolerance = SPECTRUM_UTILS_TOLERANCE)
 })
 
+test_that("setBackend,Spectra backend = MsBackendPy works", {
+    expect_error(a <- setBackend(s, MsBackendPy()), "'pythonVariableName'")
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp_s_p")
+    expect_s4_class(a, "Spectra")
+    expect_s4_class(a@backend, "MsBackendPy")
+    expect_equal(rtime(a), rtime(s))
+    expect_equal(mz(a), mz(s))
+    expect_equal(intensity(a), intensity(s))
+})
+
 test_that("show,MsBackendPy works", {
     be <- backendInitialize(MsBackendPy(), "s_p")
     expect_output(show(be), "MsBackendPy")

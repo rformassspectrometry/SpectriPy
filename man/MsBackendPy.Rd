@@ -204,16 +204,26 @@ s
 ## conversions.
 py_set_attr(py, "s_p", rspec_to_pyspec(s))
 
-
 ## Create a `MsBackendPy` representing an interface to the data in the
 ## "s_p" variable in Python:
 be <- backendInitialize(MsBackendPy(), "s_p")
 be
 
+## An easier way to change the data representation of a `Spectra` object
+## from R to Python is to use the `Spectra`'s `setBackend()` method
+## selecting a `MsBackendPy` as the target backend representation:
+s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2")
+s_2
+
+## This moved the data from R to Python, storing it in a Python variable
+## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
+## with all MS data however stored in Python.
+
 ## Alternatively, by passing the full MS data with parameter `data`, the
 ## data is first converted to Python and the backend is initialized with
-## that data.
-be <- backendInitialize(MsBackendPy(), "s_p2",
+## that data. The `setBackend()` call from above internally uses this
+## code to convert the data.
+be <- backendInitialize(MsBackendPy(), "s_p3",
     data = spectraData(s, c(spectraVariables(s), "mz", "intensity")))
 
 ## Create a Spectra object which this backend:
