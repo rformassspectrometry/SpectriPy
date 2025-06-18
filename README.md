@@ -34,8 +34,8 @@ If you use *SpectriPy* in your research, please cite:
 Detailed installation instructions can be found in the [installation and
 configuration](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html)
 vignette. More advanced instructions and Python configuration, e.g. to use
-*virtualenv* instead of the default *miniconda*-based setup can be found in
-the [Startup and Python
+*miniconda*-based instead of the default *virtualenv*-based setup can be found
+in the [Startup and Python
 configuration](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
 section of the main vignette.
 

@@ -4,7 +4,7 @@ matchms_similarity <- NULL
 matchms_filtering <- NULL
 spectrum_utils <- NULL
 
-.PY_PKGS <- c(matchms = "matchms==0.28.2",
+.PY_PKGS <- c(matchms = "matchms==0.30.0",
               spectrum_utils = "spectrum_utils==0.3.2",
               numpy = "numpy==2.0.2")
 
@@ -12,33 +12,34 @@ spectrum_utils <- NULL
 #'
 #' @importFrom reticulate py_install virtualenv_exists virtualenv_create
 #'
-#' @importFrom reticulate conda_list conda_create install_miniconda
+#' @importFrom reticulate conda_list conda_create
 .onLoad <- function(libname, pkgname) {
     if (!.spectripy_use_system()) {
         if (.spectripy_use_conda()) .initialize_conda()
         else .initialize_virtualenv()
     }
-    .initialize_libraries(delay_load = TRUE, convert = FALSE)
+    .initialize_libraries2(TRUE, FALSE, asNamespace(pkgname))
 }
 
-#' Load all required Python libraries and assign it to global variables
+#' Load all required Python libraries and assign it to package-internal
+#' variables
 #'
 #' @noRd
-.initialize_libraries <- function(delay_load = TRUE, convert = FALSE) {
+.initialize_libraries2 <- function(delay_load = TRUE, convert = FALSE,
+                                   envir = new.env()) {
     if (.spectripy_use_system())
         packageStartupMessage("Using system Python")
-    matchms <<- import("matchms",
-                       delay_load = delay_load,
-                       convert = convert)
-    matchms_similarity <<- import("matchms.similarity",
-                                  delay_load = delay_load,
-                                  convert = convert)
-    matchms_filtering <<- import("matchms.filtering",
-                                 delay_load = delay_load,
-                                 convert = convert)
-    spectrum_utils <<- import("spectrum_utils",
-                              delay_load = delay_load,
-                              convert = convert)
+    assign("matchms", import("matchms", delay_load = delay_load,
+                             convert = convert), envir = envir)
+    assign("matchms_similarity",
+           import("matchms.similarity", delay_load = delay_load,
+                  convert = convert), envir = envir)
+    assign("matchms_filtering",
+           import("matchms.filtering", delay_load = delay_load,
+                  convert = convert), envir = envir)
+    assign("spectrum_utils",
+           import("spectrum_utils", delay_load = delay_load,
+                  convert = convert), envir = envir)
 }
 
 #' Initialize the conda environment creating it if not already present
@@ -77,7 +78,7 @@ spectrum_utils <- NULL
 .spectripy_use_conda <- function() {
     as.logical(getOption(
         "spectripy.use_conda",
-        Sys.getenv("SPECTRIPY_USE_CONDA", unset = "TRUE")))
+        Sys.getenv("SPECTRIPY_USE_CONDA", unset = "FALSE")))
 }
 
 .spectripy_use_system <- function() {
@@ -102,5 +103,6 @@ spectrum_utils <- NULL
         }
     }
     if (any_install)
-        packageStartupMessage("\nPlease restart R to load the freshly installed packages.\n")
+        packageStartupMessage("\nPlease restart R to load the freshly ",
+                              "installed packages.\n")
 }

@@ -138,6 +138,11 @@ test_that("normalize_intensities constructor works", {
     expect_s4_class(res, "normalize_intensities")
 })
 
+## test_that("filterSpectriPy,normalize_intensitites works", {
+##     p <- normalize_intensities()
+##     res <- filterSpectriPy(s_all, p)
+## })
+
 test_that("py_fun,select_by_intensity works", {
     p <- select_by_mz(mz_from = 3, mz_to = 24)
     res <- py_fun(p)
@@ -156,4 +161,10 @@ test_that("filterSpectriPy,Spectra,select_by_mz works", {
     expect_true(all(mz(res)[[4L]] > 100 & mz(res)[[4L]] < 180))
     expect_equal(msLevel(s_all), msLevel(res))
     expect_equal(rtime(s_all), rtime(res))
+})
+
+test_that(".filter_spectra_python works", {
+    res <- .filter_spectra_python(Spectra())
+    expect_s4_class(res, "Spectra")
+    expect_true(length(res) == 0L)
 })

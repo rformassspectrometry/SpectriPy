@@ -65,18 +65,17 @@ If the *BiocManager* package is not already available, please install it with
 *SpectriPy* from GitHub, please install in addition the *remotes* package with
 `install.packages("remotes")`. As a system dependency, the package requires
 Python (version >= 2.10) to be available. During package installation,
-*SpectriPy* will install also all required Python libraries using *miniconda*
-(which will also installed if not already available) into a new Python
-environment *r-spectripy*. See also section @sec-python for options to skip this
-and use either *virtualenv* or system Python environment instead.
+*SpectriPy* will install also all required Python libraries using a Python
+*virtualenv* setup into a new Python environment *r-spectripy*. See also section
+@sec-python for options to skip this and use either *miniconda* or system Python
+environment instead.
 
 To install the package use the code below:
 
 ```{r}
 #| eval: false
 install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager::install("SpectriPy")
 ```
 
 
@@ -115,6 +114,15 @@ library(SpectriPy)
 In this section we show how MS data can be converted from R to Python. Below we
 first define the name and path of a data file in mzML format (provided by the
 `r BiocStyle::Biocpkg("msdata")` package) and load that data as an R `Spectra`
+object. We thus first ensure that the package *msdata* is installed. If the line
+below results in an error you need to first install *msdata* using
+`BiocManager::install("msdata")`.
+
+```{r}
+stopifnot(require("msdata"))
+```
+
+Next, we define the file path to the test file and load the data as a `Spectra`
 object.
 
 ```{r}
@@ -685,11 +693,10 @@ and copying of the MS data. See also section @sec-comments for general comments.
 During package startup, *SpectriPy* loads the required *reticulate* library and
 configures the Python environment. If the package-specific environment does not
 exist it creates one and installs all required libraries. By default,
-*SpectriPy* will use *miniconda* to setup and use a package-specific
-Python which includes all required Python libraries (i.e. *matchms* version
-0.28.2 and *spectrum_utils* version 0.3.2, loaded from *conda-forge*). The
-Python setup can also be configured with three package options that can also be
-set *via* environment variables. These are:
+*SpectriPy* will setup a specific *virtualenv* and install all required Python
+libraries (i.e. *matchms* version 0.30.0 and *spectrum_utils* version 0.3.2)
+into that. The Python setup can also be configured with three package options
+that can also be set *via* environment variables. These are:
 
 - `"spectripy.use_system"` (environment variable `SPECTRIPY_USE_SYSTEM`):
   whether the system Python should be used. Default is `"FALSE"`. If set to
@@ -699,10 +706,9 @@ set *via* environment variables. These are:
 
 - `"spectripy.use_conda"` (environment variable `SPECTRIPY_USE_CONDA`): whether
   conda should be used to install and manage the package-specific Python
-  environment. If `"FALSE"` *reticulate*'s `virtualenv_create()` and
-  `use_virtualenv()` functions are used. If set to `"TRUE"` (the default),
-  `conda_create()` and `use_conda()` are used instead. It is suggested to use
-  the conda-based installation.
+  environment. If `"FALSE"` (the default) *reticulate*'s `virtualenv_create()`
+  and `use_virtualenv()` functions are used. If set to `"TRUE"`,
+  `conda_create()` and `use_conda()` are used instead.
 
 - `"spectripy.env"` (environment variable `SPECTRIPY_ENV`): the name of the
   environment that should be used by *SpectriPy*. Defaults to `"r-spectripy"`.

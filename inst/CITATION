@@ -1,0 +1,27 @@
+citHeader("If you use this software, please cite our article in the Journal of Open Source Software:")
+
+bibentry(
+  bibtype  = "Article",
+  title    = "A universal language for finding mass spectrometry data patterns",
+  author   = personList(
+  person(family = "De Graeve", given = "Marilyn"),
+  person(family = "Bittremieux", given = "Wout"),
+  person(family = "Naake", given = "Thomas"),
+  person(family = "Huber", given = "Carolin"),
+  person(family = "Anagho-Mattanovich", given = "Matthias"),
+  person(family = "Hoffmann", given = "Nils"),
+  person(family = "Marchal", given = "Pierre"),
+  person(family = "Chrone", given = "Victor"),
+  person(family = "Louail", given = "Philippine"),
+  person(family = "Hecht", given = "Helge"),
+  person(family = "Witting", given = "Michael"),
+  person(family = "Rainer", given = "Johannes")
+  ),
+  journal  = "Journal of Open Source Software",
+  year     = "2025",
+  volume   = "10",
+  number   = "109",
+  pages    = "8070",
+  url      = "https://joss.theoj.org/papers/10.21105/joss.08070",
+  doi      = "10.21105/joss.08070"
+)

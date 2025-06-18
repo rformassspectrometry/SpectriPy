@@ -31,8 +31,9 @@ interoperability between Python and R. For installation of *SpectriPy*, Python
 needs to be installed on the system. See also the [Install Python
 Packages](https://rstudio.github.io/reticulate/articles/python_packages.html)
 documentation from the *reticulate* package for information on installing
-Python. By default, *SpectriPy* uses *miniconda* to configure and setup a Python
-environment specific to the package. The code below shows how *miniconda* can be
+Python. By default, *SpectriPy* uses *virtualenv* to configure and setup a Python
+environment specific to the package. As an alternative, it is possible to use a
+*miniconda*-based setup insterad. The code below shows how *miniconda* can be
 installed with the *reticulate* package (which needs to be first installed with
 `install.package("reticulate")` if not already available):
 
@@ -41,7 +42,8 @@ installed with the *reticulate* package (which needs to be first installed with
 #' R session:
 
 install.packages("reticulate")
-reticulate::install_miniconda()
+library(reticulate)
+install_miniconda()
 ```
 
 
@@ -53,7 +55,10 @@ environment of the host system, instead of using the automatic setup.
 The path to the python3 executable file needs to be specified in the
 `use_python()` function of *reticulate*. A conda environment used in the
 analysis will also created below, ensuring a specific Python environment for
-*reticulate*.
+*reticulate*. Note that the path specified below in the `use_python()` call
+might be different depending on the operating system or setup. Eventually refer
+to the installation log/output from the previous code block if miniconda was
+installed with the `install_miniconda()` function.
 
 ```{r}
 #| eval: false

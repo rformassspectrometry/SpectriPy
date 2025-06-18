@@ -1,8 +1,20 @@
 # SpectriPy 0.99
 
-## Changes in 0.99.2
+## Changes in 0.99.5
 
 - Add support for parameter `data` to `backendInitialize()`.
+
+## Changes in 0.99.4
+
+- Refactor functions to initialize Python libraries.
+
+## Changes in 0.99.3
+
+- Address Bioconductor review comments.
+
+## Changes in 0.99.2
+
+- Use Python virtualenv instead of miniconda.
 
 ## Changes in 0.99.1
 

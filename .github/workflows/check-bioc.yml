@@ -90,7 +90,7 @@ jobs:
       - name: Install macOS system dependencies part 1
         if: matrix.config.os == 'macOS-latest'
         run: |
-          brew install netcdf
+          brew install netcdf python pyenv
         shell: bash {0}
 
         ## Install R dependencies using R-lib
@@ -112,21 +112,6 @@ jobs:
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
-
-      - name: Install Miniconda
-        run: |
-          Rscript -e "install.packages('reticulate')"
-          Rscript -e "reticulate::install_miniconda()"
-
-      - name: Fix conda for macOS
-        if: runner.os == 'macOS'
-        run: echo "options(reticulate.conda_binary = reticulate:::miniconda_conda())" >> ~/.Rprofile
-
-      - name: Install libraries for macOS
-        if: runner.os == 'macOS'
-        run: |
-          Rscript -e "reticulate::conda_create('r-spectripy')"
-          Rscript -e "reticulate::conda_install(envname = 'r-spectripy', packages = c('matchms==0.28.2'), channel = c('bioconda', 'conda-forge'))"
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os != 'Linux'"
@@ -151,16 +136,16 @@ jobs:
           echo $sysreqs
           sudo -s eval "$sysreqs"
           ## To build the quarto vignette with pkgdown
-          Rscript -e "install.packages('unixtools', repos = 'http://www.rforge.net/')"
+          Rscript -e "install.packages('unixtools', repos = 'http://www.rforge.net/', dependencies = c('Depends', 'Imports'))"
         shell: bash {0}
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-          Rscript -e "reticulate:::miniconda_path()"
-          export RETICULATE_MINICONDA_PATH='/Users/runner/Library/r-miniconda-arm64/'
-          Rscript -e 'remotes::install_github("RforMassSpectrometry/SpectriPy",args = "--no-manual", build_args = "--no-build-vignettes")'
-        shell: bash {0}
+          install.packages("reticulate")
+          library(reticulate)
+          reticulate::install_python(version = "3.13:latest")
+        shell: Rscript {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
@@ -171,12 +156,12 @@ jobs:
       - name: Install BiocManager
         run: |
           message(paste('****', Sys.time(), 'installing BiocManager ****'))
-          remotes::install_cran("BiocManager")
+          remotes::install_cran("BiocManager", dependencies = c("Depends", "Imports"))
         shell: Rscript {0}
 
       - name: Set BiocVersion
         run: |
-          BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE)
+          BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE, dependencies = c("Depends", "Imports"))
         shell: Rscript {0}
 
       - name: Install dependencies pass 1
@@ -201,14 +186,11 @@ jobs:
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = TRUE)
 
           message(paste('****', Sys.time(), 'force installation of selected packages ****'))
-          BiocManager::install(c("BiocStyle"))
 
-          BiocManager::install("mzR")
-          BiocManager::install("Spectra")
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
-          remotes::install_cran("rcmdcheck")
-          BiocManager::install("BiocCheck")
+          remotes::install_cran("rcmdcheck", dependencies = c("Depends", "Imports"))
+          BiocManager::install("BiocCheck", dependencies = c("Depends", "Imports"))
         shell: Rscript {0}
 
       - name: Install BiocGenerics
@@ -221,7 +203,7 @@ jobs:
       - name: Install covr
         if: github.ref == 'refs/heads/main' && env.run_covr == 'true' && runner.os == 'Linux'
         run: |
-          remotes::install_cran("covr")
+          remotes::install_cran("covr", dependencies = c("Depends", "Imports"))
         shell: Rscript {0}
 
       - name: Install pkgdown

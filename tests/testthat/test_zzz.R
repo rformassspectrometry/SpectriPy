@@ -13,7 +13,7 @@ test_that(".spectripy_env works", {
 
 test_that(".spectripy_use_conda works", {
     res <- SpectriPy:::.spectripy_use_conda()
-    expect_true(res)
+    expect_false(res)
     orig <- Sys.getenv("SPECTRIPY_USE_CONDA")
     Sys.setenv(SPECTRIPY_USE_CONDA=FALSE)
     res <- SpectriPy:::.spectripy_use_conda()
@@ -24,7 +24,7 @@ test_that(".spectripy_use_conda works", {
     if (orig == "") Sys.unsetenv("SPECTRIPY_USE_CONDA")
     else Sys.setenv(SPECTRIPY_USE_CONDA=orig)
     res <- SpectriPy:::.spectripy_use_conda()
-    expect_true(res)
+    expect_false(res)
 })
 
 test_that(".spectripy_use_system works", {
@@ -123,7 +123,7 @@ test_that(".initialize_conda works", {
             },
             code = SpectriPy:::.initialize_conda("aa")
         ), "Creating conda environment 'aa'")
-    expect_equal(res, c(matchms = "matchms==0.28.2",
+    expect_equal(res, c(matchms = "matchms==0.30.0",
                         spectrum_utils = "spectrum_utils==0.3.2",
                         "aa", TRUE))
 })
@@ -159,22 +159,24 @@ test_that(".initialize_virtualenv works", {
             },
             code = SpectriPy:::.initialize_virtualenv("bb")
         ), "Creating virtual environment 'bb'")
-    expect_equal(res, c(matchms = "matchms==0.28.2",
+    expect_equal(res, c(matchms = "matchms==0.30.0",
                         spectrum_utils = "spectrum_utils==0.3.2",
                         "bb", FALSE))
 })
 
-test_that(".initialize_libraries works", {
-    matchms <- NULL
-    matchms_similarity <- NULL
-    matchms_filtering <- NULL
-    spectrum_utils <- NULL
-    ## import_mock <- function(module, as = NULL, convert = TRUE,
-    ##                         delay_load = FALSE) module
-    ## with_mocked_bindings(
-    ##     "import" = import_mock,
-    ##     .package = "reticulate",
-    ##     code = .initialize_libraries()
-    ## )
-    ## expect_equal(matchms, "matchms")
+test_that(".initialize_libraries2 works", {
+    a <- new.env()
+    import_mock <- function(module, as = NULL, convert = TRUE,
+                            delay_load = FALSE) module
+    with_mocked_bindings(
+        "import" = import_mock,
+        .package = "reticulate",
+        code = .initialize_libraries2(envir = a)
+    )
+    expect_equal(sort(ls(a)), sort(c("matchms", "matchms_similarity",
+                                     "matchms_filtering", "spectrum_utils")))
+})
+
+test_that(".onLoad works", {
+    ## Does not work because the `asNamespace()` call.
 })
