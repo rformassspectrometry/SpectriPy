@@ -148,6 +148,7 @@
 #' ## from matchms.importing import load_from_mgf
 #' ## s_p = list(load_from_mgf(r.fl))
 #' library(Spectra)
+#' library(SpectriPy)
 #' library(MsBackendMgf)
 #'
 #' fl <- system.file("extdata", "mgf", "test.mgf", package = "SpectriPy")

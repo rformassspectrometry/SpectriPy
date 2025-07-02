@@ -1,5 +1,10 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.5
+
+- Replace Python library installation *via* virtualenv or conda with
+  `py_require()` from *reticulate* version > 1.41.0.
+
 ## Changes in 0.99.4
 
 - Refactor functions to initialize Python libraries.
