@@ -142,7 +142,7 @@ jobs:
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
         run: |
-          path_to_python <- reticulate::virtualenv_create(envname = "r-reticulate", python = Sys.which("python"), packages = c("numpy>=2.0.2", "matchms>=0.30.0", "spectrum_utils==0.3.2"))
+          path_to_python <- reticulate::virtualenv_create(envname = "r-spectripy", python = Sys.which("python"), packages = c("numpy>=2.0.2", "matchms>=0.30.0", "spectrum_utils==0.3.2"))
           writeLines(sprintf("RETICULATE_PYTHON=%s", path_to_python), Sys.getenv("GITHUB_ENV"))
         shell: Rscript {0}
 
