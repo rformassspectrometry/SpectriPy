@@ -144,6 +144,7 @@ jobs:
         run: |
           path_to_python <- reticulate::virtualenv_create(envname = "r-spectripy", python = Sys.which("python"), packages = c("numpy>=2.0.2", "matchms>=0.30.0", "spectrum_utils==0.3.2"))
           writeLines(sprintf("RETICULATE_PYTHON_ENV=%s", path_to_python), Sys.getenv("GITHUB_ENV"))
+          cat(paste0("RETICULATE_PYTHON_ENV=\"", path_to_python, "\""), file = "~/.Rprofile", append = TRUE)
         shell: Rscript {0}
 
       - name: Install Windows system dependencies

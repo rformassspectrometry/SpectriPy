@@ -11,10 +11,6 @@ spectrum_utils <- NULL
 #' @importFrom reticulate py_require py_available
 .onLoad <- function(libname, pkgname) {
     py_require(packages = .PY_PKGS, python_version = ">=3.10")
-    ## if (!.spectripy_use_system()) {
-    ##     if (.spectripy_use_conda()) .initialize_conda()
-    ##     else .initialize_virtualenv()
-    ## }
     .initialize_libraries2(TRUE, FALSE, asNamespace(pkgname))
 }
 
