@@ -101,6 +101,7 @@ session:` or `#' Python session:` to label the R and Python code chunks,
 respectively.
 
 ```{r}
+#| label: libraries
 #| message: false
 #' R session:
 
@@ -126,6 +127,7 @@ Next, we define the file path to the test file and load the data as a `Spectra`
 object.
 
 ```{r}
+#| label: load-data
 #| message: false
 #' R session:
 
@@ -138,6 +140,7 @@ We next restrict the data to MS level 2 and remove spectra with less than 3
 (fragment) peaks.
 
 ```{r}
+#| label: filter MS level
 #' R session:
 
 #' Restrict to MS level 2 spectra
@@ -150,6 +153,7 @@ This `Spectra` object can now be converted to equivalent data structures in
 Python using the `rspec_to_pyspec()` function:
 
 ```{r}
+#| label: convert spectra to matchms
 #' R session:
 
 #' Convert the R Spectra to a list of Python matchms.Spectrum objects
@@ -190,6 +194,7 @@ environment with the `py_set_attr()` function. We repeat our data conversion
 operation but assign the result to a Python attribute `"mzml_py"`:
 
 ```{r}
+#| label: assign variable to Python
 #' R session:
 
 #' Assign the data to a variable in the Python environment
@@ -200,6 +205,7 @@ names(py)
 We can now access this data directly from within Python:
 
 ```{python}
+#| label: data types of variables
 #' Python session:
 
 #' Data type of the variable:
@@ -221,6 +227,7 @@ values of each spectrum with the `normalize_intensities()` function such that
 their total sum is 1.
 
 ```{python}
+#| label: normalize intensities with matchms
 #' Python session:
 
 import matchms.filtering as mms_filt
@@ -242,6 +249,7 @@ since the variable returned by `py_get_attr()` is a Python object, we need to
 use index `0` to access the first element.
 
 ```{r}
+#| label: inspect changed intensities in R
 #' R session:
 
 #' Access the intensities of the first spectrum
@@ -305,6 +313,7 @@ MGF format using the Python *matchms* library. This MGF file is provided within
 the *SpectriPy* package so we first define its file name and path in R.
 
 ```{r}
+#| label: define MGF file
 #' R session:
 
 f_mgf <- system.file("extdata", "mgf", "test.mgf", package = "SpectriPy")
@@ -315,6 +324,7 @@ access the variable (defined in the R session) with the file name to import the
 data from through the `r.<variable name>`.
 
 ```{python}
+#| label: load MGF in Python
 #| warning: false
 #' Python session
 
@@ -402,6 +412,7 @@ previously imported from the MGF file (i.e. `"mgf_py"`) and using the
 `MsBackendPy` as the data source (i.e. backend).
 
 ```{r}
+#| label: initialize MsBackendPy for Python variable
 #' R session:
 
 #' Create a Spectra object with a MsBackendPy backend for the
@@ -419,6 +430,7 @@ backend to iterate over the MS data in Python, extract the respective
 information, translate it and return it to the user.
 
 ```{r}
+#| label: access MS level and intensity through MsBackendPy
 #' R session:
 
 #' Extract MS level
@@ -440,6 +452,7 @@ the MS data attribute in Python are also immediately reflected in the respective
 peaks in Python:
 
 ```{python}
+#| label: normalize intensities of MGF in Python
 #' Python session:
 
 #' Scale intensities
@@ -451,6 +464,7 @@ for i in range(len(mgf_py)):
 The intensities retrieved from the `Spectra` object are now also scaled.
 
 ```{r}
+#| label: get intensities after modifying in Python
 #' R session:
 
 #' Get intensities after scaling the intensities in Python:
@@ -517,6 +531,7 @@ Such custom mapping can be passed with the parameter `mapping` to the
 convert the full data to R.
 
 ```{r}
+#| label: convert R to Python with spectra variables
 #' R session:
 
 #' Convert the Python MS data structures to an R `Spectra`
@@ -528,6 +543,7 @@ The respective metadata values have thus been added as new spectra variables to
 our `Spectra` object and can also be extracted:
 
 ```{r}
+#| label: access spectra variables from Python in R
 #' R session:
 
 #' Show the first values for the spectra variable "name"
@@ -566,6 +582,7 @@ add for example a mapping of the `matchms.Spectrum` metadata attribute
 `MsBackendPy`:
 
 ```{r}
+#| label: add additional mapping
 #' R session:
 
 #' Add mapping for additional spectra variables to the `MsBackendPy`
@@ -608,6 +625,7 @@ we re-use the `mgf` variable, which is also a `Spectra` with a `MsBackendPy`
 backend referencing the MS data imported and processed in Python.
 
 ```{r}
+#| label: compareSpectra with mzML and MGF
 #' R session:
 
 #' Create a `Spectra` for the scaled MS data in Python
@@ -623,6 +641,7 @@ functionality from the *matchms* library. Here we use the *original* attributes
 available in Python, i.e. `mzml_py` and `mgf_py`.
 
 ```{python}
+#| label: Cosine Hungarian similarity in Python
 #' Python session:
 
 import matchms.similarity as mms_similarity
@@ -644,6 +663,7 @@ We can also directly compare the scores calculated using the two different
 algorithms.
 
 ```{r}
+#| label: compare dot product vs Cosine Hungarian
 #' R session:
 
 #' Plot the similarity scores against each other
