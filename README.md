@@ -28,49 +28,35 @@ If you use *SpectriPy* in your research, please cite:
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
 
 
-
 # Installation
 
-Detailed installation instructions can be found in the [installation and
-configuration](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html)
-vignette. More advanced instructions and Python configuration, e.g. to use
-*miniconda*-based instead of the default *virtualenv*-based setup can be found
-in the [Startup and Python
-configuration](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
-section of the main vignette.
-
-TLDR:
-
-- Prerequisites: R >= 4.4.0.
-- System requirement: *reticulate* (i.e., setup Python environment if not
-  already available)
+*SpectriPy* needs Python (version > 3.10) to be installed on the system. All
+necessary Python libraries (listed below) are automatically installed by the
+[*reticulate*](https://rstudio.github.io/reticulate) R package. Python library
+management uses the
+[`py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)
+function introduced in *reticulate* version 1.41 and should hence work on most
+system without problems. To install *SpectriPy*:
 
 ```r
-#' R session:
-
-install.packages("reticulate")
-reticulate::install_miniconda()
-```
-
-- Package requirements: Bioconductor's *BiocManager*, *remotes*
-
-```r
-#' R session:
-
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install(version = "3.20")
-
+install.packages("BiocManager")
 install.packages("remotes")
-```
-
-- Package: *SpectriPy*
-
-```r
-#' R session:
-
 BiocManager::install("RforMassSpectrometry/SpectriPy")
 ```
+
+In addition it is possible to install the Python libraries manually (e.g., for
+the system Python version) and specify the version of Python (or of the local
+*virtualenv* or *conda* environment) using the `RETICULATE_PYTHON` or
+`RETICULATE_PYTHON_ENV` environment variables. If either of these environment
+variables are defined, all Python libraries listed below **must** be installed,
+since *SpectriPy* (respectively *reticulate*) will not try to install them
+automatically. The required Python libraries with the suggested and tested
+versions are:
+
+- [*matchms*](https://github.com/matchms) 0.30.0
+- [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
+- *numpy* 2.0.2
+
 
 # Documentation for users
 
