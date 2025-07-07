@@ -11,7 +11,7 @@ spectrum_utils <- NULL
 #' @importFrom reticulate py_require py_available
 .onLoad <- function(libname, pkgname) {
     py_require(packages = .PY_PKGS, python_version = ">=3.10")
-    .initialize_libraries2(TRUE, FALSE, asNamespace(pkgname))
+    .initialize_libraries2(FALSE, FALSE, asNamespace(pkgname))
 }
 
 #' Load all required Python libraries and assign it to package-internal
@@ -22,6 +22,8 @@ spectrum_utils <- NULL
 #' @noRd
 .initialize_libraries2 <- function(delay_load = TRUE, convert = FALSE,
                                    envir = new.env()) {
+    if (!reticulate::py_available(initialize = TRUE))
+        stop("Unable to initialize the Python environment", call. = FALSE)
     assign("matchms", import("matchms", delay_load = delay_load,
                              convert = convert), envir = envir)
     assign("matchms_similarity",
@@ -33,6 +35,4 @@ spectrum_utils <- NULL
     assign("spectrum_utils",
            import("spectrum_utils", delay_load = delay_load,
                   convert = convert), envir = envir)
-    if (!reticulate::py_available(initialize = TRUE))
-        stop("Unable to initialize the Python environment", call. = FALSE)
 }

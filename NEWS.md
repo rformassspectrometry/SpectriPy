@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.6
+
+- Set `delay_load = FALSE` in `import()` calls during package loading
+
 ## Changes in 0.99.5
 
 - Replace Python library installation *via* virtualenv or conda with
