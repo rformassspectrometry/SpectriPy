@@ -61,7 +61,10 @@ either \code{pythonLibrary = "matchms"} (the default) or
 \item{...}{Additional parameters.}
 
 \item{data}{For \code{backendInitialize()}: \code{DataFrame} with the full MS data
-(peaks data and spectra data). Currently not supported.}
+(peaks data and spectra data) such as extracted with the
+\code{\link[Spectra:spectraData]{Spectra::spectraData()}} method on another \code{MsBackend} instance.
+Importantly, the \code{DataFrame} must have columns \code{"mz"} and
+\code{"intensity"} with the full MS data.}
 
 \item{x}{A \code{MsBackendPy} object}
 
@@ -132,13 +135,20 @@ specific properties of the backend.
 \item \code{backendInitialize()}: initializes the backend with information from the
 referenced Python variable (attribute). The name of this attribute,
 ideally stored in the associated Python session, is expected to be
-provided with the \code{pythonVariableName} parameter. The optional
-\code{spectraVariableMapping} parameter allows to provide additional, or
-alternative, mapping of \code{Spectra}'s \emph{spectra variables} to metadata in the
-\code{matchms.Spectrum} objects. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} (the
-default) for more information. Parameter \code{pythonLibrary} must be used
-to specify the Python library representing the MS data in Python. It can
-be either \code{pythonLibrary = "matchms"} (the default) or
+provided with the \code{pythonVariableName} parameter. This variable is
+expected to contain or represent the full MS data. Alternatively, by
+providing the full MS data with the \code{data} parameter, this MS data will
+be first converted to the respective Python MS data representation and
+the \code{MsBackendPy} object will be initialized as described before. This
+allows to initialize the Python-based MS backend with data initially
+available in R.
+The optional \code{spectraVariableMapping} parameter allows to provide
+additional, or alternative, mapping of \code{Spectra}'s \emph{spectra variables}
+to metadata in the \code{matchms.Spectrum} objects. See
+\code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}} (the default) for more information.
+Parameter \code{pythonLibrary} must be used to specify the Python library
+representing the MS data in Python. It can be either
+\code{pythonLibrary = "matchms"} (the default) or
 \code{pythonLibrary = "spectrum_utils"}. The function returns an initialized
 instance of \code{MsBackendPy}.
 \item \code{peaksData()}: extracts the peaks data matrices from the backend. Python
@@ -194,11 +204,27 @@ s
 ## conversions.
 py_set_attr(py, "s_p", rspec_to_pyspec(s))
 
-
 ## Create a `MsBackendPy` representing an interface to the data in the
 ## "s_p" variable in Python:
 be <- backendInitialize(MsBackendPy(), "s_p")
 be
+
+## An easier way to change the data representation of a `Spectra` object
+## from R to Python is to use the `Spectra`'s `setBackend()` method
+## selecting a `MsBackendPy` as the target backend representation:
+s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2")
+s_2
+
+## This moved the data from R to Python, storing it in a Python variable
+## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
+## with all MS data however stored in Python.
+
+## Alternatively, by passing the full MS data with parameter `data`, the
+## data is first converted to Python and the backend is initialized with
+## that data. The `setBackend()` call from above internally uses this
+## code to convert the data.
+be <- backendInitialize(MsBackendPy(), "s_p3",
+    data = spectraData(s, c(spectraVariables(s), "mz", "intensity")))
 
 ## Create a Spectra object which this backend:
 s_2 <- Spectra(be)

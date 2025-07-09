@@ -175,6 +175,8 @@ test_that(".initialize_libraries2 works", {
     )
     expect_equal(sort(ls(a)), sort(c("matchms", "matchms_similarity",
                                      "matchms_filtering", "spectrum_utils")))
+    orig <- getOption("spectripy.use.system")
+    options(spectripy.use.system = TRUE)
 })
 
 test_that(".onLoad works", {
