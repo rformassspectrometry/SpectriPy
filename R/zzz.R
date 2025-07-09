@@ -17,22 +17,28 @@ spectrum_utils <- NULL
 #' Load all required Python libraries and assign it to package-internal
 #' variables
 #'
-#' @importFrom reticulate import
+#' @importFrom reticulate import py_config
 #'
 #' @noRd
 .initialize_libraries2 <- function(delay_load = TRUE, convert = FALSE,
                                    envir = new.env()) {
     if (!reticulate::py_available(initialize = TRUE))
         stop("Unable to initialize the Python environment", call. = FALSE)
-    assign("matchms", import("matchms", delay_load = delay_load,
-                             convert = convert), envir = envir)
-    assign("matchms_similarity",
-           import("matchms.similarity", delay_load = delay_load,
-                  convert = convert), envir = envir)
-    assign("matchms_filtering",
-           import("matchms.filtering", delay_load = delay_load,
-                  convert = convert), envir = envir)
-    assign("spectrum_utils",
-           import("spectrum_utils", delay_load = delay_load,
-                  convert = convert), envir = envir)
+    tryCatch({
+        assign("matchms", import("matchms", delay_load = delay_load,
+                                 convert = convert), envir = envir)
+        assign("matchms_similarity",
+               import("matchms.similarity", delay_load = delay_load,
+                      convert = convert), envir = envir)
+        assign("matchms_filtering",
+               import("matchms.filtering", delay_load = delay_load,
+                      convert = convert), envir = envir)
+        assign("spectrum_utils",
+               import("spectrum_utils", delay_load = delay_load,
+                      convert = convert), envir = envir)
+    }, error = function(e) {
+        stop("Failed to initialize Python environment and libraries.\n",
+             "Original message:\n", e, "\nPython configuration:\n",
+             print(py_config()))
+    })
 }
