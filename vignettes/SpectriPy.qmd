@@ -11,7 +11,7 @@ vignette: >
   %\VignettePackage{SpectriPy}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{quarto::html}
-  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate,MsBackendMgf,msdata,mzR}
+  %\VignetteDepends{Spectra,BiocStyle,SpectriPy,reticulate,MsBackendMgf,MsDataHub,mzR}
 ---
 
 **Compiled**: `r date()`
@@ -113,14 +113,14 @@ library(SpectriPy)
 ## Converting MS data from R to Python
 
 In this section we show how MS data can be converted from R to Python. Below we
-first define the name and path of a data file in mzML format (provided by the
-`r BiocStyle::Biocpkg("msdata")` package) and load that data as an R `Spectra`
-object. We thus first ensure that the package *msdata* is installed. If the line
-below results in an error you need to first install *msdata* using
-`BiocManager::install("msdata")`.
+first define the name and path of a data file in mzML format (provided by the `r
+BiocStyle::Biocpkg("MsDataHub")` package) and load that data as an R `Spectra`
+object. We thus first ensure that the package *MsDataHub* is installed. If the
+line below results in an error you need to first install *MsDataHub* using
+`BiocManager::install("MsDataHub")`.
 
 ```{r}
-stopifnot(require("msdata"))
+stopifnot(require("MsDataHub"))
 ```
 
 Next, we define the file path to the test file and load the data as a `Spectra`
@@ -132,7 +132,8 @@ object.
 #' R session:
 
 #' Loading the data from a mzML file as a `Spectra` object
-fl <- system.file("TripleTOF-SWATH", "PestMix1_DDA.mzML", package = "msdata")
+library(MsDataHub)
+fl <- MsDataHub::PestMix1_DDA.mzML()
 mzml_r <- Spectra(fl)
 ```
 

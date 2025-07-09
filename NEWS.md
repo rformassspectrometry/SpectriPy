@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.7
+
+- Replace the *msdata* package with *MsDataHub*.
+
 ## Changes in 0.99.6
 
 - Set `delay_load = FALSE` in `import()` calls during package loading

@@ -1,6 +1,6 @@
 Package: SpectriPy
 Title: Enhancing Cross-Language Mass Spectrometry Data Analysis with R and Python
-Version: 0.99.6
+Version: 0.99.7
 Description: The SpectriPy package allows integration of Python-based MS
     analysis code with the Spectra package. Spectra objects can be converted
     into Python MS data structures. In addition, SpectriPy integrates
@@ -65,7 +65,7 @@ Suggests:
     testthat,
     quarto,
     MsBackendMgf,
-    msdata,
+    MsDataHub,
     mzR,
     knitr,
     BiocStyle
