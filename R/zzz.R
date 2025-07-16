@@ -40,6 +40,7 @@ spectrum_utils <- NULL
     }, error = function(e) {
         stop("Failed to initialize Python environment and libraries.\n",
              "Original message:\n", e, "\nPython configuration:\n",
-             print(py_config()))
+             print(py_config()), "\nEnvironmental variables:\n",
+             print(Sys.getenv()))
     })
 }
