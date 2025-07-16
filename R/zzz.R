@@ -10,8 +10,9 @@ spectrum_utils <- NULL
 
 #' @importFrom reticulate py_require py_available
 .onLoad <- function(libname, pkgname) {
-    py_require(packages = .PY_PKGS, python_version = ">=3.10")
+    py_require(packages = .PY_PKGS, python_version = ">=3.12")
     .initialize_libraries2(FALSE, FALSE, asNamespace(pkgname))
+    packageStartupMessage(print(py_config())) # temporarily
 }
 
 #' Load all required Python libraries and assign it to package-internal

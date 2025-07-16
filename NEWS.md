@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.8
+
+- Verbose startup messages and require Python 3.12.
+
 ## Changes in 0.99.7
 
 - Replace the *msdata* package with *MsDataHub*.
