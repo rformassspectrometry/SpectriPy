@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.9
+
+- Add tolerance for comparison of retention time with *spectrum_utils*.
+
 ## Changes in 0.99.8
 
 - Verbose startup messages and require Python 3.12.
