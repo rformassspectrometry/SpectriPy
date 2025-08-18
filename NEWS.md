@@ -3,6 +3,7 @@
 ## Changes in 0.99.9
 
 - Add tolerance for comparison of retention time with *spectrum_utils*.
+- Require numpy version >= 2.2.0.
 
 ## Changes in 0.99.8
 
