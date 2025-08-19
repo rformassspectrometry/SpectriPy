@@ -91,7 +91,7 @@ jobs:
         if: matrix.config.os == 'macOS-latest'
         run: |
           brew install netcdf
-          ##brew install --build-from-source python
+          brew install --build-from-source python
         shell: bash {0}
 
         ## Install R dependencies using R-lib
