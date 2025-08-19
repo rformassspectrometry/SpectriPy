@@ -38,8 +38,8 @@ spectrum_utils <- NULL
                import("spectrum_utils", delay_load = delay_load,
                       convert = convert), envir = envir)
     }, error = function(e) {
-        stop("Failed to initialize Python environment and libraries.\n",
-             "Original message:\n", e, "\nPython configuration:\n",
+        stop("Failed to initialize Python environment and libraries!\n",
+             "Original message: ", e, "\nPython configuration:\n",
              print(py_config()), "\nEnvironmental variables:\n",
              print(Sys.getenv()))
     })
