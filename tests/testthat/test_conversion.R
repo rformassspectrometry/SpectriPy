@@ -251,7 +251,7 @@ test_that("pyspec_to_rspec and .single_pyspec_to_rspec work", {
     res <- expect_warning(pyspec_to_rspec(p, map, "spectrum_utils"), "NAs")
     expect_s4_class(res, "Spectra")
     expect_s4_class(res@backend, "MsBackendMemory")
-    expect_equal(rtime(res), rtime(sps))
+    expect_equal(rtime(res), rtime(sps), tolerance = SPECTRUM_UTILS_TOLERANCE)
     expect_true(validObject(res))
     expect_equal(peaksData(res, return.type = "list"),
                  peaksData(sps, return.type = "list"),

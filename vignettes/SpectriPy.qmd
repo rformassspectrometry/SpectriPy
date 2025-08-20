@@ -16,6 +16,11 @@ vignette: >
 
 **Compiled**: `r date()`
 
+**Note**: since version 0.99.6 *SpectriPy* uses the newer, recommended approach
+to install and configure required Python libraries (i.e., through *reticulate*'s
+`py_require()` functionality). This affects also the way a pre-defined Python
+environment can be used. See section @sec-python for updated information.
+
 # Introduction
 
 Powerful software libraries for mass spectrometry (MS) data are available in
@@ -61,14 +66,11 @@ libraries, respectively.
 # Installation
 
 If the *BiocManager* package is not already available, please install it with
-`install.packages("BiocManager")`. To install the development version of
-*SpectriPy* from GitHub, please install in addition the *remotes* package with
-`install.packages("remotes")`. As a system dependency, the package requires
-Python (version >= 2.10) to be available. During package installation,
-*SpectriPy* will install also all required Python libraries using a Python
-*virtualenv* setup into a new Python environment *r-spectripy*. See also section
-@sec-python for options to skip this and use either *miniconda* or system Python
-environment instead.
+`install.packages("BiocManager")`. As a system dependency, the package requires
+Python (version >= 2.12) to be available. During package installation,
+*SpectriPy* will by default install all required Python libraries
+automatically. See section @sec-python for information on manual library
+installation or usage of a pre-defined or system Python environment.
 
 To install the package use the code below:
 
@@ -84,15 +86,12 @@ BiocManager::install("SpectriPy")
 ## Library loading and system setup
 
 Below we load all required packages. By loading *SpectriPy*, the package will
-evaluate if the required Python libraries (i.e. *matchms* version 0.28.2 and
-*spectrum_utils* version 0.3.2-0) are available. If they are not available,
+evaluate if the required Python libraries (i.e., *matchms* version 0.30.0 and
+*spectrum_utils* version 0.3.2) are available. If they are not available,
 *SpectriPy* will install them using functionality from the *reticulate* R
-package (see also
+package, in particular, *reticulate*'s `py_require()` function (see also
 [here](https://rstudio.github.io/reticulate/articles/versions.html) for
-information on Python and library versions). Note that if required Python
-libraries are being installed during package loading, it might be required to
-restart the R session to ensure they are correctly loaded. See section
-@sec-python for more configuration options of *SpectriPy*.
+details). See section @sec-python for more configuration options of *SpectriPy*.
 
 The *reticulate* package will be loaded by *SpectriPy*, ensuring the R/Python
 integration provided by that package to be available as well. To better
@@ -711,38 +710,33 @@ and copying of the MS data. See also section @sec-comments for general comments.
 
 ## Startup and Python configuration {#sec-python}
 
-During package startup, *SpectriPy* loads the required *reticulate* library and
-configures the Python environment. If the package-specific environment does not
-exist it creates one and installs all required libraries. By default,
-*SpectriPy* will setup a specific *virtualenv* and install all required Python
-libraries (i.e. *matchms* version 0.30.0 and *spectrum_utils* version 0.3.2)
-into that. The Python setup can also be configured with three package options
-that can also be set *via* environment variables. These are:
+The way Python dependencies are defined and managed has changed in *SpectriPy*
+beginning with version 0.99.6. *SpectriPy* now declares Python dependencies
+using the `py_require()` function from the *reticulate* package. These Python
+package dependencies requested via `py_require()` will automatically be
+provisioned and made available for the user when the *SpectriPy* package is
+loaded, *via* an ephemeral Python virtual environment. Eventually missing
+libraries are downloaded and installed automatically.
 
-- `"spectripy.use_system"` (environment variable `SPECTRIPY_USE_SYSTEM`):
-  whether the system Python should be used. Default is `"FALSE"`. If set to
-  `"TRUE"` *SpectriPy* will not check or install any packages but simply use the
-  user's system setup and will ignore the other options below. Users are thus
-  expected to manage the dependencies themselves.
+The previous *virtualenv* or *conda*-based setup is now replaced by the
+preferred `py_require()` approach, hence the previous package's options and
+environment variables `"spectripy.use_system"`, `SPECTRIPY_USE_SYSTEM`,
+`"spectripy.use_conda"`, `SPECTRIPY_USE_CONDA`, `"spectripy.env"`,
+`SPECTRIPY_ENV` are now ignored.
 
-- `"spectripy.use_conda"` (environment variable `SPECTRIPY_USE_CONDA`): whether
-  conda should be used to install and manage the package-specific Python
-  environment. If `"FALSE"` (the default) *reticulate*'s `virtualenv_create()`
-  and `use_virtualenv()` functions are used. If set to `"TRUE"`,
-  `conda_create()` and `use_conda()` are used instead.
+- NOTE: still define SPECTRIPY_ENV/"spectripy.env"? maybe to be used in `import`
+  parameter `delay_load`?
 
-- `"spectripy.env"` (environment variable `SPECTRIPY_ENV`): the name of the
-  environment that should be used by *SpectriPy*. Defaults to `"r-spectripy"`.
+A pre-defined Python environment can be used by pointing the `RETICULATE_PYTHON`
+environment variable to the respective Python binary or the
+`RETICULATE_PYTHON_ENV` to the path of the environment. All Python libraries
+required by *SpectriPy* need however to be installed and available in that
+Python environment, as *SpectriPy* respectively *reticulate*'s `py_require()`
+functionality will be bypassed. These Python libraries are:
 
-Options can be set, prior loading of the package, either directly in the R
-session using the `options()` function, or added to the *.Rprofile* file in the
-user's home directory. To use *SpectriPy* with system Python, either call
-`options(spectripy.use_system = TRUE)`, or add the line
-`options(spectripy.use_system = TRUE)` to the *.Rprofile* file, or set and
-export a system environment variable `SPECTRIPY_USE_SYSTEM=TRUE`.
-
-**Important** it is required to restart the R session if eventually missing
-Python libraries were installed during package startup!
+- *matchms* >= 0.30.0
+- *spectrum_utils* >= 0.3.2
+- *numpy* >= 2.2.0
 
 See also the help of the *reticulate* package for more information on
 configuring Python with R.

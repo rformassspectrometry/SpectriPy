@@ -1,5 +1,10 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.10
+
+- Update installation and Python configuration settings.
+- Check environment variables on package loading.
+
 ## Changes in 0.99.9
 
 - Add tolerance for comparison of retention time with *spectrum_utils*.
