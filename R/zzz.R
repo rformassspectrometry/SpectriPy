@@ -4,7 +4,7 @@ matchms_similarity <- NULL
 matchms_filtering <- NULL
 spectrum_utils <- NULL
 
-.PY_PKGS <- c(matchms = "matchms>=0.30.0",
+.PY_PKGS <- c(matchms = "matchms>=0.30",
               spectrum_utils = "spectrum_utils>=0.3.2",
               numpy = "numpy>=2.2.0")
 
@@ -28,7 +28,7 @@ spectrum_utils <- NULL
                 "Python setup options.")
     se <- .spectripy_env()
     if (length(se) && se != "")
-        warning("Environment variable 'SPECTRIPY_ENV' is no longre ",
+        warning("Environment variable 'SPECTRIPY_ENV' is no longer ",
                 "supported. Please use 'RETICULATE_PYTHON_ENV' instead. See ",
                 "the package vignette for updated Python setup options.")
     ## Potentially interfering global settings

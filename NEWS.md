@@ -1,5 +1,10 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.11
+
+- Add unit tests for package startup messages.
+- Complete and clean installation and configuration documentation.
+
 ## Changes in 0.99.10
 
 - Update installation and Python configuration settings.
