@@ -32,6 +32,9 @@
 
 - Replace Python library installation *via* virtualenv or conda with
   `py_require()` from *reticulate* version > 1.41.0.
+- Add support for parameter `data` to `backendInitialize()`: this enables to
+  change the backend from a `Spectra` object to `MsBackendPy` using the
+  `setBackend()` method.
 
 ## Changes in 0.99.4
 
@@ -53,7 +56,6 @@
 ## Changes in 0.99.0
 
 - Prepare for Bioconductor submission.
-
 
 # SpectriPy 0.5
 

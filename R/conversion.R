@@ -378,18 +378,26 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
         }
     }
 
-#' Converts a `Spectra::Spectra` to a `list` of `matchms.Spectrum` by first
-#' extracting the peaks and spectra data and iterating over these. This is
-#' a faster, but also more memory heavy implementation as the full peaks and
-#' spectra data are read into memory. With the `single_rspec_to_pyspec()` only
-#' the data from one spectrum at a time are read.
+#' Converts a `Spectra::Spectra` (or its `spectraData()`) to a `list` of
+#' `matchms.Spectrum` by first extracting the peaks and spectra data and
+#' iterating over these. This is a faster, but also more memory heavy
+#' implementation as the full peaks and spectra data are read into memory.
+#' With the `single_rspec_to_pyspec()` only the data from one spectrum at
+#' a time are read.
+#'
+#' @param x either a `Spectra` object or a `DataFrame` which includes also the
+#'    `"mz"` and `"intensity"` values (e.g. by calling `spectraData(x@backend))`
 #'
 #' @noRd
 .rspec_to_matchms_pyspec <- function(x, mapping = spectraVariableMapping()) {
-    pks <- peaksData(x, c("mz", "intensity"))
+    if (is(x, "Spectra"))
+        pks <- peaksData(x, c("mz", "intensity"), return.type = "list")
+    else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind)
     sv <- mapping[!mapping %in% c("mz", "intensity")]
     if (length(sv)) {
-        spd <- as.data.frame(spectraData(x, columns = names(sv)))
+        if (is(x, "Spectra"))
+            spd <- as.data.frame(spectraData(x, columns = names(sv)))
+        else spd <- as.data.frame(x[, names(sv), drop = FALSE])
         colnames(spd) <- sv[colnames(spd)]
         rm(x)
         spd <- split(spd, seq_along(pks))
@@ -421,7 +429,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 #' @noRd
 .rspec_to_spectrum_utils_pyspec <-
     function(x, mapping = spectraVariableMapping()) {
-        pks <- peaksData(x, c("mz", "intensity"))
+        if (is(x, "Spectra"))
+            pks <- peaksData(x, c("mz", "intensity"))
+        else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind)
         l <- length(pks)
         sv <- mapping[!mapping %in% c("mz", "intensity")]
         svm <- sv[sv %in% .SPECTRA_2_SPECTRUM_UTILS]
@@ -430,7 +440,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
             warning("Ignoring variables ",
                     paste0("\"", names(sv)[sv %in% w] ,"\""))
         if (length(svm)) {
-            spd <- as.data.frame(spectraData(x, columns = names(svm)))
+            if (is(x, "Spectra"))
+                spd <- as.data.frame(spectraData(x, columns = names(svm)))
+            else spd <- as.data.frame(x[, names(svm), drop = FALSE])
             colnames(spd) <- svm[colnames(spd)]
         }
         rm(x)

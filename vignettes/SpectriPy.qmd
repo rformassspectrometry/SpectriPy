@@ -124,7 +124,7 @@ stopifnot(require("MsDataHub"))
 ```
 
 Next, we define the file path to the test file and load the data as a `Spectra`
-object.
+object in R.
 
 ```{r}
 #| label: load-data
@@ -174,10 +174,11 @@ class(tmp[1])
 ```
 
 Note that this Python data structure is now stored within the R session.
-Therefore, we have two full copies of the data in memory, i.e. an R
-`Spectra` object and a Python `matchms.Spectrum` object. We can access the
-variable from the associated Python environment through *reticulate*'s special
-`r` attribute using `r.<variable name in R>`.
+Therefore, we have two full copies of the data in memory, i.e., an R `Spectra`
+object and a Python `matchms.Spectrum` object (see Section @sec-backend for an
+alternative to avoid multiple data copies). We can access the variable from the
+associated Python environment through *reticulate*'s special `r` attribute using
+`r.<variable name in R>`.
 
 ```{python}
 #' Python session:
@@ -265,7 +266,7 @@ to R we need to convert the data from Python to R. This can be done with the
 `pyspec_to_rspec()` function which translates Python MS data structures into an
 R `Spectra` object (see the following @sec-py-to-r section for more
 information). A more elegant way is to use the `MsBackendPy` backend for
-R' `Spectra` objects (see section @sec-backend).
+R' `Spectra` objects (see Section @sec-backend).
 
 With *reticulate* we can use the `py` special variable in R to access attributes
 defined in the associated Python environment. Similarly, *reticulate* defines an
@@ -393,24 +394,25 @@ two (detached) variables containing the same MS data, one in R and one in
 Python.
 
 
-### Using a dedicated MS data *backend* for MS data in Python {#sec-backend}
+## Using a dedicated MS data *backend* for MS data in Python {#sec-backend}
 
-An alternative, and more elegant, approach to keeping multiple copies of
-spectral objects (i.e. `Spectra`, `matchms.Spectrum`) in memory, is to use a
-dedicated data *backend* for the `Spectra` object.
-The R's `Spectra` object separates by design the functionality to analyze MS
-data from the code to *represent* or retrieve the MS data, which is provided by
-dedicated data *backends*. These allow for example to import MS data from
-different file formats, or to store and access the data with different storage
-modes, respectively (see also [this
+An alternative, and more elegant, approach to avoid keeping multiple copies of
+spectral objects (i.e., `Spectra`, `matchms.Spectrum`) in memory, is to use a
+dedicated data *backend* for the `Spectra` object. This allows direct access of
+MS data in Python from R without having an additional copy in R. The R's
+`Spectra` object separates by design the functionality to analyze MS data from
+the code to *represent* or retrieve the MS data, which is provided by dedicated
+data *backends*. These allow for example to import MS data from different file
+formats, or to store and access the data with different storage modes,
+respectively (see also [this
 tutorial](https://jorainer.github.io/SpectraTutorials/articles/Spectra-backends.html)
 for more information). The *SpectriPy* packages defines such a backend, the
-`MsBackendPy`, that allows to directly access MS data stored in the respective
-data formats in Python.
+`MsBackendPy`, that allows to directly access MS data stored in Python (in their
+respective data formats).
 
 As an example we create below a `Spectra` object for the MS data (in Python)
 previously imported from the MGF file (i.e. `"mgf_py"`) and using the
-`MsBackendPy` as the data source (i.e. backend).
+`MsBackendPy` as the data `source` (i.e., backend).
 
 ```{r}
 #| label: initialize MsBackendPy for Python variable
@@ -426,7 +428,7 @@ In contrast to using the `pyspec_to_rspec()` function, no data was copied or
 converted by this call. The `Spectra` object (through its backend) does only
 keep a *reference* to the original data attribute in Python, but no data. Data
 is retrieved and translated on-the-fly each time it is requested from the
-`Spectra` object. Thus, calling e.g. `msLevel()` or `intensity()` causes the
+`Spectra` object. Thus, calling e.g., `msLevel()` or `intensity()` causes the
 backend to iterate over the MS data in Python, extract the respective
 information, translate it and return it to the user.
 
@@ -444,8 +446,8 @@ intensity(mgf)
 While the performance is a little lower, compared to translating all data to R
 using the `pyspec_to_rspec()` function, this approach is much more memory
 efficient, because no additional copies of MS data are generated and only the MS
-data currently required for a certain analysis task (i.e. a subset of the data)
-is loaded and translated at a time.
+data currently required for a certain analysis task is loaded and translated at
+a time.
 
 Also, because data is always retrieved on-the-fly from Python, any changes to
 the MS data attribute in Python are also immediately reflected in the respective
@@ -470,6 +472,62 @@ The intensities retrieved from the `Spectra` object are now also scaled.
 
 #' Get intensities after scaling the intensities in Python:
 intensity(mgf)
+```
+
+While we created a `Spectra` object from an existing data object in Python, it
+is similarly possible change the backend of a `Spectra` object to a
+`MsBackendPy`. This follows the general concept of `Spectra` objects to support
+changing between data representations, respectively backends, at any time. The
+first data set in this vignette was imported from mzML files:
+
+```{r}
+#' R session:
+
+mzml_r
+```
+
+This `Spectra` object uses the `MsBackedMzR` backend as data representation. We
+can change the backend of `Spectra` objects using the `setBackend()`
+function. Thus, below we change the backend to `MsBackendPy`, specifying also
+the name of the variable in Python that should be used to store the data.
+
+```{r}
+#' R session:
+
+mzml_r <- setBackend(mzml_r, backend = MsBackendPy(),
+                     pythonVariableName = "mzml_p")
+mzml_r
+```
+
+This converted all the MS data of the `mzml_r` `Spectra` object to Python
+objects and assigned these to the Python variable with the name `"mzml_p"`. The
+resulting `Spectra` object uses now a `MsBackendPy` backend which keeps only the
+reference to the Python variable but no data. The size of the `Spectra` object
+is thus very small.
+
+```{r}
+#' R session:
+
+print(object.size(mzml_r), units = "MB")
+```
+
+And accessing the data will retrieve and convert the data from the referenced
+Python objects:
+
+```{r}
+#' R session:
+
+mz(mzml_r)
+```
+
+And all data can also be accessed in Python:
+
+```{python}
+#' Python session:
+
+len(mzml_p)
+
+mzml_p[0].peaks.mz
 ```
 
 
