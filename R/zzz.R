@@ -13,7 +13,6 @@ spectrum_utils <- NULL
     .check_environment()
     py_require(packages = .PY_PKGS, python_version = ">=3.12")
     .initialize_libraries2(FALSE, FALSE, asNamespace(pkgname))
-    packageStartupMessage(print(py_config())) # temporarily/remove later.
 }
 
 .check_environment <- function() {

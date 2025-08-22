@@ -3,6 +3,7 @@
 ## Changes in 0.99.11
 
 - Add unit tests for package startup messages.
+- Remove debug startup messages.
 - Complete and clean installation and configuration documentation.
 
 ## Changes in 0.99.10

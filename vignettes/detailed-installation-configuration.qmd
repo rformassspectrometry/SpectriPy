@@ -45,8 +45,10 @@ BiocManager::install("SpectriPy")
 ```
 
 should work on most systems. See also section [*Fixing package installation or
-loading problems*]() in the appendix of the *SpectriPy* vignette if installing
-or loading of the package fails.
+loading
+problems*](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-fix)
+in the appendix of the *SpectriPy* vignette if installing or loading of the
+package fails.
 
 
 ## Configure reticulate with host system Python environment (optional)
