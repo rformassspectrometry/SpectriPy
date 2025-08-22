@@ -30,24 +30,23 @@ If you use *SpectriPy* in your research, please cite:
 
 # Installation
 
-*SpectriPy* needs Python (version > 3.10) to be installed on the system. All
+*SpectriPy* needs Python (version > 3.12) to be installed on the system. All
 necessary Python libraries (listed below) are automatically installed by the
-[*reticulate*](https://rstudio.github.io/reticulate) R package. Python library
-management uses the
+[*reticulate*](https://rstudio.github.io/reticulate) R package. *SpectriPy*'s
+Python library management uses the
 [`py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)
 function introduced in *reticulate* version 1.41 and should hence work on most
 system without problems. To install *SpectriPy*:
 
 ```r
 install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager("SpectriPy")
 ```
 
 In addition it is possible to install the Python libraries manually (e.g., for
 the system Python version) and specify the version of Python (or of the local
 *virtualenv* or *conda* environment) using the `RETICULATE_PYTHON` or
-`RETICULATE_PYTHON_ENV` environment variables. If either of these environment
+`RETICULATE_PYTHON_ENV` environment variables. If any of these environment
 variables are defined, all Python libraries listed below **must** be installed,
 since *SpectriPy* (respectively *reticulate*) will not try to install them
 automatically. The required Python libraries with the suggested and tested
@@ -55,7 +54,11 @@ versions are:
 
 - [*matchms*](https://github.com/matchms) 0.30.0
 - [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
-- *numpy* 2.0.2
+- *numpy* 2.2.0
+
+See also sections [*Startup and Python configuration*]() for more details or
+[*Fixing package installation or loading problems*]() if installation or loading
+fails.
 
 
 # Documentation for users

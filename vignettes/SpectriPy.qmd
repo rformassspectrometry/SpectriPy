@@ -70,7 +70,8 @@ If the *BiocManager* package is not already available, please install it with
 Python (version >= 2.12) to be available. During package installation,
 *SpectriPy* will by default install all required Python libraries
 automatically. See section @sec-python for information on manual library
-installation or usage of a pre-defined or system Python environment.
+installation or usage of a pre-defined or system Python environment. See section
+@sec-fix for some hints how to solve package installation or loading problems.
 
 To install the package use the code below:
 
@@ -724,9 +725,6 @@ environment variables `"spectripy.use_system"`, `SPECTRIPY_USE_SYSTEM`,
 `"spectripy.use_conda"`, `SPECTRIPY_USE_CONDA`, `"spectripy.env"`,
 `SPECTRIPY_ENV` are now ignored.
 
-- NOTE: still define SPECTRIPY_ENV/"spectripy.env"? maybe to be used in `import`
-  parameter `delay_load`?
-
 A pre-defined Python environment can be used by pointing the `RETICULATE_PYTHON`
 environment variable to the respective Python binary or the
 `RETICULATE_PYTHON_ENV` to the path of the environment. All Python libraries
@@ -738,8 +736,54 @@ functionality will be bypassed. These Python libraries are:
 - *spectrum_utils* >= 0.3.2
 - *numpy* >= 2.2.0
 
+More information on this manual setup can be found in the *Detailed information
+on installation and configuration* vignette.
+
 See also the help of the *reticulate* package for more information on
 configuring Python with R.
+
+
+## Fixing package installation or loading problems {#sec-fix}
+
+*SpectriPy* loads and imports the required Python libraries *matchms*,
+*spectrum_utils* and *numpy* during package loading/attaching (e.g. using
+`library(SpectriPy)`). Installation or loading of the package can thus fail if
+these libraries or the required versions can not be found. *SpectriPy* uses the
+newer `py_require()` approach from the *reticulate* package to manage Python
+requirements.
+
+Trouble shooting:
+
+1) Check the output of `Sys.getenv()`: is there a system variable
+   `RETICULATE_PYTHON` or `RETICULATE_PYTHON_ENV` defined? Problem: *reticulate*
+   will by use the specified Python or Python environment and skip automatic
+   installation of the Python libraries. Solution: a) unset this environment
+   variables b) manually install the required Python libraries in that Python
+   environment (see section @sec-python).
+
+2) Is there a *default* *r-reticulate* virtual environment (e.g. created by
+   another package or a previous version of *reticulate*) on the system, i.e.,
+   does `virtualenv_exists("r-reticulate")` return `TRUE`? Problem: *reticulate*
+   will use this environment instead of the *ephemeral virtual environment* that
+   would be managed through `py_require()`. Solution: define an environment
+   variable `RETICULATE_USE_MANAGED_VENV="yes"`. This variable can either be
+   defined system wide, or by adding a line `RETICULATE_USE_MANAGED_VENV="yes"`
+   to a file named *.Renviron* in the user's home directory. See also the
+   [Environment](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html)
+   documentation from Posit for more information on how to define environment
+   variables for R.
+
+If this does not solve the issue, have also a look at the [order of
+discovery](https://rstudio.github.io/reticulate/articles/versions.html#order-of-discovery)
+documentation of *reticulate* which clearly explains how *reticulate* tries to
+define and use the Python setup. Most *SpectriPy* installation/loading problems
+come from the fact that another Python setup than the *ephemeral virtual
+environment* (which is the current suggested mode) is used. The solution
+suggested in point 2 above should solve most of these problems.
+
+More information can also be found in the *reticulate*'s [Python version
+configuration](https://rstudio.github.io/reticulate/articles/versions.html)
+documentation.
 
 
 # Session information

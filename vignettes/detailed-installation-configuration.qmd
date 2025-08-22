@@ -41,11 +41,13 @@ Installation of the package using:
 #| eval: false
 #' R session:
 install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager::install("SpectriPy")
 ```
 
-should work on most systems.
+should work on most systems. See also section [*Fixing package installation or
+loading problems*]() in the appendix of the *SpectriPy* vignette if installing
+or loading of the package fails.
+
 
 ## Configure reticulate with host system Python environment (optional)
 
@@ -56,16 +58,18 @@ libraries manually in that local environment. The required libraries are:
 
 - [*matchms*](https://github.com/matchms) 0.30.0
 - [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
-- *numpy* 2.0.2
+- *numpy* 2.2.0
 
 To use *SpectriPy* with a local, system, Python environment either the
 `RETICULATE_PYTHON` or the `RETICULATE_PYTHON_ENV` environment variable needs to
 be set. The former should point to the *python* binary, while the latter should
 point to the (virtualenv or conda) environment with all necessary libraries
 installed. These environment variables can either be set globally in the
-operation system settings, or specifically for R. In R, it is possible to set
-the variable using `Sys.setenv()` **before** the *SpectriPy* or *reticulate*
-libraries are loaded. For example with:
+operation system settings, or specifically for R. See also the
+[Environment](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html)
+documentation from Posit for more information on how to define environment
+variables for R. In the example below, we set the variable using `Sys.setenv()`
+**before** the *SpectriPy* or *reticulate* libraries are loaded:
 
 ```{r}
 #| eval: false
@@ -117,24 +121,13 @@ BiocManager::install(version = "3.21")
 
 ### Installing *SpectriPy*
 
-Since *SpectriPy* is currently still in Bioconductor's developmental branch and
-needs to be installed through GitHub. For that, the *remotes* package needs to
-be installed.
+*SpectriPy* can be installed through Bioconductor:
 
 ```{r}
 #| eval: false
 #' R session:
 
-install.packages("remotes")
-```
-
-To install the *SpectriPy* package use
-
-```{r}
-#| eval: false
-#' R session:
-
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager::install("SpectriPy")
 ```
 
 ### Check installation completed
