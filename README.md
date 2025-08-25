@@ -5,9 +5,7 @@
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
-[![years in bioc](http://bioconductor.org/shields/years-in-bioc/SpectriPy.svg)](https://bioconductor.org/packages/release/bioc/html/SpectriPy.html)
 [![Ranking by downloads](http://bioconductor.org/shields/downloads/release/SpectriPy.svg)](https://bioconductor.org/packages/stats/bioc/SpectriPy/)
-[![build release](http://bioconductor.org/shields/build/release/bioc/SpectriPy.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/SpectriPy/)
 [![build devel](http://bioconductor.org/shields/build/devel/bioc/SpectriPy.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/SpectriPy/)
 
 ![SpectriPy_logo](man/figures/logo_100.png)
