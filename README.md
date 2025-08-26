@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/rformassspectrometry/SpectriPy/branch/main/graph/badge.svg?token=638UZM0DXP)](https://codecov.io/gh/rformassspectrometry/SpectriPy)
 [![license](https://img.shields.io/badge/license-Artistic--2.0-brightgreen.svg)](https://opensource.org/licenses/Artistic-2.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
+[![Ranking by downloads](http://bioconductor.org/shields/downloads/release/SpectriPy.svg)](https://bioconductor.org/packages/stats/bioc/SpectriPy/)
+[![build devel](http://bioconductor.org/shields/build/devel/bioc/SpectriPy.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/SpectriPy/)
 
 ![SpectriPy_logo](man/figures/logo_100.png)
 
@@ -28,49 +30,40 @@ If you use *SpectriPy* in your research, please cite:
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08070/status.svg)](https://doi.org/10.21105/joss.08070)
 
 
-
 # Installation
 
-Detailed installation instructions can be found in the [installation and
-configuration](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html)
-vignette. More advanced instructions and Python configuration, e.g. to use
-*miniconda*-based instead of the default *virtualenv*-based setup can be found
-in the [Startup and Python
-configuration](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
-section of the main vignette.
-
-TLDR:
-
-- Prerequisites: R >= 4.4.0.
-- System requirement: *reticulate* (i.e., setup Python environment if not
-  already available)
+*SpectriPy* needs Python (version >= 3.12) to be installed on the system. All
+necessary Python libraries (listed below) are automatically installed by the
+[*reticulate*](https://rstudio.github.io/reticulate) R package. *SpectriPy*'s
+Python library management uses the
+[`py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)
+function introduced in *reticulate* version 1.41 and should hence work on most
+system without problems. To install *SpectriPy*:
 
 ```r
-#' R session:
-
-install.packages("reticulate")
-reticulate::install_miniconda()
+install.packages("BiocManager")
+BiocManager("SpectriPy")
 ```
 
-- Package requirements: Bioconductor's *BiocManager*, *remotes*
+In addition it is possible to install the Python libraries manually (e.g., for
+the system Python version) and specify the version of Python (or of the local
+*virtualenv* or *conda* environment) using the `RETICULATE_PYTHON` or
+`RETICULATE_PYTHON_ENV` environment variables. If any of these environment
+variables are defined, all Python libraries listed below **must** be installed,
+since *SpectriPy* (respectively *reticulate*) will not try to install them
+automatically. The required Python libraries with the suggested and tested
+versions are:
 
-```r
-#' R session:
+- [*matchms*](https://github.com/matchms) 0.30.0
+- [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
+- *numpy* 2.2.0
 
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install(version = "3.20")
+See also sections [*Startup and Python
+configuration*](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python)
+for more details or [*Fixing package installation or loading
+problems*](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-fix)
+if installation or loading fails.
 
-install.packages("remotes")
-```
-
-- Package: *SpectriPy*
-
-```r
-#' R session:
-
-BiocManager::install("RforMassSpectrometry/SpectriPy")
-```
 
 # Documentation for users
 

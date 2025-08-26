@@ -1,7 +1,37 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.11
+
+- Add unit tests for package startup messages.
+- Remove debug startup messages.
+- Complete and clean installation and configuration documentation.
+
+## Changes in 0.99.10
+
+- Update installation and Python configuration settings.
+- Check environment variables on package loading.
+
+## Changes in 0.99.9
+
+- Add tolerance for comparison of retention time with *spectrum_utils*.
+- Require numpy version >= 2.2.0.
+
+## Changes in 0.99.8
+
+- Verbose startup messages and require Python 3.12.
+
+## Changes in 0.99.7
+
+- Replace the *msdata* package with *MsDataHub*.
+
+## Changes in 0.99.6
+
+- Set `delay_load = FALSE` in `import()` calls during package loading
+
 ## Changes in 0.99.5
 
+- Replace Python library installation *via* virtualenv or conda with
+  `py_require()` from *reticulate* version > 1.41.0.
 - Add support for parameter `data` to `backendInitialize()`: this enables to
   change the backend from a `Spectra` object to `MsBackendPy` using the
   `setBackend()` method.

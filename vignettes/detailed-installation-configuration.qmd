@@ -18,12 +18,12 @@ vignette: >
 
 This document provides detailed installation and configuration instructions for
 the [*SpectriPy*](https://github.com/RforMassSpectrometry/SpectriPy)
-package. For first time R users see also section @sec-first in the appendix.
+package. For first time R users see also section @sec-first in the appendix. For
+advanced Python/system configuration and troubleshooting see sections
+@sec-python and @sec-fix in the appendix.
 
 
 # Installation
-
-## System requirements
 
 *SpectriPy* relies on, and extends, the
 [*reticulate*](https://rstudio.github.io/reticulate/index.html) package for
@@ -31,69 +31,60 @@ interoperability between Python and R. For installation of *SpectriPy*, Python
 needs to be installed on the system. See also the [Install Python
 Packages](https://rstudio.github.io/reticulate/articles/python_packages.html)
 documentation from the *reticulate* package for information on installing
-Python. By default, *SpectriPy* uses *virtualenv* to configure and setup a Python
-environment specific to the package. As an alternative, it is possible to use a
-*miniconda*-based setup insterad. The code below shows how *miniconda* can be
-installed with the *reticulate* package (which needs to be first installed with
-`install.package("reticulate")` if not already available):
+Python. Since version 0.99.5, *SpectriPy* uses the new
+[`py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)
+function from the *reticulate* package to install and manage all required Python
+libraries (i.e., *matchms*, *spectrum_utils* and *numpy*) including all their
+dependencies.
+
+Installation of the package using:
 
 ```{r}
 #| eval: false
 #' R session:
-
-install.packages("reticulate")
-library(reticulate)
-install_miniconda()
+install.packages("BiocManager")
+BiocManager::install("SpectriPy")
 ```
+
+should work on most systems. See also section [*Fixing package installation or
+loading
+problems*](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-fix)
+in the appendix of the *SpectriPy* vignette if installing or loading of the
+package fails.
 
 
 ## Configure reticulate with host system Python environment (optional)
 
-The installation of *reticulate* can be configured to use an available Python
-environment of the host system, instead of using the automatic setup.
+*SpectriPy* (respectively *reticulate*) can be configured to use an available
+Python environment of the host system, instead of using the automatic setup. In
+this case, however, the user **must** first install the required Python
+libraries manually in that local environment. The required libraries are:
 
-The path to the python3 executable file needs to be specified in the
-`use_python()` function of *reticulate*. A conda environment used in the
-analysis will also created below, ensuring a specific Python environment for
-*reticulate*. Note that the path specified below in the `use_python()` call
-might be different depending on the operating system or setup. Eventually refer
-to the installation log/output from the previous code block if miniconda was
-installed with the `install_miniconda()` function.
+- [*matchms*](https://github.com/matchms) 0.30.0
+- [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
+- *numpy* 2.2.0
 
-```{r}
-#| eval: false
-#' R session:
-
-use_python("~/miniconda3_reticulate/bin/python3")
-conda_create("r-reticulate")
-reticulate::py_config()
-```
-
-In case the host system Python environment is used, the required Python
-packages can be installed using *reticulate* in its Python environment. To
-install more Python packages, we use `conda_install()`.
-
-Alternatively, if working outside of conda, packages can be installed using the
-function `py_install()`.
+To use *SpectriPy* with a local, system, Python environment either the
+`RETICULATE_PYTHON` or the `RETICULATE_PYTHON_ENV` environment variable needs to
+be set. The former should point to the *python* binary, while the latter should
+point to the (virtualenv or conda) environment with all necessary libraries
+installed. These environment variables can either be set globally in the
+operation system settings, or specifically for R. See also the
+[Environment](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html)
+documentation from Posit for more information on how to define environment
+variables for R. In the example below, we set the variable using `Sys.setenv()`
+**before** the *SpectriPy* or *reticulate* libraries are loaded:
 
 ```{r}
 #| eval: false
 #' R session:
 
-conda_install(envname = "r-reticulate","matchms==0.28.2", pip = TRUE,
-              python_version = "3.12.2")
-conda_install(envname = "r-reticulate","spectrum_utils", pip = TRUE)
-conda_install(envname = "r-reticulate","numpy==2.0.2", pip = FALSE)
+Sys.setenv(RETICULATE_PYTHON_ENV="<path-to-the-virtualenv-with-libraries>")
+library(SpectriPy)
 ```
 
-To use *SpectriPy* with the system Python, the R option `"spectripy.use_system"`
-needs to be set to `TRUE` by calling `options(spectripy.use_system = TRUE)`
-**before** loading *SpectriPy* with `library(SpectriPy)`. In addition, option
-`"spectripy.env"` has to be set to use the miniconda environment defined above
-with `options(spectripy.env = "r-reticulate")` (also before loading the
-*SpectriPy* library). These options can also be configured with system
-environment variables (see the *Startup and Python configuration* section in the
-main *SpectriPy* vignette).
+The `Sys.setenv()` call can also be added to a *.Rprofile* file to automatically
+set the environmental variable when R starts.
 
 
 ## SpectriPy pre-requisites and installation instructions
@@ -103,12 +94,12 @@ main *SpectriPy* vignette).
 Bioconductor is required to install *SpectriPy*, as described below and from
 source [https://bioconductor.org/install/](https://bioconductor.org/install/).
 
-The current release of Bioconductor is version 3.20; it works with R version
-4.4.0. Users of older R and Bioconductor must update their installation to take
+The current release of Bioconductor is version 3.21; it works with R version
+4.5.0. Users of older R and Bioconductor must update their installation to take
 advantage of new features and to access packages that have been added to
 Bioconductor since the last release.
 
-The development version of Bioconductor is version 3.21; it works with R version
+The development version of Bioconductor is version 3.22; it works with R version
 4.5.0. More recent *devel* versions of R (if available) will be supported during
 the next Bioconductor release cycle.
 
@@ -129,29 +120,18 @@ managing Bioconductor resources.
 
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(version = "3.20")
+BiocManager::install(version = "3.21")
 ```
 
 ### Installing *SpectriPy*
 
-Since *SpectriPy* is currently still in development, you will need the *remotes*
-package to install it from GitHub. If you do not have the *remotes* package yet,
-you can install it using the following command:
+*SpectriPy* can be installed through Bioconductor:
 
 ```{r}
 #| eval: false
 #' R session:
 
-install.packages("remotes")
-```
-
-To install the *SpectriPy* package use
-
-```{r}
-#| eval: false
-#' R session:
-
-BiocManager::install("RforMassSpectrometry/SpectriPy")
+BiocManager::install("SpectriPy")
 ```
 
 ### Check installation completed
@@ -159,12 +139,14 @@ BiocManager::install("RforMassSpectrometry/SpectriPy")
 The status of installation can be easily checked by starting R and entering the
 following commands.
 
-This command loads the *SpectriPy* package, if correct installed.
+This command loads the *SpectriPy* package, if correct
+installed. `py_availble()` should return `TRUE`.
 
 ```{r}
 #' R session:
 
 library(SpectriPy)
+py_available()
 ```
 
 
@@ -176,7 +158,7 @@ Instructions to install R and RStudio for the first time are described below,
 from source
 [https://rstudio-education.github.io/hopr/packages2.html](https://rstudio-education.github.io/hopr/packages2.html).
 
-## Installing R and RStudio
+### Installing R and RStudio
 
 To get started with R, you need to acquire your own copy. This appendix will
 show you how to download R as well as RStudio, a software application that makes
@@ -316,6 +298,82 @@ Figure 1: The RStudio IDE for R.
 Now that you have both R and RStudio on your computer, you can begin using R by
 opening the RStudio program. Open RStudio just as you would any program, by
 clicking on its icon or by typing *RStudio* at the Windows Run prompt.
+
+## Startup and Python configuration {#sec-python}
+
+The way Python dependencies are defined and managed has changed in *SpectriPy*
+beginning with version 0.99.6. *SpectriPy* now declares Python dependencies
+using the `py_require()` function from the *reticulate* package. These Python
+package dependencies requested via `py_require()` will automatically be
+provisioned and made available for the user when the *SpectriPy* package is
+loaded, *via* an ephemeral Python virtual environment. Eventually missing
+libraries are downloaded and installed automatically.
+
+The previous *virtualenv* or *conda*-based setup is now replaced by the
+preferred `py_require()` approach, hence the previous package's options and
+environment variables `"spectripy.use_system"`, `SPECTRIPY_USE_SYSTEM`,
+`"spectripy.use_conda"`, `SPECTRIPY_USE_CONDA`, `"spectripy.env"`,
+`SPECTRIPY_ENV` are now ignored.
+
+A pre-defined Python environment can be used by pointing the `RETICULATE_PYTHON`
+environment variable to the respective Python binary or the
+`RETICULATE_PYTHON_ENV` to the path of the environment. All Python libraries
+required by *SpectriPy* need however to be installed and available in that
+Python environment, as *SpectriPy* respectively *reticulate*'s `py_require()`
+functionality will be bypassed. These Python libraries are:
+
+- *matchms* >= 0.30.0
+- *spectrum_utils* >= 0.3.2
+- *numpy* >= 2.2.0
+
+More information on this manual setup can be found in the *Detailed information
+on installation and configuration* vignette.
+
+See also the help of the *reticulate* package for more information on
+configuring Python with R.
+
+
+## Fixing package installation or loading problems {#sec-fix}
+
+*SpectriPy* loads and imports the required Python libraries *matchms*,
+*spectrum_utils* and *numpy* during package loading/attaching (e.g. using
+`library(SpectriPy)`). Installation or loading of the package can thus fail if
+these libraries or the required versions can not be found. *SpectriPy* uses the
+newer `py_require()` approach from the *reticulate* package to manage Python
+requirements.
+
+Trouble shooting:
+
+1) Check the output of `Sys.getenv()`: is there a system variable
+   `RETICULATE_PYTHON` or `RETICULATE_PYTHON_ENV` defined? Problem: *reticulate*
+   will use the specified Python or Python environment and skip automatic
+   installation of the Python libraries. Solution: a) unset this environment
+   variables b) manually install the required Python libraries in that Python
+   environment (see section @sec-python).
+
+2) Is there a *default* *r-reticulate* virtual environment (e.g. created by
+   another package or a previous version of *reticulate*) on the system, i.e.,
+   does `virtualenv_exists("r-reticulate")` return `TRUE`? Problem: *reticulate*
+   will use this environment instead of the *ephemeral virtual environment* that
+   would be managed through `py_require()`. Solution: define an environment
+   variable `RETICULATE_USE_MANAGED_VENV="yes"`. This variable can either be
+   defined system wide, or by adding a line `RETICULATE_USE_MANAGED_VENV="yes"`
+   to a file named *.Renviron* in the user's home directory. See also the
+   [Environment](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html)
+   documentation from Posit for more information on how to define environment
+   variables for R.
+
+If this does not solve the issue, have also a look at the [order of
+discovery](https://rstudio.github.io/reticulate/articles/versions.html#order-of-discovery)
+documentation of *reticulate* which clearly explains how *reticulate* tries to
+define and use the Python setup. Most *SpectriPy* installation/loading problems
+come from the fact that another Python setup than the *ephemeral virtual
+environment* (which is the current suggested mode) is used. The solution
+suggested in point 2 above should solve most of these problems.
+
+More information can also be found in the *reticulate*'s [Python version
+configuration](https://rstudio.github.io/reticulate/articles/versions.html)
+documentation.
 
 
 # Session information
