@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,93 +76,82 @@
 
     <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This document provides detailed installation and configuration instructions for the <a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link"><em>SpectriPy</em></a> package. For first time R users see also section <a href="#sec-first" class="quarto-xref">Section 3.1</a> in the appendix.</p>
+<p>This document provides detailed installation and configuration instructions for the <a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link"><em>SpectriPy</em></a> package. For first time R users see also section <a href="#sec-first" class="quarto-xref">Section 3.1</a> in the appendix. For advanced Python/system configuration and troubleshooting see sections <a href="#sec-python" class="quarto-xref">Section 3.2</a> and <a href="#sec-fix" class="quarto-xref">Section 3.3</a> in the appendix.</p>
 </section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<section class="level2"><h3 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
-</h3>
-<p><em>SpectriPy</em> relies on, and extends, the <a href="https://rstudio.github.io/reticulate/index.html" class="external-link"><em>reticulate</em></a> package for interoperability between Python and R. For installation of <em>SpectriPy</em>, Python needs to be installed on the system. See also the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">Install Python Packages</a> documentation from the <em>reticulate</em> package for information on installing Python. By default, <em>SpectriPy</em> uses <em>virtualenv</em> to configure and setup a Python environment specific to the package. As an alternative, it is possible to use a <em>miniconda</em>-based setup insterad. The code below shows how <em>miniconda</em> can be installed with the <em>reticulate</em> package (which needs to be first installed with <code>install.package("reticulate")</code> if not already available):</p>
+<p><em>SpectriPy</em> relies on, and extends, the <a href="https://rstudio.github.io/reticulate/index.html" class="external-link"><em>reticulate</em></a> package for interoperability between Python and R. For installation of <em>SpectriPy</em>, Python needs to be installed on the system. See also the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">Install Python Packages</a> documentation from the <em>reticulate</em> package for information on installing Python. Since version 0.99.5, <em>SpectriPy</em> uses the new <a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link"><code>py_require()</code></a> function from the <em>reticulate</em> package to install and manage all required Python libraries (i.e., <em>matchms</em>, <em>spectrum_utils</em> and <em>numpy</em>) including all their dependencies.</p>
+<p>Installation of the package using:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reticulate"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"SpectriPy"</span><span class="op">)</span></span></code></pre></div>
 </div>
-</section><section class="level2"><h3 id="configure-reticulate-with-host-system-python-environment-optional">Configure reticulate with host system Python environment (optional)<a class="anchor" aria-label="anchor" href="#configure-reticulate-with-host-system-python-environment-optional"></a>
+<p>should work on most systems. See also section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-fix"><em>Fixing package installation or loading problems</em></a> in the appendix of the <em>SpectriPy</em> vignette if installing or loading of the package fails.</p>
+<section class="level2"><h3 id="configure-reticulate-with-host-system-python-environment-optional">Configure reticulate with host system Python environment (optional)<a class="anchor" aria-label="anchor" href="#configure-reticulate-with-host-system-python-environment-optional"></a>
 </h3>
-<p>The installation of <em>reticulate</em> can be configured to use an available Python environment of the host system, instead of using the automatic setup.</p>
-<p>The path to the python3 executable file needs to be specified in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> function of <em>reticulate</em>. A conda environment used in the analysis will also created below, ensuring a specific Python environment for <em>reticulate</em>. Note that the path specified below in the <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python()</a></code> call might be different depending on the operating system or setup. Eventually refer to the installation log/output from the previous code block if miniconda was installed with the <code><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda()</a></code> function.</p>
+<p><em>SpectriPy</em> (respectively <em>reticulate</em>) can be configured to use an available Python environment of the host system, instead of using the automatic setup. In this case, however, the user <strong>must</strong> first install the required Python libraries manually in that local environment. The required libraries are:</p>
+<ul>
+<li>
+<a href="https://github.com/matchms" class="external-link"><em>matchms</em></a> 0.30.0</li>
+<li>
+<a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> 0.3.2</li>
+<li>
+<em>numpy</em> 2.2.0</li>
+</ul>
+<p>To use <em>SpectriPy</em> with a local, system, Python environment either the <code>RETICULATE_PYTHON</code> or the <code>RETICULATE_PYTHON_ENV</code> environment variable needs to be set. The former should point to the <em>python</em> binary, while the latter should point to the (virtualenv or conda) environment with all necessary libraries installed. These environment variables can either be set globally in the operation system settings, or specifically for R. See also the <a href="https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html" class="external-link">Environment</a> documentation from Posit for more information on how to define environment variables for R. In the example below, we set the variable using <code><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv()</a></code> <strong>before</strong> the <em>SpectriPy</em> or <em>reticulate</em> libraries are loaded:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">"~/miniconda3_reticulate/bin/python3"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create</a></span><span class="op">(</span><span class="st">"r-reticulate"</span><span class="op">)</span></span>
-<span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_config.html" class="external-link">py_config</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RETICULATE_PYTHON_ENV<span class="op">=</span><span class="st">"&lt;path-to-the-virtualenv-with-libraries&gt;"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>In case the host system Python environment is used, the required Python packages can be installed using <em>reticulate</em> in its Python environment. To install more Python packages, we use <code><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install()</a></code>.</p>
-<p>Alternatively, if working outside of conda, packages can be installed using the function <code><a href="https://rstudio.github.io/reticulate/reference/py_install.html" class="external-link">py_install()</a></code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"matchms==0.28.2"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>              python_version <span class="op">=</span> <span class="st">"3.12.2"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"spectrum_utils"</span>, pip <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_install</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"r-reticulate"</span>,<span class="st">"numpy==2.0.2"</span>, pip <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>To use <em>SpectriPy</em> with the system Python, the R option <code>"spectripy.use_system"</code> needs to be set to <code>TRUE</code> by calling <code>options(spectripy.use_system = TRUE)</code> <strong>before</strong> loading <em>SpectriPy</em> with <code><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">library(SpectriPy)</a></code>. In addition, option <code>"spectripy.env"</code> has to be set to use the miniconda environment defined above with <code>options(spectripy.env = "r-reticulate")</code> (also before loading the <em>SpectriPy</em> library). These options can also be configured with system environment variables (see the <em>Startup and Python configuration</em> section in the main <em>SpectriPy</em> vignette).</p>
+<p>The <code><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv()</a></code> call can also be added to a <em>.Rprofile</em> file to automatically set the environmental variable when R starts.</p>
 </section><section class="level2"><h3 id="spectripy-pre-requisites-and-installation-instructions">SpectriPy pre-requisites and installation instructions<a class="anchor" aria-label="anchor" href="#spectripy-pre-requisites-and-installation-instructions"></a>
 </h3>
 <section class="level3"><h4 id="installing-bioconductor">Installing Bioconductor<a class="anchor" aria-label="anchor" href="#installing-bioconductor"></a>
 </h4>
 <p>Bioconductor is required to install <em>SpectriPy</em>, as described below and from source <a href="https://bioconductor.org/install/" class="external-link">https://bioconductor.org/install/</a>.</p>
-<p>The current release of Bioconductor is version 3.20; it works with R version 4.4.0. Users of older R and Bioconductor must update their installation to take advantage of new features and to access packages that have been added to Bioconductor since the last release.</p>
-<p>The development version of Bioconductor is version 3.21; it works with R version 4.5.0. More recent <em>devel</em> versions of R (if available) will be supported during the next Bioconductor release cycle.</p>
+<p>The current release of Bioconductor is version 3.21; it works with R version 4.5.0. Users of older R and Bioconductor must update their installation to take advantage of new features and to access packages that have been added to Bioconductor since the last release.</p>
+<p>The development version of Bioconductor is version 3.22; it works with R version 4.5.0. More recent <em>devel</em> versions of R (if available) will be supported during the next Bioconductor release cycle.</p>
 <p>Once R has been installed, get the latest version of Bioconductor by starting R and entering the following commands.</p>
 <p>It may be possible to change the Bioconductor version of an existing installation; see the <em>Changing version</em> section of the BiocManager vignette.</p>
 <p>Details, including instructions to install additional packages and to update, find, and troubleshoot are provided below. A devel version of Bioconductor is available. There are good reasons for using <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> for managing Bioconductor resources.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.20"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.21"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </section><section class="level3"><h4 id="installing-spectripy">Installing <em>SpectriPy</em>
 <a class="anchor" aria-label="anchor" href="#installing-spectripy"></a>
 </h4>
-<p>Since <em>SpectriPy</em> is currently still in development, you will need the <em>remotes</em> package to install it from GitHub. If you do not have the <em>remotes</em> package yet, you can install it using the following command:</p>
+<p><em>SpectriPy</em> can be installed through Bioconductor:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>To install the <em>SpectriPy</em> package use</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
-<span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"RforMassSpectrometry/SpectriPy"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"SpectriPy"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </section><section class="level3"><h4 id="check-installation-completed">Check installation completed<a class="anchor" aria-label="anchor" href="#check-installation-completed"></a>
 </h4>
 <p>The status of installation can be easily checked by starting R and entering the following commands.</p>
-<p>This command loads the <em>SpectriPy</em> package, if correct installed.</p>
+<p>This command loads the <em>SpectriPy</em> package, if correct installed. <code>py_availble()</code> should return <code>TRUE</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">SpectriPy</a></span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: reticulate</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using virtual environment 'r-spectripy'</code></pre>
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_available.html" class="external-link">py_available</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
 </div>
 </div>
 </section></section></section><section class="section level2"><h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
@@ -170,11 +159,11 @@
 <section class="level2"><h3 id="sec-first">Installation instructions for first-time R users<a class="anchor" aria-label="anchor" href="#sec-first"></a>
 </h3>
 <p>Instructions to install R and RStudio for the first time are described below, from source <a href="https://rstudio-education.github.io/hopr/packages2.html" class="external-link">https://rstudio-education.github.io/hopr/packages2.html</a>.</p>
-</section><section class="level2"><h3 id="installing-r-and-rstudio">Installing R and RStudio<a class="anchor" aria-label="anchor" href="#installing-r-and-rstudio"></a>
-</h3>
+<section class="level3"><h4 id="installing-r-and-rstudio">Installing R and RStudio<a class="anchor" aria-label="anchor" href="#installing-r-and-rstudio"></a>
+</h4>
 <p>To get started with R, you need to acquire your own copy. This appendix will show you how to download R as well as RStudio, a software application that makes R easier to use. You’ll go from downloading R to opening your first R session.</p>
 <p>Both R and RStudio are free and easy to download.</p>
-<section class="level3"><h4 id="how-to-download-and-install-r">How to Download and Install R<a class="anchor" aria-label="anchor" href="#how-to-download-and-install-r"></a>
+</section><section class="level3"><h4 id="how-to-download-and-install-r">How to Download and Install R<a class="anchor" aria-label="anchor" href="#how-to-download-and-install-r"></a>
 </h4>
 <p>R is maintained by an international team of developers who make the language available through the web page of The Comprehensive R Archive Network. The top of the web page provides three links for downloading R. Follow the link that describes your operating system: Windows, Mac, or Linux.</p>
 <section class="level4"><h5 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
@@ -224,10 +213,35 @@
 </section><section class="level3"><h4 id="opening-r">Opening R<a class="anchor" aria-label="anchor" href="#opening-r"></a>
 </h4>
 <p>Now that you have both R and RStudio on your computer, you can begin using R by opening the RStudio program. Open RStudio just as you would any program, by clicking on its icon or by typing <em>RStudio</em> at the Windows Run prompt.</p>
-</section></section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</section></section><section class="level2"><h3 id="sec-python">Startup and Python configuration<a class="anchor" aria-label="anchor" href="#sec-python"></a>
+</h3>
+<p>The way Python dependencies are defined and managed has changed in <em>SpectriPy</em> beginning with version 0.99.6. <em>SpectriPy</em> now declares Python dependencies using the <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> function from the <em>reticulate</em> package. These Python package dependencies requested via <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> will automatically be provisioned and made available for the user when the <em>SpectriPy</em> package is loaded, <em>via</em> an ephemeral Python virtual environment. Eventually missing libraries are downloaded and installed automatically.</p>
+<p>The previous <em>virtualenv</em> or <em>conda</em>-based setup is now replaced by the preferred <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> approach, hence the previous package’s options and environment variables <code>"spectripy.use_system"</code>, <code>SPECTRIPY_USE_SYSTEM</code>, <code>"spectripy.use_conda"</code>, <code>SPECTRIPY_USE_CONDA</code>, <code>"spectripy.env"</code>, <code>SPECTRIPY_ENV</code> are now ignored.</p>
+<p>A pre-defined Python environment can be used by pointing the <code>RETICULATE_PYTHON</code> environment variable to the respective Python binary or the <code>RETICULATE_PYTHON_ENV</code> to the path of the environment. All Python libraries required by <em>SpectriPy</em> need however to be installed and available in that Python environment, as <em>SpectriPy</em> respectively <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> functionality will be bypassed. These Python libraries are:</p>
+<ul>
+<li>
+<em>matchms</em> &gt;= 0.30.0</li>
+<li>
+<em>spectrum_utils</em> &gt;= 0.3.2</li>
+<li>
+<em>numpy</em> &gt;= 2.2.0</li>
+</ul>
+<p>More information on this manual setup can be found in the <em>Detailed information on installation and configuration</em> vignette.</p>
+<p>See also the help of the <em>reticulate</em> package for more information on configuring Python with R.</p>
+</section><section class="level2"><h3 id="sec-fix">Fixing package installation or loading problems<a class="anchor" aria-label="anchor" href="#sec-fix"></a>
+</h3>
+<p><em>SpectriPy</em> loads and imports the required Python libraries <em>matchms</em>, <em>spectrum_utils</em> and <em>numpy</em> during package loading/attaching (e.g. using <code><a href="https://github.com/RforMassSpectrometry/SpectriPy" class="external-link">library(SpectriPy)</a></code>). Installation or loading of the package can thus fail if these libraries or the required versions can not be found. <em>SpectriPy</em> uses the newer <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> approach from the <em>reticulate</em> package to manage Python requirements.</p>
+<p>Trouble shooting:</p>
+<ol type="1">
+<li><p>Check the output of <code><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv()</a></code>: is there a system variable <code>RETICULATE_PYTHON</code> or <code>RETICULATE_PYTHON_ENV</code> defined? Problem: <em>reticulate</em> will use the specified Python or Python environment and skip automatic installation of the Python libraries. Solution: a) unset this environment variables b) manually install the required Python libraries in that Python environment (see section <a href="#sec-python" class="quarto-xref">Section 3.2</a>).</p></li>
+<li><p>Is there a <em>default</em> <em>r-reticulate</em> virtual environment (e.g. created by another package or a previous version of <em>reticulate</em>) on the system, i.e., does <code>virtualenv_exists("r-reticulate")</code> return <code>TRUE</code>? Problem: <em>reticulate</em> will use this environment instead of the <em>ephemeral virtual environment</em> that would be managed through <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code>. Solution: define an environment variable <code>RETICULATE_USE_MANAGED_VENV="yes"</code>. This variable can either be defined system wide, or by adding a line <code>RETICULATE_USE_MANAGED_VENV="yes"</code> to a file named <em>.Renviron</em> in the user’s home directory. See also the <a href="https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html" class="external-link">Environment</a> documentation from Posit for more information on how to define environment variables for R.</p></li>
+</ol>
+<p>If this does not solve the issue, have also a look at the <a href="https://rstudio.github.io/reticulate/articles/versions.html#order-of-discovery" class="external-link">order of discovery</a> documentation of <em>reticulate</em> which clearly explains how <em>reticulate</em> tries to define and use the Python setup. Most <em>SpectriPy</em> installation/loading problems come from the fact that another Python setup than the <em>ephemeral virtual environment</em> (which is the current suggested mode) is used. The solution suggested in point 2 above should solve most of these problems.</p>
+<p>More information can also be found in the <em>reticulate</em>’s <a href="https://rstudio.github.io/reticulate/articles/versions.html" class="external-link">Python version configuration</a> documentation.</p>
+</section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -255,11 +269,11 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base
 
 other attached packages:
-[1] SpectriPy_0.99.5  reticulate_1.42.0
+[1] SpectriPy_0.99.11 reticulate_1.43.0
 
 loaded via a namespace (and not attached):
- [1] Spectra_1.19.2         cli_3.6.5              knitr_1.50
- [4] rlang_1.1.6            xfun_0.52              ProtGenerics_1.41.0
+ [1] Spectra_1.19.6         cli_3.6.5              knitr_1.50
+ [4] rlang_1.1.6            xfun_0.53              ProtGenerics_1.41.0
  [7] png_0.1-8              generics_0.1.4         jsonlite_2.0.0
 [10] clue_0.3-66            S4Vectors_0.47.0       htmltools_0.5.8.1
 [13] stats4_4.5.1           rmarkdown_2.29         grid_4.5.1
@@ -269,7 +283,7 @@ loaded via a namespace (and not attached):
 [25] fs_1.6.6               Rcpp_1.1.0             MetaboCoreUtils_1.17.1
 [28] BiocParallel_1.43.4    lattice_0.22-7         digest_0.6.37
 [31] parallel_4.5.1         Matrix_1.7-3           tools_4.5.1
-[34] BiocGenerics_0.55.0   </code></pre>
+[34] BiocGenerics_0.55.1   </code></pre>
 </div>
 </div>
 </section><script id="quarto-html-after-body" type="application/javascript">

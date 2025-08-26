@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,8 @@
 
 
 
-    <p><strong>Compiled</strong>: Wed Jul 9 08:42:27 2025</p>
+    <p><strong>Compiled</strong>: Tue Aug 26 06:22:35 2025</p>
+<p><strong>Note</strong>: since version 0.99.6 <em>SpectriPy</em> uses the newer, recommended approach to install and configure required Python libraries (i.e., through <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> functionality). This affects also the way a pre-defined Python environment can be used. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for updated information.</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Powerful software libraries for mass spectrometry (MS) data are available in both Python and R, covering specific and sometimes distinct aspects in the analysis of proteomics and metabolomics data. R’s <em>reticulate</em> package converts basic data types between Python and R and enables a seamless interoperability of both programming languages. The <em>SpectriPy</em> package extends <em>reticulate</em> allowing to translate MS data data structures between R and Python, specifically, between R’s <code>Spectra</code> objects and Python MS data structures from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries. In addition, functionality from Python’s <em>matchms</em> library is directly wrapped into R functions allowing a seamless integration into R based workflows. <em>SpectriPy</em> thus enables powerful proteomics or metabolomics analysis workflows combining the strengths of Python and R MS libraries.</p>
@@ -85,7 +86,7 @@
 <p>The <em>SpectriPy</em> package builds on <em>reticulate</em> providing in addition the functionality to translate data structures for MS data between the two languages. Specifically, the package translates between R’s <code>Spectra</code> objects (from the <em><a href="https://bioconductor.org/packages/3.22/Spectra" class="external-link">Spectra</a></em> package) and Python’s <code>matchms.Spectrum</code> and <code>spectrum_utils.spectrum.MsmsSpectrum</code> objects from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries, respectively.</p>
 </section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>If the <em>BiocManager</em> package is not already available, please install it with <code>install.packages("BiocManager")</code>. To install the development version of <em>SpectriPy</em> from GitHub, please install in addition the <em>remotes</em> package with <code>install.packages("remotes")</code>. As a system dependency, the package requires Python (version &gt;= 2.10) to be available. During package installation, <em>SpectriPy</em> will install also all required Python libraries using a Python <em>virtualenv</em> setup into a new Python environment <em>r-spectripy</em>. See also section <a href="#sec-python" class="quarto-xref">Section 5.2</a> for options to skip this and use either <em>miniconda</em> or system Python environment instead.</p>
+<p>If the <em>BiocManager</em> package is not already available, please install it with <code>install.packages("BiocManager")</code>. As a system dependency, the package requires Python (version &gt;= 3.12) to be available. During package installation, <em>SpectriPy</em> will by default install all required Python libraries automatically. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for information on manual library installation or usage of a pre-defined or system Python environment. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-fix">Fixing package installation or loading problems</a> in the <em>Detailed information on installation and configuration</em> vignette for some hints how to solve package installation or loading problems.</p>
 <p>To install the package use the code below:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
@@ -96,7 +97,7 @@
 </h2>
 <section class="level2"><h3 id="library-loading-and-system-setup">Library loading and system setup<a class="anchor" aria-label="anchor" href="#library-loading-and-system-setup"></a>
 </h3>
-<p>Below we load all required packages. By loading <em>SpectriPy</em>, the package will evaluate if the required Python libraries (i.e. <em>matchms</em> version 0.28.2 and <em>spectrum_utils</em> version 0.3.2-0) are available. If they are not available, <em>SpectriPy</em> will install them using functionality from the <em>reticulate</em> R package (see also <a href="https://rstudio.github.io/reticulate/articles/versions.html" class="external-link">here</a> for information on Python and library versions). Note that if required Python libraries are being installed during package loading, it might be required to restart the R session to ensure they are correctly loaded. See section <a href="#sec-python" class="quarto-xref">Section 5.2</a> for more configuration options of <em>SpectriPy</em>.</p>
+<p>Below we load all required packages. By loading <em>SpectriPy</em>, the package will evaluate if the required Python libraries (i.e., <em>matchms</em> version &gt;= 0.30, <em>spectrum_utils</em> version &gt;= 0.3.2 and <em>numpy</em> version &gt;= 2.2) are available. If they are not available, <em>SpectriPy</em> will install them using functionality from the <em>reticulate</em> R package. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for more configuration options of <em>SpectriPy</em>.</p>
 <p>The <em>reticulate</em> package will be loaded by <em>SpectriPy</em>, ensuring the R/Python integration provided by that package to be available as well. To better discriminate between R and Python code chunks, we add the comment <code>#' R session:</code> or <code>#' Python session:</code> to label the R and Python code chunks, respectively.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
@@ -107,12 +108,12 @@
 </div>
 </section><section class="level2"><h3 id="converting-ms-data-from-r-to-python">Converting MS data from R to Python<a class="anchor" aria-label="anchor" href="#converting-ms-data-from-r-to-python"></a>
 </h3>
-<p>In this section we show how MS data can be converted from R to Python. Below we first define the name and path of a data file in mzML format (provided by the <em><a href="https://bioconductor.org/packages/3.22/msdata" class="external-link">msdata</a></em> package) and load that data as an R <code>Spectra</code> object. We thus first ensure that the package <em>msdata</em> is installed. If the line below results in an error you need to first install <em>msdata</em> using <code>BiocManager::install("msdata")</code>.</p>
+<p>In this section we show how MS data can be converted from R to Python. Below we first define the name and path of a data file in mzML format (provided by the <code>r BiocStyle::Biocpkg("MsDataHub")</code> package) and load that data as an R <code>Spectra</code> object. We thus first ensure that the package <em>MsDataHub</em> is installed. If the line below results in an error you need to first install <em>MsDataHub</em> using <code>BiocManager::install("MsDataHub")</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st">"msdata"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://rformassspectrometry.github.io/MsDataHub" class="external-link">"MsDataHub"</a></span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: msdata</code></pre>
+<pre><code>Loading required package: MsDataHub</code></pre>
 </div>
 </div>
 <p>Next, we define the file path to the test file and load the data as a <code>Spectra</code> object in R.</p>
@@ -121,7 +122,8 @@
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Loading the data from a mzML file as a `Spectra` object</span></span>
-<span><span class="va">fl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"TripleTOF-SWATH"</span>, <span class="st">"PestMix1_DDA.mzML"</span>, package <span class="op">=</span> <span class="st">"msdata"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rformassspectrometry.github.io/MsDataHub" class="external-link">MsDataHub</a></span><span class="op">)</span></span>
+<span><span class="va">fl</span> <span class="op">&lt;-</span> <span class="fu">MsDataHub</span><span class="fu">::</span><span class="fu"><a href="https://rformassspectrometry.github.io/MsDataHub/reference/TripleTOF.html" class="external-link">PestMix1_DDA.mzML</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mzml_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="va">fl</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>We next restrict the data to MS level 2 and remove spectra with less than 3 (fragment) peaks.</p>
@@ -151,9 +153,9 @@
  ... 34 more variables/columns.
 
 file(s):
-PestMix1_DDA.mzML
+113769c406ec_7861
 Processing:
- Filter: select MS level(s) 2 [Wed Jul  9 08:42:38 2025] </code></pre>
+ Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -263,7 +265,7 @@ Processing:
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' Access the `fl` variable from the R session:</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>r.fl</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code><span><span class="st">'/__w/_temp/Library/msdata/TripleTOF-SWATH/PestMix1_DDA.mzML'</span></span></code></pre>
+<pre><code><span><span class="st">'/github/home/.cache/R/ExperimentHub/113769c406ec_7861'</span></span></code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(r.fl)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -484,9 +486,9 @@ Data stored in the "mgf_py" variable in Python</code></pre>
  ... 34 more variables/columns.
 
 file(s):
-PestMix1_DDA.mzML
+113769c406ec_7861
 Processing:
- Filter: select MS level(s) 2 [Wed Jul  9 08:42:38 2025] </code></pre>
+ Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object uses the <code>MsBackedMzR</code> backend as data representation. We can change the backend of <code>Spectra</code> objects using the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> function. Thus, below we change the backend to <code>MsBackendPy</code>, specifying also the name of the variable in Python that should be used to store the data.</p>
@@ -501,8 +503,8 @@ Processing:
 <pre><code>MSn data (Spectra) with 2243 spectra in a MsBackendPy backend:
 Data stored in the "mzml_p" variable in Python
 Processing:
- Filter: select MS level(s) 2 [Wed Jul  9 08:42:38 2025]
- Switch backend from MsBackendMzR to MsBackendPy [Wed Jul  9 08:42:47 2025] </code></pre>
+ Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025]
+ Switch backend from MsBackendMzR to MsBackendPy [Tue Aug 26 06:22:58 2025] </code></pre>
 </div>
 </div>
 <p>This converted all the MS data of the <code>mzml_r</code> <code>Spectra</code> object to Python objects and assigned these to the Python variable with the name <code>"mzml_p"</code>. The resulting <code>Spectra</code> object uses now a <code>MsBackendPy</code> backend which keeps only the reference to the Python variable but no data. The size of the <code>Spectra</code> object is thus very small.</p>
@@ -765,119 +767,107 @@ Processing:
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Calculating similarities:   0%|          | 0/2243 [00:00&lt;?, ?it/s]
-Calculating similarities:   0%|          | 1/2243 [00:00&lt;23:53,  1.56it/s]
-Calculating similarities:   1%|          | 22/2243 [00:00&lt;00:56, 39.48it/s]
-Calculating similarities:   2%|1         | 41/2243 [00:00&lt;00:31, 70.32it/s]
-Calculating similarities:   3%|2         | 63/2243 [00:00&lt;00:21, 103.20it/s]
-Calculating similarities:   4%|3         | 84/2243 [00:01&lt;00:16, 128.57it/s]
-Calculating similarities:   5%|4         | 104/2243 [00:01&lt;00:14, 146.25it/s]
-Calculating similarities:   6%|5         | 126/2243 [00:01&lt;00:12, 164.92it/s]
-Calculating similarities:   7%|6         | 146/2243 [00:01&lt;00:12, 173.78it/s]
-Calculating similarities:   7%|7         | 166/2243 [00:01&lt;00:11, 176.55it/s]
-Calculating similarities:   8%|8         | 186/2243 [00:01&lt;00:11, 179.20it/s]
-Calculating similarities:   9%|9         | 206/2243 [00:01&lt;00:11, 176.93it/s]
-Calculating similarities:  10%|#         | 225/2243 [00:01&lt;00:12, 159.12it/s]
-Calculating similarities:  11%|#         | 242/2243 [00:02&lt;00:14, 135.55it/s]
-Calculating similarities:  12%|#1        | 263/2243 [00:02&lt;00:13, 151.85it/s]
-Calculating similarities:  13%|#2        | 283/2243 [00:02&lt;00:11, 163.85it/s]
-Calculating similarities:  13%|#3        | 301/2243 [00:02&lt;00:11, 166.51it/s]
-Calculating similarities:  14%|#4        | 319/2243 [00:02&lt;00:11, 167.89it/s]
-Calculating similarities:  15%|#5        | 338/2243 [00:02&lt;00:11, 171.45it/s]
-Calculating similarities:  16%|#5        | 356/2243 [00:02&lt;00:11, 164.77it/s]
-Calculating similarities:  17%|#6        | 373/2243 [00:02&lt;00:11, 156.87it/s]
-Calculating similarities:  17%|#7        | 390/2243 [00:02&lt;00:11, 159.54it/s]
-Calculating similarities:  18%|#8        | 412/2243 [00:02&lt;00:10, 175.37it/s]
-Calculating similarities:  19%|#9        | 430/2243 [00:03&lt;00:10, 175.99it/s]
-Calculating similarities:  20%|#9        | 448/2243 [00:03&lt;00:10, 174.88it/s]
-Calculating similarities:  21%|##        | 466/2243 [00:03&lt;00:10, 168.89it/s]
-Calculating similarities:  22%|##1       | 484/2243 [00:03&lt;00:10, 165.47it/s]
-Calculating similarities:  22%|##2       | 504/2243 [00:03&lt;00:10, 173.90it/s]
-Calculating similarities:  23%|##3       | 525/2243 [00:03&lt;00:09, 182.37it/s]
-Calculating similarities:  24%|##4       | 549/2243 [00:03&lt;00:08, 196.19it/s]
-Calculating similarities:  26%|##5       | 572/2243 [00:03&lt;00:08, 204.25it/s]
-Calculating similarities:  26%|##6       | 593/2243 [00:03&lt;00:08, 204.44it/s]
-Calculating similarities:  27%|##7       | 615/2243 [00:04&lt;00:07, 206.98it/s]
-Calculating similarities:  28%|##8       | 636/2243 [00:04&lt;00:07, 201.62it/s]
-Calculating similarities:  29%|##9       | 661/2243 [00:04&lt;00:07, 214.90it/s]
-Calculating similarities:  30%|###       | 683/2243 [00:04&lt;00:07, 212.77it/s]
-Calculating similarities:  31%|###1      | 705/2243 [00:04&lt;00:07, 203.51it/s]
-Calculating similarities:  32%|###2      | 726/2243 [00:04&lt;00:07, 193.45it/s]
-Calculating similarities:  33%|###3      | 746/2243 [00:04&lt;00:08, 184.00it/s]
-Calculating similarities:  34%|###4      | 765/2243 [00:04&lt;00:08, 178.04it/s]
-Calculating similarities:  35%|###4      | 783/2243 [00:04&lt;00:08, 176.84it/s]
-Calculating similarities:  36%|###5      | 801/2243 [00:05&lt;00:08, 169.30it/s]
-Calculating similarities:  37%|###6      | 821/2243 [00:05&lt;00:08, 175.47it/s]
-Calculating similarities:  37%|###7      | 839/2243 [00:05&lt;00:08, 175.46it/s]
-Calculating similarities:  38%|###8      | 857/2243 [00:05&lt;00:07, 174.97it/s]
-Calculating similarities:  39%|###9      | 875/2243 [00:05&lt;00:07, 176.11it/s]
-Calculating similarities:  40%|###9      | 894/2243 [00:05&lt;00:07, 178.70it/s]
-Calculating similarities:  41%|####      | 912/2243 [00:05&lt;00:07, 173.12it/s]
-Calculating similarities:  42%|####1     | 933/2243 [00:05&lt;00:07, 181.92it/s]
-Calculating similarities:  42%|####2     | 952/2243 [00:05&lt;00:07, 183.71it/s]
-Calculating similarities:  43%|####3     | 975/2243 [00:05&lt;00:06, 195.16it/s]
-Calculating similarities:  44%|####4     | 995/2243 [00:06&lt;00:06, 194.37it/s]
-Calculating similarities:  45%|####5     | 1015/2243 [00:06&lt;00:06, 193.19it/s]
-Calculating similarities:  46%|####6     | 1035/2243 [00:06&lt;00:06, 184.14it/s]
-Calculating similarities:  47%|####6     | 1054/2243 [00:06&lt;00:06, 181.69it/s]
-Calculating similarities:  48%|####7     | 1074/2243 [00:06&lt;00:06, 183.52it/s]
-Calculating similarities:  49%|####8     | 1093/2243 [00:06&lt;00:06, 181.37it/s]
-Calculating similarities:  50%|####9     | 1112/2243 [00:06&lt;00:06, 165.31it/s]
-Calculating similarities:  50%|#####     | 1132/2243 [00:06&lt;00:06, 172.47it/s]
-Calculating similarities:  51%|#####1    | 1153/2243 [00:06&lt;00:06, 181.22it/s]
-Calculating similarities:  52%|#####2    | 1172/2243 [00:07&lt;00:05, 182.19it/s]
-Calculating similarities:  53%|#####3    | 1192/2243 [00:07&lt;00:05, 186.30it/s]
-Calculating similarities:  54%|#####4    | 1215/2243 [00:07&lt;00:05, 197.58it/s]
-Calculating similarities:  55%|#####5    | 1237/2243 [00:07&lt;00:04, 203.74it/s]
-Calculating similarities:  56%|#####6    | 1258/2243 [00:07&lt;00:04, 201.03it/s]
-Calculating similarities:  57%|#####7    | 1279/2243 [00:07&lt;00:04, 202.84it/s]
-Calculating similarities:  58%|#####7    | 1300/2243 [00:07&lt;00:04, 204.46it/s]
-Calculating similarities:  59%|#####8    | 1321/2243 [00:07&lt;00:04, 192.61it/s]
-Calculating similarities:  60%|#####9    | 1343/2243 [00:07&lt;00:04, 198.04it/s]
-Calculating similarities:  61%|######    | 1364/2243 [00:08&lt;00:04, 199.70it/s]
-Calculating similarities:  62%|######1   | 1385/2243 [00:08&lt;00:04, 196.19it/s]
-Calculating similarities:  63%|######2   | 1405/2243 [00:08&lt;00:04, 191.40it/s]
-Calculating similarities:  64%|######3   | 1427/2243 [00:08&lt;00:04, 197.93it/s]
-Calculating similarities:  65%|######4   | 1447/2243 [00:08&lt;00:04, 190.29it/s]
-Calculating similarities:  65%|######5   | 1467/2243 [00:08&lt;00:04, 183.57it/s]
-Calculating similarities:  66%|######6   | 1486/2243 [00:08&lt;00:04, 182.04it/s]
-Calculating similarities:  67%|######7   | 1505/2243 [00:08&lt;00:04, 183.62it/s]
-Calculating similarities:  68%|######7   | 1524/2243 [00:08&lt;00:03, 182.59it/s]
-Calculating similarities:  69%|######8   | 1544/2243 [00:09&lt;00:03, 184.49it/s]
-Calculating similarities:  70%|######9   | 1563/2243 [00:09&lt;00:03, 184.98it/s]
-Calculating similarities:  71%|#######   | 1582/2243 [00:09&lt;00:03, 180.10it/s]
-Calculating similarities:  71%|#######1  | 1603/2243 [00:09&lt;00:03, 187.82it/s]
-Calculating similarities:  72%|#######2  | 1623/2243 [00:09&lt;00:03, 189.22it/s]
-Calculating similarities:  73%|#######3  | 1642/2243 [00:09&lt;00:03, 185.72it/s]
-Calculating similarities:  74%|#######4  | 1663/2243 [00:09&lt;00:03, 192.39it/s]
-Calculating similarities:  75%|#######5  | 1683/2243 [00:09&lt;00:02, 191.74it/s]
-Calculating similarities:  76%|#######5  | 1704/2243 [00:09&lt;00:02, 196.45it/s]
-Calculating similarities:  77%|#######6  | 1725/2243 [00:09&lt;00:02, 200.15it/s]
-Calculating similarities:  78%|#######7  | 1746/2243 [00:10&lt;00:02, 193.31it/s]
-Calculating similarities:  79%|#######8  | 1766/2243 [00:10&lt;00:02, 191.04it/s]
-Calculating similarities:  80%|#######9  | 1786/2243 [00:10&lt;00:02, 184.95it/s]
-Calculating similarities:  80%|########  | 1805/2243 [00:10&lt;00:02, 183.71it/s]
-Calculating similarities:  81%|########1 | 1824/2243 [00:10&lt;00:02, 183.23it/s]
-Calculating similarities:  82%|########2 | 1843/2243 [00:10&lt;00:02, 160.16it/s]
-Calculating similarities:  83%|########2 | 1860/2243 [00:10&lt;00:02, 159.39it/s]
-Calculating similarities:  84%|########3 | 1877/2243 [00:10&lt;00:03, 121.02it/s]
-Calculating similarities:  85%|########4 | 1898/2243 [00:11&lt;00:02, 139.31it/s]
-Calculating similarities:  85%|########5 | 1915/2243 [00:11&lt;00:02, 144.57it/s]
-Calculating similarities:  86%|########6 | 1931/2243 [00:11&lt;00:02, 146.95it/s]
-Calculating similarities:  87%|########6 | 1951/2243 [00:11&lt;00:01, 160.82it/s]
-Calculating similarities:  88%|########7 | 1972/2243 [00:11&lt;00:01, 172.14it/s]
-Calculating similarities:  89%|########8 | 1994/2243 [00:11&lt;00:01, 185.14it/s]
-Calculating similarities:  90%|########9 | 2016/2243 [00:11&lt;00:01, 194.25it/s]
-Calculating similarities:  91%|######### | 2038/2243 [00:11&lt;00:01, 198.52it/s]
-Calculating similarities:  92%|#########1| 2059/2243 [00:11&lt;00:00, 201.78it/s]
-Calculating similarities:  93%|#########2| 2080/2243 [00:12&lt;00:00, 202.16it/s]
-Calculating similarities:  94%|#########3| 2101/2243 [00:12&lt;00:00, 201.55it/s]
-Calculating similarities:  95%|#########4| 2122/2243 [00:12&lt;00:00, 200.26it/s]
-Calculating similarities:  96%|#########5| 2143/2243 [00:12&lt;00:00, 202.81it/s]
-Calculating similarities:  96%|#########6| 2164/2243 [00:12&lt;00:00, 204.13it/s]
-Calculating similarities:  98%|#########7| 2187/2243 [00:12&lt;00:00, 210.64it/s]
-Calculating similarities:  98%|#########8| 2209/2243 [00:12&lt;00:00, 204.02it/s]
-Calculating similarities:  99%|#########9| 2230/2243 [00:12&lt;00:00, 196.08it/s]
-Calculating similarities: 100%|##########| 2243/2243 [00:12&lt;00:00, 174.87it/s]</code></pre>
+Calculating similarities:   0%|          | 1/2243 [00:00&lt;34:06,  1.10it/s]
+Calculating similarities:   1%|1         | 24/2243 [00:01&lt;01:09, 32.03it/s]
+Calculating similarities:   2%|2         | 45/2243 [00:01&lt;00:36, 60.77it/s]
+Calculating similarities:   3%|3         | 70/2243 [00:01&lt;00:22, 96.25it/s]
+Calculating similarities:   4%|4         | 93/2243 [00:01&lt;00:17, 124.03it/s]
+Calculating similarities:   5%|5         | 117/2243 [00:01&lt;00:14, 149.58it/s]
+Calculating similarities:   6%|6         | 140/2243 [00:01&lt;00:12, 168.91it/s]
+Calculating similarities:   7%|7         | 163/2243 [00:01&lt;00:11, 178.99it/s]
+Calculating similarities:   8%|8         | 185/2243 [00:01&lt;00:10, 187.91it/s]
+Calculating similarities:   9%|9         | 207/2243 [00:01&lt;00:10, 189.82it/s]
+Calculating similarities:  10%|#         | 228/2243 [00:02&lt;00:11, 171.35it/s]
+Calculating similarities:  11%|#1        | 247/2243 [00:02&lt;00:13, 150.85it/s]
+Calculating similarities:  12%|#2        | 271/2243 [00:02&lt;00:11, 171.03it/s]
+Calculating similarities:  13%|#3        | 292/2243 [00:02&lt;00:10, 178.97it/s]
+Calculating similarities:  14%|#3        | 312/2243 [00:02&lt;00:10, 184.41it/s]
+Calculating similarities:  15%|#4        | 333/2243 [00:02&lt;00:10, 189.19it/s]
+Calculating similarities:  16%|#5        | 353/2243 [00:02&lt;00:10, 185.94it/s]
+Calculating similarities:  17%|#6        | 373/2243 [00:02&lt;00:10, 174.93it/s]
+Calculating similarities:  18%|#7        | 393/2243 [00:02&lt;00:10, 179.52it/s]
+Calculating similarities:  19%|#8        | 417/2243 [00:03&lt;00:09, 195.00it/s]
+Calculating similarities:  19%|#9        | 437/2243 [00:03&lt;00:09, 191.36it/s]
+Calculating similarities:  20%|##        | 457/2243 [00:03&lt;00:09, 192.51it/s]
+Calculating similarities:  21%|##1       | 477/2243 [00:03&lt;00:09, 186.41it/s]
+Calculating similarities:  22%|##2       | 499/2243 [00:03&lt;00:08, 193.90it/s]
+Calculating similarities:  23%|##3       | 522/2243 [00:03&lt;00:08, 203.18it/s]
+Calculating similarities:  24%|##4       | 548/2243 [00:03&lt;00:07, 218.70it/s]
+Calculating similarities:  26%|##5       | 574/2243 [00:03&lt;00:07, 228.66it/s]
+Calculating similarities:  27%|##6       | 597/2243 [00:03&lt;00:07, 227.74it/s]
+Calculating similarities:  28%|##7       | 620/2243 [00:03&lt;00:07, 227.83it/s]
+Calculating similarities:  29%|##8       | 644/2243 [00:04&lt;00:06, 229.42it/s]
+Calculating similarities:  30%|##9       | 671/2243 [00:04&lt;00:06, 239.96it/s]
+Calculating similarities:  31%|###1      | 696/2243 [00:04&lt;00:06, 234.23it/s]
+Calculating similarities:  32%|###2      | 720/2243 [00:04&lt;00:06, 224.27it/s]
+Calculating similarities:  33%|###3      | 743/2243 [00:04&lt;00:07, 211.15it/s]
+Calculating similarities:  34%|###4      | 765/2243 [00:04&lt;00:07, 202.61it/s]
+Calculating similarities:  35%|###5      | 786/2243 [00:04&lt;00:07, 195.11it/s]
+Calculating similarities:  36%|###5      | 806/2243 [00:04&lt;00:07, 194.84it/s]
+Calculating similarities:  37%|###6      | 827/2243 [00:04&lt;00:07, 197.36it/s]
+Calculating similarities:  38%|###7      | 848/2243 [00:05&lt;00:07, 198.92it/s]
+Calculating similarities:  39%|###8      | 868/2243 [00:05&lt;00:07, 194.81it/s]
+Calculating similarities:  40%|###9      | 891/2243 [00:05&lt;00:06, 202.46it/s]
+Calculating similarities:  41%|####      | 912/2243 [00:05&lt;00:06, 195.17it/s]
+Calculating similarities:  42%|####1     | 936/2243 [00:05&lt;00:06, 205.92it/s]
+Calculating similarities:  43%|####2     | 958/2243 [00:05&lt;00:06, 208.10it/s]
+Calculating similarities:  44%|####3     | 984/2243 [00:05&lt;00:05, 220.81it/s]
+Calculating similarities:  45%|####4     | 1007/2243 [00:05&lt;00:05, 217.05it/s]
+Calculating similarities:  46%|####5     | 1029/2243 [00:05&lt;00:05, 209.12it/s]
+Calculating similarities:  47%|####6     | 1050/2243 [00:06&lt;00:05, 202.65it/s]
+Calculating similarities:  48%|####7     | 1073/2243 [00:06&lt;00:05, 208.66it/s]
+Calculating similarities:  49%|####8     | 1094/2243 [00:06&lt;00:05, 205.92it/s]
+Calculating similarities:  50%|####9     | 1115/2243 [00:06&lt;00:06, 183.29it/s]
+Calculating similarities:  51%|#####     | 1140/2243 [00:06&lt;00:05, 199.51it/s]
+Calculating similarities:  52%|#####1    | 1162/2243 [00:06&lt;00:05, 205.08it/s]
+Calculating similarities:  53%|#####2    | 1183/2243 [00:06&lt;00:05, 203.27it/s]
+Calculating similarities:  54%|#####3    | 1210/2243 [00:06&lt;00:04, 217.96it/s]
+Calculating similarities:  55%|#####5    | 1236/2243 [00:06&lt;00:04, 228.47it/s]
+Calculating similarities:  56%|#####6    | 1260/2243 [00:07&lt;00:04, 224.96it/s]
+Calculating similarities:  57%|#####7    | 1285/2243 [00:07&lt;00:04, 228.98it/s]
+Calculating similarities:  58%|#####8    | 1309/2243 [00:07&lt;00:04, 227.23it/s]
+Calculating similarities:  59%|#####9    | 1332/2243 [00:07&lt;00:04, 221.12it/s]
+Calculating similarities:  60%|######    | 1355/2243 [00:07&lt;00:04, 221.80it/s]
+Calculating similarities:  61%|######1   | 1378/2243 [00:07&lt;00:03, 221.80it/s]
+Calculating similarities:  62%|######2   | 1401/2243 [00:07&lt;00:03, 216.24it/s]
+Calculating similarities:  64%|######3   | 1425/2243 [00:07&lt;00:03, 222.65it/s]
+Calculating similarities:  65%|######4   | 1448/2243 [00:07&lt;00:03, 214.49it/s]
+Calculating similarities:  66%|######5   | 1470/2243 [00:08&lt;00:03, 208.32it/s]
+Calculating similarities:  66%|######6   | 1491/2243 [00:08&lt;00:03, 206.70it/s]
+Calculating similarities:  67%|######7   | 1512/2243 [00:08&lt;00:03, 205.69it/s]
+Calculating similarities:  68%|######8   | 1533/2243 [00:08&lt;00:03, 204.10it/s]
+Calculating similarities:  69%|######9   | 1555/2243 [00:08&lt;00:03, 206.68it/s]
+Calculating similarities:  70%|#######   | 1577/2243 [00:08&lt;00:03, 207.28it/s]
+Calculating similarities:  71%|#######1  | 1599/2243 [00:08&lt;00:03, 209.18it/s]
+Calculating similarities:  72%|#######2  | 1622/2243 [00:08&lt;00:02, 211.76it/s]
+Calculating similarities:  73%|#######3  | 1644/2243 [00:08&lt;00:03, 156.16it/s]
+Calculating similarities:  74%|#######4  | 1668/2243 [00:09&lt;00:03, 175.00it/s]
+Calculating similarities:  75%|#######5  | 1690/2243 [00:09&lt;00:02, 185.39it/s]
+Calculating similarities:  76%|#######6  | 1714/2243 [00:09&lt;00:02, 198.32it/s]
+Calculating similarities:  77%|#######7  | 1738/2243 [00:09&lt;00:02, 206.05it/s]
+Calculating similarities:  78%|#######8  | 1760/2243 [00:09&lt;00:02, 205.30it/s]
+Calculating similarities:  79%|#######9  | 1782/2243 [00:09&lt;00:02, 202.01it/s]
+Calculating similarities:  80%|########  | 1803/2243 [00:09&lt;00:02, 201.44it/s]
+Calculating similarities:  81%|########1 | 1824/2243 [00:09&lt;00:02, 202.90it/s]
+Calculating similarities:  82%|########2 | 1845/2243 [00:09&lt;00:02, 180.43it/s]
+Calculating similarities:  83%|########3 | 1864/2243 [00:10&lt;00:02, 170.72it/s]
+Calculating similarities:  84%|########4 | 1887/2243 [00:10&lt;00:01, 185.64it/s]
+Calculating similarities:  85%|########5 | 1910/2243 [00:10&lt;00:01, 196.20it/s]
+Calculating similarities:  86%|########6 | 1931/2243 [00:10&lt;00:01, 181.74it/s]
+Calculating similarities:  87%|########7 | 1954/2243 [00:10&lt;00:01, 193.73it/s]
+Calculating similarities:  88%|########8 | 1978/2243 [00:10&lt;00:01, 204.38it/s]
+Calculating similarities:  89%|########9 | 2003/2243 [00:10&lt;00:01, 216.77it/s]
+Calculating similarities:  90%|######### | 2027/2243 [00:10&lt;00:00, 222.67it/s]
+Calculating similarities:  91%|#########1| 2051/2243 [00:10&lt;00:00, 225.32it/s]
+Calculating similarities:  93%|#########2| 2075/2243 [00:11&lt;00:00, 227.27it/s]
+Calculating similarities:  94%|#########3| 2099/2243 [00:11&lt;00:00, 227.50it/s]
+Calculating similarities:  95%|#########4| 2122/2243 [00:11&lt;00:00, 225.41it/s]
+Calculating similarities:  96%|#########5| 2146/2243 [00:11&lt;00:00, 228.04it/s]
+Calculating similarities:  97%|#########6| 2169/2243 [00:11&lt;00:00, 228.14it/s]
+Calculating similarities:  98%|#########7| 2195/2243 [00:11&lt;00:00, 234.63it/s]
+Calculating similarities:  99%|#########8| 2219/2243 [00:11&lt;00:00, 222.41it/s]
+Calculating similarities: 100%|#########9| 2242/2243 [00:11&lt;00:00, 213.39it/s]
+Calculating similarities: 100%|##########| 2243/2243 [00:11&lt;00:00, 190.21it/s]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' Extract similarity scores</span></span>
@@ -895,7 +885,7 @@ Calculating similarities: 100%|##########| 2243/2243 [00:12&lt;00:00, 174.87it/s
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output-display">
 <div>
-<figure><p><img src="SpectriPy_files/figure-html/unnamed-chunk-39-1.png" width="672"></p>
+<figure><p><img src="SpectriPy_files/figure-html/compare%20dot%20product%20vs%20Cosine%20Hungarian-1.png" width="672"></p>
 </figure>
 </div>
 </div>
@@ -913,18 +903,7 @@ Calculating similarities: 100%|##########| 2243/2243 [00:12&lt;00:00, 174.87it/s
 <li><p>The <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> and <code><a href="../reference/conversion.html">pyspec_to_rspec()</a></code> functions <strong>copy</strong> the data while transferring. Thus, there will be eventually two (detached) copies of the same data in Python and R.</p></li>
 <li><p>The <code>MsBackendPy</code> backend allows to directly interface MS data from Python. Data will be converted on-the-fly, so no additional copies of the data exist.</p></li>
 <li><p>Be aware that, since the <code>MsBackendPy</code> backend does not contain any MS data but simply interfaces the MS data in Python, any changes to this data in Python affect also the <code>Spectra</code> object using that backend.</p></li>
-</ul></section><section class="level2"><h3 id="sec-python">Startup and Python configuration<a class="anchor" aria-label="anchor" href="#sec-python"></a>
-</h3>
-<p>During package startup, <em>SpectriPy</em> loads the required <em>reticulate</em> library and configures the Python environment. If the package-specific environment does not exist it creates one and installs all required libraries. By default, <em>SpectriPy</em> will setup a specific <em>virtualenv</em> and install all required Python libraries (i.e. <em>matchms</em> version 0.30.0 and <em>spectrum_utils</em> version 0.3.2) into that. The Python setup can also be configured with three package options that can also be set <em>via</em> environment variables. These are:</p>
-<ul>
-<li><p><code>"spectripy.use_system"</code> (environment variable <code>SPECTRIPY_USE_SYSTEM</code>): whether the system Python should be used. Default is <code>"FALSE"</code>. If set to <code>"TRUE"</code> <em>SpectriPy</em> will not check or install any packages but simply use the user’s system setup and will ignore the other options below. Users are thus expected to manage the dependencies themselves.</p></li>
-<li><p><code>"spectripy.use_conda"</code> (environment variable <code>SPECTRIPY_USE_CONDA</code>): whether conda should be used to install and manage the package-specific Python environment. If <code>"FALSE"</code> (the default) <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/virtualenv-tools.html" class="external-link">virtualenv_create()</a></code> and <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_virtualenv()</a></code> functions are used. If set to <code>"TRUE"</code>, <code><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create()</a></code> and <code>use_conda()</code> are used instead.</p></li>
-<li><p><code>"spectripy.env"</code> (environment variable <code>SPECTRIPY_ENV</code>): the name of the environment that should be used by <em>SpectriPy</em>. Defaults to <code>"r-spectripy"</code>.</p></li>
-</ul>
-<p>Options can be set, prior loading of the package, either directly in the R session using the <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> function, or added to the <em>.Rprofile</em> file in the user’s home directory. To use <em>SpectriPy</em> with system Python, either call <code>options(spectripy.use_system = TRUE)</code>, or add the line <code>options(spectripy.use_system = TRUE)</code> to the <em>.Rprofile</em> file, or set and export a system environment variable <code>SPECTRIPY_USE_SYSTEM=TRUE</code>.</p>
-<p><strong>Important</strong> it is required to restart the R session if eventually missing Python libraries were installed during package startup!</p>
-<p>See also the help of the <em>reticulate</em> package for more information on configuring Python with R.</p>
-</section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</ul></section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb95"><pre class="downlit sourceCode r">
@@ -956,22 +935,34 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] msdata_0.49.0       SpectriPy_0.99.5    reticulate_1.42.0
-[4] Spectra_1.19.2      BiocParallel_1.43.4 S4Vectors_0.47.0
-[7] BiocGenerics_0.55.0 generics_0.1.4
+[1] MsDataHub_1.9.0     SpectriPy_0.99.11   reticulate_1.43.0
+[4] Spectra_1.19.6      BiocParallel_1.43.4 S4Vectors_0.47.0
+[7] BiocGenerics_0.55.1 generics_0.1.4
 
 loaded via a namespace (and not attached):
- [1] cli_3.6.5              knitr_1.50             rlang_1.1.6
- [4] xfun_0.52              ncdf4_1.24             ProtGenerics_1.41.0
- [7] png_0.1-8              jsonlite_2.0.0         clue_0.3-66
-[10] mzR_2.43.0             BiocStyle_2.37.0       htmltools_0.5.8.1
-[13] Biobase_2.69.0         rmarkdown_2.29         grid_4.5.1
-[16] evaluate_1.0.4         MASS_7.3-65            fastmap_1.2.0
-[19] yaml_2.3.10            IRanges_2.43.0         BiocManager_1.30.26
-[22] MsCoreUtils_1.21.0     cluster_2.1.8.1        compiler_4.5.1
-[25] codetools_0.2-20       fs_1.6.6               Rcpp_1.1.0
-[28] MetaboCoreUtils_1.17.1 lattice_0.22-7         digest_0.6.37
-[31] parallel_4.5.1         Matrix_1.7-3           tools_4.5.1           </code></pre>
+ [1] KEGGREST_1.49.1        xfun_0.53              httr2_1.2.1
+ [4] Biobase_2.69.0         lattice_0.22-7         vctrs_0.6.5
+ [7] tools_4.5.1            curl_7.0.0             parallel_4.5.1
+[10] tibble_3.3.0           AnnotationDbi_1.71.1   RSQLite_2.4.3
+[13] cluster_2.1.8.1        blob_1.2.4             pkgconfig_2.0.3
+[16] Matrix_1.7-3           dbplyr_2.5.0           lifecycle_1.0.4
+[19] compiler_4.5.1         Biostrings_2.77.2      BiocStyle_2.37.1
+[22] Seqinfo_0.99.2         codetools_0.2-20       ncdf4_1.24
+[25] clue_0.3-66            htmltools_0.5.8.1      yaml_2.3.10
+[28] pillar_1.11.0          crayon_1.5.3           MASS_7.3-65
+[31] cachem_1.1.0           MetaboCoreUtils_1.17.1 ExperimentHub_2.99.5
+[34] AnnotationHub_3.99.6   tidyselect_1.2.1       digest_0.6.37
+[37] purrr_1.1.0            dplyr_1.1.4            BiocVersion_3.22.0
+[40] fastmap_1.2.0          grid_4.5.1             cli_3.6.5
+[43] magrittr_2.0.3         withr_3.0.2            filelock_1.0.3
+[46] rappdirs_0.3.3         bit64_4.6.0-1          XVector_0.49.0
+[49] rmarkdown_2.29         httr_1.4.7             bit_4.6.0
+[52] png_0.1-8              memoise_2.0.1          evaluate_1.0.4
+[55] knitr_1.50             IRanges_2.43.0         BiocFileCache_2.99.5
+[58] rlang_1.1.6            Rcpp_1.1.0             glue_1.8.0
+[61] DBI_1.2.3              mzR_2.43.1             BiocManager_1.30.26
+[64] jsonlite_2.0.0         R6_2.6.1               fs_1.6.6
+[67] ProtGenerics_1.41.0    MsCoreUtils_1.21.0    </code></pre>
 </div>
 </div>
 </section><script id="quarto-html-after-body" type="application/javascript">
