@@ -32,7 +32,7 @@ If you use *SpectriPy* in your research, please cite:
 
 # Installation
 
-*SpectriPy* needs Python (version > 3.12) to be installed on the system. All
+*SpectriPy* needs Python (version >= 3.12) to be installed on the system. All
 necessary Python libraries (listed below) are automatically installed by the
 [*reticulate*](https://rstudio.github.io/reticulate) R package. *SpectriPy*'s
 Python library management uses the
@@ -59,9 +59,9 @@ versions are:
 - *numpy* 2.2.0
 
 See also sections [*Startup and Python
-configuration*](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-python)
+configuration*](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python)
 for more details or [*Fixing package installation or loading
-problems*](https://rformassspectrometry.github.io/SpectriPy/articles/SpectriPy.html#sec-fix)
+problems*](https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-fix)
 if installation or loading fails.
 
 

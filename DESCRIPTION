@@ -52,7 +52,7 @@ Authors@R: c(person(given = "Michael", family = "Witting",
                     comment = c(ORCID = "0009-0007-5429-6846"))
              )
 Depends:
-    R (>= 4.1.0),
+    R (>= 4.4.0),
     reticulate (>= 1.42.0)
 Imports:
     Spectra (>= 1.17.7),
