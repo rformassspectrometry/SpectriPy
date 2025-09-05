@@ -11,7 +11,7 @@
 \alias{pyspec_to_rspec}
 \title{Converting between R and Python MS data structures}
 \usage{
-\S4method{spectraVariableMapping}{character}(object, ...)
+\S4method{spectraVariableMapping}{character}(object, x = character(), ...)
 
 \S4method{spectraVariableMapping}{missing}(object, ...)
 
@@ -36,9 +36,9 @@ pyspec_to_rspec(
 \arguments{
 \item{object}{For \code{spectraVariableMapping()}: not used.}
 
-\item{...}{For \code{spectraVariableMapping()}: not used.}
-
 \item{x}{\code{Spectra} object.}
+
+\item{...}{For \code{spectraVariableMapping()}: not used.}
 
 \item{convert}{Boolean; should Python objects be automatically converted to
 their R equivalent? Defaults to \code{FALSE}.}
@@ -152,17 +152,20 @@ The initial mapping is based on this
 \itemize{
 \item \code{defaultSpectraVariableMapping()}: returns the \emph{default} mapping between
 spectra variables and Python metadata names for the \emph{matchms} library.
-\item \code{spectraVariableMapping()}: returns the currently defined spectra
-variable mapping as a named character vector, with names representing the
-names of the spectra variables in R and elements the respective names
-of the spectra metadata in Python. Use \code{\link[Spectra:spectraData]{Spectra::spectraVariables()}} on
-the \code{Spectra} object that should be converted with \code{r_to_py()} to list
-all available spectra variables. \code{r_to_py()} and \code{py_to_r()} for MS data
-structures will use this default mapping. Calling
-\code{spectraVariableMapping()} defining also the Python library (e.g.,
+\item \code{spectraVariableMapping()}: returns the currently defined spectra variable
+mapping as a named character vector, with names
+representing the names of the spectra variables in R and elements the
+respective names of the spectra metadata in Python.
+Use \code{\link[Spectra:spectraData]{Spectra::spectraVariables()}} on the \code{Spectra} object that should
+be converted with \code{r_to_py()} to list all available spectra variables.
+\code{r_to_py()} and \code{py_to_r()} for MS data structures will use this default
+mapping.
+Calling \code{spectraVariableMapping()} defining also the Python library (e.g.,
 \code{spectraVariableMapping("matchms")} or
 \code{spectraVariableMapping("spectrum_utils")}) will return the variable
-mapping for the specified Python library.
+mapping for the specified Python library. Optional parameter \code{x} allows
+to specify a (potentially names) character vector with the names of the
+spectra variables that should in addition be included in the mapping.
 \item \code{setSpectraVariableMapping()}: sets/replaces the currently defined mapping
 of spectra variable names to Python metadata names. Setting
 \code{setSpectraVariableMapping(character())} will only convert the mass peaks
