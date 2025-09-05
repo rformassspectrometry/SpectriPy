@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 
 
 
-    <p><strong>Compiled</strong>: Tue Aug 26 06:22:35 2025</p>
+    <p><strong>Compiled</strong>: Fri Sep 5 14:53:28 2025</p>
 <p><strong>Note</strong>: since version 0.99.6 <em>SpectriPy</em> uses the newer, recommended approach to install and configure required Python libraries (i.e., through <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> functionality). This affects also the way a pre-defined Python environment can be used. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for updated information.</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -95,6 +95,7 @@
 </div>
 </section><section class="section level2"><h2 id="translating-data-structures-between-r-and-python">Translating data structures between R and Python<a class="anchor" aria-label="anchor" href="#translating-data-structures-between-r-and-python"></a>
 </h2>
+<p>This section describes how MS data is being converted between R and Python to enable analyses combining both programming/analysis languages and accessing the same shared MS data. The first two sections describe how MS data can be converted between R and Python. See also section <a href="#sec-backend" class="quarto-xref">Section 4.4</a> for a more elegant approach and improved integration with <a href="https://" class="external-link"><em>Spectra</em></a>-based workflows in R.</p>
 <section class="level2"><h3 id="library-loading-and-system-setup">Library loading and system setup<a class="anchor" aria-label="anchor" href="#library-loading-and-system-setup"></a>
 </h3>
 <p>Below we load all required packages. By loading <em>SpectriPy</em>, the package will evaluate if the required Python libraries (i.e., <em>matchms</em> version &gt;= 0.30, <em>spectrum_utils</em> version &gt;= 0.3.2 and <em>numpy</em> version &gt;= 2.2) are available. If they are not available, <em>SpectriPy</em> will install them using functionality from the <em>reticulate</em> R package. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for more configuration options of <em>SpectriPy</em>.</p>
@@ -153,9 +154,9 @@
  ... 34 more variables/columns.
 
 file(s):
-113769c406ec_7861
+11ad459da407_7861
 Processing:
- Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025] </code></pre>
+ Filter: select MS level(s) 2 [Fri Sep  5 14:53:41 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -265,7 +266,7 @@ Processing:
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' Access the `fl` variable from the R session:</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>r.fl</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code><span><span class="st">'/github/home/.cache/R/ExperimentHub/113769c406ec_7861'</span></span></code></pre>
+<pre><code><span><span class="st">'/github/home/.cache/R/ExperimentHub/11ad459da407_7861'</span></span></code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(r.fl)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -486,9 +487,9 @@ Data stored in the "mgf_py" variable in Python</code></pre>
  ... 34 more variables/columns.
 
 file(s):
-113769c406ec_7861
+11ad459da407_7861
 Processing:
- Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025] </code></pre>
+ Filter: select MS level(s) 2 [Fri Sep  5 14:53:41 2025] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object uses the <code>MsBackedMzR</code> backend as data representation. We can change the backend of <code>Spectra</code> objects using the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> function. Thus, below we change the backend to <code>MsBackendPy</code>, specifying also the name of the variable in Python that should be used to store the data.</p>
@@ -503,8 +504,8 @@ Processing:
 <pre><code>MSn data (Spectra) with 2243 spectra in a MsBackendPy backend:
 Data stored in the "mzml_p" variable in Python
 Processing:
- Filter: select MS level(s) 2 [Tue Aug 26 06:22:49 2025]
- Switch backend from MsBackendMzR to MsBackendPy [Tue Aug 26 06:22:58 2025] </code></pre>
+ Filter: select MS level(s) 2 [Fri Sep  5 14:53:41 2025]
+ Switch backend from MsBackendMzR to MsBackendPy [Fri Sep  5 14:53:50 2025] </code></pre>
 </div>
 </div>
 <p>This converted all the MS data of the <code>mzml_r</code> <code>Spectra</code> object to Python objects and assigned these to the Python variable with the name <code>"mzml_p"</code>. The resulting <code>Spectra</code> object uses now a <code>MsBackendPy</code> backend which keeps only the reference to the Python variable but no data. The size of the <code>Spectra</code> object is thus very small.</p>
@@ -552,11 +553,141 @@ Processing:
 <pre><code>array([ 55.9353447 ,  78.95068359, 138.01589966])</code></pre>
 </div>
 </div>
+<p>In addition to the MS data (i.e., the <em>m/z</em> and intensity values), <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> will also convert core general spectra variables and store them in the Python MS data structure as spectrum related metadata. By default, only a limited set of spectra variables, the ones with the direct counterpart in Python, are translated. These are for the <em>matchms</em> library:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="st">"matchms"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 precursorMz           precursorIntensity
+              "precursor_mz"        "precursor_intensity"
+             precursorCharge                        rtime
+                    "charge"             "retention_time"
+             collisionEnergy      isolationWindowTargetMz
+          "collision_energy" "isolation_window_target_mz"
+                     msLevel
+                  "ms_level" </code></pre>
+</div>
+</div>
+<p>with the names being the spectra variable names in R and the values the names of the respective metadata fields in Python. The <em>spectrum_utils</em> library supports only few, fixed, variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="st">"spectrum_utils"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       precursorMz    precursorCharge              rtime          scanIndex
+    "precursor_mz" "precursor_charge"   "retention_time"       "identifier" </code></pre>
+</div>
+</div>
+<p>The spectra variables that have been transferred to Python with the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> call above are:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">mzml_r</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 precursorMz           precursorIntensity
+              "precursor_mz"        "precursor_intensity"
+             precursorCharge                        rtime
+                    "charge"             "retention_time"
+             collisionEnergy      isolationWindowTargetMz
+          "collision_energy" "isolation_window_target_mz"
+                     msLevel
+                  "ms_level" </code></pre>
+</div>
+</div>
+<p>Thus, only some of the variables from the original <code>Spectra</code> object are now available after changing the backend to <code>MsBackendPy</code>. However, since <em>matchms</em> supports additional, arbitrary, metadata fields, it is also possible to convert and transfer other spectra variables with <code>MsBackendPy</code>. As an example, we below import data from an MGF.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RforMassSpectrometry/MsBackendMgf" class="external-link">MsBackendMgf</a></span><span class="op">)</span></span>
+<span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mgf"</span>, <span class="st">"test.mgf"</span>,</span>
+<span>                           package <span class="op">=</span> <span class="st">"SpectriPy"</span><span class="op">)</span>, source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/MsBackendMgf/man/MsBackendMgf.html" class="external-link">MsBackendMgf</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start data import from 1 files ... done</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "msLevel"                 "rtime"
+ [3] "acquisitionNum"          "scanIndex"
+ [5] "dataStorage"             "dataOrigin"
+ [7] "centroided"              "smoothed"
+ [9] "polarity"                "precScanNum"
+[11] "precursorMz"             "precursorIntensity"
+[13] "precursorCharge"         "collisionEnergy"
+[15] "isolationWindowLowerMz"  "isolationWindowTargetMz"
+[17] "isolationWindowUpperMz"  "TITLE"
+[19] "SMILES"                  "INCHI"
+[21] "NAME"                   </code></pre>
+</div>
+</div>
+<p>There are thus also spectra variables, such as <code>"SMILES"</code> and <code>"INCHI"</code> that are not part of the default <code>spectraVariableMapping("matchms")</code> and would thus not be converted/transferred by default when changing to a <code>MsBackendPy</code>. We can however use the <code>spectraVariableMapping</code> parameter with <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> to define which spectra variables should be transferred. The parameter takes a named character with names being the names of the spectra variables to transfer and values the names that should be used for the metadata in Python. We use the <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code> function to append the mapping for the spectra variables <code>"SMILES"</code> and <code>"INCHI"</code> to the default one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="va">mp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="st">"matchms"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>SMILES <span class="op">=</span> <span class="st">"smiles"</span>, INCHI <span class="op">=</span> <span class="st">"inchi"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mp</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 precursorMz           precursorIntensity
+              "precursor_mz"        "precursor_intensity"
+             precursorCharge                        rtime
+                    "charge"             "retention_time"
+             collisionEnergy      isolationWindowTargetMz
+          "collision_energy" "isolation_window_target_mz"
+                     msLevel                       SMILES
+                  "ms_level"                     "smiles"
+                       INCHI
+                     "inchi" </code></pre>
+</div>
+</div>
+<p>We pass this character vector to the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> call.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend</a></span><span class="op">(</span><span class="va">sps</span>, backend <span class="op">=</span> <span class="fu"><a href="../reference/MsBackendPy.html">MsBackendPy</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                  pythonVariableName <span class="op">=</span> <span class="st">"sps_p"</span>,</span>
+<span>                  spectraVariableMapping <span class="op">=</span> <span class="va">mp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "msLevel"                 "rtime"
+ [3] "acquisitionNum"          "scanIndex"
+ [5] "dataStorage"             "dataOrigin"
+ [7] "centroided"              "smoothed"
+ [9] "polarity"                "precScanNum"
+[11] "precursorMz"             "precursorIntensity"
+[13] "precursorCharge"         "collisionEnergy"
+[15] "isolationWindowLowerMz"  "isolationWindowTargetMz"
+[17] "isolationWindowUpperMz"  "INCHI"
+[19] "SMILES"                 </code></pre>
+</div>
+</div>
+<p>The spectra variables <code>"INCHI"</code> and <code>"SMILES"</code> have thus also been stored in Python:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' R session:</span></span>
+<span></span>
+<span><span class="va">sps</span><span class="op">$</span><span class="va">SMILES</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CC1=CC(=CC2=C1C3=CC(=CC(=C3C(=O)O2)O)O)O"
+[2] "CC[C@@H]1[C@@]([C@@H]([C@H](/C(=N/OCOCCOC)/[C@@H](C[C@@]([C@@H]([C@H]([C@@H]([C@H](C(=O)O1)C)O[C@H]2C[C@@]([C@H]([C@@H](O2)C)O)(C)OC)C)O[C@H]3[C@@H]([C@H](C[C@H](O3)C)N(C)C)O)(C)O)C)C)O)(C)O"
+[3] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"
+[4] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"
+[5] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"
+[6] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"                                                                                                                                                       </code></pre>
+</div>
+</div>
+<p>See also the next section for more information on the mapping between <code>Spectra</code>’s spectra variables and <em>matchms</em> metadata.</p>
 </section><section class="level2"><h3 id="conversion-of-spectra-variables">Conversion of spectra variables<a class="anchor" aria-label="anchor" href="#conversion-of-spectra-variables"></a>
 </h3>
 <p>Conversion of the MS peaks data (i.e. the <em>m/z</em> and intensity values) is always performed by the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> and <code><a href="../reference/conversion.html">pyspec_to_rspec()</a></code> functions. But next to the peaks data, also additional information are available for individual spectra. In R/<em>Spectra</em> these variables are called <em>spectra variables</em> while in <em>matchms</em> they are stored as a <em>metadata</em> attribute to a <code>matchms.Spectrum</code> object. The <em>SpectriPy</em> package defines a core set of spectra variables that are by default converted by the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> and <code><a href="../reference/conversion.html">pyspec_to_rspec()</a></code> function. These default variables can be accessed using the <code><a href="../reference/conversion.html">defaultSpectraVariableMapping()</a></code> function:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb85"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' List the *default* spectra variable mapping in R and python, respectively</span></span>
@@ -575,17 +706,17 @@ Processing:
 <p>These variables, if present in the respective data object, are transferred (and renamed) to the MS data structure of the other programming language. The names of this character vector represent the name of the spectra variable in the <code>Spectra</code> object, the elements (values) the names of the respective metadata keys in Python’s <code>matchms.Spectrum</code> class. This default mapping thus transfers for example the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz()</a></code> spectra variable of R to the <code>"precursor_mz"</code> spectrum metadata in Python (and <em>vice versa</em>). Note that any spectra variable or metadata <strong>not</strong> being part of such a <code>mapping</code> will be ignored and hence not converted.</p>
 <p>Below we inspect the available metadata in the <code>matchms.Spectrum</code> objects that were imported from the MGF file.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Python session:</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' Available metadata for the first spectrum</span></span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>mgf_py[<span class="dv">0</span>].metadata.keys()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Python session:</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' Available metadata for the first spectrum</span></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>mgf_py[<span class="dv">0</span>].metadata.keys()</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>dict_keys(['title', 'pepmassint', 'charge', 'smiles', 'inchi', 'ms_level', 'compound_name', 'precursor_mz'])</code></pre>
 </div>
 </div>
 <p>Several additional metadata variables, such as <code>"smiles"</code>, <code>"inchi"</code> or <code>"compound_name"</code>, not part of the default variables, are available. To transfer also these, we create below a custom mapping adding in addition also a mapping for these 3 variables:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb89"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Add mapping for additional spectra variables to the default mapping in R and</span></span>
@@ -608,7 +739,7 @@ Processing:
 </div>
 <p>Such custom mapping can be passed with the parameter <code>mapping</code> to the <code><a href="../reference/conversion.html">pyspec_to_rspec()</a></code> (and also the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code>) function which will then convert the full data to R.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb91"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Convert the Python MS data structures to an R `Spectra`</span></span>
@@ -629,7 +760,7 @@ Processing:
 </div>
 <p>The respective metadata values have thus been added as new spectra variables to our <code>Spectra</code> object and can also be extracted:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb93"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Show the first values for the spectra variable "name"</span></span>
@@ -639,7 +770,7 @@ Processing:
 <pre><code>[1] "Alternariol"         "Roxithromycin"       "O-Desmethyltramadol"
 [4] "O-Desmethyltramadol" "4-Aminoantipyrine"   "4-Aminoantipyrine"  </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Show the first values for the spectra variable "inchi"</span></span>
 <span><span class="va">mgf_r</span><span class="op">$</span><span class="va">inchi</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -654,7 +785,7 @@ Processing:
 </div>
 <p>When using a <code>MsBackendPy</code>, all metadata attributes from the <code>matchms.Spectrum</code> objects can be accessed and extracted with the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData()</a></code> function. The <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables()</a></code> function lists all available columns:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb97"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' List available spectra variables</span></span>
@@ -675,7 +806,7 @@ Processing:
 </div>
 <p>We thus have already access to e.g. the <code>"inchi"</code> variable:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb99"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Get the first entries from the inchi variable</span></span>
@@ -692,7 +823,7 @@ Processing:
 </div>
 <p>A <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code> can however be used to rename variables. Below we add for example a mapping of the <code>matchms.Spectrum</code> metadata attribute <code>"pepmassint"</code> to the (core) variable <code>"precursorIntensity"</code> using the <code>MsBackendPy</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb85"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb101"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Add mapping for additional spectra variables to the `MsBackendPy`</span></span>
@@ -715,7 +846,7 @@ Processing:
 [19] "inchi"                   "smiles"
 [21] "title"                  </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb87"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Get spectra data for two variables</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData</a></span><span class="op">(</span><span class="va">mgf</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"precursorMz"</span>, <span class="st">"precursorIntensity"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -742,7 +873,7 @@ Processing:
 <p>As a simple use case we calculate below spectra similarities using two different similarity scores between spectra from the mzML and the MGF files.</p>
 <p>In R we can use the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">compareSpectra()</a></code> function that by default calculates the normalized dot product similarity between the compared spectra. The MS data from the mzML file was processed in Python. To use this data we first create a <code>Spectra</code> object with a <code>MsBackendPy</code> backend. For the MS data from the MGF file we re-use the <code>mgf</code> variable, which is also a <code>Spectra</code> with a <code>MsBackendPy</code> backend referencing the MS data imported and processed in Python.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb89"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb105"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Create a `Spectra` for the scaled MS data in Python</span></span>
@@ -757,126 +888,128 @@ Processing:
 </div>
 <p>We can calculate the <em>Cosine Hungarian</em> similarity score in Python using the functionality from the <em>matchms</em> library. Here we use the <em>original</em> attributes available in Python, i.e. <code>mzml_py</code> and <code>mgf_py</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Python session:</span></span>
-<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matchms.similarity <span class="im">as</span> mms_similarity</span>
-<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' Calculate similarity scores</span></span>
-<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> matchms.calculate_scores(</span>
-<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>    mzml_py, mgf_py, mms_similarity.CosineHungarian(tolerance <span class="op">=</span> <span class="fl">0.1</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Python session:</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matchms.similarity <span class="im">as</span> mms_similarity</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' Calculate similarity scores</span></span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> matchms.calculate_scores(</span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>    mzml_py, mgf_py, mms_similarity.CosineHungarian(tolerance <span class="op">=</span> <span class="fl">0.1</span>))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Calculating similarities:   0%|          | 0/2243 [00:00&lt;?, ?it/s]
-Calculating similarities:   0%|          | 1/2243 [00:00&lt;34:06,  1.10it/s]
-Calculating similarities:   1%|1         | 24/2243 [00:01&lt;01:09, 32.03it/s]
-Calculating similarities:   2%|2         | 45/2243 [00:01&lt;00:36, 60.77it/s]
-Calculating similarities:   3%|3         | 70/2243 [00:01&lt;00:22, 96.25it/s]
-Calculating similarities:   4%|4         | 93/2243 [00:01&lt;00:17, 124.03it/s]
-Calculating similarities:   5%|5         | 117/2243 [00:01&lt;00:14, 149.58it/s]
-Calculating similarities:   6%|6         | 140/2243 [00:01&lt;00:12, 168.91it/s]
-Calculating similarities:   7%|7         | 163/2243 [00:01&lt;00:11, 178.99it/s]
-Calculating similarities:   8%|8         | 185/2243 [00:01&lt;00:10, 187.91it/s]
-Calculating similarities:   9%|9         | 207/2243 [00:01&lt;00:10, 189.82it/s]
-Calculating similarities:  10%|#         | 228/2243 [00:02&lt;00:11, 171.35it/s]
-Calculating similarities:  11%|#1        | 247/2243 [00:02&lt;00:13, 150.85it/s]
-Calculating similarities:  12%|#2        | 271/2243 [00:02&lt;00:11, 171.03it/s]
-Calculating similarities:  13%|#3        | 292/2243 [00:02&lt;00:10, 178.97it/s]
-Calculating similarities:  14%|#3        | 312/2243 [00:02&lt;00:10, 184.41it/s]
-Calculating similarities:  15%|#4        | 333/2243 [00:02&lt;00:10, 189.19it/s]
-Calculating similarities:  16%|#5        | 353/2243 [00:02&lt;00:10, 185.94it/s]
-Calculating similarities:  17%|#6        | 373/2243 [00:02&lt;00:10, 174.93it/s]
-Calculating similarities:  18%|#7        | 393/2243 [00:02&lt;00:10, 179.52it/s]
-Calculating similarities:  19%|#8        | 417/2243 [00:03&lt;00:09, 195.00it/s]
-Calculating similarities:  19%|#9        | 437/2243 [00:03&lt;00:09, 191.36it/s]
-Calculating similarities:  20%|##        | 457/2243 [00:03&lt;00:09, 192.51it/s]
-Calculating similarities:  21%|##1       | 477/2243 [00:03&lt;00:09, 186.41it/s]
-Calculating similarities:  22%|##2       | 499/2243 [00:03&lt;00:08, 193.90it/s]
-Calculating similarities:  23%|##3       | 522/2243 [00:03&lt;00:08, 203.18it/s]
-Calculating similarities:  24%|##4       | 548/2243 [00:03&lt;00:07, 218.70it/s]
-Calculating similarities:  26%|##5       | 574/2243 [00:03&lt;00:07, 228.66it/s]
-Calculating similarities:  27%|##6       | 597/2243 [00:03&lt;00:07, 227.74it/s]
-Calculating similarities:  28%|##7       | 620/2243 [00:03&lt;00:07, 227.83it/s]
-Calculating similarities:  29%|##8       | 644/2243 [00:04&lt;00:06, 229.42it/s]
-Calculating similarities:  30%|##9       | 671/2243 [00:04&lt;00:06, 239.96it/s]
-Calculating similarities:  31%|###1      | 696/2243 [00:04&lt;00:06, 234.23it/s]
-Calculating similarities:  32%|###2      | 720/2243 [00:04&lt;00:06, 224.27it/s]
-Calculating similarities:  33%|###3      | 743/2243 [00:04&lt;00:07, 211.15it/s]
-Calculating similarities:  34%|###4      | 765/2243 [00:04&lt;00:07, 202.61it/s]
-Calculating similarities:  35%|###5      | 786/2243 [00:04&lt;00:07, 195.11it/s]
-Calculating similarities:  36%|###5      | 806/2243 [00:04&lt;00:07, 194.84it/s]
-Calculating similarities:  37%|###6      | 827/2243 [00:04&lt;00:07, 197.36it/s]
-Calculating similarities:  38%|###7      | 848/2243 [00:05&lt;00:07, 198.92it/s]
-Calculating similarities:  39%|###8      | 868/2243 [00:05&lt;00:07, 194.81it/s]
-Calculating similarities:  40%|###9      | 891/2243 [00:05&lt;00:06, 202.46it/s]
-Calculating similarities:  41%|####      | 912/2243 [00:05&lt;00:06, 195.17it/s]
-Calculating similarities:  42%|####1     | 936/2243 [00:05&lt;00:06, 205.92it/s]
-Calculating similarities:  43%|####2     | 958/2243 [00:05&lt;00:06, 208.10it/s]
-Calculating similarities:  44%|####3     | 984/2243 [00:05&lt;00:05, 220.81it/s]
-Calculating similarities:  45%|####4     | 1007/2243 [00:05&lt;00:05, 217.05it/s]
-Calculating similarities:  46%|####5     | 1029/2243 [00:05&lt;00:05, 209.12it/s]
-Calculating similarities:  47%|####6     | 1050/2243 [00:06&lt;00:05, 202.65it/s]
-Calculating similarities:  48%|####7     | 1073/2243 [00:06&lt;00:05, 208.66it/s]
-Calculating similarities:  49%|####8     | 1094/2243 [00:06&lt;00:05, 205.92it/s]
-Calculating similarities:  50%|####9     | 1115/2243 [00:06&lt;00:06, 183.29it/s]
-Calculating similarities:  51%|#####     | 1140/2243 [00:06&lt;00:05, 199.51it/s]
-Calculating similarities:  52%|#####1    | 1162/2243 [00:06&lt;00:05, 205.08it/s]
-Calculating similarities:  53%|#####2    | 1183/2243 [00:06&lt;00:05, 203.27it/s]
-Calculating similarities:  54%|#####3    | 1210/2243 [00:06&lt;00:04, 217.96it/s]
-Calculating similarities:  55%|#####5    | 1236/2243 [00:06&lt;00:04, 228.47it/s]
-Calculating similarities:  56%|#####6    | 1260/2243 [00:07&lt;00:04, 224.96it/s]
-Calculating similarities:  57%|#####7    | 1285/2243 [00:07&lt;00:04, 228.98it/s]
-Calculating similarities:  58%|#####8    | 1309/2243 [00:07&lt;00:04, 227.23it/s]
-Calculating similarities:  59%|#####9    | 1332/2243 [00:07&lt;00:04, 221.12it/s]
-Calculating similarities:  60%|######    | 1355/2243 [00:07&lt;00:04, 221.80it/s]
-Calculating similarities:  61%|######1   | 1378/2243 [00:07&lt;00:03, 221.80it/s]
-Calculating similarities:  62%|######2   | 1401/2243 [00:07&lt;00:03, 216.24it/s]
-Calculating similarities:  64%|######3   | 1425/2243 [00:07&lt;00:03, 222.65it/s]
-Calculating similarities:  65%|######4   | 1448/2243 [00:07&lt;00:03, 214.49it/s]
-Calculating similarities:  66%|######5   | 1470/2243 [00:08&lt;00:03, 208.32it/s]
-Calculating similarities:  66%|######6   | 1491/2243 [00:08&lt;00:03, 206.70it/s]
-Calculating similarities:  67%|######7   | 1512/2243 [00:08&lt;00:03, 205.69it/s]
-Calculating similarities:  68%|######8   | 1533/2243 [00:08&lt;00:03, 204.10it/s]
-Calculating similarities:  69%|######9   | 1555/2243 [00:08&lt;00:03, 206.68it/s]
-Calculating similarities:  70%|#######   | 1577/2243 [00:08&lt;00:03, 207.28it/s]
-Calculating similarities:  71%|#######1  | 1599/2243 [00:08&lt;00:03, 209.18it/s]
-Calculating similarities:  72%|#######2  | 1622/2243 [00:08&lt;00:02, 211.76it/s]
-Calculating similarities:  73%|#######3  | 1644/2243 [00:08&lt;00:03, 156.16it/s]
-Calculating similarities:  74%|#######4  | 1668/2243 [00:09&lt;00:03, 175.00it/s]
-Calculating similarities:  75%|#######5  | 1690/2243 [00:09&lt;00:02, 185.39it/s]
-Calculating similarities:  76%|#######6  | 1714/2243 [00:09&lt;00:02, 198.32it/s]
-Calculating similarities:  77%|#######7  | 1738/2243 [00:09&lt;00:02, 206.05it/s]
-Calculating similarities:  78%|#######8  | 1760/2243 [00:09&lt;00:02, 205.30it/s]
-Calculating similarities:  79%|#######9  | 1782/2243 [00:09&lt;00:02, 202.01it/s]
-Calculating similarities:  80%|########  | 1803/2243 [00:09&lt;00:02, 201.44it/s]
-Calculating similarities:  81%|########1 | 1824/2243 [00:09&lt;00:02, 202.90it/s]
-Calculating similarities:  82%|########2 | 1845/2243 [00:09&lt;00:02, 180.43it/s]
-Calculating similarities:  83%|########3 | 1864/2243 [00:10&lt;00:02, 170.72it/s]
-Calculating similarities:  84%|########4 | 1887/2243 [00:10&lt;00:01, 185.64it/s]
-Calculating similarities:  85%|########5 | 1910/2243 [00:10&lt;00:01, 196.20it/s]
-Calculating similarities:  86%|########6 | 1931/2243 [00:10&lt;00:01, 181.74it/s]
-Calculating similarities:  87%|########7 | 1954/2243 [00:10&lt;00:01, 193.73it/s]
-Calculating similarities:  88%|########8 | 1978/2243 [00:10&lt;00:01, 204.38it/s]
-Calculating similarities:  89%|########9 | 2003/2243 [00:10&lt;00:01, 216.77it/s]
-Calculating similarities:  90%|######### | 2027/2243 [00:10&lt;00:00, 222.67it/s]
-Calculating similarities:  91%|#########1| 2051/2243 [00:10&lt;00:00, 225.32it/s]
-Calculating similarities:  93%|#########2| 2075/2243 [00:11&lt;00:00, 227.27it/s]
-Calculating similarities:  94%|#########3| 2099/2243 [00:11&lt;00:00, 227.50it/s]
-Calculating similarities:  95%|#########4| 2122/2243 [00:11&lt;00:00, 225.41it/s]
-Calculating similarities:  96%|#########5| 2146/2243 [00:11&lt;00:00, 228.04it/s]
-Calculating similarities:  97%|#########6| 2169/2243 [00:11&lt;00:00, 228.14it/s]
-Calculating similarities:  98%|#########7| 2195/2243 [00:11&lt;00:00, 234.63it/s]
-Calculating similarities:  99%|#########8| 2219/2243 [00:11&lt;00:00, 222.41it/s]
-Calculating similarities: 100%|#########9| 2242/2243 [00:11&lt;00:00, 213.39it/s]
-Calculating similarities: 100%|##########| 2243/2243 [00:11&lt;00:00, 190.21it/s]</code></pre>
+Calculating similarities:   0%|          | 1/2243 [00:00&lt;35:26,  1.05it/s]
+Calculating similarities:   1%|1         | 24/2243 [00:01&lt;01:11, 30.98it/s]
+Calculating similarities:   2%|2         | 45/2243 [00:01&lt;00:37, 58.95it/s]
+Calculating similarities:   3%|3         | 70/2243 [00:01&lt;00:23, 93.52it/s]
+Calculating similarities:   4%|4         | 93/2243 [00:01&lt;00:17, 120.58it/s]
+Calculating similarities:   5%|5         | 116/2243 [00:01&lt;00:14, 144.71it/s]
+Calculating similarities:   6%|6         | 139/2243 [00:01&lt;00:12, 164.24it/s]
+Calculating similarities:   7%|7         | 161/2243 [00:01&lt;00:11, 176.11it/s]
+Calculating similarities:   8%|8         | 183/2243 [00:01&lt;00:11, 184.97it/s]
+Calculating similarities:   9%|9         | 205/2243 [00:01&lt;00:10, 187.52it/s]
+Calculating similarities:  10%|#         | 226/2243 [00:02&lt;00:11, 170.41it/s]
+Calculating similarities:  11%|#         | 245/2243 [00:02&lt;00:13, 148.08it/s]
+Calculating similarities:  12%|#1        | 268/2243 [00:02&lt;00:11, 167.30it/s]
+Calculating similarities:  13%|#2        | 289/2243 [00:02&lt;00:11, 176.89it/s]
+Calculating similarities:  14%|#3        | 309/2243 [00:02&lt;00:10, 180.53it/s]
+Calculating similarities:  15%|#4        | 330/2243 [00:02&lt;00:10, 187.80it/s]
+Calculating similarities:  16%|#5        | 350/2243 [00:02&lt;00:10, 184.26it/s]
+Calculating similarities:  16%|#6        | 369/2243 [00:02&lt;00:10, 172.28it/s]
+Calculating similarities:  17%|#7        | 388/2243 [00:02&lt;00:10, 175.42it/s]
+Calculating similarities:  18%|#8        | 412/2243 [00:03&lt;00:09, 192.84it/s]
+Calculating similarities:  19%|#9        | 432/2243 [00:03&lt;00:09, 193.30it/s]
+Calculating similarities:  20%|##        | 452/2243 [00:03&lt;00:09, 194.47it/s]
+Calculating similarities:  21%|##1       | 472/2243 [00:03&lt;00:09, 182.83it/s]
+Calculating similarities:  22%|##1       | 492/2243 [00:03&lt;00:09, 187.00it/s]
+Calculating similarities:  23%|##2       | 515/2243 [00:03&lt;00:08, 197.12it/s]
+Calculating similarities:  24%|##4       | 539/2243 [00:03&lt;00:08, 207.77it/s]
+Calculating similarities:  25%|##5       | 567/2243 [00:03&lt;00:07, 227.16it/s]
+Calculating similarities:  26%|##6       | 590/2243 [00:03&lt;00:07, 225.89it/s]
+Calculating similarities:  27%|##7       | 613/2243 [00:04&lt;00:07, 226.47it/s]
+Calculating similarities:  28%|##8       | 636/2243 [00:04&lt;00:07, 221.72it/s]
+Calculating similarities:  30%|##9       | 664/2243 [00:04&lt;00:06, 238.33it/s]
+Calculating similarities:  31%|###       | 688/2243 [00:04&lt;00:06, 232.55it/s]
+Calculating similarities:  32%|###1      | 712/2243 [00:04&lt;00:06, 223.34it/s]
+Calculating similarities:  33%|###2      | 735/2243 [00:04&lt;00:07, 213.71it/s]
+Calculating similarities:  34%|###3      | 757/2243 [00:04&lt;00:07, 203.02it/s]
+Calculating similarities:  35%|###4      | 778/2243 [00:04&lt;00:07, 193.75it/s]
+Calculating similarities:  36%|###5      | 798/2243 [00:04&lt;00:07, 186.75it/s]
+Calculating similarities:  37%|###6      | 820/2243 [00:05&lt;00:07, 194.43it/s]
+Calculating similarities:  37%|###7      | 840/2243 [00:05&lt;00:07, 194.06it/s]
+Calculating similarities:  38%|###8      | 860/2243 [00:05&lt;00:07, 194.02it/s]
+Calculating similarities:  39%|###9      | 880/2243 [00:05&lt;00:07, 194.42it/s]
+Calculating similarities:  40%|####      | 901/2243 [00:05&lt;00:06, 198.72it/s]
+Calculating similarities:  41%|####1     | 921/2243 [00:05&lt;00:06, 194.10it/s]
+Calculating similarities:  42%|####2     | 944/2243 [00:05&lt;00:06, 198.93it/s]
+Calculating similarities:  43%|####3     | 970/2243 [00:05&lt;00:05, 213.60it/s]
+Calculating similarities:  44%|####4     | 993/2243 [00:05&lt;00:05, 215.85it/s]
+Calculating similarities:  45%|####5     | 1015/2243 [00:05&lt;00:05, 213.13it/s]
+Calculating similarities:  46%|####6     | 1037/2243 [00:06&lt;00:06, 199.96it/s]
+Calculating similarities:  47%|####7     | 1059/2243 [00:06&lt;00:05, 205.45it/s]
+Calculating similarities:  48%|####8     | 1080/2243 [00:06&lt;00:05, 202.66it/s]
+Calculating similarities:  49%|####9     | 1101/2243 [00:06&lt;00:05, 197.80it/s]
+Calculating similarities:  50%|####9     | 1121/2243 [00:06&lt;00:06, 183.35it/s]
+Calculating similarities:  51%|#####1    | 1145/2243 [00:06&lt;00:05, 196.32it/s]
+Calculating similarities:  52%|#####2    | 1167/2243 [00:06&lt;00:05, 202.25it/s]
+Calculating similarities:  53%|#####2    | 1188/2243 [00:06&lt;00:05, 199.55it/s]
+Calculating similarities:  54%|#####4    | 1214/2243 [00:06&lt;00:04, 216.54it/s]
+Calculating similarities:  55%|#####5    | 1239/2243 [00:07&lt;00:04, 223.63it/s]
+Calculating similarities:  56%|#####6    | 1262/2243 [00:07&lt;00:04, 221.01it/s]
+Calculating similarities:  57%|#####7    | 1287/2243 [00:07&lt;00:04, 227.06it/s]
+Calculating similarities:  58%|#####8    | 1310/2243 [00:07&lt;00:04, 223.83it/s]
+Calculating similarities:  59%|#####9    | 1333/2243 [00:07&lt;00:04, 218.75it/s]
+Calculating similarities:  60%|######    | 1355/2243 [00:07&lt;00:04, 218.75it/s]
+Calculating similarities:  61%|######1   | 1377/2243 [00:07&lt;00:03, 218.18it/s]
+Calculating similarities:  62%|######2   | 1399/2243 [00:07&lt;00:03, 213.15it/s]
+Calculating similarities:  63%|######3   | 1423/2243 [00:07&lt;00:03, 218.48it/s]
+Calculating similarities:  64%|######4   | 1445/2243 [00:08&lt;00:03, 210.93it/s]
+Calculating similarities:  65%|######5   | 1467/2243 [00:08&lt;00:03, 204.62it/s]
+Calculating similarities:  66%|######6   | 1488/2243 [00:08&lt;00:03, 203.23it/s]
+Calculating similarities:  67%|######7   | 1509/2243 [00:08&lt;00:03, 202.67it/s]
+Calculating similarities:  68%|######8   | 1530/2243 [00:08&lt;00:03, 201.52it/s]
+Calculating similarities:  69%|######9   | 1552/2243 [00:08&lt;00:03, 204.58it/s]
+Calculating similarities:  70%|#######   | 1573/2243 [00:08&lt;00:03, 205.69it/s]
+Calculating similarities:  71%|#######1  | 1594/2243 [00:08&lt;00:03, 200.43it/s]
+Calculating similarities:  72%|#######2  | 1617/2243 [00:08&lt;00:03, 207.07it/s]
+Calculating similarities:  73%|#######3  | 1638/2243 [00:08&lt;00:02, 202.36it/s]
+Calculating similarities:  74%|#######4  | 1661/2243 [00:09&lt;00:02, 209.97it/s]
+Calculating similarities:  75%|#######5  | 1683/2243 [00:09&lt;00:02, 210.73it/s]
+Calculating similarities:  76%|#######6  | 1706/2243 [00:09&lt;00:03, 160.76it/s]
+Calculating similarities:  77%|#######7  | 1729/2243 [00:09&lt;00:02, 176.31it/s]
+Calculating similarities:  78%|#######7  | 1749/2243 [00:09&lt;00:02, 181.30it/s]
+Calculating similarities:  79%|#######8  | 1769/2243 [00:09&lt;00:02, 185.84it/s]
+Calculating similarities:  80%|#######9  | 1789/2243 [00:09&lt;00:02, 187.20it/s]
+Calculating similarities:  81%|########  | 1810/2243 [00:09&lt;00:02, 190.89it/s]
+Calculating similarities:  82%|########1 | 1830/2243 [00:10&lt;00:02, 192.02it/s]
+Calculating similarities:  82%|########2 | 1850/2243 [00:10&lt;00:02, 169.52it/s]
+Calculating similarities:  83%|########3 | 1868/2243 [00:10&lt;00:02, 166.32it/s]
+Calculating similarities:  84%|########4 | 1891/2243 [00:10&lt;00:01, 182.47it/s]
+Calculating similarities:  85%|########5 | 1914/2243 [00:10&lt;00:01, 186.88it/s]
+Calculating similarities:  86%|########6 | 1934/2243 [00:10&lt;00:01, 180.47it/s]
+Calculating similarities:  87%|########7 | 1957/2243 [00:10&lt;00:01, 193.72it/s]
+Calculating similarities:  88%|########8 | 1980/2243 [00:10&lt;00:01, 201.75it/s]
+Calculating similarities:  89%|########9 | 2005/2243 [00:10&lt;00:01, 213.94it/s]
+Calculating similarities:  90%|######### | 2029/2243 [00:11&lt;00:00, 219.38it/s]
+Calculating similarities:  91%|#########1| 2052/2243 [00:11&lt;00:00, 222.38it/s]
+Calculating similarities:  93%|#########2| 2076/2243 [00:11&lt;00:00, 225.33it/s]
+Calculating similarities:  94%|#########3| 2099/2243 [00:11&lt;00:00, 225.63it/s]
+Calculating similarities:  95%|#########4| 2122/2243 [00:11&lt;00:00, 223.62it/s]
+Calculating similarities:  96%|#########5| 2146/2243 [00:11&lt;00:00, 226.25it/s]
+Calculating similarities:  97%|#########6| 2169/2243 [00:11&lt;00:00, 226.66it/s]
+Calculating similarities:  98%|#########7| 2195/2243 [00:11&lt;00:00, 233.53it/s]
+Calculating similarities:  99%|#########8| 2219/2243 [00:11&lt;00:00, 222.35it/s]
+Calculating similarities: 100%|#########9| 2242/2243 [00:11&lt;00:00, 219.82it/s]
+Calculating similarities: 100%|##########| 2243/2243 [00:11&lt;00:00, 187.20it/s]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' Extract similarity scores</span></span>
-<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> scores.to_array()[<span class="st">"CosineHungarian_score"</span>]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' Extract similarity scores</span></span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> scores.to_array()[<span class="st">"CosineHungarian_score"</span>]</span></code></pre></div>
 </div>
 <p>Alternatively, we can also directly use any <code>Spectra</code> object from R as the data is converted automatically when accessed from Python. We can for example use <code>r.mzml</code> instead of <code>mzml_py</code> in the call above, which converts the <code>Spectra</code> object <code>mzml</code> in R to Python before calculating the similarities.</p>
 <p>We can also directly compare the scores calculated using the two different algorithms.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb110"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="co">#' Plot the similarity scores against each other</span></span>
@@ -906,7 +1039,7 @@ Calculating similarities: 100%|##########| 2243/2243 [00:11&lt;00:00, 190.21it/s
 </ul></section></section><section class="section level2"><h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb95"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb111"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' R session:</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -935,9 +1068,9 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] MsDataHub_1.9.0     SpectriPy_0.99.11   reticulate_1.43.0
-[4] Spectra_1.19.6      BiocParallel_1.43.4 S4Vectors_0.47.0
-[7] BiocGenerics_0.55.1 generics_0.1.4
+[1] MsBackendMgf_1.17.0 MsDataHub_1.9.0     SpectriPy_0.99.12
+[4] reticulate_1.43.0   Spectra_1.19.8      BiocParallel_1.43.4
+[7] S4Vectors_0.47.0    BiocGenerics_0.55.1 generics_0.1.4
 
 loaded via a namespace (and not attached):
  [1] KEGGREST_1.49.1        xfun_0.53              httr2_1.2.1
@@ -945,7 +1078,7 @@ loaded via a namespace (and not attached):
  [7] tools_4.5.1            curl_7.0.0             parallel_4.5.1
 [10] tibble_3.3.0           AnnotationDbi_1.71.1   RSQLite_2.4.3
 [13] cluster_2.1.8.1        blob_1.2.4             pkgconfig_2.0.3
-[16] Matrix_1.7-3           dbplyr_2.5.0           lifecycle_1.0.4
+[16] Matrix_1.7-4           dbplyr_2.5.0           lifecycle_1.0.4
 [19] compiler_4.5.1         Biostrings_2.77.2      BiocStyle_2.37.1
 [22] Seqinfo_0.99.2         codetools_0.2-20       ncdf4_1.24
 [25] clue_0.3-66            htmltools_0.5.8.1      yaml_2.3.10
@@ -957,10 +1090,10 @@ loaded via a namespace (and not attached):
 [43] magrittr_2.0.3         withr_3.0.2            filelock_1.0.3
 [46] rappdirs_0.3.3         bit64_4.6.0-1          XVector_0.49.0
 [49] rmarkdown_2.29         httr_1.4.7             bit_4.6.0
-[52] png_0.1-8              memoise_2.0.1          evaluate_1.0.4
-[55] knitr_1.50             IRanges_2.43.0         BiocFileCache_2.99.5
+[52] png_0.1-8              memoise_2.0.1          evaluate_1.0.5
+[55] knitr_1.50             IRanges_2.43.0         BiocFileCache_2.99.6
 [58] rlang_1.1.6            Rcpp_1.1.0             glue_1.8.0
-[61] DBI_1.2.3              mzR_2.43.1             BiocManager_1.30.26
+[61] DBI_1.2.3              mzR_2.43.3             BiocManager_1.30.26
 [64] jsonlite_2.0.0         R6_2.6.1               fs_1.6.6
 [67] ProtGenerics_1.41.0    MsCoreUtils_1.21.0    </code></pre>
 </div>

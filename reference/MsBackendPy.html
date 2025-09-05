@@ -7,9 +7,20 @@ library directly from R. The MS data (peaks data or spectra variables) are
 translated on-the-fly when accessed. Thus, the MsBackendPy allows a
 seamless integration of Python MS data structures into Spectra::Spectra()
 based analysis workflows.
-The MsBackendPy object is considered read-only, i.e. it does not provide
-functionality to replace the peaks data from R. However, it is possible to
-directly change the data in the referenced Python variable."><meta property="og:description" content="The MsBackendPy allows to access MS data stored as matchms.Spectrum
+The MsBackendPy object supports replacing values for peaks variables
+(m/z and intensity) and adding/replacing or removing spectra variables.
+The changes are immediately translated and written back to the Python
+variable.
+See the descripion of the backendInitialize() method below for creation
+and initialization of objects from this class. Also, the setBackend()
+method for Spectra::Spectra() objects internally uses
+backendInitialize(), thus the same parameters can (and have) to be passed
+if the backend of a Spectra object is changed to MsBackendPy using
+the setBackend() method. Special care should also be given to parameter
+spectraVariableMapping, that defines which spectra variables should be
+considered/translated and how their names should or have to be converted
+between R and Python. See the description for backendInitialize() for
+details."><meta property="og:description" content="The MsBackendPy allows to access MS data stored as matchms.Spectrum
 or spectrum_utils.spectrum.MsmsSpectrum objects from the
 matchms respectively
 spectrum_utils Python
@@ -17,9 +28,20 @@ library directly from R. The MS data (peaks data or spectra variables) are
 translated on-the-fly when accessed. Thus, the MsBackendPy allows a
 seamless integration of Python MS data structures into Spectra::Spectra()
 based analysis workflows.
-The MsBackendPy object is considered read-only, i.e. it does not provide
-functionality to replace the peaks data from R. However, it is possible to
-directly change the data in the referenced Python variable."><meta property="og:image" content="https://rformassspectrometry.github.io/SpectriPy/logo.png"></head><body>
+The MsBackendPy object supports replacing values for peaks variables
+(m/z and intensity) and adding/replacing or removing spectra variables.
+The changes are immediately translated and written back to the Python
+variable.
+See the descripion of the backendInitialize() method below for creation
+and initialization of objects from this class. Also, the setBackend()
+method for Spectra::Spectra() objects internally uses
+backendInitialize(), thus the same parameters can (and have) to be passed
+if the backend of a Spectra object is changed to MsBackendPy using
+the setBackend() method. Special care should also be given to parameter
+spectraVariableMapping, that defines which spectra variables should be
+considered/translated and how their names should or have to be converted
+between R and Python. See the description for backendInitialize() for
+details."><meta property="og:image" content="https://rformassspectrometry.github.io/SpectriPy/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -27,7 +49,7 @@ directly change the data in the referenced Python variable."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +75,7 @@ directly change the data in the referenced Python variable."><meta property="og:
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>A MS data backend for MS data stored in Python</h1>
-      <small class="dont-index">Source: <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/MsBackendPython.R" class="external-link"><code>R/MsBackendPython.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/MsBackendPython.R" class="external-link"><code>R/MsBackendPython.R</code></a>, <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/Spectra.R" class="external-link"><code>R/Spectra.R</code></a></small>
       <div class="d-none name"><code>MsBackendPy.Rd</code></div>
     </div>
 
@@ -66,9 +88,20 @@ library directly from R. The MS data (peaks data or spectra variables) are
 translated on-the-fly when accessed. Thus, the <code>MsBackendPy</code> allows a
 seamless integration of Python MS data structures into <code><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra::Spectra()</a></code>
 based analysis workflows.</p>
-<p>The <code>MsBackendPy</code> object is considered <em>read-only</em>, i.e. it does not provide
-functionality to replace the peaks data from R. However, it is possible to
-directly change the data in the referenced Python variable.</p>
+<p>The <code>MsBackendPy</code> object supports replacing values for peaks variables
+(<em>m/z</em> and intensity) and adding/replacing or removing spectra variables.
+The changes are immediately translated and written back to the Python
+variable.</p>
+<p>See the descripion of the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> method below for creation
+and initialization of objects from this class. Also, the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>
+method for <code><a href="https://rdrr.io/pkg/Spectra/man/Spectra.html" class="external-link">Spectra::Spectra()</a></code> objects internally uses
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>, thus the same parameters can (and have) to be passed
+if the backend of a <code>Spectra</code> object is changed to <code>MsBackendPy</code> using
+the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> method. Special care should also be given to parameter
+<code>spectraVariableMapping</code>, that defines which spectra variables should be
+considered/translated and how their names should or have to be converted
+between R and Python. See the description for <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> for
+details.</p>
     </div>
 
     <div class="section level2">
@@ -93,21 +126,30 @@ directly change the data in the referenced Python variable.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData</a></span><span class="op">(</span><span class="va">object</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData</a></span><span class="op">(</span><span class="va">object</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mz"</span>, <span class="st">"intensity"</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">name</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="va">x</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'Spectra'</span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'Spectra'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'Spectra'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -127,8 +169,9 @@ name of the variable/Python attribute that contains the list of
 <dt id="arg-spectravariablemapping">spectraVariableMapping<a class="anchor" aria-label="anchor" href="#arg-spectravariablemapping"></a></dt>
 <dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: named <code>character</code>
 with the mapping between spectra variable names and (<code>matchms.Spectrum</code>)
-metadata names. See <code><a href="conversion.html">defaultSpectraVariableMapping()</a></code> for more
-information and details.</p></dd>
+metadata names. See <code><a href="conversion.html">defaultSpectraVariableMapping()</a></code>, and the
+description of the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> function for <code>MsBackendPy</code>
+for more information and details.</p></dd>
 
 
 <dt id="arg-pythonlibrary">pythonLibrary<a class="anchor" aria-label="anchor" href="#arg-pythonlibrary"></a></dt>
@@ -167,13 +210,13 @@ when a single column is requested, the data should be returned as a
 <code>vector</code> instead of a <code>data.frame</code> or <code>matrix</code>.</p></dd>
 
 
+<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
+<dd><p>Replacement value(s).</p></dd>
+
+
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p>For <code>$</code>: <code>character(1)</code> with the name of the variable to
 retrieve.</p></dd>
-
-
-<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
-<dd><p>Replacement value(s).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -214,25 +257,33 @@ Python object, it immediately affects the <code>Spectra</code>/backend.</p>
 interface for access to MS data. Details on the invidual functions can also
 be found in the main documentation in the <em>Spectra</em> package (i.e. for
 <code><a href="https://rdrr.io/pkg/Spectra/man/MsBackend.html" class="external-link">Spectra::MsBackend()</a></code>). Here we provide information for functions with
-specific properties of the backend.</p><ul><li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: initializes the backend with information from the
-referenced Python variable (attribute). The name of this attribute,
-ideally stored in the associated Python session, is expected to be
-provided with the <code>pythonVariableName</code> parameter. This variable is
-expected to contain or represent the full MS data. Alternatively, by
-providing the full MS data with the <code>data</code> parameter, this MS data will
-be first converted to the respective Python MS data representation and
-the <code>MsBackendPy</code> object will be initialized as described before. This
-allows to initialize the Python-based MS backend with data initially
-available in R.
-The optional <code>spectraVariableMapping</code> parameter allows to provide
-additional, or alternative, mapping of <code>Spectra</code>'s <em>spectra variables</em>
-to metadata in the <code>matchms.Spectrum</code> objects. See
-<code><a href="conversion.html">defaultSpectraVariableMapping()</a></code> (the default) for more information.
+specific properties of the backend.</p><ul><li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: this method can be used to either initialize the
+backend with data from a referenced and **existing ** MS data structure
+in Python, or, through parameter <code>data</code>, first convert and store the
+provided data to a Python MS data structure and then initialize the
+backend pointing to this referenced variable (Python attribute). In both
+cases, the name of the Python attribute needs to be provided with the
+parameter <code>pythonVariableName</code>.
+The mapping between the spectra variable names in R and the related
+Python metadata variables can be specified with the
+<code>spectraVariableMapping</code> parameter. It has to be a named <code>character</code> with
+names being the spectra variables and the values the respective name for
+the metadata in the Python MS data structure. It defaults to
+<code><a href="conversion.html">defaultSpectraVariableMapping()</a></code> which returns the mapping of some
+core spectra variables for the <em>matchms</em> Python library. Be aware that
+only those spectra variables specified with this parameter are mapped and
+translated between R and Python. For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> with parameter
+<code>data</code> provided, only the variables defined by <code>spectraVariableMapping</code>,
+and available in <code>data</code>, are converted and stored in Python. Also note
+that, for efficiency reasons, core spectra variables (those listed by
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">Spectra::coreSpectraVariables()</a></code>) defined with <code>spectraVariableMapping</code>
+but that have only missing values, are ignored.
 Parameter <code>pythonLibrary</code> must be used to specify the Python library
 representing the MS data in Python. It can be either
 <code>pythonLibrary = "matchms"</code> (the default) or
 <code>pythonLibrary = "spectrum_utils"</code>. The function returns an initialized
-instance of <code>MsBackendPy</code>.</p></li>
+instance of <code>MsBackendPy</code>. See examples below for different settings
+and conversion of spectra variables.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData()</a></code>: extracts the peaks data matrices from the backend. Python
 code is applied to the data structure in Python to
 extract the <em>m/z</em> and intensity values as a list of (numpy) arrays. These
@@ -244,6 +295,11 @@ variables are translated and retrieved from the Python objects depends on
 the backend's <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>. All metadata names defined are
 retrieved and added to the returned <code>DataFrame</code> (with eventually missing
 <em>core</em> spectra variables filled with <code>NA</code>).</p></li>
+<li><p><code>spectraData()&lt;-</code>: replaces the full spectra (+ peaks) data of the backend
+with the values provided with the submitted <code>DataFrame</code>. The number of
+rows of this <code>DataFrame</code> has to match the number of spectra of <code>object</code>
+(i.e., being equal to <code>length(object)</code>) and the <code>DataFrame</code> must also
+contain the spectras' <em>m/z</em> and intensity values.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraVariables()</a></code>: retrieves available spectra variables, which include
 the names of all metadata attributes in the <code>matchms.Spectrum</code> objects
 and the <em>core</em> spectra variables <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">Spectra::coreSpectraVariables()</a></code>.</p></li>
@@ -252,6 +308,11 @@ and the <em>core</em> spectra variables <code><a href="https://rdrr.io/pkg/ProtG
 <li><p><code>spectraVariableMapping&lt;-</code>: replaces the <code>spectraVariableMapping</code> of the
 backend (see <code><a href="conversion.html">setSpectraVariableMapping()</a></code> for details and description
 of the expected format).</p></li>
+<li><p><code>$</code>, <code>$&lt;-</code>: extract or add/replace values for a spectra variable from/in
+the backend. Replacing or adding values for a spectra variable cause the
+full data to be replaced. In detail, first the full data is retrieved from
+Python, then the values are added/replaced and then the data is again
+transferred to Python.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="additional-helper-and-utility-functions">Additional helper and utility functions<a class="anchor" aria-label="anchor" href="#additional-helper-and-utility-functions"></a></h2>
@@ -346,20 +407,6 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MsBackendPy with 100 spectra</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p" variable in Python</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## An easier way to change the data representation of a `Spectra` object</span></span></span>
-<span class="r-in"><span><span class="co">## from R to Python is to use the `Spectra`'s `setBackend()` method</span></span></span>
-<span class="r-in"><span><span class="co">## selecting a `MsBackendPy` as the target backend representation:</span></span></span>
-<span class="r-in"><span><span class="va">s_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend</a></span><span class="op">(</span><span class="va">s</span>, <span class="fu">MsBackendPy</span><span class="op">(</span><span class="op">)</span>, pythonVariableName <span class="op">=</span> <span class="st">"s_p2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">s_2</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Tue Aug 26 06:22:26 2025] </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
-<span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
-<span class="r-in"><span><span class="co">## with all MS data however stored in Python.</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Alternatively, by passing the full MS data with parameter `data`, the</span></span></span>
 <span class="r-in"><span><span class="co">## data is first converted to Python and the backend is initialized with</span></span></span>
 <span class="r-in"><span><span class="co">## that data. The `setBackend()` call from above internally uses this</span></span></span>
@@ -373,6 +420,87 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p3" variable in Python</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## An easier way to change the data representation of a `Spectra` object</span></span></span>
+<span class="r-in"><span><span class="co">## from R to Python is to use the `Spectra`'s `setBackend()` method</span></span></span>
+<span class="r-in"><span><span class="co">## selecting a `MsBackendPy` as the target backend representation:</span></span></span>
+<span class="r-in"><span><span class="va">s_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend</a></span><span class="op">(</span><span class="va">s</span>, <span class="fu">MsBackendPy</span><span class="op">(</span><span class="op">)</span>, pythonVariableName <span class="op">=</span> <span class="st">"s_p2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">s_2</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Fri Sep  5 14:53:18 2025] </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
+<span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
+<span class="r-in"><span><span class="co">## with all MS data however stored in Python.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Note that by default only spectra variables that are part of</span></span></span>
+<span class="r-in"><span><span class="co">## `defaultSpectraVariableMapping()` are converted to Python</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="conversion.html">defaultSpectraVariableMapping</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  precursorMz           precursorIntensity </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               "precursor_mz"        "precursor_intensity" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              precursorCharge                        rtime </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     "charge"             "retention_time" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              collisionEnergy      isolationWindowTargetMz </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           "collision_energy" "isolation_window_target_mz" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level" </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Thus, for example the precursor m/z is available in `s_2`, but other</span></span></span>
+<span class="r-in"><span><span class="co">## spectra variables from `s`, such as `"SMILES"` are not:</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 259.0595 837.5318 250.1802 250.1802 250.1802 250.1802 250.1802 250.1802</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [9] 195.0877 100.0757 154.0777 190.1352 175.1190 287.0574  83.0604  83.0604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [17] 195.0877       NA       NA 780.5500 770.5700 179.1179 195.0877 195.0877</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 195.0877 425.1871 285.1809 224.0728 202.0854 161.0220 296.1412 239.1503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [33] 990.9768 239.0673 163.0314 303.1339       NA       NA       NA       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41]       NA       NA       NA       NA       NA       NA       NA       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49]       NA       NA 296.1467 205.1911 317.2122 216.0000 207.0000 125.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [57] 164.0000 256.0000 138.0000 256.0000 436.9460 866.6100 254.2478 335.0512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [65] 257.1285 239.0815 239.0815 239.0815 301.1445 301.1445 302.3054 175.1190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 175.1190       NA 497.3272 175.1189 175.1189 230.0958 350.1598       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]       NA 611.1612 273.1386 385.2122 449.1078 447.0933 591.1719 339.2067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [89] 878.5001       NA 102.0600 465.4100 459.2748       NA 301.1445 301.1445</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 407.1347 304.1918 361.2020       NA</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">s_2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 259.0595 837.5318 250.1802 250.1802 250.1802 250.1802 250.1802 250.1802</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [9] 195.0877 100.0757 154.0777 190.1352 175.1190 287.0574  83.0604  83.0604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [17] 195.0877       NA       NA 780.5500 770.5700 179.1179 195.0877 195.0877</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 195.0877 425.1871 285.1809 224.0728 202.0854 161.0220 296.1412 239.1503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [33] 990.9768 239.0673 163.0314 303.1339       NA       NA       NA       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41]       NA       NA       NA       NA       NA       NA       NA       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49]       NA       NA 296.1467 205.1911 317.2122 216.0000 207.0000 125.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [57] 164.0000 256.0000 138.0000 256.0000 436.9460 866.6100 254.2478 335.0512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [65] 257.1285 239.0815 239.0815 239.0815 301.1445 301.1445 302.3054 175.1190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 175.1190       NA 497.3272 175.1189 175.1189 230.0958 350.1598       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]       NA 611.1612 273.1386 385.2122 449.1078 447.0933 591.1719 339.2067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [89] 878.5001       NA 102.0600 465.4100 459.2748       NA 301.1445 301.1445</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 407.1347 304.1918 361.2020       NA</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">s</span><span class="op">$</span><span class="va">SMILES</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CC1=CC(=CC2=C1C3=CC(=CC(=C3C(=O)O2)O)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "CC[C@@H]1[C@@]([C@@H]([C@H](/C(=N/OCOCCOC)/[C@@H](C[C@@]([C@@H]([C@H]([C@@H]([C@H](C(=O)O1)C)O[C@H]2C[C@@]([C@H]([C@@H](O2)C)O)(C)OC)C)O[C@H]3[C@@H]([C@H](C[C@H](O3)C)N(C)C)O)(C)O)C)C)O)(C)O"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"                                                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"                                                                                                                                                       </span>
+<span class="r-in"><span><span class="co">## s_2$SMILES would throw an error.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## To also translate this spectra variable, it needs to be included and</span></span></span>
+<span class="r-in"><span><span class="co">## specified with the `spectraVariableMapping` parameter. The easiest</span></span></span>
+<span class="r-in"><span><span class="co">## approach is to use the `spectraVariableMapping()` function adding in</span></span></span>
+<span class="r-in"><span><span class="co">## addition to the default mapping for the Python library (`"matchms"`)</span></span></span>
+<span class="r-in"><span><span class="co">## also the mapping of additional spectra variables that should be converted:</span></span></span>
+<span class="r-in"><span><span class="va">s_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend</a></span><span class="op">(</span><span class="va">s</span>, <span class="fu">MsBackendPy</span><span class="op">(</span><span class="op">)</span>, pythonVariableName <span class="op">=</span> <span class="st">"s_p2"</span>,</span></span>
+<span class="r-in"><span>    spectraVariableMapping <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="st">"matchms"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>SMILES <span class="op">=</span> <span class="st">"smiles"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">s_2</span><span class="op">$</span><span class="va">SMILES</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CC1=CC(=CC2=C1C3=CC(=CC(=C3C(=O)O2)O)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "CC[C@@H]1[C@@]([C@@H]([C@H](/C(=N/OCOCCOC)/[C@@H](C[C@@]([C@@H]([C@H]([C@@H]([C@H](C(=O)O1)C)O[C@H]2C[C@@]([C@H]([C@@H](O2)C)O)(C)OC)C)O[C@H]3[C@@H]([C@H](C[C@H](O3)C)N(C)C)O)(C)O)C)C)O)(C)O"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "CN(C)C[C@@H]1CCCC([C@H]1C2=CC(=CC=C2)O)O"                                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"                                                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "CN(C)C[C@H]1CCCC[C@@]1(C2=CC(=CC=C2)O)O"                                                                                                                                                       </span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Available spectra variables: these include, next to the *core* spectra</span></span></span>
 <span class="r-in"><span><span class="co">## variables, also the names of all metadata stored in the `matchms.Spectrum`</span></span></span>
 <span class="r-in"><span><span class="co">## objects.</span></span></span>
@@ -385,7 +513,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "precursorMz"             "precursorIntensity"     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] "precursorCharge"         "collisionEnergy"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [15] "isolationWindowLowerMz"  "isolationWindowTargetMz"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "isolationWindowUpperMz" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "isolationWindowUpperMz"  "SMILES"                 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the full peaks data:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData</a></span><span class="op">(</span><span class="va">s_2</span><span class="op">)</span></span></span>
@@ -400,20 +528,20 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the full spectra data:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData</a></span><span class="op">(</span><span class="va">s_2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 100 rows and 17 columns</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 100 rows and 18 columns</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       msLevel     rtime acquisitionNum scanIndex dataStorage  dataOrigin</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;integer&gt; &lt;numeric&gt;      &lt;integer&gt; &lt;integer&gt; &lt;character&gt; &lt;character&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           2        NA             NA        NA        s_p3          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2           2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           2        NA             NA        NA        s_p2          NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ...       ...       ...            ...       ...         ...         ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96          2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97          2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 98          2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99          2        NA             NA        NA        s_p3          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100        NA        NA             NA        NA        s_p3          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96          2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97          2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98          2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99          2        NA             NA        NA        s_p2          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100        NA        NA             NA        NA        s_p2          NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     centroided  smoothed  polarity precScanNum precursorMz precursorIntensity</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;logical&gt; &lt;logical&gt; &lt;integer&gt;   &lt;integer&gt;   &lt;numeric&gt;          &lt;numeric&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1           NA        NA        NA          NA     259.060                 NA</span>
@@ -440,19 +568,19 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 98                1              NA                     NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 99                1              NA                     NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100               1              NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     isolationWindowTargetMz isolationWindowUpperMz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;numeric&gt;              &lt;numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                        NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                        NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                        NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                        NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                        NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ...                     ...                    ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96                       NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97                       NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 98                       NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99                       NA                     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100                      NA                     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     isolationWindowTargetMz isolationWindowUpperMz                 SMILES</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;numeric&gt;              &lt;numeric&gt;            &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                        NA                     NA CC1=CC(=CC2=C1C3=CC(..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                        NA                     NA CC[C@@H]1[C@@]([C@@H..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                        NA                     NA CN(C)C[C@@H]1CCCC([C..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                        NA                     NA CN(C)C[C@@H]1CCCC([C..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                        NA                     NA CN(C)C[C@H]1CCCC[C@@..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                     ...                    ...                    ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96                       NA                     NA CC(CC1=CC(=C(C=C1)O)..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97                       NA                     NA CC1C(=O)OC2C1(C34C(=..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98                       NA                     NA CC(C)/C=C/CCCCC(=O)N..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99                       NA                     NA C[C@]12CCC(=O)C=C1CC..</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100                      NA                     NA c(c3)ccc(c3)CC(=O)NC..</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Get the m/z values</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">mz</a></span><span class="op">(</span><span class="va">s_2</span><span class="op">)</span></span></span>

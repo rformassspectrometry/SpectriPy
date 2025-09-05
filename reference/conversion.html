@@ -57,7 +57,7 @@ objects using the reticulate package."><meta property="og:image" content="https:
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,7 +116,7 @@ objects using the <code>reticulate</code> package.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'character'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'missing'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -149,12 +149,12 @@ objects using the <code>reticulate</code> package.</p>
 <dd><p>For <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: not used.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>For <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: not used.</p></dd>
-
-
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p><code>Spectra</code> object.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>For <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: not used.</p></dd>
 
 
 <dt id="arg-convert">convert<a class="anchor" aria-label="anchor" href="#arg-convert"></a></dt>
@@ -242,17 +242,20 @@ spectra metadata/variables in <code><a href="https://rdrr.io/pkg/Spectra/man/spe
 The initial mapping is based on this
 <a href="https://github.com/matchms/matchms/blob/master/matchms/data/known_key_conversions.csv" class="external-link">definition in matchms</a>.</p><ul><li><p><code>defaultSpectraVariableMapping()</code>: returns the <em>default</em> mapping between
 spectra variables and Python metadata names for the <em>matchms</em> library.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: returns the currently defined spectra
-variable mapping as a named character vector, with names representing the
-names of the spectra variables in R and elements the respective names
-of the spectra metadata in Python. Use <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">Spectra::spectraVariables()</a></code> on
-the <code>Spectra</code> object that should be converted with <code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py()</a></code> to list
-all available spectra variables. <code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py()</a></code> and <code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">py_to_r()</a></code> for MS data
-structures will use this default mapping. Calling
-<code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code> defining also the Python library (e.g.,
+<li><p><code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>: returns the currently defined spectra variable
+mapping as a named character vector, with names
+representing the names of the spectra variables in R and elements the
+respective names of the spectra metadata in Python.
+Use <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">Spectra::spectraVariables()</a></code> on the <code>Spectra</code> object that should
+be converted with <code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py()</a></code> to list all available spectra variables.
+<code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">r_to_py()</a></code> and <code><a href="https://rstudio.github.io/reticulate/reference/r-py-conversion.html" class="external-link">py_to_r()</a></code> for MS data structures will use this default
+mapping.
+Calling <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code> defining also the Python library (e.g.,
 <code>spectraVariableMapping("matchms")</code> or
 <code>spectraVariableMapping("spectrum_utils")</code>) will return the variable
-mapping for the specified Python library.</p></li>
+mapping for the specified Python library. Optional parameter <code>x</code> allows
+to specify a (potentially names) character vector with the names of the
+spectra variables that should in addition be included in the mapping.</p></li>
 <li><p><code>setSpectraVariableMapping()</code>: sets/replaces the currently defined mapping
 of spectra variable names to Python metadata names. Setting
 <code>setSpectraVariableMapping(character())</code> will only convert the mass peaks
