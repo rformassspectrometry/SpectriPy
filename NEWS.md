@@ -1,5 +1,17 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.12
+
+- Add `spectraData<-,MsBackendPy` method.
+- Add parameter `x` to `spectraVariableMapping,character` to simplify adding
+  custom mapping to the default one.
+- Add examples to describe which spectra variables are transferred to Python
+  using `setBackend()` with `MsBackendPy` and how additional variables can be
+  added.
+- `backendInitialize()` with defined parameter `data` drops core spectra
+  variables that contain only missing values.
+- Add `$<-` method for `MsBackendPy`.
+
 ## Changes in 0.99.11
 
 - Add unit tests for package startup messages.

@@ -91,6 +91,13 @@ BiocManager::install("SpectriPy")
 
 # Translating data structures between R and Python
 
+This section describes how MS data is being converted between R and Python to
+enable analyses combining both programming/analysis languages and accessing the
+same shared MS data. The first two sections describe how MS data can be
+converted between R and Python. See also section @sec-backend for a more
+elegant approach and improved integration with [*Spectra*](https://)-based
+workflows in R.
+
 ## Library loading and system setup
 
 Below we load all required packages. By loading *SpectriPy*, the package will
@@ -538,6 +545,91 @@ len(mzml_p)
 mzml_p[0].peaks.mz
 ```
 
+In addition to the MS data (i.e., the *m/z* and intensity values),
+`setBackend()` will also convert core general spectra variables and store them
+in the Python MS data structure as spectrum related metadata. By default, only a
+limited set of spectra variables, the ones with the direct counterpart in
+Python, are translated. These are for the *matchms* library:
+
+```{r}
+#' R session:
+
+spectraVariableMapping("matchms")
+```
+
+with the names being the spectra variable names in R and the values the names of
+the respective metadata fields in Python. The *spectrum_utils* library supports
+only few, fixed, variables:
+
+```{r}
+#' R session:
+
+spectraVariableMapping("spectrum_utils")
+```
+
+The spectra variables that have been transferred to Python with the
+`setBackend()` call above are:
+
+```{r}
+#' R session:
+
+spectraVariableMapping(mzml_r)
+```
+
+Thus, only some of the variables from the original `Spectra` object are now
+available after changing the backend to `MsBackendPy`. However, since *matchms*
+supports additional, arbitrary, metadata fields, it is also possible to convert
+and transfer other spectra variables with `MsBackendPy`. As an example, we below
+import data from an MGF.
+
+```{r}
+#' R session:
+
+library(MsBackendMgf)
+sps <- Spectra(system.file("extdata", "mgf", "test.mgf",
+                           package = "SpectriPy"), source = MsBackendMgf())
+spectraVariables(sps)
+```
+
+There are thus also spectra variables, such as `"SMILES"` and `"INCHI"` that are
+not part of the default `spectraVariableMapping("matchms")` and would thus not
+be converted/transferred by default when changing to a `MsBackendPy`. We can
+however use the `spectraVariableMapping` parameter with `setBackend()` to define
+which spectra variables should be transferred. The parameter takes a named
+character with names being the names of the spectra variables to transfer and
+values the names that should be used for the metadata in Python. We use the
+`spectraVariableMapping()` function to append the mapping for the spectra
+variables `"SMILES"` and `"INCHI"` to the default one.
+
+```{r}
+#' R session:
+
+mp <- spectraVariableMapping("matchms", c(SMILES = "smiles", INCHI = "inchi"))
+mp
+```
+
+We pass this character vector to the `setBackend()` call.
+
+```{r}
+#' R session:
+
+sps <- setBackend(sps, backend = MsBackendPy(),
+                  pythonVariableName = "sps_p",
+                  spectraVariableMapping = mp)
+spectraVariables(sps)
+```
+
+The spectra variables `"INCHI"` and `"SMILES"` have thus also been stored in
+Python:
+
+```{r}
+#' R session:
+
+sps$SMILES |> head()
+```
+
+See also the next section for more information on the mapping between
+`Spectra`'s spectra variables and *matchms* metadata.
 
 ## Conversion of spectra variables
 

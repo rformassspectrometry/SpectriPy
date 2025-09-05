@@ -93,17 +93,20 @@
 #' - `defaultSpectraVariableMapping()`: returns the *default* mapping between
 #'   spectra variables and Python metadata names for the *matchms* library.
 #'
-#' - `spectraVariableMapping()`: returns the currently defined spectra
-#'   variable mapping as a named character vector, with names representing the
-#'   names of the spectra variables in R and elements the respective names
-#'   of the spectra metadata in Python. Use [Spectra::spectraVariables()] on
-#'   the `Spectra` object that should be converted with `r_to_py()` to list
-#'   all available spectra variables. `r_to_py()` and `py_to_r()` for MS data
-#'   structures will use this default mapping. Calling
-#'   `spectraVariableMapping()` defining also the Python library (e.g.,
+#' - `spectraVariableMapping()`: returns the currently defined spectra variable
+#'   mapping as a named character vector, with names
+#'   representing the names of the spectra variables in R and elements the
+#'   respective names of the spectra metadata in Python.
+#'   Use [Spectra::spectraVariables()] on the `Spectra` object that should
+#'   be converted with `r_to_py()` to list all available spectra variables.
+#'   `r_to_py()` and `py_to_r()` for MS data structures will use this default
+#'   mapping.
+#'   Calling `spectraVariableMapping()` defining also the Python library (e.g.,
 #'   `spectraVariableMapping("matchms")` or
 #'   `spectraVariableMapping("spectrum_utils")`) will return the variable
-#'   mapping for the specified Python library.
+#'   mapping for the specified Python library. Optional parameter `x` allows
+#'   to specify a (potentially names) character vector with the names of the
+#'   spectra variables that should in addition be included in the mapping.
 #'
 #' - `setSpectraVariableMapping()`: sets/replaces the currently defined mapping
 #'   of spectra variable names to Python metadata names. Setting
@@ -118,6 +121,9 @@
 #'     [Spectra::Spectra()]` object that should be translated. For
 #'     `pyspec_to_rspec()`: a single `matchms.Spectrum` object or a Python
 #'     list of `matchms.Spectrum` objects.
+#'     For `spectraVariableMapping()`: optional additional spectra variables
+#'     that should be appended to the pre-defined ones for the specified
+#'     Python library.
 #'
 #' @param object For `spectraVariableMapping()`: not used.
 #'
@@ -257,12 +263,22 @@ NULL
 #' @rdname conversion
 #'
 #' @exportMethod spectraVariableMapping
-setMethod("spectraVariableMapping", "character", function(object, ...) {
+setMethod("spectraVariableMapping", "character", function(object,
+                                                          x = character(),
+                                                          ...) {
+    object <- object[1L]
+    if (is.null(names(x))) names(x) <- x
     if (!object %in% c("matchms", "spectrum_utils"))
         stop("Supported values are \"matchms\" or \"spectrum_utils\"")
-    if (object == "matchms")
-        .SPECTRA_2_MATCHMS
-    else .SPECTRA_2_SPECTRUM_UTILS
+    if (object == "matchms") {
+        c(.SPECTRA_2_MATCHMS, x[!x %in% names(.SPECTRA_2_MATCHMS)])
+    } else {
+        if (length(x))
+            warning("Provided spectra variables ",
+                    paste0(names(x), collapse = ", "),
+                    " will not be translated to Python")
+        .SPECTRA_2_SPECTRUM_UTILS
+    }
 })
 
 #' @rdname conversion

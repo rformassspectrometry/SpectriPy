@@ -13,9 +13,21 @@
 #' seamless integration of Python MS data structures into [Spectra::Spectra()]
 #' based analysis workflows.
 #'
-#' The `MsBackendPy` object is considered *read-only*, i.e. it does not provide
-#' functionality to replace the peaks data from R. However, it is possible to
-#' directly change the data in the referenced Python variable.
+#' The `MsBackendPy` object supports replacing values for peaks variables
+#' (*m/z* and intensity) and adding/replacing or removing spectra variables.
+#' The changes are immediately translated and written back to the Python
+#' variable.
+#'
+#' See the descripion of the `backendInitialize()` method below for creation
+#' and initialization of objects from this class. Also, the `setBackend()`
+#' method for [Spectra::Spectra()] objects internally uses
+#' `backendInitialize()`, thus the same parameters can (and have) to be passed
+#' if the backend of a `Spectra` object is changed to `MsBackendPy` using
+#' the `setBackend()` method. Special care should also be given to parameter
+#' `spectraVariableMapping`, that defines which spectra variables should be
+#' considered/translated and how their names should or have to be converted
+#' between R and Python. See the description for `backendInitialize()` for
+#' details.
 #'
 #' @details
 #'
@@ -51,25 +63,33 @@
 #' [Spectra::MsBackend()]). Here we provide information for functions with
 #' specific properties of the backend.
 #'
-#' - `backendInitialize()`: initializes the backend with information from the
-#'   referenced Python variable (attribute). The name of this attribute,
-#'   ideally stored in the associated Python session, is expected to be
-#'   provided with the `pythonVariableName` parameter. This variable is
-#'   expected to contain or represent the full MS data. Alternatively, by
-#'   providing the full MS data with the `data` parameter, this MS data will
-#'   be first converted to the respective Python MS data representation and
-#'   the `MsBackendPy` object will be initialized as described before. This
-#'   allows to initialize the Python-based MS backend with data initially
-#'   available in R.
-#'   The optional `spectraVariableMapping` parameter allows to provide
-#'   additional, or alternative, mapping of `Spectra`'s *spectra variables*
-#'   to metadata in the `matchms.Spectrum` objects. See
-#'   [defaultSpectraVariableMapping()] (the default) for more information.
+#' - `backendInitialize()`: this method can be used to either initialize the
+#'   backend with data from a referenced and **existing ** MS data structure
+#'   in Python, or, through parameter `data`, first convert and store the
+#'   provided data to a Python MS data structure and then initialize the
+#'   backend pointing to this referenced variable (Python attribute). In both
+#'   cases, the name of the Python attribute needs to be provided with the
+#'   parameter `pythonVariableName`.
+#'   The mapping between the spectra variable names in R and the related
+#'   Python metadata variables can be specified with the
+#'   `spectraVariableMapping` parameter. It has to be a named `character` with
+#'   names being the spectra variables and the values the respective name for
+#'   the metadata in the Python MS data structure. It defaults to
+#'   [defaultSpectraVariableMapping()] which returns the mapping of some
+#'   core spectra variables for the *matchms* Python library. Be aware that
+#'   only those spectra variables specified with this parameter are mapped and
+#'   translated between R and Python. For `backendInitialize()` with parameter
+#'   `data` provided, only the variables defined by `spectraVariableMapping`,
+#'   and available in `data`, are converted and stored in Python. Also note
+#'   that, for efficiency reasons, core spectra variables (those listed by
+#'   [Spectra::coreSpectraVariables()]) defined with `spectraVariableMapping`
+#'   but that have only missing values, are ignored.
 #'   Parameter `pythonLibrary` must be used to specify the Python library
 #'   representing the MS data in Python. It can be either
 #'   `pythonLibrary = "matchms"` (the default) or
 #'   `pythonLibrary = "spectrum_utils"`. The function returns an initialized
-#'   instance of `MsBackendPy`.
+#'   instance of `MsBackendPy`. See examples below for different settings
+#'   and conversion of spectra variables.
 #'
 #' - `peaksData()`: extracts the peaks data matrices from the backend. Python
 #'   code is applied to the data structure in Python to
@@ -84,6 +104,12 @@
 #'   retrieved and added to the returned `DataFrame` (with eventually missing
 #'   *core* spectra variables filled with `NA`).
 #'
+#' - `spectraData()<-`: replaces the full spectra (+ peaks) data of the backend
+#'   with the values provided with the submitted `DataFrame`. The number of
+#'   rows of this `DataFrame` has to match the number of spectra of `object`
+#'   (i.e., being equal to `length(object)`) and the `DataFrame` must also
+#'   contain the spectras' *m/z* and intensity values.
+#'
 #' - `spectraVariables()`: retrieves available spectra variables, which include
 #'   the names of all metadata attributes in the `matchms.Spectrum` objects
 #'   and the *core* spectra variables [Spectra::coreSpectraVariables()].
@@ -94,6 +120,12 @@
 #' - `spectraVariableMapping<-`: replaces the `spectraVariableMapping` of the
 #'   backend (see [setSpectraVariableMapping()] for details and description
 #'   of the expected format).
+#'
+#' - `$`, `$<-`: extract or add/replace values for a spectra variable from/in
+#'   the backend. Replacing or adding values for a spectra variable cause the
+#'   full data to be replaced. In detail, first the full data is retrieved from
+#'   Python, then the values are added/replaced and then the data is again
+#'   transferred to Python.
 #'
 #' @section Additional helper and utility functions:
 #'
@@ -132,8 +164,9 @@
 #'
 #' @param spectraVariableMapping For `backendInitialize()`: named `character`
 #'     with the mapping between spectra variable names and (`matchms.Spectrum`)
-#'     metadata names. See [defaultSpectraVariableMapping()] for more
-#'     information and details.
+#'     metadata names. See [defaultSpectraVariableMapping()], and the
+#'     description of the `backendInitialize()` function for `MsBackendPy`
+#'     for more information and details.
 #'
 #' @param value Replacement value(s).
 #'
@@ -177,16 +210,6 @@
 #' be <- backendInitialize(MsBackendPy(), "s_p")
 #' be
 #'
-#' ## An easier way to change the data representation of a `Spectra` object
-#' ## from R to Python is to use the `Spectra`'s `setBackend()` method
-#' ## selecting a `MsBackendPy` as the target backend representation:
-#' s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2")
-#' s_2
-#'
-#' ## This moved the data from R to Python, storing it in a Python variable
-#' ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
-#' ## with all MS data however stored in Python.
-#'
 #' ## Alternatively, by passing the full MS data with parameter `data`, the
 #' ## data is first converted to Python and the backend is initialized with
 #' ## that data. The `setBackend()` call from above internally uses this
@@ -197,6 +220,37 @@
 #' ## Create a Spectra object which this backend:
 #' s_2 <- Spectra(be)
 #' s_2
+#'
+#' ## An easier way to change the data representation of a `Spectra` object
+#' ## from R to Python is to use the `Spectra`'s `setBackend()` method
+#' ## selecting a `MsBackendPy` as the target backend representation:
+#' s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2")
+#' s_2
+#'
+#' ## This moved the data from R to Python, storing it in a Python variable
+#' ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
+#' ## with all MS data however stored in Python.
+#'
+#' ## Note that by default only spectra variables that are part of
+#' ## `defaultSpectraVariableMapping()` are converted to Python
+#' defaultSpectraVariableMapping()
+#'
+#' ## Thus, for example the precursor m/z is available in `s_2`, but other
+#' ## spectra variables from `s`, such as `"SMILES"` are not:
+#' precursorMz(s)
+#' precursorMz(s_2)
+#'
+#' s$SMILES |> head()
+#' ## s_2$SMILES would throw an error.
+#'
+#' ## To also translate this spectra variable, it needs to be included and
+#' ## specified with the `spectraVariableMapping` parameter. The easiest
+#' ## approach is to use the `spectraVariableMapping()` function adding in
+#' ## addition to the default mapping for the Python library (`"matchms"`)
+#' ## also the mapping of additional spectra variables that should be converted:
+#' s_2 <- setBackend(s, MsBackendPy(), pythonVariableName = "s_p2",
+#'     spectraVariableMapping = spectraVariableMapping("matchms", c(SMILES = "smiles")))
+#' s_2$SMILES |> head()
 #'
 #' ## Available spectra variables: these include, next to the *core* spectra
 #' ## variables, also the names of all metadata stored in the `matchms.Spectrum`
@@ -288,9 +342,9 @@ setMethod("backendInitialize", "MsBackendPy",
                    spectraVariableMapping = defaultSpectraVariableMapping(),
                    pythonLibrary = c("matchms", "spectrum_utils"),
                    ..., data) {
+              pythonLibrary <- match.arg(pythonLibrary)
               .check_spectra_variable_mapping(spectraVariableMapping)
               object@spectraVariableMapping <- spectraVariableMapping
-              pythonLibrary <- match.arg(pythonLibrary)
               if (!length(pythonVariableName))
                   stop("'pythonVariableName' has to be provided", call. = FALSE)
               if (!is.character(pythonVariableName))
@@ -318,6 +372,10 @@ setMethod("backendInitialize", "MsBackendPy",
                   if (!all(c("mz", "intensity") %in% colnames(data)))
                       stop("Columns \"mz\" and \"intensity\" are required",
                            call. = FALSE)
+                  ## drop NA core spectra variables!
+                  data <- .drop_na_core_spectra_variables(data)
+                  spectraVariableMapping <- spectraVariableMapping[
+                      names(spectraVariableMapping) %in% colnames(data)]
                   py_set_attr(
                       py, pythonVariableName,
                       switch(pythonLibrary,
@@ -418,6 +476,44 @@ setMethod(
         else as(res[, columns, drop = FALSE], "DataFrame")
     })
 
+#' @importMethodsFrom ProtGenerics spectraData<-
+#'
+#' @rdname MsBackendPy
+#'
+#' @export
+setReplaceMethod("spectraData", "MsBackendPy", function(object, value) {
+    if (nrow(value) != length(object))
+        stop("The number of rows of the provided 'DataFrame' has to match ",
+             "the number of spectra (=", length(object), ").")
+    svm <- object@spectraVariableMapping
+    ## keep only variable mapping for which we have values in 'value'
+    svm <- svm[names(svm) %in% colnames(value)]
+    miss <- setdiff(colnames(value), c(names(svm), c("mz", "intensity")))
+    svm <- c(svm, .py_variable_map(miss))
+    backendInitialize(object, pythonVariableName = object@py_var,
+                      pythonLibrary = object@py_lib,
+                      spectraVariableMapping = svm,
+                      data = value)
+})
+
+#' Helper function to choose Python names that match the core ones.
+#'
+#' @param x `character` with spectra variables.
+#'
+#' @return named `character` with names corresponding to the spectra variables
+#'     and values the respective names in Python.
+#'
+#' @noRd
+.py_variable_map <- function(x = character(), library = "matchms") {
+    cm <- spectraVariableMapping(library)
+    names(x) <- x
+    idx <- match(x, names(cm))
+    nna <- !is.na(idx)
+    if (any(nna))
+        x[nna] <- cm[idx[nna]]
+    x
+}
+
 #' @importMethodsFrom ProtGenerics peaksData
 #'
 #' @importFrom reticulate iterate
@@ -459,6 +555,17 @@ setMethod("extractByIndex", c("MsBackendPy", "ANY"), function(object, i) {
 #' @rdname MsBackendPy
 setMethod("$", "MsBackendPy", function(x, name) {
     spectraData(x, name, drop = TRUE)
+})
+
+#' @rdname MsBackendPy
+#'
+#' @importMethodsFrom Spectra peaksVariables
+setReplaceMethod("$", "MsBackendPy", function(x, name, value) {
+    spd <- spectraData(
+        x, union(names(spectraVariableMapping(x)), peaksVariables(x)))
+    spd[[name]] <- value
+    spectraData(x) <- spd
+    x
 })
 
 setMethod("lengths", "MsBackendPy", function(x, use.names = FALSE) {
@@ -589,12 +696,6 @@ setReplaceMethod(
         object@spectraVariableMapping <- value
         object
     })
-
-#' @rdname MsBackendPy
-setReplaceMethod("spectraVariableMapping", "Spectra", function(object, value) {
-    spectraVariableMapping(object@backend) <- value
-    object
-})
 
 #' @importMethodsFrom Spectra spectraVariableMapping
 #'
@@ -733,4 +834,20 @@ reindex <- function(object) {
             })
     }
     else character()
+}
+
+#' helper function to drop all columns for core spectra variables that contain
+#' only missing values.
+#'
+#' @importFrom MsCoreUtils vapply1l
+#'
+#' @noRd
+.drop_na_core_spectra_variables <- function(x) {
+    svs <- intersect(colnames(x), names(coreSpectraVariables()))
+    svs <- svs[!svs %in% c("mz", "intensity")]
+    keep <- !vapply1l(svs, function(z) {
+        all(is.na(x[[z]]))
+    })
+    keep <- c(setdiff(colnames(x), svs), svs[keep])
+    x[, colnames(x) %in% keep, drop = FALSE]
 }

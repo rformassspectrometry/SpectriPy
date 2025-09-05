@@ -36,6 +36,15 @@ test_that("spectraVariableMapping, spectraVariableMapping<- works", {
 
     expect_error(setSpectraVariableMapping(3), "named character vector")
     expect_error(setSpectraVariableMapping(c("a", "b")), "named character")
+
+    res <- spectraVariableMapping("matchms", c("some", "other"))
+    expect_equal(res, c(spectraVariableMapping("matchms"),
+                        c(some = "some", other = "other")))
+
+    expect_warning(
+        res <- spectraVariableMapping("spectrum_utils", c("some", "other")),
+        "Provided spectra variables")
+    expect_equal(res, spectraVariableMapping("spectrum_utils"))
 })
 
 #############

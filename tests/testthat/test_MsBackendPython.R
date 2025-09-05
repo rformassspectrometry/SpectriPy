@@ -102,6 +102,30 @@ test_that("backendInitialize,MsBackendPy works with providing data", {
     expect_equal(rtime(s), rtime(res))
     expect_equal(intensity(s), intensity(res))
     expect_equal(mz(s), mz(res))
+    expect_true(length(spectraVariables(res)) < length(spectraVariables(s)))
+    expect_true(all(spectraVariables(res) %in% names(coreSpectraVariables())))
+    expect_true(all(names(coreSpectraVariables()) %in% spectraVariables(res)))
+
+    ## mapping additional variables
+    res <- backendInitialize(
+        MsBackendPy(), pythonVariableName = "ttt", data = d,
+        spectraVariableMapping = spectraVariableMapping(
+            "matchms", c(SMILES = "smiles", INCHI = "inchi")))
+    expect_true(all(c("SMILES", "INCHI") %in% spectraVariables(res)))
+    expect_equal(res$SMILES, s$SMILES)
+    expect_equal(res$INCHI, s$INCHI)
+
+    ## Set core variables to NA
+    d$rtime <- NA
+    d$precursorMz <- NA
+    res <- backendInitialize(
+        MsBackendPy(), pythonVariableName = "ttt", data = d)
+    ## We get a bunch of warnings - because NA was not translated.
+    expect_true(all(is.na(res$precursorMz)))
+    ## Only non-NA variables have a mapping
+    expect_equal(res@spectraVariableMapping,
+                 c(precursorCharge = "charge", msLevel = "ms_level"))
+
     ## Repeat with spectrum_utils
     py_del_attr(py, "ttt")
     res <- backendInitialize(MsBackendPy(), pythonVariableName = "ttt",
@@ -558,3 +582,117 @@ test_that("spectraVariableMapping,spectraVariableMapping<- works", {
     expect_equal(spectraVariableMapping(s3@backend),
                  c(rtime = "retention_time"))
 })
+
+################################################################################
+##
+##             REPLACEMENT FUNCTIONALITY
+##
+################################################################################
+test_that("spectraData<-,MsBackendPy works", {
+    ## Basically, replace the full data from the backend - again.
+    ## Expects a `DataFrame` with the same number of rows as there are spectra
+    ## in object. This `DataFrame` **has** to contain the m/z and intensity
+    ## values! So, basically, we will run a `backendInitialize` with that data.
+    a <- setBackend(s, MsBackendPy(),
+                    spectraVariableMapping = c(spectrum_index = "spctrm_idx",
+                                               defaultSpectraVariableMapping()),
+                    pythonVariableName = "set_test")
+    ## Subset, this is not synchronized with Python.
+    a <- a[20:1]
+    expect_true(length(a) == 20)
+    expect_true(length(py$set_test) == 100)
+
+    sd <- spectraData(a@backend)
+    sd$other_var <- "a"
+
+    spectraData(a@backend) <- sd
+    expect_equal(a@backend@i, 1:20)
+    expect_true(any(spectraVariables(a) == "other_var"))
+    expect_equal(a$other_var, rep("a", 20))
+    expect_equal(rtime(a), rtime(s)[20:1])
+    expect_equal(mz(a), mz(s)[20:1])
+
+    ## Remove a spectra variable.
+    sd <- spectraData(a@backend)
+    sd$other_var <- NULL
+    sd$centroided <- NULL
+    spectraData(a) <- sd
+    expect_false(any(spectraVariables(a) == "other_var"))
+    expect_equal(centroided(a), rep(NA, 20))
+
+    expect_error(spectraData(a) <- sd[1:4, ], "The number of rows")
+})
+
+test_that("$<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "dollar_test",
+        spectraVariableMapping = c(spectrum_index = "spctrm_idx",
+                                   defaultSpectraVariableMapping()))
+    ## set core spectra variable to NULL
+    a$msLevel <- NULL
+    expect_false(any(names(a@backend@spectraVariableMapping) == "msLevel"))
+    expect_true(all(is.na(msLevel(a))))
+
+    ## Re-add the msLevel
+    a$msLevel <- 2L
+    expect_true(any(names(a@backend@spectraVariableMapping) == "msLevel"))
+    expect_true(all(msLevel(a) == 2L))
+
+    ## Add another one.
+    a$other_thing <- seq_along(a)
+    expect_true(any(names(a@backend@spectraVariableMapping) == "other_thing"))
+    expect_equal(a$other_thing, seq_along(a))
+
+    ## Remove it again
+    a$other_thing <- NULL
+    expect_false(any(names(a@backend@spectraVariableMapping) == "other_thing"))
+
+    expect_error(a$other_thing <- c("a", "b", "c"), "replace")
+})
+
+test_that(".py_variable_map works", {
+    res <- .py_variable_map(c("msLevel"))
+    expect_equal(res, c(msLevel = "ms_level"))
+    res <- .py_variable_map(c("other", "msLevel"))
+    expect_equal(res, c(other = "other", msLevel = "ms_level"))
+    res <- .py_variable_map("other")
+    expect_equal(res, c(other = "other"))
+    res <- .py_variable_map(c("other", "msLevel", "rtime"))
+    expect_equal(res, c(other = "other", msLevel = "ms_level", rtime = "retention_time"))
+    res <- .py_variable_map()
+    expect_equal(unname(res), character())
+})
+
+test_that(".drop_na_core_spectra_variables works", {
+    a <- spectraData(s@backend)
+
+    res <- .drop_na_core_spectra_variables(a)
+    expect_true(ncol(res) < ncol(a))
+    expect_true(any(colnames(res) == "spectrum_index"))
+
+    test_df <- data.frame(a = 1:3, b = "a", c = NA)
+    res <- .drop_na_core_spectra_variables(test_df)
+    expect_equal(test_df, res)
+
+    test_df$rtime <- NA
+    res <- .drop_na_core_spectra_variables(test_df)
+    expect_false(any(colnames(res) == "rtime"))
+
+    test_df$rtime <- 1:3
+    res <- .drop_na_core_spectra_variables(test_df)
+    expect_true(any(colnames(res) == "rtime"))
+})
+
+## Comments, thoughts TODO
+## DONE spectraData()<-: replaces the full data and allows adding/removing
+##      spectra variables. number of spectra has to match.
+## DONE setBackend/backendInitialize: only convert non-NA columns. update the
+##      spectraVariableMapping: we can use spectraDataMapping now to add
+##      additional columns - missing data will be dropped - and not registered
+##      in @spectraVariableMapping
+## TODO $<- : replace the full data?
+## TODO peaksData()<-: replace the full data?
+## TODO applyProcessing(): replace the full data? is that needed? should
+##      internally call peaksData()<-
+## TODO all other replacement methods.
+## TODO support the Spectra unit test suite
