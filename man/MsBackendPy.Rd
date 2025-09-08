@@ -8,6 +8,7 @@
 \alias{spectraData,MsBackendPy-method}
 \alias{spectraData<-,MsBackendPy-method}
 \alias{peaksData,MsBackendPy-method}
+\alias{peaksData<-,MsBackendPy-method}
 \alias{$,MsBackendPy-method}
 \alias{$<-,MsBackendPy-method}
 \alias{spectraVariableMapping<-,MsBackendPy-method}
@@ -35,6 +36,8 @@
 \S4method{spectraData}{MsBackendPy}(object) <- value
 
 \S4method{peaksData}{MsBackendPy}(object, columns = c("mz", "intensity"), drop = FALSE)
+
+\S4method{peaksData}{MsBackendPy}(object) <- value
 
 \S4method{$}{MsBackendPy}(x, name)
 
@@ -118,8 +121,8 @@ if the backend of a \code{Spectra} object is changed to \code{MsBackendPy} using
 the \code{setBackend()} method. Special care should also be given to parameter
 \code{spectraVariableMapping}, that defines which spectra variables should be
 considered/translated and how their names should or have to be converted
-between R and Python. See the description for \code{backendInitialize()} for
-details.
+between R and Python. See the description for \code{backendInitialize()} and the
+package vignette for details and examples.
 }
 \details{
 The \code{MsBackendPy} keeps only a reference to the MS data in Python (i.e. the
@@ -187,6 +190,13 @@ extract the \emph{m/z} and intensity values as a list of (numpy) arrays. These
 are then translated into an R \code{list} of two-column \code{numeric} matrices.
 Because Python does not allow to name columns of an array, an additional
 loop in R is required to set the column names to \code{"mz"} and \code{"intensity"}.
+\item \verb{peaksData()<-}: replaces the full peaks data (i.e., \emph{m/z} and intensity
+values) for all spectra. Parameter \code{value} has to be a \code{list}-like
+structure with each element being a \code{numeric} matrix with one column
+(named \code{"mz"}) containing the spectrum's \emph{m/z} and one column (named
+\code{"intensity"}) with the intensity values. This method will replace the
+full data of the associated Python variable (i.e., both the spectra as
+well as the peaks data).
 \item \code{spectraData()}: extracts the spectra data from the backend. Which spectra
 variables are translated and retrieved from the Python objects depends on
 the backend's \code{spectraVariableMapping()}. All metadata names defined are

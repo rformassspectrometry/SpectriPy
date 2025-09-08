@@ -80,7 +80,7 @@ SystemRequirements:
     quarto
 VignetteBuilder: quarto
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Collate:
     'conversion.R'
     'MsBackendPython.R'

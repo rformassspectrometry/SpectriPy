@@ -683,6 +683,32 @@ test_that(".drop_na_core_spectra_variables works", {
     expect_true(any(colnames(res) == "rtime"))
 })
 
+test_that("peaksData<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "pd_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    svm <- a@spectraVariableMapping
+    pd <- peaksData(s)
+    expect_error(peaksData(a) <- pd[1:3], "match length")
+    pd <- lapply(pd, function(z) {
+        z[, 2L] <- z[, 2L] / 2
+        z
+    })
+    peaksData(a) <- pd
+    expect_equal(svm, a@spectraVariableMapping)
+    pd_2 <- peaksData(a)
+    expect_equal(pd, pd_2)
+    spd_2 <- spectraData(a)
+    expect_equal(colnames(spd), colnames(spd_2))
+    expect_equal(lengths(spd$intensity), lengths(spd_2$intensity))
+    expect_equal(spd$intensity / 2, spd_2$intensity)
+    spd$intensity <- NULL
+    spd_2$intensity <- NULL
+    expect_equal(spd, spd_2)
+})
+
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
 ##      spectra variables. number of spectra has to match.
@@ -690,9 +716,11 @@ test_that(".drop_na_core_spectra_variables works", {
 ##      spectraVariableMapping: we can use spectraDataMapping now to add
 ##      additional columns - missing data will be dropped - and not registered
 ##      in @spectraVariableMapping
-## TODO $<- : replace the full data?
-## TODO peaksData()<-: replace the full data?
+## DONE $<- : replace the full data?
+## DONE peaksData()<-: replace the full data?
+## TODO mz()<-
+## TODO intensity()<-
 ## TODO applyProcessing(): replace the full data? is that needed? should
 ##      internally call peaksData()<-
-## TODO all other replacement methods.
+## DONE all other replacement methods.
 ## TODO support the Spectra unit test suite

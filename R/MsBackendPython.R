@@ -26,8 +26,8 @@
 #' the `setBackend()` method. Special care should also be given to parameter
 #' `spectraVariableMapping`, that defines which spectra variables should be
 #' considered/translated and how their names should or have to be converted
-#' between R and Python. See the description for `backendInitialize()` for
-#' details.
+#' between R and Python. See the description for `backendInitialize()` and the
+#' package vignette for details and examples.
 #'
 #' @details
 #'
@@ -97,6 +97,14 @@
 #'   are then translated into an R `list` of two-column `numeric` matrices.
 #'   Because Python does not allow to name columns of an array, an additional
 #'   loop in R is required to set the column names to `"mz"` and `"intensity"`.
+#'
+#' - `peaksData()<-`: replaces the full peaks data (i.e., *m/z* and intensity
+#'   values) for all spectra. Parameter `value` has to be a `list`-like
+#'   structure with each element being a `numeric` matrix with one column
+#'   (named `"mz"`) containing the spectrum's *m/z* and one column (named
+#'   `"intensity"`) with the intensity values. This method will replace the
+#'   full data of the associated Python variable (i.e., both the spectra as
+#'   well as the peaks data).
 #'
 #' - `spectraData()`: extracts the spectra data from the backend. Which spectra
 #'   variables are translated and retrieved from the Python objects depends on
@@ -520,9 +528,9 @@ setReplaceMethod("spectraData", "MsBackendPy", function(object, value) {
 #'
 #' @rdname MsBackendPy
 setMethod(
-    "peaksData", "MsBackendPy", function(object,
-                                         columns = c("mz", "intensity"),
-                                         drop = FALSE) {
+    "peaksData",
+    "MsBackendPy",
+    function(object, columns = c("mz", "intensity"), drop = FALSE) {
         if (length(object@py_var)) {
             res <- switch(
                 object@py_lib,
@@ -544,6 +552,24 @@ setMethod(
             res
         } else list()
     })
+
+#' @importMethodsFrom ProtGenerics peaksData<-
+#'
+#' @rdname MsBackendPy
+setReplaceMethod("peaksData", "MsBackendPy", function(object, value) {
+    Spectra:::.check_peaks_data_value(value, length(object))
+    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
+                                     peaksVariables(object)))
+    cns <- colnames(value[[1L]])
+    for (cn in cns) {
+        vals <- lapply(value, "[", , cn)
+        if (cn %in% c("mz", "intensity"))
+            vals <- NumericList(vals, compress = FALSE)
+        spd[[cn]] <- vals
+    }
+    spectraData(object) <- spd
+    object
+})
 
 #' @importMethodsFrom ProtGenerics extractByIndex
 setMethod("extractByIndex", c("MsBackendPy", "ANY"), function(object, i) {
