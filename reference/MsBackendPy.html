@@ -19,8 +19,8 @@ if the backend of a Spectra object is changed to MsBackendPy using
 the setBackend() method. Special care should also be given to parameter
 spectraVariableMapping, that defines which spectra variables should be
 considered/translated and how their names should or have to be converted
-between R and Python. See the description for backendInitialize() for
-details."><meta property="og:description" content="The MsBackendPy allows to access MS data stored as matchms.Spectrum
+between R and Python. See the description for backendInitialize() and the
+package vignette for details and examples."><meta property="og:description" content="The MsBackendPy allows to access MS data stored as matchms.Spectrum
 or spectrum_utils.spectrum.MsmsSpectrum objects from the
 matchms respectively
 spectrum_utils Python
@@ -40,8 +40,8 @@ if the backend of a Spectra object is changed to MsBackendPy using
 the setBackend() method. Special care should also be given to parameter
 spectraVariableMapping, that defines which spectra variables should be
 considered/translated and how their names should or have to be converted
-between R and Python. See the description for backendInitialize() for
-details."><meta property="og:image" content="https://rformassspectrometry.github.io/SpectriPy/logo.png"></head><body>
+between R and Python. See the description for backendInitialize() and the
+package vignette for details and examples."><meta property="og:image" content="https://rformassspectrometry.github.io/SpectriPy/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -100,8 +100,8 @@ if the backend of a <code>Spectra</code> object is changed to <code>MsBackendPy<
 the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> method. Special care should also be given to parameter
 <code>spectraVariableMapping</code>, that defines which spectra variables should be
 considered/translated and how their names should or have to be converted
-between R and Python. See the description for <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> for
-details.</p>
+between R and Python. See the description for <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> and the
+package vignette for details and examples.</p>
     </div>
 
     <div class="section level2">
@@ -132,10 +132,19 @@ details.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData</a></span><span class="op">(</span><span class="va">object</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mz"</span>, <span class="st">"intensity"</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">name</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">mz</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -247,6 +256,11 @@ the variable in Python. Thus, each time MS data is requested from the
 backend, it is retrieved in its <strong>current</strong> state.
 If for example data was transformed or metadata added or removed in the
 Python object, it immediately affects the <code>Spectra</code>/backend.</p>
+<p>Any replacement operation uses internally the <code>spectraData()&lt;-</code> method,
+thus replacing/updating values for individual spectra variables or peaks
+variables will first load the current data from Python to R, update or
+replace the values and then store the full MS data again to the
+referenced Python attribute.</p>
     </div>
     <div class="section level2">
     <h2 id="msbackendpy-methods"><code>MsBackendPy</code> methods<a class="anchor" aria-label="anchor" href="#msbackendpy-methods"></a></h2>
@@ -284,12 +298,39 @@ representing the MS data in Python. It can be either
 <code>pythonLibrary = "spectrum_utils"</code>. The function returns an initialized
 instance of <code>MsBackendPy</code>. See examples below for different settings
 and conversion of spectra variables.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity()</a></code>, <code>intensity()&lt;-</code>: get or replace the intensity values.
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity()</a></code> returns a <code>NumericList</code> of length equal to the number of
+spectra with each element being the intensity values of the individual
+mass peaks per spectrum. <code>intensity()&lt;-</code> takes the same list-like
+structure as input parameter. Both the number of spectra and the number of
+peaks must match the length of the spectra and the number of existing mass
+peaks. To change the number of peaks use the <code>peaksData()&lt;-</code> method
+instead that replaces the <em>m/z</em> and intensity values at the same time.
+Calling <code>intensity()&lt;-</code> will replace the full MS data (spectra variables
+as well as peaks variables) of the associated Python variable.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">mz()</a></code>, <code>mz()&lt;-</code>: get or replace the <em>m/z</em> values. <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">mz()</a></code> returns a
+<code>NumericList</code> of length equal to the number of spectra with each element
+being the <em>m/z</em> values of the individual mass peaks per spectrum.
+<code>mz()&lt;-</code> takes the same list-like structure as input parameter. Both the
+number of spectra and the number of peaks must match the length of the
+spectra and the number of existing mass peaks. To change the number of
+peaks use the <code>peaksData()&lt;-</code> method instead that replaces the <em>m/z</em> and
+intensity values at the same time.
+Calling <code>mz()&lt;-</code> will replace the full MS data (spectra variables
+as well as peaks variables) of the associated Python variable.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/peaksData.html" class="external-link">peaksData()</a></code>: extracts the peaks data matrices from the backend. Python
 code is applied to the data structure in Python to
 extract the <em>m/z</em> and intensity values as a list of (numpy) arrays. These
 are then translated into an R <code>list</code> of two-column <code>numeric</code> matrices.
 Because Python does not allow to name columns of an array, an additional
 loop in R is required to set the column names to <code>"mz"</code> and <code>"intensity"</code>.</p></li>
+<li><p><code>peaksData()&lt;-</code>: replaces the full peaks data (i.e., <em>m/z</em> and intensity
+values) for all spectra. Parameter <code>value</code> has to be a <code>list</code>-like
+structure with each element being a <code>numeric</code> matrix with one column
+(named <code>"mz"</code>) containing the spectrum's <em>m/z</em> and one column (named
+<code>"intensity"</code>) with the intensity values. This method will replace the
+full data of the associated Python variable (i.e., both the spectra as
+well as the peaks data).</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">spectraData()</a></code>: extracts the spectra data from the backend. Which spectra
 variables are translated and retrieved from the Python objects depends on
 the backend's <code><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping()</a></code>. All metadata names defined are
@@ -428,7 +469,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Fri Sep  5 14:53:18 2025] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Tue Sep  9 07:12:20 2025] </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
 <span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
