@@ -11,6 +11,8 @@
 \alias{peaksData<-,MsBackendPy-method}
 \alias{$,MsBackendPy-method}
 \alias{$<-,MsBackendPy-method}
+\alias{intensity<-,MsBackendPy-method}
+\alias{mz<-,MsBackendPy-method}
 \alias{spectraVariableMapping<-,MsBackendPy-method}
 \alias{spectraVariableMapping,MsBackendPy-method}
 \alias{reindex}
@@ -42,6 +44,10 @@
 \S4method{$}{MsBackendPy}(x, name)
 
 \S4method{$}{MsBackendPy}(x, name) <- value
+
+\S4method{intensity}{MsBackendPy}(object) <- value
+
+\S4method{mz}{MsBackendPy}(object) <- value
 
 \S4method{spectraVariableMapping}{MsBackendPy}(object) <- value
 
@@ -147,6 +153,12 @@ the variable in Python. Thus, each time MS data is requested from the
 backend, it is retrieved in its \strong{current} state.
 If for example data was transformed or metadata added or removed in the
 Python object, it immediately affects the \code{Spectra}/backend.
+
+Any replacement operation uses internally the \verb{spectraData()<-} method,
+thus replacing/updating values for individual spectra variables or peaks
+variables will first load the current data from Python to R, update or
+replace the values and then store the full MS data again to the
+referenced Python attribute.
 }
 \section{\code{MsBackendPy} methods}{
 
@@ -184,6 +196,26 @@ representing the MS data in Python. It can be either
 \code{pythonLibrary = "spectrum_utils"}. The function returns an initialized
 instance of \code{MsBackendPy}. See examples below for different settings
 and conversion of spectra variables.
+\item \code{intensity()}, \verb{intensity()<-}: get or replace the intensity values.
+\code{intensity()} returns a \code{NumericList} of length equal to the number of
+spectra with each element being the intensity values of the individual
+mass peaks per spectrum. \verb{intensity()<-} takes the same list-like
+structure as input parameter. Both the number of spectra and the number of
+peaks must match the length of the spectra and the number of existing mass
+peaks. To change the number of peaks use the \verb{peaksData()<-} method
+instead that replaces the \emph{m/z} and intensity values at the same time.
+Calling \verb{intensity()<-} will replace the full MS data (spectra variables
+as well as peaks variables) of the associated Python variable.
+\item \code{mz()}, \verb{mz()<-}: get or replace the \emph{m/z} values. \code{mz()} returns a
+\code{NumericList} of length equal to the number of spectra with each element
+being the \emph{m/z} values of the individual mass peaks per spectrum.
+\verb{mz()<-} takes the same list-like structure as input parameter. Both the
+number of spectra and the number of peaks must match the length of the
+spectra and the number of existing mass peaks. To change the number of
+peaks use the \verb{peaksData()<-} method instead that replaces the \emph{m/z} and
+intensity values at the same time.
+Calling \verb{mz()<-} will replace the full MS data (spectra variables
+as well as peaks variables) of the associated Python variable.
 \item \code{peaksData()}: extracts the peaks data matrices from the backend. Python
 code is applied to the data structure in Python to
 extract the \emph{m/z} and intensity values as a list of (numpy) arrays. These

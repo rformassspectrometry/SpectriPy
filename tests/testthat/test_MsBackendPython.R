@@ -709,6 +709,60 @@ test_that("peaksData<-,MsBackendPy works", {
     expect_equal(spd, spd_2)
 })
 
+test_that(".check_mz_intensity works", {
+    mzs <- mz(s)
+    expect_silent(.check_mz_intensity(mzs, length(mzs), lengths(mzs)))
+    expect_silent(.check_mz_intensity(as.list(mzs), length(mzs), lengths(mzs)))
+    expect_error(.check_mz_intensity(3, 1, 1), "list-like")
+    expect_error(.check_mz_intensity(mzs, 1, 1), "number of spectra")
+    expect_error(.check_mz_intensity(mzs[1:3], 3, c(3, 3, 3)),
+                 "number of peaks")
+    a <- list(c(1:4), c(1.1, 2.2, 3), c("a", "b"))
+    expect_error(.check_mz_intensity(a, 4, c(4, 3, 2)), "number of spectra")
+    expect_error(.check_mz_intensity(a, 3, c(4, 1, 2)), "number of peaks")
+    expect_error(.check_mz_intensity(a, 3, c(4, 3, 2)), "numeric vectors")
+})
+
+test_that("mz<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "mz_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    mzs <- mz(a)
+    expect_equal(spd$mz, mzs)
+    mzs <- mzs / 3
+    mz(a) <- mzs
+    expect_equal(mz(a), mzs)
+    expect_equal(a$INCHI, spd$INCHI)
+    mzs <- as.list(mzs)
+    mzs[[1L]] <- mzs[[1L]] * 2
+    mz(a) <- mzs
+    expect_equal(as.list(mz(a)), mzs)
+    ## errors/issues
+    expect_error(mz(a) <- mzs[1:3], "match the number")
+})
+
+test_that("intensity<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "intensity_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    ints <- intensity(a)
+    expect_equal(spd$intensity, ints)
+    ints <- ints / 3
+    intensity(a) <- ints
+    expect_equal(intensity(a), ints)
+    expect_equal(a$INCHI, spd$INCHI)
+    ints <- as.list(ints)
+    ints[[1L]] <- ints[[1L]] * 2
+    intensity(a) <- ints
+    expect_equal(as.list(intensity(a)), ints)
+    ## errors/issues
+    expect_error(intensity(a) <- ints[1:3], "match the number")
+})
+
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
 ##      spectra variables. number of spectra has to match.
@@ -718,8 +772,8 @@ test_that("peaksData<-,MsBackendPy works", {
 ##      in @spectraVariableMapping
 ## DONE $<- : replace the full data?
 ## DONE peaksData()<-: replace the full data?
-## TODO mz()<-
-## TODO intensity()<-
+## DONE mz()<-
+## DONE intensity()<-
 ## TODO applyProcessing(): replace the full data? is that needed? should
 ##      internally call peaksData()<-
 ## DONE all other replacement methods.
