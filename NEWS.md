@@ -11,6 +11,8 @@
 - `backendInitialize()` with defined parameter `data` drops core spectra
   variables that contain only missing values.
 - Add `$<-` method for `MsBackendPy`.
+- Add `peaksData()<-` for `MsBackendPy`.
+- Add `intensity()<-` and `mz()<-` methods for `MsBackendPy`.
 
 ## Changes in 0.99.11
 

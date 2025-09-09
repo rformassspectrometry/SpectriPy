@@ -631,6 +631,17 @@ sps$SMILES |> head()
 See also the next section for more information on the mapping between
 `Spectra`'s spectra variables and *matchms* metadata.
 
+The `MsBackendPy` has full *read/write* support, i.e., it allows to add new
+spectra variables or change existing spectra and/or peaks variables through the
+available replacement methods `spectraData()<-`, `peaksData()<-`,
+`intensity()<-`, `mz()<-` and `$<-`. Currently, this operations change however
+the full MS data of the associated Python variable. Thus, even if for example
+only the retention times are replaced using `$rtime<-`, the (full!) data is
+first loaded from Python to R, the retention time values are then replaced and
+finally the full data (spectra and peaks variables) are again stored to the
+associated Python variable. Replacement operations are thus quite memory
+demanding.
+
 ## Conversion of spectra variables
 
 Conversion of the MS peaks data (i.e. the *m/z* and intensity values) is always

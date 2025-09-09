@@ -26,8 +26,8 @@
 #' the `setBackend()` method. Special care should also be given to parameter
 #' `spectraVariableMapping`, that defines which spectra variables should be
 #' considered/translated and how their names should or have to be converted
-#' between R and Python. See the description for `backendInitialize()` for
-#' details.
+#' between R and Python. See the description for `backendInitialize()` and the
+#' package vignette for details and examples.
 #'
 #' @details
 #'
@@ -54,6 +54,12 @@
 #' backend, it is retrieved in its **current** state.
 #' If for example data was transformed or metadata added or removed in the
 #' Python object, it immediately affects the `Spectra`/backend.
+#'
+#' Any replacement operation uses internally the `spectraData()<-` method,
+#' thus replacing/updating values for individual spectra variables or peaks
+#' variables will first load the current data from Python to R, update or
+#' replace the values and then store the full MS data again to the
+#' referenced Python attribute.
 #'
 #' @section `MsBackendPy` methods:
 #'
@@ -91,12 +97,42 @@
 #'   instance of `MsBackendPy`. See examples below for different settings
 #'   and conversion of spectra variables.
 #'
+#' - `intensity()`, `intensity()<-`: get or replace the intensity values.
+#'   `intensity()` returns a `NumericList` of length equal to the number of
+#'   spectra with each element being the intensity values of the individual
+#'   mass peaks per spectrum. `intensity()<-` takes the same list-like
+#'   structure as input parameter. Both the number of spectra and the number of
+#'   peaks must match the length of the spectra and the number of existing mass
+#'   peaks. To change the number of peaks use the `peaksData()<-` method
+#'   instead that replaces the *m/z* and intensity values at the same time.
+#'   Calling `intensity()<-` will replace the full MS data (spectra variables
+#'   as well as peaks variables) of the associated Python variable.
+#'
+#' - `mz()`, `mz()<-`: get or replace the *m/z* values. `mz()` returns a
+#'   `NumericList` of length equal to the number of spectra with each element
+#'   being the *m/z* values of the individual mass peaks per spectrum.
+#'   `mz()<-` takes the same list-like structure as input parameter. Both the
+#'   number of spectra and the number of peaks must match the length of the
+#'   spectra and the number of existing mass peaks. To change the number of
+#'   peaks use the `peaksData()<-` method instead that replaces the *m/z* and
+#'   intensity values at the same time.
+#'   Calling `mz()<-` will replace the full MS data (spectra variables
+#'   as well as peaks variables) of the associated Python variable.
+#'
 #' - `peaksData()`: extracts the peaks data matrices from the backend. Python
 #'   code is applied to the data structure in Python to
 #'   extract the *m/z* and intensity values as a list of (numpy) arrays. These
 #'   are then translated into an R `list` of two-column `numeric` matrices.
 #'   Because Python does not allow to name columns of an array, an additional
 #'   loop in R is required to set the column names to `"mz"` and `"intensity"`.
+#'
+#' - `peaksData()<-`: replaces the full peaks data (i.e., *m/z* and intensity
+#'   values) for all spectra. Parameter `value` has to be a `list`-like
+#'   structure with each element being a `numeric` matrix with one column
+#'   (named `"mz"`) containing the spectrum's *m/z* and one column (named
+#'   `"intensity"`) with the intensity values. This method will replace the
+#'   full data of the associated Python variable (i.e., both the spectra as
+#'   well as the peaks data).
 #'
 #' - `spectraData()`: extracts the spectra data from the backend. Which spectra
 #'   variables are translated and retrieved from the Python objects depends on
@@ -520,9 +556,9 @@ setReplaceMethod("spectraData", "MsBackendPy", function(object, value) {
 #'
 #' @rdname MsBackendPy
 setMethod(
-    "peaksData", "MsBackendPy", function(object,
-                                         columns = c("mz", "intensity"),
-                                         drop = FALSE) {
+    "peaksData",
+    "MsBackendPy",
+    function(object, columns = c("mz", "intensity"), drop = FALSE) {
         if (length(object@py_var)) {
             res <- switch(
                 object@py_lib,
@@ -544,6 +580,24 @@ setMethod(
             res
         } else list()
     })
+
+#' @importMethodsFrom ProtGenerics peaksData<-
+#'
+#' @rdname MsBackendPy
+setReplaceMethod("peaksData", "MsBackendPy", function(object, value) {
+    Spectra:::.check_peaks_data_value(value, length(object))
+    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
+                                     peaksVariables(object)))
+    cns <- colnames(value[[1L]])
+    for (cn in cns) {
+        vals <- lapply(value, "[", , cn)
+        if (cn %in% c("mz", "intensity"))
+            vals <- NumericList(vals, compress = FALSE)
+        spd[[cn]] <- vals
+    }
+    spectraData(object) <- spd
+    object
+})
 
 #' @importMethodsFrom ProtGenerics extractByIndex
 setMethod("extractByIndex", c("MsBackendPy", "ANY"), function(object, i) {
@@ -602,6 +656,18 @@ setMethod("intensity", "MsBackendPy", function(object) {
     NumericList(peaksData(object, "intensity", drop = TRUE), compress = FALSE)
 })
 
+#' @importMethodsFrom ProtGenerics intensity<-
+#'
+#' @rdname MsBackendPy
+setReplaceMethod("intensity", "MsBackendPy", function(object, value) {
+    .check_mz_intensity(value, length(object), lengths(object))
+    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
+                                     peaksVariables(object)))
+    spd[["intensity"]] <- value
+    spectraData(object) <- spd
+    object
+})
+
 #' @importMethodsFrom ProtGenerics isolationWindowLowerMz
 setMethod("isolationWindowLowerMz", "MsBackendPy", function(object) {
     spectraData(object, "isolationWindowLowerMz", drop = TRUE)
@@ -625,6 +691,18 @@ setMethod("msLevel", "MsBackendPy", function(object) {
 #' @importMethodsFrom ProtGenerics mz
 setMethod("mz", "MsBackendPy", function(object) {
     NumericList(peaksData(object, "mz", drop = TRUE), compress = FALSE)
+})
+
+#' @importMethodsFrom ProtGenerics mz<-
+#'
+#' @rdname MsBackendPy
+setReplaceMethod("mz", "MsBackendPy", function(object, value) {
+    .check_mz_intensity(value, length(object), lengths(object))
+    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
+                                     peaksVariables(object)))
+    spd[["mz"]] <- value
+    spectraData(object) <- spd
+    object
 })
 
 #' @importMethodsFrom ProtGenerics polarity
@@ -850,4 +928,26 @@ reindex <- function(object) {
     })
     keep <- c(setdiff(colnames(x), svs), svs[keep])
     x[, colnames(x) %in% keep, drop = FALSE]
+}
+
+#' helper to check input/validity of intensity or mz: has to be a list-like
+#' structure with numeric vectors.
+#'
+#' @param x `list` or `NumericList`.
+#'
+#' @param l `integer(1)` with the number of spectra/expected elements in `x`.
+#'
+#' @param ls `integer` with the number of peaks, i.e., the lengths of the
+#'     numeric vectors.
+#'
+#' @noRd
+.check_mz_intensity <- function(x, l = length(x), ls = lengths(x)) {
+    if (!(is.list(x) | inherits(x, "SimpleList")))
+        stop("'value' has to be a list-like data structure.")
+    if (length(x) != l)
+        stop("length of 'value' has to match the number of spectra")
+    if (!all(lengths(x) == ls))
+        stop("lengths(value) has to match the number of peaks per spectrum")
+    if (!all(vapply1l(x, is.numeric)))
+        stop("elements of 'value' are expected to be numeric vectors.")
 }

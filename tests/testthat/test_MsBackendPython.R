@@ -683,6 +683,86 @@ test_that(".drop_na_core_spectra_variables works", {
     expect_true(any(colnames(res) == "rtime"))
 })
 
+test_that("peaksData<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "pd_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    svm <- a@spectraVariableMapping
+    pd <- peaksData(s)
+    expect_error(peaksData(a) <- pd[1:3], "match length")
+    pd <- lapply(pd, function(z) {
+        z[, 2L] <- z[, 2L] / 2
+        z
+    })
+    peaksData(a) <- pd
+    expect_equal(svm, a@spectraVariableMapping)
+    pd_2 <- peaksData(a)
+    expect_equal(pd, pd_2)
+    spd_2 <- spectraData(a)
+    expect_equal(colnames(spd), colnames(spd_2))
+    expect_equal(lengths(spd$intensity), lengths(spd_2$intensity))
+    expect_equal(spd$intensity / 2, spd_2$intensity)
+    spd$intensity <- NULL
+    spd_2$intensity <- NULL
+    expect_equal(spd, spd_2)
+})
+
+test_that(".check_mz_intensity works", {
+    mzs <- mz(s)
+    expect_silent(.check_mz_intensity(mzs, length(mzs), lengths(mzs)))
+    expect_silent(.check_mz_intensity(as.list(mzs), length(mzs), lengths(mzs)))
+    expect_error(.check_mz_intensity(3, 1, 1), "list-like")
+    expect_error(.check_mz_intensity(mzs, 1, 1), "number of spectra")
+    expect_error(.check_mz_intensity(mzs[1:3], 3, c(3, 3, 3)),
+                 "number of peaks")
+    a <- list(c(1:4), c(1.1, 2.2, 3), c("a", "b"))
+    expect_error(.check_mz_intensity(a, 4, c(4, 3, 2)), "number of spectra")
+    expect_error(.check_mz_intensity(a, 3, c(4, 1, 2)), "number of peaks")
+    expect_error(.check_mz_intensity(a, 3, c(4, 3, 2)), "numeric vectors")
+})
+
+test_that("mz<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "mz_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    mzs <- mz(a)
+    expect_equal(spd$mz, mzs)
+    mzs <- mzs / 3
+    mz(a) <- mzs
+    expect_equal(mz(a), mzs)
+    expect_equal(a$INCHI, spd$INCHI)
+    mzs <- as.list(mzs)
+    mzs[[1L]] <- mzs[[1L]] * 2
+    mz(a) <- mzs
+    expect_equal(as.list(mz(a)), mzs)
+    ## errors/issues
+    expect_error(mz(a) <- mzs[1:3], "match the number")
+})
+
+test_that("intensity<-,MsBackendPy works", {
+    a <- setBackend(
+        s, MsBackendPy(), pythonVariableName = "intensity_test",
+        spectraVariableMapping = c(INCHI = "inchi",
+                                   defaultSpectraVariableMapping()))@backend
+    spd <- spectraData(a)
+    ints <- intensity(a)
+    expect_equal(spd$intensity, ints)
+    ints <- ints / 3
+    intensity(a) <- ints
+    expect_equal(intensity(a), ints)
+    expect_equal(a$INCHI, spd$INCHI)
+    ints <- as.list(ints)
+    ints[[1L]] <- ints[[1L]] * 2
+    intensity(a) <- ints
+    expect_equal(as.list(intensity(a)), ints)
+    ## errors/issues
+    expect_error(intensity(a) <- ints[1:3], "match the number")
+})
+
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
 ##      spectra variables. number of spectra has to match.
@@ -690,9 +770,11 @@ test_that(".drop_na_core_spectra_variables works", {
 ##      spectraVariableMapping: we can use spectraDataMapping now to add
 ##      additional columns - missing data will be dropped - and not registered
 ##      in @spectraVariableMapping
-## TODO $<- : replace the full data?
-## TODO peaksData()<-: replace the full data?
+## DONE $<- : replace the full data?
+## DONE peaksData()<-: replace the full data?
+## DONE mz()<-
+## DONE intensity()<-
 ## TODO applyProcessing(): replace the full data? is that needed? should
 ##      internally call peaksData()<-
-## TODO all other replacement methods.
+## DONE all other replacement methods.
 ## TODO support the Spectra unit test suite
