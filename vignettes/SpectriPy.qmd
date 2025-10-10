@@ -101,7 +101,7 @@ workflows in R.
 ## Library loading and system setup
 
 Below we load all required packages. By loading *SpectriPy*, the package will
-evaluate if the required Python libraries (i.e., *matchms* version >= 0.30,
+evaluate if the required Python libraries (i.e., *matchms* version >= 0.1,
 *spectrum_utils* version >= 0.3.2 and *numpy* version >= 2.2) are available. If
 they are not available, *SpectriPy* will install them using functionality from
 the *reticulate* R package. See section [Startup and Python

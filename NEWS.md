@@ -1,5 +1,9 @@
 # SpectriPy 0.99
 
+## Changes in 0.99.13
+
+- Update *matchms* suggested version to 0.31.
+
 ## Changes in 0.99.12
 
 - Add `spectraData<-,MsBackendPy` method.
