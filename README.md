@@ -54,7 +54,7 @@ since *SpectriPy* (respectively *reticulate*) will not try to install them
 automatically. The required Python libraries with the suggested and tested
 versions are:
 
-- [*matchms*](https://github.com/matchms) 0.30.0
+- [*matchms*](https://github.com/matchms) 0.31
 - [*spectrum_utils*](https://github.com/bittremieux-lab/spectrum_utils) 0.3.2
 - *numpy* 2.2.0
 
