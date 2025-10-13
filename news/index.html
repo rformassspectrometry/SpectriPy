@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,11 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99" id="spectripy-099">SpectriPy 0.99<a class="anchor" aria-label="anchor" href="#spectripy-099"></a></h2>
 <div class="section level3">
-<h3 id="changes-in-0-99">Changes in 0.99.12<a class="anchor" aria-label="anchor" href="#changes-in-0-99"></a></h3>
+<h3 id="changes-in-0-99">Changes in 0.99.13<a class="anchor" aria-label="anchor" href="#changes-in-0-99"></a></h3>
+<ul><li>Update <em>matchms</em> suggested version to 0.31.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-in-0-99-1">Changes in 0.99.12<a class="anchor" aria-label="anchor" href="#changes-in-0-99-1"></a></h3>
 <ul><li>Add <code>spectraData&lt;-,MsBackendPy</code> method.</li>
 <li>Add parameter <code>x</code> to <code>spectraVariableMapping,character</code> to simplify adding custom mapping to the default one.</li>
 <li>Add examples to describe which spectra variables are transferred to Python using <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> with <code>MsBackendPy</code> and how additional variables can be added.</li>
@@ -50,56 +54,56 @@
 <li>Add <code>intensity()&lt;-</code> and <code>mz()&lt;-</code> methods for <code>MsBackendPy</code>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-1">Changes in 0.99.11<a class="anchor" aria-label="anchor" href="#changes-in-0-99-1"></a></h3>
+<h3 id="changes-in-0-99-2">Changes in 0.99.11<a class="anchor" aria-label="anchor" href="#changes-in-0-99-2"></a></h3>
 <ul><li>Add unit tests for package startup messages.</li>
 <li>Remove debug startup messages.</li>
 <li>Complete and clean installation and configuration documentation.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-2">Changes in 0.99.10<a class="anchor" aria-label="anchor" href="#changes-in-0-99-2"></a></h3>
+<h3 id="changes-in-0-99-3">Changes in 0.99.10<a class="anchor" aria-label="anchor" href="#changes-in-0-99-3"></a></h3>
 <ul><li>Update installation and Python configuration settings.</li>
 <li>Check environment variables on package loading.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-3">Changes in 0.99.9<a class="anchor" aria-label="anchor" href="#changes-in-0-99-3"></a></h3>
+<h3 id="changes-in-0-99-4">Changes in 0.99.9<a class="anchor" aria-label="anchor" href="#changes-in-0-99-4"></a></h3>
 <ul><li>Add tolerance for comparison of retention time with <em>spectrum_utils</em>.</li>
 <li>Require numpy version &gt;= 2.2.0.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-4">Changes in 0.99.8<a class="anchor" aria-label="anchor" href="#changes-in-0-99-4"></a></h3>
+<h3 id="changes-in-0-99-5">Changes in 0.99.8<a class="anchor" aria-label="anchor" href="#changes-in-0-99-5"></a></h3>
 <ul><li>Verbose startup messages and require Python 3.12.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-5">Changes in 0.99.7<a class="anchor" aria-label="anchor" href="#changes-in-0-99-5"></a></h3>
+<h3 id="changes-in-0-99-6">Changes in 0.99.7<a class="anchor" aria-label="anchor" href="#changes-in-0-99-6"></a></h3>
 <ul><li>Replace the <em>msdata</em> package with <em>MsDataHub</em>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-6">Changes in 0.99.6<a class="anchor" aria-label="anchor" href="#changes-in-0-99-6"></a></h3>
+<h3 id="changes-in-0-99-7">Changes in 0.99.6<a class="anchor" aria-label="anchor" href="#changes-in-0-99-7"></a></h3>
 <ul><li>Set <code>delay_load = FALSE</code> in <code><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import()</a></code> calls during package loading</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-7">Changes in 0.99.5<a class="anchor" aria-label="anchor" href="#changes-in-0-99-7"></a></h3>
+<h3 id="changes-in-0-99-8">Changes in 0.99.5<a class="anchor" aria-label="anchor" href="#changes-in-0-99-8"></a></h3>
 <ul><li>Replace Python library installation <em>via</em> virtualenv or conda with <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> from <em>reticulate</em> version &gt; 1.41.0.</li>
 <li>Add support for parameter <code>data</code> to <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: this enables to change the backend from a <code>Spectra</code> object to <code>MsBackendPy</code> using the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> method.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-8">Changes in 0.99.4<a class="anchor" aria-label="anchor" href="#changes-in-0-99-8"></a></h3>
+<h3 id="changes-in-0-99-9">Changes in 0.99.4<a class="anchor" aria-label="anchor" href="#changes-in-0-99-9"></a></h3>
 <ul><li>Refactor functions to initialize Python libraries.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-9">Changes in 0.99.3<a class="anchor" aria-label="anchor" href="#changes-in-0-99-9"></a></h3>
+<h3 id="changes-in-0-99-10">Changes in 0.99.3<a class="anchor" aria-label="anchor" href="#changes-in-0-99-10"></a></h3>
 <ul><li>Address Bioconductor review comments.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-10">Changes in 0.99.2<a class="anchor" aria-label="anchor" href="#changes-in-0-99-10"></a></h3>
+<h3 id="changes-in-0-99-11">Changes in 0.99.2<a class="anchor" aria-label="anchor" href="#changes-in-0-99-11"></a></h3>
 <ul><li>Use Python virtualenv instead of miniconda.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-11">Changes in 0.99.1<a class="anchor" aria-label="anchor" href="#changes-in-0-99-11"></a></h3>
+<h3 id="changes-in-0-99-12">Changes in 0.99.1<a class="anchor" aria-label="anchor" href="#changes-in-0-99-12"></a></h3>
 <ul><li>Check for presence of conda and eventually install miniconda through <em>reticulate</em>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-0-99-12">Changes in 0.99.0<a class="anchor" aria-label="anchor" href="#changes-in-0-99-12"></a></h3>
+<h3 id="changes-in-0-99-13">Changes in 0.99.0<a class="anchor" aria-label="anchor" href="#changes-in-0-99-13"></a></h3>
 <ul><li>Prepare for Bioconductor submission.</li>
 </ul></div>
 </div>

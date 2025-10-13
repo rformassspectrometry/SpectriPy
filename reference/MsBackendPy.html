@@ -49,7 +49,7 @@ package vignette for details and examples."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,7 @@ package vignette for details and examples."><meta property="og:image" content="h
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>A MS data backend for MS data stored in Python</h1>
-      <small class="dont-index">Source: <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/MsBackendPython.R" class="external-link"><code>R/MsBackendPython.R</code></a>, <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/Spectra.R" class="external-link"><code>R/Spectra.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RforMassSpectrometry/SpectriPy/blob/main/R/MsBackendPython.R" class="external-link"><code>R/MsBackendPython.R</code></a></small>
       <div class="d-none name"><code>MsBackendPy.Rd</code></div>
     </div>
 
@@ -152,13 +152,7 @@ package vignette for details and examples.</p>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Spectra'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Spectra'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -469,7 +463,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Tue Sep  9 07:12:20 2025] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Mon Oct 13 06:27:05 2025] </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
 <span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
