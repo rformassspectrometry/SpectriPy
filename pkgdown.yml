@@ -1,10 +1,10 @@
-pandoc: 3.8.1
-pkgdown: 2.1.3.9000
-pkgdown_sha: 1f2f7401ca3d9d1983eb705a2203c4c4abd4184d
+pandoc: 3.8.2.1
+pkgdown: 2.2.0.9000
+pkgdown_sha: c07d935583c90125586821e3b39ed52f16593e42
 articles:
   detailed-installation-configuration: detailed-installation-configuration.html
   SpectriPy: SpectriPy.html
-last_built: 2025-10-13T06:26Z
+last_built: 2025-11-24T08:35Z
 urls:
   reference: https://rformassspectrometry.github.io/SpectriPy/reference
   article: https://rformassspectrometry.github.io/SpectriPy/articles
