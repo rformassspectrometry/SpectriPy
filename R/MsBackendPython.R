@@ -463,6 +463,8 @@ setMethod("spectraVariables", "MsBackendPy", function(object) {
 #'
 #' @importFrom methods as
 #'
+#' @importFrom data.table rbindlist
+#'
 #' @rdname MsBackendPy
 setMethod(
     "spectraData", "MsBackendPy",
@@ -480,9 +482,8 @@ setMethod(
             ## Note: creating a pandas.DataFrame in Python is not faster
             d <- .get_py_var(object@py_var, object@is_in_py)
             if (!is.list(d)) d <- py_to_r(d)
-            res <- do.call(
-                rbindFill,
-                lapply(d[object@i], SFUN, mt))
+            res <- as.data.frame(rbindlist(
+                lapply(d[object@i], SFUN, mt), use.names = TRUE, fill = TRUE))
             ## Ensure correct data type for core variables.
             csv <- coreSpectraVariables()
             for (mtc in intersect(colnames(res), names(csv)))
