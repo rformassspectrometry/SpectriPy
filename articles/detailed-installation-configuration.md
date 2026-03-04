@@ -415,9 +415,9 @@ documentation.
 sessionInfo()
 ```
 
-    R Under development (unstable) (2025-11-22 r89050)
+    R Under development (unstable) (2026-03-01 r89508)
     Platform: x86_64-pc-linux-gnu
-    Running under: Ubuntu 24.04.3 LTS
+    Running under: Ubuntu 24.04.4 LTS
 
     Matrix products: default
     BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
@@ -438,18 +438,19 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base
 
     other attached packages:
-    [1] SpectriPy_1.1.0   reticulate_1.44.1
+    [1] SpectriPy_1.1.1   reticulate_1.45.0
 
     loaded via a namespace (and not attached):
-     [1] Spectra_1.21.0         cli_3.6.5              knitr_1.50
-     [4] rlang_1.1.6            xfun_0.54              ProtGenerics_1.43.0
-     [7] png_0.1-8              generics_0.1.4         jsonlite_2.0.0
-    [10] clue_0.3-66            S4Vectors_0.49.0       htmltools_0.5.8.1
-    [13] stats4_4.6.0           rmarkdown_2.30         grid_4.6.0
-    [16] evaluate_1.0.5         MASS_7.3-65            fastmap_1.2.0
-    [19] yaml_2.3.10            IRanges_2.45.0         MsCoreUtils_1.21.0
-    [22] cluster_2.1.8.1        compiler_4.6.0         codetools_0.2-20
-    [25] fs_1.6.6               Rcpp_1.1.0             MetaboCoreUtils_1.19.1
-    [28] BiocParallel_1.45.0    lattice_0.22-7         digest_0.6.39
-    [31] parallel_4.6.0         Matrix_1.7-4           tools_4.6.0
-    [34] BiocGenerics_0.57.0   
+     [1] Spectra_1.21.1         cli_3.6.5              knitr_1.51
+     [4] rlang_1.1.7            xfun_0.56              ProtGenerics_1.43.0
+     [7] otel_0.2.0             png_0.1-8              generics_0.1.4
+    [10] data.table_1.18.2.1    jsonlite_2.0.0         clue_0.3-67
+    [13] S4Vectors_0.49.0       htmltools_0.5.9        stats4_4.6.0
+    [16] rmarkdown_2.30         grid_4.6.0             evaluate_1.0.5
+    [19] MASS_7.3-65            fastmap_1.2.0          yaml_2.3.12
+    [22] IRanges_2.45.0         MsCoreUtils_1.23.2     cluster_2.1.8.2
+    [25] compiler_4.6.0         codetools_0.2-20       fs_1.6.6
+    [28] Rcpp_1.1.1             MetaboCoreUtils_1.19.2 BiocParallel_1.45.0
+    [31] lattice_0.22-9         digest_0.6.39          parallel_4.6.0
+    [34] Matrix_1.7-4           withr_3.0.2            tools_4.6.0
+    [37] BiocGenerics_0.57.0   
