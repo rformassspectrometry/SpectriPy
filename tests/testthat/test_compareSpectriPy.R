@@ -70,15 +70,15 @@ test_that(".fun_name works", {
 })
 
 test_that("py_fun works", {
-    res <- py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
+    res <- SpectriPy:::py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(class(res)[1L],
                  "matchms.similarity.CosineGreedy.CosineGreedy")
-    res <- py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
+    res <- SpectriPy:::py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(
         class(res)[1L], "matchms.similarity.CosineHungarian.CosineHungarian")
-    res <- py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
+    res <- SpectriPy:::py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
                                            intensity_power = 0.2))
     expect_equal(
         class(res)[1L], "matchms.similarity.ModifiedCosine.ModifiedCosine")

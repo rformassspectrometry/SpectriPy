@@ -130,15 +130,15 @@
 #' res <- compareSpectriPy(sps, sps[1], param = CosineGreedy())
 #'
 #' ## Calculate pairwise similarity of all spectra in sps with matchms'
-#' ## ModifiedCosine algorithm
-#' res <- compareSpectriPy(sps, param = ModifiedCosine())
+#' ## ModifiedCosineHungarian algorithm
+#' res <- compareSpectriPy(sps, param = ModifiedCosineHungarian())
 #' res
 #'
-#' ## Note that the ModifiedCosine method requires the precursor m/z to be
-#' ## known for all input spectra. Thus, it is advisable to remove spectra
+#' ## Note that the ModifiedCosineHungarian method requires the precursor m/z
+#' ## to be known for all input spectra. Thus, it is advisable to remove spectra
 #' ## without precursor m/z before using this algorithm.
 #' sps <- sps[!is.na(precursorMz(sps))]
-#' compareSpectriPy(sps, param = ModifiedCosine())
+#' compareSpectriPy(sps, param = ModifiedCosineHungarian())
 NULL
 
 setGeneric("compareSpectriPy", function(x, y, param, ...) {
@@ -170,6 +170,12 @@ setClass(
     contains = "CosineGreedy")
 setClass(
     "ModifiedCosine",
+    contains = "CosineGreedy")
+setClass(
+    "ModifiedCosineHungarian",
+    contains = "CosineGreedy")
+setClass(
+    "ModifiedCosineGreedy",
     contains = "CosineGreedy")
 setClass(
     "NeutralLossesCosine",
@@ -221,12 +227,34 @@ CosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
 #'
 #' @export
 ModifiedCosine <- function(tolerance = 0.1, mz_power = 0.0,
-                                intensity_power = 1.0) {
-    new("ModifiedCosine",
+                           intensity_power = 1.0) {
+    message("'ModifiedCosine' is deprecated! Using 'ModifiedCosineHungarian'")
+    ModifiedCosineHungarian(tolerance, mz_power, intensity_power)
+}
+
+#' @rdname compareSpectriPy
+#'
+#' @export
+ModifiedCosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
+                                    intensity_power = 1.0) {
+    deprecated("'ModifiedCosine' is superseded by 'ModifiedCosineHungarian'")
+    new("ModifiedCosineHungarian",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
         intensityPower = as.numeric(intensity_power)
     )
+}
+
+#' @rdname compareSpectriPy
+#'
+#' @export
+ModifiedCosineGreedy <- function(tolerance = 0.1, mz_power = 0.0,
+                                 intensity_power = 1.0) {
+    new("ModifiedCosineGreedy",
+        tolerance = as.numeric(tolerance),
+        mzPower = as.numeric(mz_power),
+        intensityPower = as.numeric(intensity_power)
+        )
 }
 
 #' @rdname compareSpectriPy
@@ -287,8 +315,17 @@ setMethod("py_fun", "CosineHungarian", function(object) {
                                        object@intensityPower)
 })
 setMethod("py_fun", "ModifiedCosine", function(object) {
-    matchms_similarity$ModifiedCosine(object@tolerance, object@mzPower,
-                                      object@intensityPower)
+    message("'ModifiedCosine' is deprecated; using 'ModifiedCosineHungarian'")
+    matchms_similarity$ModifiedCosineHungarian(object@tolerance, object@mzPower,
+                                               object@intensityPower)
+})
+setMethod("py_fun", "ModifiedCosineHungarian", function(object) {
+    matchms_similarity$ModifiedCosineHungarian(object@tolerance, object@mzPower,
+                                               object@intensityPower)
+})
+setMethod("py_fun", "ModifiedCosineGreedy", function(object) {
+    matchms_similarity$ModifiedCosineGreedy(object@tolerance, object@mzPower,
+                                            object@intensityPower)
 })
 setMethod("py_fun", "NeutralLossesCosine", function(object) {
     matchms_similarity$NeutralLossesCosine(object@tolerance, object@mzPower,

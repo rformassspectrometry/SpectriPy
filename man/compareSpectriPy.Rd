@@ -5,6 +5,8 @@
 \alias{CosineGreedy}
 \alias{CosineHungarian}
 \alias{ModifiedCosine}
+\alias{ModifiedCosineHungarian}
+\alias{ModifiedCosineGreedy}
 \alias{NeutralLossesCosine}
 \alias{compareSpectriPy,Spectra,Spectra,CosineGreedy-method}
 \alias{compareSpectriPy,Spectra,missing,CosineGreedy-method}
@@ -15,6 +17,10 @@ CosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 CosineHungarian(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
 ModifiedCosine(tolerance = 0.1, mz_power = 0, intensity_power = 1)
+
+ModifiedCosineHungarian(tolerance = 0.1, mz_power = 0, intensity_power = 1)
+
+ModifiedCosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
 NeutralLossesCosine(
   tolerance = 0.1,
