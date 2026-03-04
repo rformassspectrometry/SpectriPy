@@ -532,6 +532,9 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
         m[, columns, drop = drop]
     }
 
+#' @return `data.frame`
+#'
+#' @noRd
 .py_spectrum_utils_spectrum_spectra_data <-
     function(x, mapping = spectraVariableMapping(), ...) {
         s <- data.frame(precursor_mz = py_to_r(x$precursor_mz),
@@ -599,8 +602,6 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 
 #' @export
 #'
-#' @importFrom MsCoreUtils rbindFill
-#'
 #' @importFrom reticulate iterate
 #'
 #' @importFrom methods slot<-
@@ -629,7 +630,8 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
     slot(be, "peaksData", check = FALSE) <- ITER(x, PFUN, simplify = FALSE)
     ## Not very efficient and elegant... get the indivudal elements and stuff
     ## into list. pandas.DataFrame can not be easily created unfortunately.
-    sdta <- do.call(rbindFill, ITER(x, SFUN, simplify = FALSE))
+    sdta <- as.data.frame(rbindlist(ITER(x, SFUN, simplify = FALSE),
+                                    use.names = TRUE, fill = TRUE))
     sdta$dataStorage <- "<memory>"
     ## Ensure correct data type for core variables.
     csv <- coreSpectraVariables()
