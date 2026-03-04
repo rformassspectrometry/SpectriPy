@@ -1,6 +1,6 @@
 # Enabling integration of Python libraries and R packages for combined mass spectrometry data analysis
 
-**Compiled**: Wed Mar 4 07:36:37 2026
+**Compiled**: Wed Mar 4 17:27:10 2026
 
 **Note**: since version 0.99.6 *SpectriPy* uses the newer, recommended
 approach to install and configure required Python libraries (i.e.,
@@ -175,9 +175,9 @@ mzml_r
      ... 34 more variables/columns.
 
     file(s):
-    13ba6175c84_7861
+    53863c01b3f_7861
     Processing:
-     Filter: select MS level(s) 2 [Wed Mar  4 07:36:54 2026] 
+     Filter: select MS level(s) 2 [Wed Mar  4 17:27:26 2026] 
 
 This `Spectra` object can now be converted to equivalent data structures
 in Python using the
@@ -359,7 +359,7 @@ equivalent Python `str` data type:
 r.fl
 ```
 
-    '/github/home/.cache/R/ExperimentHub/13ba6175c84_7861'
+    '/github/home/.cache/R/ExperimentHub/53863c01b3f_7861'
 
 ``` python
 type(r.fl)
@@ -696,9 +696,9 @@ mzml_r
      ... 34 more variables/columns.
 
     file(s):
-    13ba6175c84_7861
+    53863c01b3f_7861
     Processing:
-     Filter: select MS level(s) 2 [Wed Mar  4 07:36:54 2026] 
+     Filter: select MS level(s) 2 [Wed Mar  4 17:27:26 2026] 
 
 This `Spectra` object uses the `MsBackedMzR` backend as data
 representation. We can change the backend of `Spectra` objects using the
@@ -719,8 +719,8 @@ mzml_r
     MSn data (Spectra) with 2243 spectra in a MsBackendPy backend:
     Data stored in the "mzml_p" variable in Python
     Processing:
-     Filter: select MS level(s) 2 [Wed Mar  4 07:36:54 2026]
-     Switch backend from MsBackendMzR to MsBackendPy [Wed Mar  4 07:37:03 2026] 
+     Filter: select MS level(s) 2 [Wed Mar  4 17:27:26 2026]
+     Switch backend from MsBackendMzR to MsBackendPy [Wed Mar  4 17:27:34 2026] 
 
 This converted all the MS data of the `mzml_r` `Spectra` object to
 Python objects and assigned these to the Python variable with the name
@@ -1265,110 +1265,92 @@ scores = matchms.calculate_scores(
 
 
     Calculating similarities:   0%|          | 0/2243 [00:00<?, ?it/s]
-    Calculating similarities:   0%|          | 1/2243 [00:00<31:13,  1.20it/s]
-    Calculating similarities:   1%|1         | 24/2243 [00:00<01:04, 34.48it/s]
-    Calculating similarities:   2%|1         | 44/2243 [00:01<00:35, 62.78it/s]
-    Calculating similarities:   3%|3         | 69/2243 [00:01<00:22, 98.71it/s]
-    Calculating similarities:   4%|4         | 91/2243 [00:01<00:17, 124.83it/s]
-    Calculating similarities:   5%|5         | 113/2243 [00:01<00:14, 146.52it/s]
-    Calculating similarities:   6%|6         | 136/2243 [00:01<00:12, 166.75it/s]
-    Calculating similarities:   7%|7         | 158/2243 [00:01<00:11, 178.15it/s]
-    Calculating similarities:   8%|8         | 180/2243 [00:01<00:11, 182.73it/s]
-    Calculating similarities:   9%|8         | 201/2243 [00:01<00:10, 186.05it/s]
-    Calculating similarities:  10%|9         | 222/2243 [00:01<00:11, 168.45it/s]
-    Calculating similarities:  11%|#         | 241/2243 [00:02<00:13, 146.44it/s]
-    Calculating similarities:  12%|#1        | 263/2243 [00:02<00:12, 163.14it/s]
-    Calculating similarities:  13%|#2        | 285/2243 [00:02<00:11, 176.47it/s]
-    Calculating similarities:  14%|#3        | 304/2243 [00:02<00:10, 176.94it/s]
-    Calculating similarities:  14%|#4        | 324/2243 [00:02<00:10, 182.12it/s]
-    Calculating similarities:  15%|#5        | 345/2243 [00:02<00:10, 188.35it/s]
-    Calculating similarities:  16%|#6        | 365/2243 [00:02<00:10, 175.36it/s]
-    Calculating similarities:  17%|#7        | 384/2243 [00:02<00:14, 128.29it/s]
-    Calculating similarities:  18%|#8        | 406/2243 [00:03<00:12, 148.02it/s]
-    Calculating similarities:  19%|#8        | 426/2243 [00:03<00:11, 159.52it/s]
-    Calculating similarities:  20%|#9        | 445/2243 [00:03<00:10, 166.33it/s]
-    Calculating similarities:  21%|##        | 464/2243 [00:03<00:10, 167.13it/s]
-    Calculating similarities:  21%|##1       | 482/2243 [00:03<00:10, 168.26it/s]
-    Calculating similarities:  22%|##2       | 504/2243 [00:03<00:09, 181.03it/s]
-    Calculating similarities:  23%|##3       | 527/2243 [00:03<00:08, 193.20it/s]
-    Calculating similarities:  25%|##4       | 552/2243 [00:03<00:08, 208.90it/s]
-    Calculating similarities:  26%|##5       | 576/2243 [00:03<00:07, 216.27it/s]
-    Calculating similarities:  27%|##6       | 599/2243 [00:04<00:07, 219.88it/s]
-    Calculating similarities:  28%|##7       | 622/2243 [00:04<00:07, 216.27it/s]
-    Calculating similarities:  29%|##8       | 646/2243 [00:04<00:07, 222.82it/s]
-    Calculating similarities:  30%|##9       | 672/2243 [00:04<00:06, 231.90it/s]
-    Calculating similarities:  31%|###1      | 696/2243 [00:04<00:06, 221.90it/s]
-    Calculating similarities:  32%|###2      | 719/2243 [00:04<00:07, 215.21it/s]
-    Calculating similarities:  33%|###3      | 741/2243 [00:04<00:07, 203.78it/s]
-    Calculating similarities:  34%|###3      | 762/2243 [00:04<00:07, 194.45it/s]
-    Calculating similarities:  35%|###4      | 782/2243 [00:04<00:07, 191.80it/s]
-    Calculating similarities:  36%|###5      | 802/2243 [00:05<00:07, 183.70it/s]
-    Calculating similarities:  37%|###6      | 823/2243 [00:05<00:07, 188.56it/s]
-    Calculating similarities:  38%|###7      | 843/2243 [00:05<00:07, 189.80it/s]
-    Calculating similarities:  38%|###8      | 863/2243 [00:05<00:07, 186.50it/s]
-    Calculating similarities:  39%|###9      | 885/2243 [00:05<00:07, 193.91it/s]
-    Calculating similarities:  40%|####      | 905/2243 [00:05<00:06, 191.77it/s]
-    Calculating similarities:  41%|####1     | 926/2243 [00:05<00:06, 196.18it/s]
-    Calculating similarities:  42%|####2     | 946/2243 [00:05<00:06, 195.89it/s]
-    Calculating similarities:  43%|####3     | 971/2243 [00:05<00:06, 208.93it/s]
-    Calculating similarities:  44%|####4     | 993/2243 [00:05<00:05, 212.01it/s]
-    Calculating similarities:  45%|####5     | 1015/2243 [00:06<00:05, 209.35it/s]
-    Calculating similarities:  46%|####6     | 1036/2243 [00:06<00:06, 198.85it/s]
-    Calculating similarities:  47%|####7     | 1056/2243 [00:06<00:05, 198.81it/s]
-    Calculating similarities:  48%|####8     | 1077/2243 [00:06<00:05, 198.24it/s]
-    Calculating similarities:  49%|####8     | 1097/2243 [00:06<00:05, 198.53it/s]
-    Calculating similarities:  50%|####9     | 1117/2243 [00:06<00:06, 176.39it/s]
-    Calculating similarities:  51%|#####     | 1141/2243 [00:06<00:05, 192.83it/s]
-    Calculating similarities:  52%|#####1    | 1163/2243 [00:06<00:05, 197.61it/s]
-    Calculating similarities:  53%|#####2    | 1184/2243 [00:06<00:05, 196.45it/s]
-    Calculating similarities:  54%|#####3    | 1210/2243 [00:07<00:04, 211.34it/s]
-    Calculating similarities:  55%|#####5    | 1236/2243 [00:07<00:04, 221.23it/s]
-    Calculating similarities:  56%|#####6    | 1259/2243 [00:07<00:04, 218.65it/s]
-    Calculating similarities:  57%|#####7    | 1283/2243 [00:07<00:04, 222.88it/s]
-    Calculating similarities:  58%|#####8    | 1306/2243 [00:07<00:04, 220.17it/s]
-    Calculating similarities:  59%|#####9    | 1329/2243 [00:07<00:04, 213.56it/s]
-    Calculating similarities:  60%|######    | 1351/2243 [00:07<00:04, 214.15it/s]
-    Calculating similarities:  61%|######1   | 1374/2243 [00:07<00:03, 217.47it/s]
-    Calculating similarities:  62%|######2   | 1396/2243 [00:07<00:04, 210.95it/s]
-    Calculating similarities:  63%|######3   | 1419/2243 [00:08<00:03, 215.25it/s]
-    Calculating similarities:  64%|######4   | 1441/2243 [00:08<00:03, 205.09it/s]
-    Calculating similarities:  65%|######5   | 1462/2243 [00:08<00:03, 203.61it/s]
-    Calculating similarities:  66%|######6   | 1483/2243 [00:08<00:03, 197.15it/s]
-    Calculating similarities:  67%|######7   | 1504/2243 [00:08<00:03, 199.68it/s]
-    Calculating similarities:  68%|######7   | 1525/2243 [00:08<00:03, 197.64it/s]
-    Calculating similarities:  69%|######8   | 1547/2243 [00:08<00:03, 201.53it/s]
-    Calculating similarities:  70%|######9   | 1568/2243 [00:08<00:03, 202.13it/s]
-    Calculating similarities:  71%|#######   | 1589/2243 [00:08<00:03, 196.37it/s]
-    Calculating similarities:  72%|#######1  | 1613/2243 [00:09<00:03, 207.94it/s]
-    Calculating similarities:  73%|#######2  | 1634/2243 [00:09<00:02, 205.25it/s]
-    Calculating similarities:  74%|#######3  | 1655/2243 [00:09<00:02, 204.95it/s]
-    Calculating similarities:  75%|#######4  | 1676/2243 [00:09<00:02, 203.69it/s]
-    Calculating similarities:  76%|#######5  | 1700/2243 [00:09<00:02, 212.35it/s]
-    Calculating similarities:  77%|#######6  | 1722/2243 [00:09<00:02, 214.55it/s]
-    Calculating similarities:  78%|#######7  | 1744/2243 [00:09<00:02, 214.61it/s]
-    Calculating similarities:  79%|#######8  | 1766/2243 [00:09<00:02, 205.61it/s]
-    Calculating similarities:  80%|#######9  | 1787/2243 [00:09<00:02, 199.49it/s]
-    Calculating similarities:  81%|########  | 1808/2243 [00:09<00:02, 198.81it/s]
-    Calculating similarities:  81%|########1 | 1828/2243 [00:10<00:02, 196.59it/s]
-    Calculating similarities:  82%|########2 | 1848/2243 [00:10<00:02, 175.12it/s]
-    Calculating similarities:  83%|########3 | 1866/2243 [00:10<00:02, 164.53it/s]
-    Calculating similarities:  84%|########4 | 1889/2243 [00:10<00:01, 179.34it/s]
-    Calculating similarities:  85%|########5 | 1910/2243 [00:10<00:01, 183.51it/s]
-    Calculating similarities:  86%|########6 | 1929/2243 [00:10<00:01, 170.10it/s]
-    Calculating similarities:  87%|########6 | 1951/2243 [00:10<00:01, 181.40it/s]
-    Calculating similarities:  88%|########8 | 1974/2243 [00:10<00:01, 192.57it/s]
-    Calculating similarities:  89%|########9 | 1999/2243 [00:11<00:01, 207.48it/s]
-    Calculating similarities:  90%|######### | 2023/2243 [00:11<00:01, 214.73it/s]
-    Calculating similarities:  91%|#########1| 2046/2243 [00:11<00:00, 217.51it/s]
-    Calculating similarities:  92%|#########2| 2069/2243 [00:11<00:00, 220.61it/s]
-    Calculating similarities:  93%|#########3| 2092/2243 [00:11<00:00, 221.15it/s]
-    Calculating similarities:  94%|#########4| 2115/2243 [00:11<00:00, 214.93it/s]
-    Calculating similarities:  95%|#########5| 2138/2243 [00:11<00:00, 218.08it/s]
-    Calculating similarities:  96%|#########6| 2161/2243 [00:11<00:00, 220.72it/s]
-    Calculating similarities:  97%|#########7| 2185/2243 [00:11<00:00, 225.62it/s]
-    Calculating similarities:  98%|#########8| 2208/2243 [00:11<00:00, 220.92it/s]
-    Calculating similarities:  99%|#########9| 2231/2243 [00:12<00:00, 208.01it/s]
-    Calculating similarities: 100%|##########| 2243/2243 [00:12<00:00, 184.96it/s]
+    Calculating similarities:   0%|          | 1/2243 [00:00<27:59,  1.33it/s]
+    Calculating similarities:   1%|1         | 28/2243 [00:00<00:50, 44.30it/s]
+    Calculating similarities:   2%|2         | 54/2243 [00:00<00:26, 84.14it/s]
+    Calculating similarities:   4%|3         | 83/2243 [00:01<00:17, 126.62it/s]
+    Calculating similarities:   5%|4         | 110/2243 [00:01<00:13, 159.22it/s]
+    Calculating similarities:   6%|6         | 138/2243 [00:01<00:11, 187.67it/s]
+    Calculating similarities:   7%|7         | 164/2243 [00:01<00:10, 205.41it/s]
+    Calculating similarities:   8%|8         | 190/2243 [00:01<00:09, 218.58it/s]
+    Calculating similarities:  10%|9         | 216/2243 [00:01<00:09, 203.85it/s]
+    Calculating similarities:  11%|#         | 240/2243 [00:01<00:11, 182.08it/s]
+    Calculating similarities:  12%|#1        | 267/2243 [00:01<00:09, 202.74it/s]
+    Calculating similarities:  13%|#3        | 293/2243 [00:01<00:09, 215.54it/s]
+    Calculating similarities:  14%|#4        | 317/2243 [00:02<00:08, 221.91it/s]
+    Calculating similarities:  15%|#5        | 341/2243 [00:02<00:08, 226.75it/s]
+    Calculating similarities:  16%|#6        | 365/2243 [00:02<00:08, 218.13it/s]
+    Calculating similarities:  17%|#7        | 388/2243 [00:02<00:11, 160.86it/s]
+    Calculating similarities:  19%|#8        | 416/2243 [00:02<00:09, 187.16it/s]
+    Calculating similarities:  20%|#9        | 439/2243 [00:02<00:09, 196.85it/s]
+    Calculating similarities:  21%|##        | 462/2243 [00:02<00:08, 201.42it/s]
+    Calculating similarities:  22%|##1       | 485/2243 [00:02<00:08, 208.19it/s]
+    Calculating similarities:  23%|##2       | 512/2243 [00:03<00:07, 224.13it/s]
+    Calculating similarities:  24%|##4       | 539/2243 [00:03<00:07, 235.49it/s]
+    Calculating similarities:  25%|##5       | 570/2243 [00:03<00:06, 255.33it/s]
+    Calculating similarities:  27%|##6       | 598/2243 [00:03<00:06, 261.07it/s]
+    Calculating similarities:  28%|##7       | 625/2243 [00:03<00:06, 261.41it/s]
+    Calculating similarities:  29%|##9       | 656/2243 [00:03<00:05, 273.53it/s]
+    Calculating similarities:  31%|###       | 685/2243 [00:03<00:05, 278.28it/s]
+    Calculating similarities:  32%|###1      | 713/2243 [00:03<00:05, 268.68it/s]
+    Calculating similarities:  33%|###3      | 741/2243 [00:03<00:05, 254.97it/s]
+    Calculating similarities:  34%|###4      | 767/2243 [00:04<00:06, 243.97it/s]
+    Calculating similarities:  35%|###5      | 792/2243 [00:04<00:06, 236.03it/s]
+    Calculating similarities:  36%|###6      | 816/2243 [00:04<00:06, 231.41it/s]
+    Calculating similarities:  37%|###7      | 841/2243 [00:04<00:05, 235.95it/s]
+    Calculating similarities:  39%|###8      | 865/2243 [00:04<00:05, 232.47it/s]
+    Calculating similarities:  40%|###9      | 892/2243 [00:04<00:05, 241.60it/s]
+    Calculating similarities:  41%|####      | 917/2243 [00:04<00:05, 235.75it/s]
+    Calculating similarities:  42%|####2     | 944/2243 [00:04<00:05, 240.90it/s]
+    Calculating similarities:  43%|####3     | 974/2243 [00:04<00:04, 255.90it/s]
+    Calculating similarities:  45%|####4     | 1000/2243 [00:04<00:04, 256.03it/s]
+    Calculating similarities:  46%|####5     | 1026/2243 [00:05<00:04, 252.17it/s]
+    Calculating similarities:  47%|####6     | 1052/2243 [00:05<00:04, 243.84it/s]
+    Calculating similarities:  48%|####8     | 1077/2243 [00:05<00:04, 245.18it/s]
+    Calculating similarities:  49%|####9     | 1102/2243 [00:05<00:04, 233.66it/s]
+    Calculating similarities:  50%|#####     | 1126/2243 [00:05<00:04, 229.95it/s]
+    Calculating similarities:  51%|#####1    | 1154/2243 [00:05<00:04, 241.65it/s]
+    Calculating similarities:  53%|#####2    | 1179/2243 [00:05<00:04, 243.54it/s]
+    Calculating similarities:  54%|#####3    | 1208/2243 [00:05<00:04, 256.84it/s]
+    Calculating similarities:  55%|#####5    | 1238/2243 [00:05<00:03, 267.18it/s]
+    Calculating similarities:  56%|#####6    | 1265/2243 [00:06<00:03, 265.32it/s]
+    Calculating similarities:  58%|#####7    | 1294/2243 [00:06<00:03, 271.10it/s]
+    Calculating similarities:  59%|#####8    | 1322/2243 [00:06<00:03, 260.37it/s]
+    Calculating similarities:  60%|######    | 1350/2243 [00:06<00:03, 264.49it/s]
+    Calculating similarities:  61%|######1   | 1377/2243 [00:06<00:03, 264.53it/s]
+    Calculating similarities:  63%|######2   | 1404/2243 [00:06<00:03, 260.25it/s]
+    Calculating similarities:  64%|######3   | 1432/2243 [00:06<00:03, 265.60it/s]
+    Calculating similarities:  65%|######5   | 1459/2243 [00:06<00:03, 254.04it/s]
+    Calculating similarities:  66%|######6   | 1485/2243 [00:06<00:03, 246.26it/s]
+    Calculating similarities:  67%|######7   | 1510/2243 [00:06<00:02, 247.14it/s]
+    Calculating similarities:  68%|######8   | 1535/2243 [00:07<00:02, 245.77it/s]
+    Calculating similarities:  70%|######9   | 1561/2243 [00:07<00:02, 248.30it/s]
+    Calculating similarities:  71%|#######   | 1586/2243 [00:07<00:02, 244.16it/s]
+    Calculating similarities:  72%|#######2  | 1615/2243 [00:07<00:02, 255.37it/s]
+    Calculating similarities:  73%|#######3  | 1641/2243 [00:07<00:02, 247.66it/s]
+    Calculating similarities:  74%|#######4  | 1669/2243 [00:07<00:02, 255.85it/s]
+    Calculating similarities:  76%|#######5  | 1695/2243 [00:07<00:02, 256.70it/s]
+    Calculating similarities:  77%|#######6  | 1723/2243 [00:07<00:01, 261.70it/s]
+    Calculating similarities:  78%|#######8  | 1750/2243 [00:07<00:01, 256.43it/s]
+    Calculating similarities:  79%|#######9  | 1776/2243 [00:08<00:01, 249.33it/s]
+    Calculating similarities:  80%|########  | 1801/2243 [00:08<00:01, 247.54it/s]
+    Calculating similarities:  81%|########1 | 1826/2243 [00:08<00:01, 246.42it/s]
+    Calculating similarities:  83%|########2 | 1851/2243 [00:08<00:01, 216.41it/s]
+    Calculating similarities:  84%|########3 | 1874/2243 [00:08<00:01, 213.03it/s]
+    Calculating similarities:  85%|########4 | 1900/2243 [00:08<00:01, 223.53it/s]
+    Calculating similarities:  86%|########5 | 1923/2243 [00:08<00:01, 208.13it/s]
+    Calculating similarities:  87%|########6 | 1949/2243 [00:08<00:01, 221.90it/s]
+    Calculating similarities:  88%|########8 | 1976/2243 [00:08<00:01, 233.70it/s]
+    Calculating similarities:  89%|########9 | 2006/2243 [00:09<00:00, 251.07it/s]
+    Calculating similarities:  91%|######### | 2035/2243 [00:09<00:00, 261.23it/s]
+    Calculating similarities:  92%|#########1| 2063/2243 [00:09<00:00, 266.40it/s]
+    Calculating similarities:  93%|#########3| 2091/2243 [00:09<00:00, 269.59it/s]
+    Calculating similarities:  94%|#########4| 2119/2243 [00:09<00:00, 265.08it/s]
+    Calculating similarities:  96%|#########5| 2147/2243 [00:09<00:00, 269.11it/s]
+    Calculating similarities:  97%|#########6| 2175/2243 [00:09<00:00, 271.51it/s]
+    Calculating similarities:  98%|#########8| 2204/2243 [00:09<00:00, 274.00it/s]
+    Calculating similarities: 100%|#########9| 2232/2243 [00:09<00:00, 265.74it/s]
+    Calculating similarities: 100%|##########| 2243/2243 [00:09<00:00, 225.95it/s]
 
 ``` python
 
@@ -1471,7 +1453,7 @@ sessionInfo()
     [8] base
 
     other attached packages:
-    [1] MsBackendMgf_1.19.0 MsDataHub_1.11.1    SpectriPy_1.1.1
+    [1] MsBackendMgf_1.19.0 MsDataHub_1.11.1    SpectriPy_1.1.2
     [4] reticulate_1.45.0   Spectra_1.21.1      BiocParallel_1.45.0
     [7] S4Vectors_0.49.0    BiocGenerics_0.57.0 generics_0.1.4
 

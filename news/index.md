@@ -1,5 +1,11 @@
 # Changelog
 
+## SpectriPy 1.1
+
+### Changes in 1.1.2
+
+- Use *matchms* 0.31.
+
 ## SpectriPy 0.99
 
 ### Changes in 0.99.13

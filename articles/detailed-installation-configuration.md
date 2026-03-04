@@ -438,7 +438,7 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base
 
     other attached packages:
-    [1] SpectriPy_1.1.1   reticulate_1.45.0
+    [1] SpectriPy_1.1.2   reticulate_1.45.0
 
     loaded via a namespace (and not attached):
      [1] Spectra_1.21.1         cli_3.6.5              knitr_1.51
