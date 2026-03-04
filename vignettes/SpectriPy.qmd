@@ -134,10 +134,6 @@ object. We thus first ensure that the package *MsDataHub* is installed. If the
 line below results in an error you need to first install *MsDataHub* using
 `BiocManager::install("MsDataHub")`.
 
-```{r}
-stopifnot(require("MsDataHub"))
-```
-
 Next, we define the file path to the test file and load the data as a `Spectra`
 object in R.
 
