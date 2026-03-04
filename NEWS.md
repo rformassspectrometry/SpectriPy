@@ -1,3 +1,9 @@
+# SpectriPy 1.0
+
+## Changes in 1.0.1
+
+- Fix *matchms* version dependency to 0.31.
+
 # SpectriPy 0.99
 
 ## Changes in 0.99.13
