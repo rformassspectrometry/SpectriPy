@@ -70,6 +70,10 @@ scores using the \code{calculate_scores()} function of the Python
 \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html}{matchms.similarity}.
 module.
 
+\strong{Note}: \emph{SpectriPy} version >= 1.1.3 follows the changes introduced in
+\emph{matchms} version 0.32, where the \code{ModifiedCosine} method was replaced by
+\code{ModifiedCosineGreedy} and \code{ModifiedCosineHungarian}.
+
 Selection and configuration of the algorithm can be performed with one of the
 \emph{parameter} objects/functions:
 \itemize{
@@ -91,14 +95,21 @@ matching peaks between the compared spectra. The algorithm can be
 configured with parameters \code{tolerance}, \code{mz_power} and \code{intensity_power}
 (see parameter description for more details). See also
 \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html}{matchms CosingHungarian} for more information.
-\item \code{ModifiedCosine()}: The modified cosine score aims at quantifying the
-similarity between two mass spectra. The score is calculated by finding
-the best possible matches between peaks of two spectra. Two peaks are
+\item \code{ModifiedCosineGreedy()}: calculate an approximate modified cosine score;
+the modified cosine score aims at quantifying the similarity between two
+mass spectra. The score is calculated by finding the best possible matches
+between peaks of two spectra. This implementation solves the peak
+assignment in a greedy way and is therefore an approximation. Two peaks are
 considered a potential match if their m/z ratios lie within the given
 \code{tolerance}, or if their m/z ratios lie within the tolerance once a
 mass shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-See also \href{https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html}{matchms ModifiedCosine} for more information.
+See also \href{https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineGreedy}{matchms ModifiedCosineGreedy} for more information.
+\item \code{ModifiedCosineHungarian()}: calculate exact modified cosine score between
+mass spectra. The modified cosine score quantifies similarity between two
+mass spectra with optional precursor-based mass shift. The mass shift is
+simply the difference in precursor-m/z between the two spectra.
+See also \href{https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineHungarian}{matchms ModifiedCosineHungarian} for more information.
 \item \code{NeutralLossesCosine()}: The neutral losses cosine score aims at
 quantifying the similarity between two mass spectra. The score is
 calculated by finding the best possible matches between peaks of two
@@ -149,15 +160,15 @@ res
 res <- compareSpectriPy(sps, sps[1], param = CosineGreedy())
 
 ## Calculate pairwise similarity of all spectra in sps with matchms'
-## ModifiedCosine algorithm
-res <- compareSpectriPy(sps, param = ModifiedCosine())
+## ModifiedCosineHungarian algorithm
+res <- compareSpectriPy(sps, param = ModifiedCosineHungarian())
 res
 
-## Note that the ModifiedCosine method requires the precursor m/z to be
-## known for all input spectra. Thus, it is advisable to remove spectra
+## Note that the ModifiedCosineHungarian method requires the precursor m/z
+## to be known for all input spectra. Thus, it is advisable to remove spectra
 ## without precursor m/z before using this algorithm.
 sps <- sps[!is.na(precursorMz(sps))]
-compareSpectriPy(sps, param = ModifiedCosine())
+compareSpectriPy(sps, param = ModifiedCosineHungarian())
 }
 \seealso{
 \code{\link[Spectra:compareSpectra]{Spectra::compareSpectra()}} in the \emph{Spectra} package for pure R

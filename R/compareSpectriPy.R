@@ -9,6 +9,10 @@
 #' [matchms.similarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html).
 #' module.
 #'
+#' **Note**: *SpectriPy* version >= 1.1.3 follows the changes introduced in
+#' *matchms* version 0.32, where the `ModifiedCosine` method was replaced by
+#' `ModifiedCosineGreedy` and `ModifiedCosineHungarian`.
+#'
 #' Selection and configuration of the algorithm can be performed with one of the
 #' *parameter* objects/functions:
 #'
@@ -32,14 +36,22 @@
 #'   (see parameter description for more details). See also
 #'   [matchms CosingHungarian](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html) for more information.
 #'
-#' - `ModifiedCosine()`: The modified cosine score aims at quantifying the
-#'   similarity between two mass spectra. The score is calculated by finding
-#'   the best possible matches between peaks of two spectra. Two peaks are
+#' - `ModifiedCosineGreedy()`: calculate an approximate modified cosine score;
+#'   the modified cosine score aims at quantifying the similarity between two
+#'   mass spectra. The score is calculated by finding the best possible matches
+#'   between peaks of two spectra. This implementation solves the peak
+#'   assignment in a greedy way and is therefore an approximation. Two peaks are
 #'   considered a potential match if their m/z ratios lie within the given
 #'   `tolerance`, or if their m/z ratios lie within the tolerance once a
 #'   mass shift is applied. The mass shift is simply the difference in
 #'   precursor-m/z between the two spectra.
-#'   See also [matchms ModifiedCosine](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html) for more information.
+#'   See also [matchms ModifiedCosineGreedy](https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineGreedy) for more information.
+#'
+#' - `ModifiedCosineHungarian()`: calculate exact modified cosine score between
+#'   mass spectra. The modified cosine score quantifies similarity between two
+#'   mass spectra with optional precursor-based mass shift. The mass shift is
+#'   simply the difference in precursor-m/z between the two spectra.
+#'   See also [matchms ModifiedCosineHungarian](https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineHungarian) for more information.
 #'
 #' - `NeutralLossesCosine()`: The neutral losses cosine score aims at
 #'   quantifying the similarity between two mass spectra. The score is
@@ -53,7 +65,6 @@
 #'   on their fingerprints. For this similarity measure to work, fingerprints
 #'   are expected to be derived by running *add_fingerprint()*. See also
 #'   [matchms FingerprintSimilarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.FingerprintSimilarity.html) for more information.
-#'
 #'
 #' @note
 #'
@@ -237,7 +248,6 @@ ModifiedCosine <- function(tolerance = 0.1, mz_power = 0.0,
 #' @export
 ModifiedCosineHungarian <- function(tolerance = 0.1, mz_power = 0.0,
                                     intensity_power = 1.0) {
-    deprecated("'ModifiedCosine' is superseded by 'ModifiedCosineHungarian'")
     new("ModifiedCosineHungarian",
         tolerance = as.numeric(tolerance),
         mzPower = as.numeric(mz_power),
