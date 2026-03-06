@@ -5,6 +5,10 @@ similarity scores using the `calculate_scores()` function of the Python
 [matchms.similarity](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html).
 module.
 
+**Note**: *SpectriPy* version \>= 1.1.3 follows the changes introduced
+in *matchms* version 0.32, where the `ModifiedCosine` method was
+replaced by `ModifiedCosineGreedy` and `ModifiedCosineHungarian`.
+
 Selection and configuration of the algorithm can be performed with one
 of the *parameter* objects/functions:
 
@@ -32,14 +36,25 @@ of the *parameter* objects/functions:
   CosingHungarian](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html)
   for more information.
 
-- `ModifiedCosine()`: The modified cosine score aims at quantifying the
-  similarity between two mass spectra. The score is calculated by
-  finding the best possible matches between peaks of two spectra. Two
-  peaks are considered a potential match if their m/z ratios lie within
-  the given `tolerance`, or if their m/z ratios lie within the tolerance
-  once a mass shift is applied. The mass shift is simply the difference
-  in precursor-m/z between the two spectra. See also [matchms
-  ModifiedCosine](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html)
+- `ModifiedCosineGreedy()`: calculate an approximate modified cosine
+  score; the modified cosine score aims at quantifying the similarity
+  between two mass spectra. The score is calculated by finding the best
+  possible matches between peaks of two spectra. This implementation
+  solves the peak assignment in a greedy way and is therefore an
+  approximation. Two peaks are considered a potential match if their m/z
+  ratios lie within the given `tolerance`, or if their m/z ratios lie
+  within the tolerance once a mass shift is applied. The mass shift is
+  simply the difference in precursor-m/z between the two spectra. See
+  also [matchms
+  ModifiedCosineGreedy](https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineGreedy)
+  for more information.
+
+- `ModifiedCosineHungarian()`: calculate exact modified cosine score
+  between mass spectra. The modified cosine score quantifies similarity
+  between two mass spectra with optional precursor-based mass shift. The
+  mass shift is simply the difference in precursor-m/z between the two
+  spectra. See also [matchms
+  ModifiedCosineHungarian](https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineHungarian)
   for more information.
 
 - `NeutralLossesCosine()`: The neutral losses cosine score aims at
@@ -67,6 +82,10 @@ CosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 CosineHungarian(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
 ModifiedCosine(tolerance = 0.1, mz_power = 0, intensity_power = 1)
+
+ModifiedCosineHungarian(tolerance = 0.1, mz_power = 0, intensity_power = 1)
+
+ModifiedCosineGreedy(tolerance = 0.1, mz_power = 0, intensity_power = 1)
 
 NeutralLossesCosine(
   tolerance = 0.1,
@@ -186,19 +205,19 @@ res
 res <- compareSpectriPy(sps, sps[1], param = CosineGreedy())
 
 ## Calculate pairwise similarity of all spectra in sps with matchms'
-## ModifiedCosine algorithm
-res <- compareSpectriPy(sps, param = ModifiedCosine())
+## ModifiedCosineHungarian algorithm
+res <- compareSpectriPy(sps, param = ModifiedCosineHungarian())
 res
 #>           [,1]      [,2]      [,3]
 #> [1,] 1.0000000 0.1948181 0.1384183
 #> [2,] 0.1948181 1.0000000 0.8520549
 #> [3,] 0.1384183 0.8520549 1.0000000
 
-## Note that the ModifiedCosine method requires the precursor m/z to be
-## known for all input spectra. Thus, it is advisable to remove spectra
+## Note that the ModifiedCosineHungarian method requires the precursor m/z
+## to be known for all input spectra. Thus, it is advisable to remove spectra
 ## without precursor m/z before using this algorithm.
 sps <- sps[!is.na(precursorMz(sps))]
-compareSpectriPy(sps, param = ModifiedCosine())
+compareSpectriPy(sps, param = ModifiedCosineHungarian())
 #>           [,1]      [,2]      [,3]
 #> [1,] 1.0000000 0.1948181 0.1384183
 #> [2,] 0.1948181 1.0000000 0.8520549

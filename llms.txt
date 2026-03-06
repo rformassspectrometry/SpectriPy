@@ -224,6 +224,8 @@ file.
 - [`CosineGreedy()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`CosineHungarian()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`ModifiedCosine()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
+  [`ModifiedCosineHungarian()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
+  [`ModifiedCosineGreedy()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`NeutralLossesCosine()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`compareSpectriPy(`*`<Spectra>`*`,`*`<Spectra>`*`,`*`<CosineGreedy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`compareSpectriPy(`*`<Spectra>`*`,`*`<missing>`*`,`*`<CosineGreedy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)

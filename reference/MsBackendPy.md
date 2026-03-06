@@ -437,7 +437,7 @@ s_2
 #> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 #> Data stored in the "s_p2" variable in Python
 #> Processing:
-#>  Switch backend from MsBackendMgf to MsBackendPy [Wed Mar  4 17:27:02 2026] 
+#>  Switch backend from MsBackendMgf to MsBackendPy [Fri Mar  6 08:06:55 2026] 
 
 ## This moved the data from R to Python, storing it in a Python variable
 ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object

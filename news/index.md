@@ -2,6 +2,14 @@
 
 ## SpectriPy 1.1
 
+### Changes in 1.1.3
+
+- Introduce new
+  [`ModifiedCosineHungarian()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
+  and
+  [`ModifiedCosineGreedy()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
+  parameters to match changes in *matchms* version 0.32.
+
 ### Changes in 1.1.2
 
 - Use *matchms* 0.31.

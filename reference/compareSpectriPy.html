@@ -3,6 +3,9 @@
 scores using the calculate_scores() function of the Python
 matchms.similarity.
 module.
+Note: SpectriPy version &amp;gt;= 1.1.3 follows the changes introduced in
+matchms version 0.32, where the ModifiedCosine method was replaced by
+ModifiedCosineGreedy and ModifiedCosineHungarian.
 Selection and configuration of the algorithm can be performed with one of the
 parameter objects/functions:
 CosineGreedy(): calculate the cosine similarity score between
@@ -23,14 +26,21 @@ matching peaks between the compared spectra. The algorithm can be
 configured with parameters tolerance, mz_power and intensity_power
 (see parameter description for more details). See also
 matchms CosingHungarian for more information.
-ModifiedCosine(): The modified cosine score aims at quantifying the
-similarity between two mass spectra. The score is calculated by finding
-the best possible matches between peaks of two spectra. Two peaks are
+ModifiedCosineGreedy(): calculate an approximate modified cosine score;
+the modified cosine score aims at quantifying the similarity between two
+mass spectra. The score is calculated by finding the best possible matches
+between peaks of two spectra. This implementation solves the peak
+assignment in a greedy way and is therefore an approximation. Two peaks are
 considered a potential match if their m/z ratios lie within the given
 tolerance, or if their m/z ratios lie within the tolerance once a
 mass shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-See also matchms ModifiedCosine for more information.
+See also matchms ModifiedCosineGreedy for more information.
+ModifiedCosineHungarian(): calculate exact modified cosine score between
+mass spectra. The modified cosine score quantifies similarity between two
+mass spectra with optional precursor-based mass shift. The mass shift is
+simply the difference in precursor-m/z between the two spectra.
+See also matchms ModifiedCosineHungarian for more information.
 NeutralLossesCosine(): The neutral losses cosine score aims at
 quantifying the similarity between two mass spectra. The score is
 calculated by finding the best possible matches between peaks of two
@@ -47,6 +57,9 @@ matchms FingerprintSimilarity for more information.
 scores using the calculate_scores() function of the Python
 matchms.similarity.
 module.
+Note: SpectriPy version &amp;gt;= 1.1.3 follows the changes introduced in
+matchms version 0.32, where the ModifiedCosine method was replaced by
+ModifiedCosineGreedy and ModifiedCosineHungarian.
 Selection and configuration of the algorithm can be performed with one of the
 parameter objects/functions:
 CosineGreedy(): calculate the cosine similarity score between
@@ -67,14 +80,21 @@ matching peaks between the compared spectra. The algorithm can be
 configured with parameters tolerance, mz_power and intensity_power
 (see parameter description for more details). See also
 matchms CosingHungarian for more information.
-ModifiedCosine(): The modified cosine score aims at quantifying the
-similarity between two mass spectra. The score is calculated by finding
-the best possible matches between peaks of two spectra. Two peaks are
+ModifiedCosineGreedy(): calculate an approximate modified cosine score;
+the modified cosine score aims at quantifying the similarity between two
+mass spectra. The score is calculated by finding the best possible matches
+between peaks of two spectra. This implementation solves the peak
+assignment in a greedy way and is therefore an approximation. Two peaks are
 considered a potential match if their m/z ratios lie within the given
 tolerance, or if their m/z ratios lie within the tolerance once a
 mass shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-See also matchms ModifiedCosine for more information.
+See also matchms ModifiedCosineGreedy for more information.
+ModifiedCosineHungarian(): calculate exact modified cosine score between
+mass spectra. The modified cosine score quantifies similarity between two
+mass spectra with optional precursor-based mass shift. The mass shift is
+simply the difference in precursor-m/z between the two spectra.
+See also matchms ModifiedCosineHungarian for more information.
 NeutralLossesCosine(): The neutral losses cosine score aims at
 quantifying the similarity between two mass spectra. The score is
 calculated by finding the best possible matches between peaks of two
@@ -95,7 +115,7 @@ matchms FingerprintSimilarity for more information.
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,6 +150,9 @@ matchms FingerprintSimilarity for more information.
 scores using the <code>calculate_scores()</code> function of the Python
 <a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.html" class="external-link">matchms.similarity</a>.
 module.</p>
+<p><strong>Note</strong>: <em>SpectriPy</em> version &gt;= 1.1.3 follows the changes introduced in
+<em>matchms</em> version 0.32, where the <code>ModifiedCosine</code> method was replaced by
+<code>ModifiedCosineGreedy</code> and <code>ModifiedCosineHungarian</code>.</p>
 <p>Selection and configuration of the algorithm can be performed with one of the
 <em>parameter</em> objects/functions:</p><ul><li><p><code>CosineGreedy()</code>: calculate the <em>cosine similarity score</em> between
 spectra. The score is calculated by finding the best possible matches
@@ -149,14 +172,21 @@ matching peaks between the compared spectra. The algorithm can be
 configured with parameters <code>tolerance</code>, <code>mz_power</code> and <code>intensity_power</code>
 (see parameter description for more details). See also
 <a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html" class="external-link">matchms CosingHungarian</a> for more information.</p></li>
-<li><p><code>ModifiedCosine()</code>: The modified cosine score aims at quantifying the
-similarity between two mass spectra. The score is calculated by finding
-the best possible matches between peaks of two spectra. Two peaks are
+<li><p><code>ModifiedCosineGreedy()</code>: calculate an approximate modified cosine score;
+the modified cosine score aims at quantifying the similarity between two
+mass spectra. The score is calculated by finding the best possible matches
+between peaks of two spectra. This implementation solves the peak
+assignment in a greedy way and is therefore an approximation. Two peaks are
 considered a potential match if their m/z ratios lie within the given
 <code>tolerance</code>, or if their m/z ratios lie within the tolerance once a
 mass shift is applied. The mass shift is simply the difference in
 precursor-m/z between the two spectra.
-See also <a href="https://matchms.readthedocs.io/en/latest/api/matchms.similarity.ModifiedCosine.html" class="external-link">matchms ModifiedCosine</a> for more information.</p></li>
+See also <a href="https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineGreedy" class="external-link">matchms ModifiedCosineGreedy</a> for more information.</p></li>
+<li><p><code>ModifiedCosineHungarian()</code>: calculate exact modified cosine score between
+mass spectra. The modified cosine score quantifies similarity between two
+mass spectra with optional precursor-based mass shift. The mass shift is
+simply the difference in precursor-m/z between the two spectra.
+See also <a href="https://matchms.readthedocs.io/en/stable/api/matchms.similarity.html#matchms.similarity.ModifiedCosineHungarian" class="external-link">matchms ModifiedCosineHungarian</a> for more information.</p></li>
 <li><p><code>NeutralLossesCosine()</code>: The neutral losses cosine score aims at
 quantifying the similarity between two mass spectra. The score is
 calculated by finding the best possible matches between peaks of two
@@ -177,6 +207,10 @@ are expected to be derived by running <em>add_fingerprint()</em>. See also
 <span><span class="fu">CosineHungarian</span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.1</span>, mz_power <span class="op">=</span> <span class="fl">0</span>, intensity_power <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">ModifiedCosine</span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.1</span>, mz_power <span class="op">=</span> <span class="fl">0</span>, intensity_power <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ModifiedCosineHungarian</span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.1</span>, mz_power <span class="op">=</span> <span class="fl">0</span>, intensity_power <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ModifiedCosineGreedy</span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.1</span>, mz_power <span class="op">=</span> <span class="fl">0</span>, intensity_power <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">NeutralLossesCosine</span><span class="op">(</span></span>
 <span>  tolerance <span class="op">=</span> <span class="fl">0.1</span>,</span>
@@ -297,19 +331,19 @@ Marilyn De Graeve</p>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">compareSpectriPy</span><span class="op">(</span><span class="va">sps</span>, <span class="va">sps</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, param <span class="op">=</span> <span class="fu">CosineGreedy</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Calculate pairwise similarity of all spectra in sps with matchms'</span></span></span>
-<span class="r-in"><span><span class="co">## ModifiedCosine algorithm</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">compareSpectriPy</span><span class="op">(</span><span class="va">sps</span>, param <span class="op">=</span> <span class="fu">ModifiedCosine</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## ModifiedCosineHungarian algorithm</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">compareSpectriPy</span><span class="op">(</span><span class="va">sps</span>, param <span class="op">=</span> <span class="fu">ModifiedCosineHungarian</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]      [,2]      [,3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.0000000 0.1948181 0.1384183</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.1948181 1.0000000 0.8520549</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.1384183 0.8520549 1.0000000</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Note that the ModifiedCosine method requires the precursor m/z to be</span></span></span>
-<span class="r-in"><span><span class="co">## known for all input spectra. Thus, it is advisable to remove spectra</span></span></span>
+<span class="r-in"><span><span class="co">## Note that the ModifiedCosineHungarian method requires the precursor m/z</span></span></span>
+<span class="r-in"><span><span class="co">## to be known for all input spectra. Thus, it is advisable to remove spectra</span></span></span>
 <span class="r-in"><span><span class="co">## without precursor m/z before using this algorithm.</span></span></span>
 <span class="r-in"><span><span class="va">sps</span> <span class="op">&lt;-</span> <span class="va">sps</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">precursorMz</a></span><span class="op">(</span><span class="va">sps</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">compareSpectriPy</span><span class="op">(</span><span class="va">sps</span>, param <span class="op">=</span> <span class="fu">ModifiedCosine</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">compareSpectriPy</span><span class="op">(</span><span class="va">sps</span>, param <span class="op">=</span> <span class="fu">ModifiedCosineHungarian</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]      [,2]      [,3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.0000000 0.1948181 0.1384183</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 0.1948181 1.0000000 0.8520549</span>
