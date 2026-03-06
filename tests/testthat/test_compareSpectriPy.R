@@ -48,7 +48,19 @@ test_that("CosineHungarian constructor works", {
 
 test_that("ModifiedCosine constructor works", {
     res <- ModifiedCosine(mz_power = 4.3)
-    expect_s4_class(res, "ModifiedCosine")
+    expect_s4_class(res, "ModifiedCosineHungarian")
+    expect_equal(res@mzPower, 4.3)
+})
+
+test_that("ModifiedCosineGreedy constructor works", {
+    res <- ModifiedCosineGreedy(mz_power = 4.3)
+    expect_s4_class(res, "ModifiedCosineGreedy")
+    expect_equal(res@mzPower, 4.3)
+})
+
+test_that("ModifiedCosineHungarian constructor works", {
+    res <- ModifiedCosineHungarian(mz_power = 4.3)
+    expect_s4_class(res, "ModifiedCosineHungarian")
     expect_equal(res@mzPower, 4.3)
 })
 
@@ -64,27 +76,43 @@ test_that(".fun_name works", {
     a <- CosineHungarian()
     expect_equal(.fun_name(a), "CosineHungarian")
     a <- ModifiedCosine()
-    expect_equal(.fun_name(a), "ModifiedCosine")
+    expect_equal(.fun_name(a), "ModifiedCosineHungarian")
+    a <- ModifiedCosineGreedy()
+    expect_equal(.fun_name(a), "ModifiedCosineGreedy")
+    a <- ModifiedCosineHungarian()
+    expect_equal(.fun_name(a), "ModifiedCosineHungarian")
     a <- NeutralLossesCosine()
     expect_equal(.fun_name(a), "NeutralLossesCosine")
 })
 
 test_that("py_fun works", {
     res <- py_fun(CosineGreedy(tolerance = 0.5, mz_power = 0.3,
-                                           intensity_power = 0.2))
+                               intensity_power = 0.2))
     expect_equal(class(res)[1L],
                  "matchms.similarity.CosineGreedy.CosineGreedy")
     res <- py_fun(CosineHungarian(tolerance = 0.4, mz_power = 0.3,
-                                           intensity_power = 0.2))
+                                  intensity_power = 0.2))
     expect_equal(
         class(res)[1L], "matchms.similarity.CosineHungarian.CosineHungarian")
     res <- py_fun(ModifiedCosine(tolerance = 0.1, mz_power = 0.3,
-                                           intensity_power = 0.2))
+                                 intensity_power = 0.2))
     expect_equal(
-        class(res)[1L], "matchms.similarity.ModifiedCosine.ModifiedCosine")
+        class(res)[1L],
+        "matchms.similarity.ModifiedCosineHungarian.ModifiedCosineHungarian")
+    res <- py_fun(ModifiedCosineGreedy(tolerance = 0.1,
+                                       mz_power = 0.3,
+                                       intensity_power = 0.2))
+    expect_equal(
+        class(res)[1L],
+        "matchms.similarity.ModifiedCosineGreedy.ModifiedCosineGreedy")
+    res <- py_fun(ModifiedCosineHungarian(tolerance = 0.1, mz_power = 0.3,
+                                          intensity_power = 0.2))
+    expect_equal(
+        class(res)[1L],
+        "matchms.similarity.ModifiedCosineHungarian.ModifiedCosineHungarian")
     res <- py_fun(NeutralLossesCosine(tolerance = 0.1, mz_power = 0.3,
-                                                  intensity_power = 0.2,
-                                                  ignore_peaks_above_precursor = FALSE))
+                                      intensity_power = 0.2,
+                                      ignore_peaks_above_precursor = FALSE))
     expect_equal(
         class(res)[1L],
         "matchms.similarity.NeutralLossesCosine.NeutralLossesCosine")
@@ -156,18 +184,28 @@ test_that("compareSpectriPy works", {
     res <- compareSpectriPy(caf, mhd, param = CosineHungarian(tolerance = 10))
     expect_true(any(res > 0))
 
-    ## ModifiedCosine
-    res <- compareSpectriPy(caf, mhd, param = ModifiedCosine())
+    ## ModifiedCosineGreedy
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosineGreedy())
     expect_true(nrow(res) == 2)
     expect_true(ncol(res) == 2)
     expect_true(all(res > 0))
-    res <- compareSpectriPy(caf, mhd, param = ModifiedCosine(tolerance = 10))
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosineGreedy(
+                                          tolerance = 10))
     expect_true(all(res > 0.3))
 
     all_mod <- all
     all_mod$precursorMz[3] <- NA_real_
-    expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosine()),
+    expect_error(compareSpectriPy(all_mod, all, param = ModifiedCosineGreedy()),
                  "Expect precursor to be positive")
+
+    ## ModifiedCosineHungarian
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosineHungarian())
+    expect_true(nrow(res) == 2)
+    expect_true(ncol(res) == 2)
+    expect_true(all(res > 0))
+    res <- compareSpectriPy(caf, mhd, param = ModifiedCosineHungarian(
+                                          tolerance = 10))
+    expect_true(all(res > 0.3))
 
     ## NeutralLossesCosine
     res <- compareSpectriPy(caf, mhd, param = NeutralLossesCosine())

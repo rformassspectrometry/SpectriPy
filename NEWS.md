@@ -1,5 +1,10 @@
 # SpectriPy 1.1
 
+## Changes in 1.1.3
+
+- Introduce new `ModifiedCosineHungarian()` and `ModifiedCosineGreedy()`
+  parameters to match changes in *matchms* version 0.32.
+
 ## Changes in 1.1.2
 
 - Use *matchms* 0.31.

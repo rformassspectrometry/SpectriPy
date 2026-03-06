@@ -1,17 +1,19 @@
 ## based on https://rstudio.github.io/reticulate/articles/package.html#delay-loading-python-modules
+## Global variables
 matchms <- NULL
 matchms_similarity <- NULL
 matchms_filtering <- NULL
 spectrum_utils <- NULL
 
-.PY_PKGS <- c(matchms = "matchms==0.31",
+## Required Python libraries
+.PY_PKGS <- c(matchms = "matchms>=0.32",
               spectrum_utils = "spectrum_utils>=0.3.2",
               numpy = "numpy>=2.2.0")
 
 #' @importFrom reticulate py_require py_available
 .onLoad <- function(libname, pkgname) {
     .check_environment()
-    py_require(packages = .PY_PKGS, python_version = ">=3.12")
+    py_require(packages = .PY_PKGS) # install packages
     .initialize_libraries2(FALSE, FALSE, asNamespace(pkgname))
 }
 
