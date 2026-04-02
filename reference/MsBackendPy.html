@@ -49,7 +49,7 @@ package vignette for details and examples."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,7 +152,18 @@ package vignette for details and examples.</p>
 <span><span class="co"># S4 method for class 'MsBackendPy'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/Spectra/man/spectraVariableMapping.html" class="external-link">spectraVariableMapping</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">reindex</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'Spectra,MsBackendPy'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend</a></span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  <span class="va">backend</span>,</span>
+<span>  pythonVariableName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  spectraVariableMapping <span class="op">=</span> <span class="fu"><a href="conversion.html">defaultSpectraVariableMapping</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  pythonLibrary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"matchms"</span>, <span class="st">"spectrum_utils"</span><span class="op">)</span>,</span>
+<span>  applyProcessing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -164,24 +175,26 @@ package vignette for details and examples.</p>
 
 
 <dt id="arg-pythonvariablename">pythonVariableName<a class="anchor" aria-label="anchor" href="#arg-pythonvariablename"></a></dt>
-<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: <code>character(1)</code> with the
-name of the variable/Python attribute that contains the list of
-<code>matchms.Spectrum</code> objects with the MS data.</p></dd>
+<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> and <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>:
+<code>character(1)</code> with the name of the variable/Python attribute that
+contains the list of <code>matchms.Spectrum</code> objects with the MS data.</p></dd>
 
 
 <dt id="arg-spectravariablemapping">spectraVariableMapping<a class="anchor" aria-label="anchor" href="#arg-spectravariablemapping"></a></dt>
-<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: named <code>character</code>
-with the mapping between spectra variable names and (<code>matchms.Spectrum</code>)
-metadata names. See <code><a href="conversion.html">defaultSpectraVariableMapping()</a></code>, and the
-description of the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> function for <code>MsBackendPy</code>
-for more information and details.</p></dd>
+<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> and <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>:
+named <code>character</code> with the mapping between spectra variable names and
+(<code>matchms.Spectrum</code>) metadata names. See
+<code><a href="conversion.html">defaultSpectraVariableMapping()</a></code>, and the description of the
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> function for <code>MsBackendPy</code> for more information
+and details. Note that for <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> only spectra variables
+defined by this parameter are transferred to Python.</p></dd>
 
 
 <dt id="arg-pythonlibrary">pythonLibrary<a class="anchor" aria-label="anchor" href="#arg-pythonlibrary"></a></dt>
-<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>: <code>character(1)</code> specifying
-the Python library used to represent the MS data in Python. Can be
-either <code>pythonLibrary = "matchms"</code> (the default) or
-<code>pythonLibrary = "spectrum_utils"</code>.</p></dd>
+<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> and <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>:
+<code>character(1)</code> specifying the Python library used to represent the MS
+data in Python. Can be either <code>pythonLibrary = "matchms"</code> (the default)
+or <code>pythonLibrary = "spectrum_utils"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -220,6 +233,17 @@ when a single column is requested, the data should be returned as a
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p>For <code>$</code>: <code>character(1)</code> with the name of the variable to
 retrieve.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>: <code>MsBackendPy</code> instance.</p></dd>
+
+
+<dt id="arg-applyprocessing">applyProcessing<a class="anchor" aria-label="anchor" href="#arg-applyprocessing"></a></dt>
+<dd><p>For <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>: <code>logical(1)</code> whether any cached
+data manipulation operations should be applied to the (peaks) data
+before transferring the data to Python. Defaults to
+<code>applyProcessing = TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -292,6 +316,12 @@ representing the MS data in Python. It can be either
 <code>pythonLibrary = "spectrum_utils"</code>. The function returns an initialized
 instance of <code>MsBackendPy</code>. See examples below for different settings
 and conversion of spectra variables.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code>: change the backend from a <code>Spectra</code> object to
+<code>MsBackendPy</code>. The function internally uses <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> (see
+above) to convert and store the relevant data to Python. By default, with
+<code>applyProcessing = TRUE</code>, all data manipulation operations are applied to
+the data before storing them to Python. Note that only spectra variables
+defined by parameter <code>spectraVariableMapping</code> are transferred to Python.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity()</a></code>, <code>intensity()&lt;-</code>: get or replace the intensity values.
 <code><a href="https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html" class="external-link">intensity()</a></code> returns a <code>NumericList</code> of length equal to the number of
 spectra with each element being the intensity values of the individual
@@ -463,7 +493,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Fri Mar  6 08:06:55 2026] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr  2 13:42:09 2026] </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
 <span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>

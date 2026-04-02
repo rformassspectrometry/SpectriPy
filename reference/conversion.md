@@ -31,7 +31,7 @@ Python libraries are:
   (`numeric`), *precursor_charge* (`integer`) and optionally also
   *retention_time* (`numeric`).
 
-See the indivudual function's documentation for more details.
+See the individual function's documentation for more details.
 
 Function to convert R Spectra objects into a Python list of matchms
 Spectrum objects using the `reticulate` package.

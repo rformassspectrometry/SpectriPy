@@ -85,6 +85,17 @@ spectraVariableMapping(object) <- value
 spectraVariableMapping(object, value)
 
 reindex(object)
+
+# S4 method for class 'Spectra,MsBackendPy'
+setBackend(
+  object,
+  backend,
+  pythonVariableName = character(),
+  spectraVariableMapping = defaultSpectraVariableMapping(),
+  pythonLibrary = c("matchms", "spectrum_utils"),
+  applyProcessing = TRUE,
+  ...
+)
 ```
 
 ## Arguments
@@ -96,25 +107,35 @@ reindex(object)
 - pythonVariableName:
 
   For
-  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  and
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
   `character(1)` with the name of the variable/Python attribute that
   contains the list of `matchms.Spectrum` objects with the MS data.
 
 - spectraVariableMapping:
 
   For
-  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  and
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
   named `character` with the mapping between spectra variable names and
   (`matchms.Spectrum`) metadata names. See
   [`defaultSpectraVariableMapping()`](https://rformassspectrometry.github.io/SpectriPy/reference/conversion.md),
   and the description of the
   [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
-  function for `MsBackendPy` for more information and details.
+  function for `MsBackendPy` for more information and details. Note that
+  for
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  only spectra variables defined by this parameter are transferred to
+  Python.
 
 - pythonLibrary:
 
   For
-  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  and
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
   `character(1)` specifying the Python library used to represent the MS
   data in Python. Can be either `pythonLibrary = "matchms"` (the
   default) or `pythonLibrary = "spectrum_utils"`.
@@ -163,6 +184,20 @@ reindex(object)
 - name:
 
   For `$`: `character(1)` with the name of the variable to retrieve.
+
+- backend:
+
+  For
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  `MsBackendPy` instance.
+
+- applyProcessing:
+
+  For
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  `logical(1)` whether any cached data manipulation operations should be
+  applied to the (peaks) data before transferring the data to Python.
+  Defaults to `applyProcessing = TRUE`.
 
 ## Value
 
@@ -242,6 +277,16 @@ the backend.
   `pythonLibrary = "spectrum_utils"`. The function returns an
   initialized instance of `MsBackendPy`. See examples below for
   different settings and conversion of spectra variables.
+
+- [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html):
+  change the backend from a `Spectra` object to `MsBackendPy`. The
+  function internally uses
+  [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  (see above) to convert and store the relevant data to Python. By
+  default, with `applyProcessing = TRUE`, all data manipulation
+  operations are applied to the data before storing them to Python. Note
+  that only spectra variables defined by parameter
+  `spectraVariableMapping` are transferred to Python.
 
 - [`intensity()`](https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html),
   `intensity()<-`: get or replace the intensity values.
@@ -437,7 +482,7 @@ s_2
 #> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 #> Data stored in the "s_p2" variable in Python
 #> Processing:
-#>  Switch backend from MsBackendMgf to MsBackendPy [Fri Mar  6 08:06:55 2026] 
+#>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr  2 13:42:09 2026] 
 
 ## This moved the data from R to Python, storing it in a Python variable
 ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object

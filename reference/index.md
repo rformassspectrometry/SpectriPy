@@ -16,6 +16,7 @@
   [`` `spectraVariableMapping<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`spectraVariableMapping(`*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`reindex()`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
+  [`setBackend(`*`<Spectra>`*`,`*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   : A MS data backend for MS data stored in Python
 - [`CosineGreedy()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)
   [`CosineHungarian()`](https://rformassspectrometry.github.io/SpectriPy/reference/compareSpectriPy.md)

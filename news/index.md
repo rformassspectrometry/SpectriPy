@@ -2,6 +2,14 @@
 
 ## SpectriPy 1.1
 
+### Changes in 1.1.4
+
+- Implement a
+  [`setBackend()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+  method for `MsBackendPy` with a parameter `applyProcessing` to allow
+  applying the processing queue and storing the modified peaks data to
+  Python.
+
 ### Changes in 1.1.3
 
 - Introduce new
