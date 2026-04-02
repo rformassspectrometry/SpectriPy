@@ -1,5 +1,11 @@
 # SpectriPy 1.1
 
+## Changes in 1.1.4
+
+- Implement a `setBackend()` method for `MsBackendPy` with a parameter
+  `applyProcessing` to allow applying the processing queue and storing the
+  modified peaks data to Python.
+
 ## Changes in 1.1.3
 
 - Introduce new `ModifiedCosineHungarian()` and `ModifiedCosineGreedy()`

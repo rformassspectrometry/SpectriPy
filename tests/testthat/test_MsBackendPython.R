@@ -763,6 +763,31 @@ test_that("intensity<-,MsBackendPy works", {
     expect_error(intensity(a) <- ints[1:3], "match the number")
 })
 
+test_that("setBackend,Spectra,MsBackendPy works", {
+    smod <- scalePeaks(s)
+    smod_1 <- setBackend(smod, MsBackendPy(), pythonVariableName = "smod_1",
+                         applyProcessing = FALSE)
+    expect_equal(smod@processingQueue, smod_1@processingQueue)
+    expect_s4_class(smod_1@backend, "MsBackendPy")
+    expect_equal(mz(smod), mz(smod_1))
+    expect_equal(intensity(smod), intensity(smod_1))
+
+    smod_1 <- setBackend(smod, MsBackendPy(), pythonVariableName = "smod_1",
+                         applyProcessing = TRUE)
+    expect_s4_class(smod_1@backend, "MsBackendPy")
+    expect_equal(mz(smod), mz(smod_1))
+    expect_equal(intensity(smod), intensity(smod_1))
+    expect_equal(smod_1@processingQueue, list())
+
+    ## mapping.
+    mp <- c(defaultSpectraVariableMapping(), TITLE = "TITLE", NAME = "NAME")
+    smod_1 <- setBackend(smod, MsBackendPy(), pythonVariableName = "smod_1",
+                         applyProcessing = TRUE, spectraVariableMapping = mp)
+    expect_true(all(c("compound_name", "title") %in% spectraVariables(smod_1)))
+    expect_equal(smod_1$title, smod$TITLE)
+    expect_equal(smod_1$compound_name, smod$NAME)
+})
+
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
 ##      spectra variables. number of spectra has to match.

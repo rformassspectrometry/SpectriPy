@@ -97,6 +97,13 @@
 #'   instance of `MsBackendPy`. See examples below for different settings
 #'   and conversion of spectra variables.
 #'
+#' - `setBackend()`: change the backend from a `Spectra` object to
+#'   `MsBackendPy`. The function internally uses `backendInitialize()` (see
+#'   above) to convert and store the relevant data to Python. By default, with
+#'   `applyProcessing = TRUE`, all data manipulation operations are applied to
+#'   the data before storing them to Python. Note that only spectra variables
+#'   defined by parameter `spectraVariableMapping` are transferred to Python.
+#'
 #' - `intensity()`, `intensity()<-`: get or replace the intensity values.
 #'   `intensity()` returns a `NumericList` of length equal to the number of
 #'   spectra with each element being the intensity values of the individual
@@ -169,6 +176,13 @@
 #'   This function is useful if the original data referenced by the backend was
 #'   subset or re-ordered by a different process (or a function in Python).
 #'
+#' @param applyProcessing For `setBackend()`: `logical(1)` whether any cached
+#'     data manipulation operations should be applied to the (peaks) data
+#'     before transferring the data to Python. Defaults to
+#'     `applyProcessing = TRUE`.
+#'
+#' @param backend For `setBackend()`: `MsBackendPy` instance.
+#'
 #' @param columns For `spectraData()`: `character` with the names of
 #'     columns (spectra variables) to retrieve. Defaults to
 #'     `spectraVariables(object)`. For `peaksData()`: `character` with the
@@ -189,20 +203,22 @@
 #'
 #' @param object A `MsBackendPy` object.
 #'
-#' @param pythonLibrary For `backendInitialize()`: `character(1)` specifying
-#'     the Python library used to represent the MS data in Python. Can be
-#'     either `pythonLibrary = "matchms"` (the default) or
-#'     `pythonLibrary = "spectrum_utils"`.
+#' @param pythonLibrary For `backendInitialize()` and `setBackend()`:
+#'     `character(1)` specifying the Python library used to represent the MS
+#'     data in Python. Can be either `pythonLibrary = "matchms"` (the default)
+#'     or `pythonLibrary = "spectrum_utils"`.
 #'
-#' @param pythonVariableName For `backendInitialize()`: `character(1)` with the
-#'     name of the variable/Python attribute that contains the list of
-#'     `matchms.Spectrum` objects with the MS data.
+#' @param pythonVariableName For `backendInitialize()` and `setBackend()`:
+#'     `character(1)` with the name of the variable/Python attribute that
+#'     contains the list of `matchms.Spectrum` objects with the MS data.
 #'
-#' @param spectraVariableMapping For `backendInitialize()`: named `character`
-#'     with the mapping between spectra variable names and (`matchms.Spectrum`)
-#'     metadata names. See [defaultSpectraVariableMapping()], and the
-#'     description of the `backendInitialize()` function for `MsBackendPy`
-#'     for more information and details.
+#' @param spectraVariableMapping For `backendInitialize()` and `setBackend()`:
+#'     named `character` with the mapping between spectra variable names and
+#'     (`matchms.Spectrum`) metadata names. See
+#'     [defaultSpectraVariableMapping()], and the description of the
+#'     `backendInitialize()` function for `MsBackendPy` for more information
+#'     and details. Note that for `setBackend()` only spectra variables
+#'     defined by this parameter are transferred to Python.
 #'
 #' @param value Replacement value(s).
 #'
@@ -792,6 +808,41 @@ reindex <- function(object) {
     object@i <- seq_len(.py_var_length(object))
     object
 }
+
+#' @rdname MsBackendPy
+#'
+#' @importMethodsFrom ProtGenerics setBackend
+#'
+#' @export
+setMethod("setBackend", c("Spectra", "MsBackendPy"),
+          function(object, backend, pythonVariableName = character(),
+                   spectraVariableMapping = defaultSpectraVariableMapping(),
+                   pythonLibrary = c("matchms", "spectrum_utils"),
+                   applyProcessing = TRUE, ...) {
+              backend_class <- class(object@backend)[1L]
+              sv <- intersect(spectraVariables(object),
+                              names(spectraVariableMapping))
+              sv <- union(sv, peaksVariables(object))
+              if (applyProcessing) {
+                  object@backend <- backendInitialize(
+                      backend, data = spectraData(object, columns = sv),
+                      pythonVariableName = pythonVariableName,
+                      spectraVariableMapping = spectraVariableMapping,
+                      pythonLibrary = pythonLibrary)
+                  object@processingQueue <- list()
+                  object@processingQueueVariables <- character()
+              } else
+                  object@backend <- backendInitialize(
+                      backend, data = spectraData(object@backend, columns = sv),
+                      pythonVariableName = pythonVariableName,
+                      spectraVariableMapping = spectraVariableMapping,
+                      pythonLibrary = pythonLibrary)
+              object@processing <- Spectra:::.logging(object@processing,
+                                                      "Switch backend from ",
+                                                      backend_class, " to ",
+                                                      class(object@backend))
+              object
+          })
 
 ################################################################################
 ##        HELPER FUNCTIONS

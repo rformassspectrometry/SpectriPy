@@ -30,7 +30,7 @@
 #'   (`numeric`), *precursor_charge* (`integer`) and optionally also
 #'   *retention_time* (`numeric`).
 #'
-#' See the indivudual function's documentation for more details.
+#' See the individual function's documentation for more details.
 #'
 #'
 #' @section Translation of MS data objects:
