@@ -87,7 +87,7 @@ supports metadata variables \emph{identifier} (\code{character}), \emph{precurso
 \emph{retention_time} (\code{numeric}).
 }
 
-See the indivudual function's documentation for more details.
+See the individual function's documentation for more details.
 
 Function to convert R Spectra objects into a Python list of matchms Spectrum
 objects using the \code{reticulate} package.

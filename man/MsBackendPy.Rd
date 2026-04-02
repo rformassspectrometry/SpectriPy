@@ -16,6 +16,7 @@
 \alias{spectraVariableMapping<-,MsBackendPy-method}
 \alias{spectraVariableMapping,MsBackendPy-method}
 \alias{reindex}
+\alias{setBackend,Spectra,MsBackendPy-method}
 \title{A MS data backend for MS data stored in Python}
 \usage{
 \S4method{backendInitialize}{MsBackendPy}(
@@ -52,24 +53,36 @@
 \S4method{spectraVariableMapping}{MsBackendPy}(object, value)
 
 reindex(object)
+
+\S4method{setBackend}{Spectra,MsBackendPy}(
+  object,
+  backend,
+  pythonVariableName = character(),
+  spectraVariableMapping = defaultSpectraVariableMapping(),
+  pythonLibrary = c("matchms", "spectrum_utils"),
+  applyProcessing = TRUE,
+  ...
+)
 }
 \arguments{
 \item{object}{A \code{MsBackendPy} object.}
 
-\item{pythonVariableName}{For \code{backendInitialize()}: \code{character(1)} with the
-name of the variable/Python attribute that contains the list of
-\code{matchms.Spectrum} objects with the MS data.}
+\item{pythonVariableName}{For \code{backendInitialize()} and \code{setBackend()}:
+\code{character(1)} with the name of the variable/Python attribute that
+contains the list of \code{matchms.Spectrum} objects with the MS data.}
 
-\item{spectraVariableMapping}{For \code{backendInitialize()}: named \code{character}
-with the mapping between spectra variable names and (\code{matchms.Spectrum})
-metadata names. See \code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}}, and the
-description of the \code{backendInitialize()} function for \code{MsBackendPy}
-for more information and details.}
+\item{spectraVariableMapping}{For \code{backendInitialize()} and \code{setBackend()}:
+named \code{character} with the mapping between spectra variable names and
+(\code{matchms.Spectrum}) metadata names. See
+\code{\link[=defaultSpectraVariableMapping]{defaultSpectraVariableMapping()}}, and the description of the
+\code{backendInitialize()} function for \code{MsBackendPy} for more information
+and details. Note that for \code{setBackend()} only spectra variables
+defined by this parameter are transferred to Python.}
 
-\item{pythonLibrary}{For \code{backendInitialize()}: \code{character(1)} specifying
-the Python library used to represent the MS data in Python. Can be
-either \code{pythonLibrary = "matchms"} (the default) or
-\code{pythonLibrary = "spectrum_utils"}.}
+\item{pythonLibrary}{For \code{backendInitialize()} and \code{setBackend()}:
+\code{character(1)} specifying the Python library used to represent the MS
+data in Python. Can be either \code{pythonLibrary = "matchms"} (the default)
+or \code{pythonLibrary = "spectrum_utils"}.}
 
 \item{...}{Additional parameters.}
 
@@ -94,6 +107,13 @@ when a single column is requested, the data should be returned as a
 
 \item{name}{For \code{$}: \code{character(1)} with the name of the variable to
 retrieve.}
+
+\item{backend}{For \code{setBackend()}: \code{MsBackendPy} instance.}
+
+\item{applyProcessing}{For \code{setBackend()}: \code{logical(1)} whether any cached
+data manipulation operations should be applied to the (peaks) data
+before transferring the data to Python. Defaults to
+\code{applyProcessing = TRUE}.}
 }
 \value{
 See description of individual functions for their return values.
@@ -190,6 +210,12 @@ representing the MS data in Python. It can be either
 \code{pythonLibrary = "spectrum_utils"}. The function returns an initialized
 instance of \code{MsBackendPy}. See examples below for different settings
 and conversion of spectra variables.
+\item \code{setBackend()}: change the backend from a \code{Spectra} object to
+\code{MsBackendPy}. The function internally uses \code{backendInitialize()} (see
+above) to convert and store the relevant data to Python. By default, with
+\code{applyProcessing = TRUE}, all data manipulation operations are applied to
+the data before storing them to Python. Note that only spectra variables
+defined by parameter \code{spectraVariableMapping} are transferred to Python.
 \item \code{intensity()}, \verb{intensity()<-}: get or replace the intensity values.
 \code{intensity()} returns a \code{NumericList} of length equal to the number of
 spectra with each element being the intensity values of the individual
