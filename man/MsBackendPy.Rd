@@ -174,6 +174,22 @@ variables will first load the current data from Python to R, update or
 replace the values and then store the full MS data again to the
 referenced Python attribute.
 }
+\section{Python metadata names \emph{vs} spectra variables}{
+
+
+The \emph{matchms} library in Python supports arbitrary metadata assigned to
+a spectrum, similar to \emph{Spectra}'s spectra variables concept. However,
+\emph{matchms} and \emph{Spectra} use different names for the same metadata/variables.
+To support this, \emph{MsBackendPy} implements \code{spectraVariableMapping} which
+allows to link spectra variable names to \emph{matchms} metadata names. This
+mapping can be provided with the \code{spectraVariableMapping} to the
+\code{backendInitialize()} function. Also, be aware that \emph{matchms} automatically
+\strong{renames} certain metadata fields: a metadata \code{"NAME"} will be
+automatically renamed to \code{"compound_name"}. Also, \emph{matchms} generally
+supports only lower-case metadata names.
+See also \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} for more information.
+}
+
 \section{\code{MsBackendPy} methods}{
 
 

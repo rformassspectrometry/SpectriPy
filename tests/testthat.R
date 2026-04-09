@@ -13,9 +13,9 @@ test_check("SpectriPy")
 
 ## TODO: add tests from the Spectra unit test suite!
 
-## ## Run the MsBackend spectra variable test suite
-## test_suite <- system.file("test_backends", "test_MsBackend",
-##                           package = "Spectra")
+## Run the MsBackend spectra variable test suite
+test_suite <- system.file("test_backends", "test_MsBackend",
+                          package = "Spectra")
 
-## ## Run single test file.
+## Run single test file.
 ## res <- test_dir(test_suite, stop_on_failure = TRUE)
