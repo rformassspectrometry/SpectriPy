@@ -49,7 +49,7 @@ package vignette for details and examples."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -281,6 +281,23 @@ replace the values and then store the full MS data again to the
 referenced Python attribute.</p>
     </div>
     <div class="section level2">
+    <h2 id="python-metadata-names-vs-spectra-variables">Python metadata names <em>vs</em> spectra variables<a class="anchor" aria-label="anchor" href="#python-metadata-names-vs-spectra-variables"></a></h2>
+
+
+
+<p>The <em>matchms</em> library in Python supports arbitrary metadata assigned to
+a spectrum, similar to <em>Spectra</em>'s spectra variables concept. However,
+<em>matchms</em> and <em>Spectra</em> use different names for the same metadata/variables.
+To support this, <em>MsBackendPy</em> implements <code>spectraVariableMapping</code> which
+allows to link spectra variable names to <em>matchms</em> metadata names. This
+mapping can be provided with the <code>spectraVariableMapping</code> to the
+<code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code> function. Also, be aware that <em>matchms</em> automatically
+<strong>renames</strong> certain metadata fields: a metadata <code>"NAME"</code> will be
+automatically renamed to <code>"compound_name"</code>. Also, <em>matchms</em> generally
+supports only lower-case metadata names.
+See also <code><a href="conversion.html">setSpectraVariableMapping()</a></code> for more information.</p>
+    </div>
+    <div class="section level2">
     <h2 id="msbackendpy-methods"><code>MsBackendPy</code> methods<a class="anchor" aria-label="anchor" href="#msbackendpy-methods"></a></h2>
 
 
@@ -493,7 +510,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr  2 13:42:09 2026] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Fri Apr 10 06:13:17 2026] </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
 <span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
@@ -508,8 +525,8 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     "charge"             "retention_time" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              collisionEnergy      isolationWindowTargetMz </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           "collision_energy" "isolation_window_target_mz" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel                  dataStorage </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level"               "data_storage" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Thus, for example the precursor m/z is available in `s_2`, but other</span></span></span>
 <span class="r-in"><span><span class="co">## spectra variables from `s`, such as `"SMILES"` are not:</span></span></span>

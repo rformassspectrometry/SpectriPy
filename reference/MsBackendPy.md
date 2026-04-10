@@ -235,6 +235,23 @@ variables will first load the current data from Python to R, update or
 replace the values and then store the full MS data again to the
 referenced Python attribute.
 
+## Python metadata names *vs* spectra variables
+
+The *matchms* library in Python supports arbitrary metadata assigned to
+a spectrum, similar to *Spectra*'s spectra variables concept. However,
+*matchms* and *Spectra* use different names for the same
+metadata/variables. To support this, *MsBackendPy* implements
+`spectraVariableMapping` which allows to link spectra variable names to
+*matchms* metadata names. This mapping can be provided with the
+`spectraVariableMapping` to the
+[`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
+function. Also, be aware that *matchms* automatically **renames**
+certain metadata fields: a metadata `"NAME"` will be automatically
+renamed to `"compound_name"`. Also, *matchms* generally supports only
+lower-case metadata names. See also
+[`setSpectraVariableMapping()`](https://rformassspectrometry.github.io/SpectriPy/reference/conversion.md)
+for more information.
+
 ## `MsBackendPy` methods
 
 The `MsBackendPy` supports all methods defined by the
@@ -482,7 +499,7 @@ s_2
 #> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 #> Data stored in the "s_p2" variable in Python
 #> Processing:
-#>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr  2 13:42:09 2026] 
+#>  Switch backend from MsBackendMgf to MsBackendPy [Fri Apr 10 06:13:17 2026] 
 
 ## This moved the data from R to Python, storing it in a Python variable
 ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object
@@ -497,8 +514,8 @@ defaultSpectraVariableMapping()
 #>                     "charge"             "retention_time" 
 #>              collisionEnergy      isolationWindowTargetMz 
 #>           "collision_energy" "isolation_window_target_mz" 
-#>                      msLevel 
-#>                   "ms_level" 
+#>                      msLevel                  dataStorage 
+#>                   "ms_level"               "data_storage" 
 
 ## Thus, for example the precursor m/z is available in `s_2`, but other
 ## spectra variables from `s`, such as `"SMILES"` are not:

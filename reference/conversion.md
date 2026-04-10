@@ -304,15 +304,15 @@ spectraVariableMapping()
 #>                     "charge"             "retention_time" 
 #>              collisionEnergy      isolationWindowTargetMz 
 #>           "collision_energy" "isolation_window_target_mz" 
-#>                      msLevel 
-#>                   "ms_level" 
+#>                      msLevel                  dataStorage 
+#>                   "ms_level"               "data_storage" 
 
 ## The names of that character vector represent the names of the spectra
 ## variables in R, the elements the name of the metadata variable in Python.
 ## Below we list the available metadata information from the first
 ## Spectrum in Python
 s_py[0]$metadata
-#> {'precursor_mz': 718.36, 'precursor_intensity': nan, 'charge': 2, 'retention_time': 2678.94, 'collision_energy': nan, 'isolation_window_target_mz': nan, 'ms_level': 2}
+#> {'precursor_mz': 718.36, 'precursor_intensity': nan, 'charge': 2, 'retention_time': 2678.94, 'collision_energy': nan, 'isolation_window_target_mz': nan, 'ms_level': 2, 'data_storage': '<memory>'}
 
 ## `setSpectraVariableMapping()` allows to replace the default mapping
 ## of variables. Below we e.g. add a new spectra variable to the `Spectra`

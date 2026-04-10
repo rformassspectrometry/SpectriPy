@@ -2,6 +2,11 @@
 
 ## SpectriPy 1.1
 
+### Changes in 1.1.5
+
+- Fix `$<-`, `spectraData()<-` and related replacement methods for
+  `Spectra`/`MsBackendPy` of length 1.
+
 ### Changes in 1.1.4
 
 - Implement a

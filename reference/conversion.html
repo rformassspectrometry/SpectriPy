@@ -57,7 +57,7 @@ objects using the reticulate package."><meta property="og:image" content="https:
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -356,15 +356,15 @@ data (m/z and intensity values) but no spectra metadata.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     "charge"             "retention_time" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              collisionEnergy      isolationWindowTargetMz </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           "collision_energy" "isolation_window_target_mz" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel                  dataStorage </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level"               "data_storage" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## The names of that character vector represent the names of the spectra</span></span></span>
 <span class="r-in"><span><span class="co">## variables in R, the elements the name of the metadata variable in Python.</span></span></span>
 <span class="r-in"><span><span class="co">## Below we list the available metadata information from the first</span></span></span>
 <span class="r-in"><span><span class="co">## Spectrum in Python</span></span></span>
 <span class="r-in"><span><span class="va">s_py</span><span class="op">[</span><span class="fl">0</span><span class="op">]</span><span class="op">$</span><span class="va">metadata</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {'precursor_mz': 718.36, 'precursor_intensity': nan, 'charge': 2, 'retention_time': 2678.94, 'collision_energy': nan, 'isolation_window_target_mz': nan, 'ms_level': 2}</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> {'precursor_mz': 718.36, 'precursor_intensity': nan, 'charge': 2, 'retention_time': 2678.94, 'collision_energy': nan, 'isolation_window_target_mz': nan, 'ms_level': 2, 'data_storage': '&lt;memory&gt;'}</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## `setSpectraVariableMapping()` allows to replace the default mapping</span></span></span>
 <span class="r-in"><span><span class="co">## of variables. Below we e.g. add a new spectra variable to the `Spectra`</span></span></span>

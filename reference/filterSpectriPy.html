@@ -45,7 +45,7 @@ normalize_intensities(): Normalizes the intensities of peaks
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -249,8 +249,8 @@ translated the MS data between R and Python.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     "charge"             "retention_time" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              collisionEnergy      isolationWindowTargetMz </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           "collision_energy" "isolation_window_target_mz" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel                  dataStorage </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level"               "data_storage" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## We can also pass a custom *spectra variable mapping* with the `mapping`</span></span></span>
 <span class="r-in"><span><span class="co">## parameter to the `filterSpectriPy()` function. Below we create such</span></span></span>
@@ -265,8 +265,10 @@ translated the MS data between R and Python.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     "charge"             "retention_time" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              collisionEnergy      isolationWindowTargetMz </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           "collision_energy" "isolation_window_target_mz" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel                         name </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level"              "compound_name" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      msLevel                  dataStorage </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   "ms_level"               "data_storage" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         name </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              "compound_name" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Repeat the filtering operation passing this mapping information:</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">filterSpectriPy</span><span class="op">(</span></span></span>

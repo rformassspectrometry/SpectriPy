@@ -190,8 +190,8 @@ spectraVariableMapping()
 #>                     "charge"             "retention_time" 
 #>              collisionEnergy      isolationWindowTargetMz 
 #>           "collision_energy" "isolation_window_target_mz" 
-#>                      msLevel 
-#>                   "ms_level" 
+#>                      msLevel                  dataStorage 
+#>                   "ms_level"               "data_storage" 
 
 ## We can also pass a custom *spectra variable mapping* with the `mapping`
 ## parameter to the `filterSpectriPy()` function. Below we create such
@@ -206,8 +206,10 @@ map
 #>                     "charge"             "retention_time" 
 #>              collisionEnergy      isolationWindowTargetMz 
 #>           "collision_energy" "isolation_window_target_mz" 
-#>                      msLevel                         name 
-#>                   "ms_level"              "compound_name" 
+#>                      msLevel                  dataStorage 
+#>                   "ms_level"               "data_storage" 
+#>                         name 
+#>              "compound_name" 
 
 ## Repeat the filtering operation passing this mapping information:
 res <- filterSpectriPy(
