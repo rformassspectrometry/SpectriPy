@@ -1,5 +1,11 @@
 # SpectriPy 1.1
 
+## Changes in 1.1.6
+
+- Add `spectraNames<-` method for `MsBackendPy` and support getting/setting
+  spectrum names. They are stored in a metadata field (spectra variable)
+  *spectrum_name*.
+
 ## Changes in 1.1.5
 
 - Fix `$<-`, `spectraData()<-` and related replacement methods for

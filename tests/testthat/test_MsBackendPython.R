@@ -540,6 +540,15 @@ test_that("spectraNames,MsBackendPy works", {
     be <- backendInitialize(MsBackendPy(), "s_p")
     res <- spectraNames(be)
     expect_equal(res, spectraNames(s@backend))
+
+    tmp <- backendInitialize(MsBackendPy(), data = spectraData(be),
+                             pythonVariableName = "delete_me")
+    expect_equal(spectraNames(tmp), NULL)
+    expect_error(spectraNames(tmp) <- 1, "'value'")
+    spectraNames(tmp) <- as.character(seq_along(tmp))
+    expect_true(any(spectraVariables(tmp) == "spectrum_name"))
+    expect_equal(tmp$spectrum_name, as.character(seq_along(tmp)))
+    expect_equal(spectraNames(tmp), as.character(seq_along(tmp)))
 })
 
 test_that("tic,MsBackendPy works", {
@@ -844,3 +853,4 @@ test_that("MsBackendPy of length 1 works", {
 ##      internally call peaksData()<-
 ## DONE all other replacement methods.
 ## TODO support the Spectra unit test suite
+## TODO $<- to replace only part of the data (not the full).

@@ -167,6 +167,10 @@
 #'   (i.e., being equal to `length(object)`) and the `DataFrame` must also
 #'   contain the spectras' *m/z* and intensity values.
 #'
+#' - `spectraNames()`, `spectraNames()<-`: extracts, respectively, adds
+#'   (replaces) names for the individual spectra. These are stored as spectra
+#'   variable/metadata field `"spectrum_name"` in the Python representation.
+#'
 #' - `spectraVariables()`: retrieves available spectra variables, which include
 #'   the names of all metadata attributes in the `matchms.Spectrum` objects
 #'   and the *core* spectra variables [Spectra::coreSpectraVariables()].
@@ -782,7 +786,21 @@ setMethod("smoothed", "MsBackendPy", function(object) {
 
 #' @importMethodsFrom ProtGenerics spectraNames
 setMethod("spectraNames", "MsBackendPy", function(object) {
-    rownames(spectraData(object))
+    if (any(spectraVariables(object) == "spectrum_name"))
+        object$spectrum_name
+    else NULL
+})
+
+#' @importMethodsFrom ProtGenerics spectraNames<-
+#'
+#' @rdname MsBackendPy
+#'
+#' @export
+setReplaceMethod("spectraNames", "MsBackendPy", function(object, value) {
+    if (length(value) != length(object))
+        stop("'value' has to be of length ", length(object))
+    object$spectrum_name <- value
+    object
 })
 
 #' @importMethodsFrom ProtGenerics tic

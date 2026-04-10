@@ -13,6 +13,7 @@
 \alias{$<-,MsBackendPy-method}
 \alias{intensity<-,MsBackendPy-method}
 \alias{mz<-,MsBackendPy-method}
+\alias{spectraNames<-,MsBackendPy-method}
 \alias{spectraVariableMapping<-,MsBackendPy-method}
 \alias{spectraVariableMapping,MsBackendPy-method}
 \alias{reindex}
@@ -47,6 +48,8 @@
 \S4method{intensity}{MsBackendPy}(object) <- value
 
 \S4method{mz}{MsBackendPy}(object) <- value
+
+\S4method{spectraNames}{MsBackendPy}(object) <- value
 
 \S4method{spectraVariableMapping}{MsBackendPy}(object) <- value
 
@@ -275,6 +278,9 @@ with the values provided with the submitted \code{DataFrame}. The number of
 rows of this \code{DataFrame} has to match the number of spectra of \code{object}
 (i.e., being equal to \code{length(object)}) and the \code{DataFrame} must also
 contain the spectras' \emph{m/z} and intensity values.
+\item \code{spectraNames()}, \verb{spectraNames()<-}: extracts, respectively, adds
+(replaces) names for the individual spectra. These are stored as spectra
+variable/metadata field \code{"spectra_name"} in the Python representation.
 \item \code{spectraVariables()}: retrieves available spectra variables, which include
 the names of all metadata attributes in the \code{matchms.Spectrum} objects
 and the \emph{core} spectra variables \code{\link[Spectra:spectraData]{Spectra::coreSpectraVariables()}}.
