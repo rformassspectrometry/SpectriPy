@@ -245,7 +245,8 @@ NULL
     collisionEnergy = "collision_energy",
     isolationWindowTargetMz = "isolation_window_target_mz",
     ## polarity = "ionmode", # Disabling since matchms does not support int.
-    msLevel = "ms_level"
+    msLevel = "ms_level",
+    dataStorage = "data_storage"
 )
 
 .SPECTRA_2_SPECTRUM_UTILS <- c(
@@ -408,7 +409,8 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
 .rspec_to_matchms_pyspec <- function(x, mapping = spectraVariableMapping()) {
     if (is(x, "Spectra"))
         pks <- peaksData(x, c("mz", "intensity"), return.type = "list")
-    else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind)
+    else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind,
+                       SIMPLIFY = FALSE, USE.NAMES = FALSE)
     sv <- mapping[!mapping %in% c("mz", "intensity")]
     if (length(sv)) {
         if (is(x, "Spectra"))
@@ -447,7 +449,8 @@ rspec_to_pyspec <- function(x, mapping = spectraVariableMapping(),
     function(x, mapping = spectraVariableMapping()) {
         if (is(x, "Spectra"))
             pks <- peaksData(x, c("mz", "intensity"))
-        else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind)
+        else pks <- mapply(mz = x$mz, intensity = x$intensity, FUN = cbind,
+                           SIMPLIFY = FALSE, USE.NAMES = FALSE)
         l <- length(pks)
         sv <- mapping[!mapping %in% c("mz", "intensity")]
         svm <- sv[sv %in% .SPECTRA_2_SPECTRUM_UTILS]

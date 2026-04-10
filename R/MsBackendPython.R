@@ -29,6 +29,20 @@
 #' between R and Python. See the description for `backendInitialize()` and the
 #' package vignette for details and examples.
 #'
+#' @section Python metadata names *vs* spectra variables:
+#'
+#' The *matchms* library in Python supports arbitrary metadata assigned to
+#' a spectrum, similar to *Spectra*'s spectra variables concept. However,
+#' *matchms* and *Spectra* use different names for the same metadata/variables.
+#' To support this, *MsBackendPy* implements `spectraVariableMapping` which
+#' allows to link spectra variable names to *matchms* metadata names. This
+#' mapping can be provided with the `spectraVariableMapping` to the
+#' `backendInitialize()` function. Also, be aware that *matchms* automatically
+#' **renames** certain metadata fields: a metadata `"NAME"` will be
+#' automatically renamed to `"compound_name"`. Also, *matchms* generally
+#' supports only lower-case metadata names.
+#' See also [setSpectraVariableMapping()] for more information.
+#'
 #' @details
 #'
 #' The `MsBackendPy` keeps only a reference to the MS data in Python (i.e. the
@@ -633,7 +647,7 @@ setMethod("$", "MsBackendPy", function(x, name) {
 #' @importMethodsFrom Spectra peaksVariables
 setReplaceMethod("$", "MsBackendPy", function(x, name, value) {
     spd <- spectraData(
-        x, union(names(spectraVariableMapping(x)), peaksVariables(x)))
+        x, union(spectraVariables(x), peaksVariables(x)))
     spd[[name]] <- value
     spectraData(x) <- spd
     x
@@ -678,7 +692,7 @@ setMethod("intensity", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("intensity", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
-    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
+    spd <- spectraData(object, union(spectraVariables(object),
                                      peaksVariables(object)))
     spd[["intensity"]] <- value
     spectraData(object) <- spd

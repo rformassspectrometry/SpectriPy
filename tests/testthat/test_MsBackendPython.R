@@ -124,7 +124,8 @@ test_that("backendInitialize,MsBackendPy works with providing data", {
     expect_true(all(is.na(res$precursorMz)))
     ## Only non-NA variables have a mapping
     expect_equal(res@spectraVariableMapping,
-                 c(precursorCharge = "charge", msLevel = "ms_level"))
+                 c(precursorCharge = "charge", msLevel = "ms_level",
+                   dataStorage = "data_storage"))
 
     ## Repeat with spectrum_utils
     py_del_attr(py, "ttt")
@@ -786,6 +787,46 @@ test_that("setBackend,Spectra,MsBackendPy works", {
     expect_true(all(c("compound_name", "title") %in% spectraVariables(smod_1)))
     expect_equal(smod_1$title, smod$TITLE)
     expect_equal(smod_1$compound_name, smod$NAME)
+})
+
+test_that("$<- does not change any other spectra variables", {
+    map <- c(spectraVariableMapping(), INCHI = "inchi", NAME = "NAME",
+             SMILES = "smiles", spectrum_index = "spectrum_index")
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    spectraVariableMapping = map)@backend
+    sd <- spectraData(a)
+    a$other_variable <- "a"
+    res <- spectraData(a)
+    expect_true(all(colnames(sd) %in% colnames(res)))
+    expect_equal(sd[, intersect(colnames(sd), colnames(res))],
+                 res[, intersect(colnames(sd), colnames(res))])
+    expect_true(all(res$other_col == "a"))
+})
+
+test_that("MsBackendPy of length 1 works", {
+    map <- c(spectraVariableMapping(), INCHI = "inchi", NAME = "NAME",
+             SMILES = "smiles")
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    spectraVariableMapping = map)@backend
+    ## Subset
+    a_3 <- a[c(3L, 1L, 5L)]
+    sd <- spectraData(a_3)
+    expect_equal(sd$SMILES, a$SMILES[c(3L, 1L, 5L)])
+    a_3$other_var <- "a"
+    res <- spectraData(a_3)
+    expect_true(all(colnames(sd) %in% colnames(res)))
+    expect_equal(sd[, intersect(colnames(sd), colnames(res))],
+                 res[, intersect(colnames(sd), colnames(res))])
+    expect_true(all(res$other_var == "a"))
+
+    a_1 <- a[3L]
+    sd <- spectraData(a_1)
+    a_1$other_var_2 <- "a"
+    res <- spectraData(a_1)
+    expect_true(all(colnames(sd) %in% colnames(res)))
+    expect_equal(sd[, intersect(colnames(sd), colnames(res))],
+                 res[, intersect(colnames(sd), colnames(res))])
+    expect_equal(res$other_var_2, "a")
 })
 
 ## Comments, thoughts TODO
