@@ -50,10 +50,20 @@
 #' name of the variable in Python) as well as an index pointing to the
 #' individual spectra in Python but no other data. Any data requested from
 #' the `MsBackendPy` is accessed and translated on-the-fly from the Python
-#' variable. The `MsBackendPy` is thus an interface to the MS data, but not
-#' a data container. All changes to the MS data in the Python variable
-#' (performed e.g. in Python) immediately affect any `MsBackendPy` instances
-#' pointing to this variable.
+#' variable. The `MsBackendPy` is thus an interface to the Python MS data
+#' structure, but not a data container. All changes to the MS data in the
+#' Python variable (performed e.g. in Python) immediately affect any
+#' `MsBackendPy` instances pointing to this variable.
+#'
+#' All **Subset** operations on a `MsBackendPy` with e.g. `[` are *delayed*
+#' meaning that the data in Python is not immediately changed, but that
+#' only the index to the individual spectrum objects in Python (which is stored
+#' within the backend) is updated. Importantly, however, any replacement
+#' operation such as `$<-` or `rtime<-` will realize the subset also in Python
+#' (i.e., subset and change the order of the data in Python according to the
+#' index in R). Be aware that this might cause data corruption if two
+#' `MsBackendPy` instances use to the same data in Python (i.e., refer to the
+#' same Python variable).
 #'
 #' Special care must be taken if the MS data structure in Python is subset or
 #' its order is changed (e.g. by another process). In that case it might be
@@ -602,6 +612,7 @@ setMethod(
 #' @rdname MsBackendPy
 setReplaceMethod("peaksData", "MsBackendPy", function(object, value) {
     Spectra:::.check_peaks_data_value(value, length(object))
+    object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(object@py_var, value, "peaks"),
            spectrum_utils = .py_spectrum_utils_replace(
@@ -628,6 +639,7 @@ setMethod("$", "MsBackendPy", function(x, name) {
 #' @importMethodsFrom Spectra peaksVariables
 setReplaceMethod("$", "MsBackendPy", function(x, name, value) {
     if (!length(x)) return(x)
+    x <- .py_realize_subset(x)
     if (x@py_lib == "matchms") {
         if (name %in% c("mz", "intensity")) {
             .check_mz_intensity(value, length(x), lengths(x))
@@ -711,6 +723,7 @@ setMethod("intensity", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("intensity", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
+    object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(
                object@py_var, value, "intensity"),
@@ -749,6 +762,7 @@ setMethod("mz", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("mz", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
+    object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(
                object@py_var, value, "mz"),
@@ -816,6 +830,7 @@ setMethod("spectraNames", "MsBackendPy", function(object) {
 setReplaceMethod("spectraNames", "MsBackendPy", function(object, value) {
     if (length(value) != length(object))
         stop("'value' has to be of length ", length(object))
+    object <- .py_realize_subset(object)
     object$spectrum_name <- value
     object
 })
@@ -967,7 +982,7 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
 #' @noRd
 .py_realize_subset <- function(x) {
     if (length(x) && !identical(unname(x@i), seq_along(x))) {
-        py_set_attr(py, "_tmp_i_", (x@i - 1L))
+        py_set_attr(py, "_tmp_i_", as.list(x@i - 1L))
         py_run_string(paste0(
             x@py_var, " = list(map(lambda i: ", x@py_var, "[i], _tmp_i_))\n"),
             local = FALSE, convert = FALSE)

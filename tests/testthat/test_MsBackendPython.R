@@ -841,7 +841,7 @@ test_that("MsBackendPy of length 1 works", {
     ## Subset
     a_3 <- a[c(3L, 1L, 5L)]
     sd <- spectraData(a_3)
-    expect_equal(sd$SMILES, a$SMILES[c(3L, 1L, 5L)])
+    expect_equal(sd$SMILES, s$SMILES[c(3L, 1L, 5L)])
     a_3$other_var <- "a"
     res <- spectraData(a_3)
     expect_true(all(colnames(sd) %in% colnames(res)))
@@ -849,7 +849,7 @@ test_that("MsBackendPy of length 1 works", {
                  res[, intersect(colnames(sd), colnames(res))])
     expect_true(all(res$other_var == "a"))
 
-    a_1 <- a[3L]
+    a_1 <- a_3[3L]
     sd <- spectraData(a_1)
     a_1$other_var_2 <- "a"
     res <- spectraData(a_1)
@@ -857,6 +857,7 @@ test_that("MsBackendPy of length 1 works", {
     expect_equal(sd[, intersect(colnames(sd), colnames(res))],
                  res[, intersect(colnames(sd), colnames(res))])
     expect_equal(res$other_var_2, "a")
+    expect_equal(a_1$precursorMz, s[5]$precursorMz)
 })
 
 test_that("efficient $<- works with matchms", {
@@ -921,11 +922,11 @@ test_that("replacing m/z, intensity and peaks data works for matchms", {
     expect_match(res, "mz = _tmp_var")
     expect_match(res, "intensities = _tmp_var")
     res <- .py_matchms_replace_cmd("aaa", "mz")
-    expect_match(res, "mz = _tmp_var")
-    expect_no_match(res, "intensities = _tmp_var")
+    expect_match(res, "mz = np.array(_tmp_var", fixed = TRUE)
+    expect_no_match(res, "intensities = np.array(_tmp_var", fixed = TRUE)
     res <- .py_matchms_replace_cmd("aaa", "intensity")
-    expect_no_match(res, "mz = _tmp_var")
-    expect_match(res, "intensities = _tmp_var")
+    expect_no_match(res, "mz = np.array(_tmp_var", fixed = TRUE)
+    expect_match(res, "intensities = np.array(_tmp_var", fixed = TRUE)
 
     a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
 
@@ -1023,15 +1024,16 @@ test_that("replacing m/z, intensity and peaks data works for spectrum_utils", {
     a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
                     pythonLibrary = "spectrum_utils")@backend
     ints <- as.list(intensity(a))
-    .py_spectrum_utils_replace(
+    SpectriPy:::.py_spectrum_utils_replace(
                     "tmp", lapply(ints, function(z) z + 101), "intensity")
-    expect_equal(as.list(intensity(a)), lapply(mzs, function(z) z + 101),
+    expect_equal(as.list(intensity(a)), lapply(ints, function(z) z + 101),
                  tolerance = SPECTRUM_UTILS_TOLERANCE)
     intensity(a) <- lapply(ints, function(z) z + 10.1)
     expect_equal(as.list(intensity(a)), lapply(ints, function(z) z + 10.1),
                  tolerance = SPECTRUM_UTILS_TOLERANCE)
     a$intensity <- lapply(ints, function(z) z / 10)
-    expect_equal(as.list(intensity(a)), lapply(ints, function(z) z / 10))
+    expect_equal(as.list(intensity(a)), lapply(ints, function(z) z / 10),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
 })
 
 test_that(".py_realize_subset works", {
