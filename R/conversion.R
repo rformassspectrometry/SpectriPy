@@ -696,3 +696,18 @@ pyspec_to_rspec <- function(x, mapping = spectraVariableMapping(),
            "for i in _i_:\n",
            "  _res_.append(np.column_stack((",x,"[i].mz,",x,"[i].intensity)))")
 }
+
+## .var_name <- function(x) {
+##     i <- 0
+##     if (any(ls(envir = .GlobalEnv) == x)) {
+##         xs <- strsplit(x, "_", fixed = TRUE)[[1L]]
+##         if (!is.na(suppressWarnings(i2 <- as.integer(xs[length(xs)]))))
+##             i <- i2
+##         x <- .var_name(paste0(c(xs[1:(length(xs) - 1)], i + 1L),
+##                               collapse = "_"))
+##     }
+##     x
+## }
+
+## .var_name("a")
+## a_1 <- 2

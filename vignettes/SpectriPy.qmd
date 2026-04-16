@@ -863,7 +863,7 @@ and copying of the MS data. See also section @sec-comments for general comments.
 
 - Since MS data can be large, it is suggested the user converts MS data mostly
   manually, and only if/when needed, using `rspec_to_pyspec()` and
-  `pyspec_to_rspec()`.
+  `pyspec_to_rspec()` - or, ideally, use a `MsBackendPy` backend.
 
 - The `rspec_to_pyspec()` and `pyspec_to_rspec()` functions **copy** the data
   while transferring. Thus, there will be eventually two (detached) copies of
@@ -876,6 +876,14 @@ and copying of the MS data. See also section @sec-comments for general comments.
 - Be aware that, since the `MsBackendPy` backend does not contain any MS data
   but simply interfaces the MS data in Python, any changes to this data in
   Python affect also the `Spectra` object using that backend.
+
+- Be careful when re-assigning a `Spectra` object that uses a `MsBackendPy` to
+  a new variable (e.g. `b <- a`, where `a` is such a `Spectra` object). Both
+  variables will point to the **same** Python variable and changing data/values
+  in one of the variables will affect/change the data in the other variable
+  (e.g. changing the MS level of all spectra in `b` using `b$msLevel <- 3` will
+  change the MS levels in the shared Python objects, hence, `a$msLevel` will
+  then also be `3` for all).
 
 
 # Session information
