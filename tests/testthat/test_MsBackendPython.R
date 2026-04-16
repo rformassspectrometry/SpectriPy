@@ -115,6 +115,17 @@ test_that("backendInitialize,MsBackendPy works with providing data", {
     expect_equal(res$SMILES, s$SMILES)
     expect_equal(res$INCHI, s$INCHI)
 
+    ## spectraVariableMapping using UPPERCASE map
+    svm <- c(defaultSpectraVariableMapping(), INCHI = "INCHI",SMILES = "SMILES")
+    expect_warning(
+        res <- backendInitialize(MsBackendPy(), pythonVariableName = "ttt",
+                                 data = d, spectraVariableMapping = svm),
+        "have been remapped to")
+    expect_true(any(res@spectraVariableMapping == "inchi"))
+    expect_true(any(res@spectraVariableMapping == "smiles"))
+    expect_true(all(c("INCHI", "SMILES") %in% spectraVariables(res)))
+    expect_equal(res$INCHI, s$INCHI)
+
     ## Set core variables to NA
     d$rtime <- NA
     d$precursorMz <- NA
@@ -172,7 +183,7 @@ test_that(".py_var_length, length,MsBackendPy works", {
 
 test_that("spectraVariables and .py_get_metadata_names works", {
     be <- backendInitialize(MsBackendPy(), "s_p")
-    vars <- SpectriPy:::.py_get_metadata_names(be)
+    vars <- .py_get_metadata_names(be)
     expect_true(is.character(vars))
     expect_true(
         all(c("charge", "collision_energy", "ms_level",
@@ -657,7 +668,14 @@ test_that("$<-,MsBackendPy works", {
     a$other_thing <- NULL
     expect_false(any(names(a@backend@spectraVariableMapping) == "other_thing"))
 
-    expect_error(a$other_thing <- c("a", "b", "c"), "replace")
+    expect_error(a$other_thing <- c("a", "b", "c"), "length 0, 1")
+
+    ## camelCase variable
+    a <- a@backend
+    a$myCoolVar <- 3
+    expect_true("my_cool_var" %in% a@spectraVariableMapping)
+    expect_true("myCoolVar" %in% spectraVariables(a))
+    expect_true(all(a$myCoolVar == 3))
 })
 
 test_that(".py_variable_map works", {
@@ -791,10 +809,13 @@ test_that("setBackend,Spectra,MsBackendPy works", {
 
     ## mapping.
     mp <- c(defaultSpectraVariableMapping(), TITLE = "TITLE", NAME = "NAME")
-    smod_1 <- setBackend(smod, MsBackendPy(), pythonVariableName = "smod_1",
-                         applyProcessing = TRUE, spectraVariableMapping = mp)
-    expect_true(all(c("compound_name", "title") %in% spectraVariables(smod_1)))
-    expect_equal(smod_1$title, smod$TITLE)
+    expect_warning(
+        smod_1 <- setBackend(
+            smod, MsBackendPy(), pythonVariableName = "smod_1",
+            applyProcessing = TRUE, spectraVariableMapping = mp),
+        "remapped to")
+    expect_true(all(c("compound_name", "TITLE") %in% spectraVariables(smod_1)))
+    expect_equal(smod_1$TITLE, smod$TITLE)
     expect_equal(smod_1$compound_name, smod$NAME)
 })
 
@@ -838,6 +859,201 @@ test_that("MsBackendPy of length 1 works", {
     expect_equal(res$other_var_2, "a")
 })
 
+test_that("efficient $<- works with matchms", {
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+
+    ## .py_matchms_update_metadata
+    .py_matchms_update_metadata(a@py_var, key = "new_var", rep("A", length(a)))
+    expect_true("new_var" %in% spectraVariables(a))
+    expect_equal(a$new_var, rep("A", length(a)))
+
+    ## .py_matchms_delete_metadata
+    .py_matchms_delete_metadata(a@py_var, key = "new_var")
+    expect_false("new_var" %in% spectraVariables(a))
+
+    ## $<- length 1 and camelCase to snake_case
+    a$myVar <- 4
+    expect_true("myVar" %in% spectraVariables(a))
+    expect_equal(a$myVar, rep(4, length(a)))
+    expect_true("my_var" %in% a@spectraVariableMapping)
+
+    ## overwriting works too
+    a$myVar <- seq_along(a)
+    expect_true("myVar" %in% spectraVariables(a))
+    expect_equal(a$myVar, seq_along(a))
+    expect_true("my_var" %in% a@spectraVariableMapping)
+
+    ## removing works
+    a$myVar <- NULL
+    expect_false("myVar" %in% spectraVariables(a))
+    expect_false("my_var" %in% a@spectraVariableMapping)
+
+    expect_error(a$new_var <- c(1, 2), "0, 1")
+
+    a <- MsBackendPy()
+    a$my_var <- 3
+    expect_equal(a, MsBackendPy())
+
+    ## spectrum_utils
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    expect_true(all(is.na(a$rtime)))
+    .py_spectrum_utils_update_metadata("tmp", "retention_time",
+                                       seq_along(a) + 0.1)
+    expect_true(all(is.na(a$rtime)))
+    a@spectraVariableMapping <- c(a@spectraVariableMapping,
+                                  rtime = "retention_time")
+    expect_equal(a$rtime, seq_along(a) + 0.1,
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    a$rtime <- a$rtime + 5
+    expect_equal(a$rtime, seq_along(a) + 5.1,
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    expect_error(a$msLevel <- 3L, "no metadata")
+    expect_error(a$rtime <- NULL, "length 1 or 100")
+    expect_error(a$rtime <- c(123.2, 13.4), "length 1 or 100")
+})
+
+test_that("replacing m/z, intensity and peaks data works for matchms", {
+    ## Helper function
+    res <- .py_matchms_replace_cmd("aaa", "peaks")
+    expect_match(res, "mz = _tmp_var")
+    expect_match(res, "intensities = _tmp_var")
+    res <- .py_matchms_replace_cmd("aaa", "mz")
+    expect_match(res, "mz = _tmp_var")
+    expect_no_match(res, "intensities = _tmp_var")
+    res <- .py_matchms_replace_cmd("aaa", "intensity")
+    expect_no_match(res, "mz = _tmp_var")
+    expect_match(res, "intensities = _tmp_var")
+
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+
+    ## peaksData<-
+    pd <- peaksData(s, return.type = "list")
+    pd <- lapply(pd, function(z) {
+        z[, 2L] <- z[, 2L] / 2
+        z
+    })
+    .py_matchms_replace("tmp", pd, "peaks")
+    res <- peaksData(a)
+    expect_equal(pd, res)
+    res <- lapply(res, function(z) {
+        z[, 2L] <- z[, 2L] * 2
+        z
+    })
+    peaksData(a) <- res
+    expect_equal(peaksData(a), peaksData(s, return.type = "list"))
+
+    ## mz<-
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    mzs <- lapply(peaksData(s, return.type = "list"), `[`, , 1L)
+    mzs <- lapply(mzs, function(z) z + 10)
+    .py_matchms_replace("tmp", mzs, "mz")
+    res <- as.list(mz(a))
+    expect_equal(mzs, res)
+    mz(a) <- lapply(mzs, function(z) z - 5)
+    res <- as.list(mz(a))
+    expect_equal(res, lapply(mzs, function(z) z -5))
+    a$mz <- lapply(mzs, function(z) z -3)
+    res <- as.list(mz(a))
+    expect_equal(res, lapply(mzs, function(z) z -3))
+
+    ## intensity<-
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    ints <- lapply(peaksData(s, return.type = "list"), `[`, , 2L)
+    ints <- lapply(ints, function(z) z / 2)
+    .py_matchms_replace("tmp", ints, "intensity")
+    res <- as.list(intensity(a))
+    expect_equal(ints, res)
+    intensity(a) <- lapply(ints, function(z) z * 5)
+    res <- as.list(intensity(a))
+    expect_equal(res, lapply(ints, function(z) z * 5))
+    a$intensity <- lapply(ints, function(z) z -3)
+    res <- as.list(intensity(a))
+    expect_equal(res, lapply(ints, function(z) z -3))
+})
+
+test_that("replacing m/z, intensity and peaks data works for spectrum_utils", {
+    ## Helper function
+    res <- .py_spectrum_utils_replace_cmd("aaa", "peaks")
+    expect_match(res, "mz = _tmp_var")
+    expect_match(res, "intensity = _tmp_var")
+    res <- .py_spectrum_utils_replace_cmd("aaa", "mz")
+    expect_match(res, "mz = _tmp_var")
+    expect_no_match(res, "intensity = _tmp_var")
+    res <- .py_spectrum_utils_replace_cmd("aaa", "intensity")
+    expect_no_match(res, "mz = _tmp_var")
+    expect_match(res, "intensity = _tmp_var")
+
+    ## peaksData<-
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    pd <- peaksData(s, return.type = "list")
+    pd <- lapply(pd, function(z) {
+        z[, 2L] <- z[, 2L] / 2
+        z[, 1L] <- z[, 1L] - 2
+        z
+    })
+    .py_spectrum_utils_replace("tmp", pd, "peaks")
+    res <- peaksData(a)
+    expect_equal(pd, res, tolerance = SPECTRUM_UTILS_TOLERANCE)
+    res <- lapply(res, function(z) {
+        z[, 2L] <- z[, 2L] * 2
+        z[, 1L] <- z[, 1L] + 2
+        z
+    })
+    peaksData(a) <- res
+    expect_equal(peaksData(a), peaksData(s, return.type = "list"),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    ## mz<-
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    mzs <- as.list(mz(a))
+    .py_spectrum_utils_replace(
+                    "tmp", lapply(mzs, function(z) z - 1), "mz")
+    expect_equal(as.list(mz(a)), lapply(mzs, function(z) z - 1))
+    mz(a) <- lapply(mzs, function(z) z + 10)
+    expect_equal(as.list(mz(a)), lapply(mzs, function(z) z + 10))
+    a$mz <- lapply(mzs, function(z) z / 10)
+    expect_equal(as.list(mz(a)), lapply(mzs, function(z) z / 10))
+
+    ## intensity<-
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    ints <- as.list(intensity(a))
+    .py_spectrum_utils_replace(
+                    "tmp", lapply(ints, function(z) z + 101), "intensity")
+    expect_equal(as.list(intensity(a)), lapply(mzs, function(z) z + 101),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    intensity(a) <- lapply(ints, function(z) z + 10.1)
+    expect_equal(as.list(intensity(a)), lapply(ints, function(z) z + 10.1),
+                 tolerance = SPECTRUM_UTILS_TOLERANCE)
+    a$intensity <- lapply(ints, function(z) z / 10)
+    expect_equal(as.list(intensity(a)), lapply(ints, function(z) z / 10))
+})
+
+test_that(".py_realize_subset works", {
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+
+    a <- .py_realize_subset(a)
+    expect_equal(precursorMz(a), precursorMz(s))
+
+    idx <- c(4L, 1L, 6L, 1L, 13L)
+    a@i <- idx
+
+    a <- .py_realize_subset(a)
+    expect_equal(a@i, seq_along(idx))
+    expect_equal(length(a), 5)
+    ref <- s[idx]
+    expect_equal(precursorMz(a), precursorMz(ref))
+    expect_equal(mz(a), mz(ref))
+    expect_equal(intensity(a), intensity(ref))
+})
+
+
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
 ##      spectra variables. number of spectra has to match.
@@ -845,12 +1061,17 @@ test_that("MsBackendPy of length 1 works", {
 ##      spectraVariableMapping: we can use spectraDataMapping now to add
 ##      additional columns - missing data will be dropped - and not registered
 ##      in @spectraVariableMapping
-## DONE $<- : replace the full data?
-## DONE peaksData()<-: replace the full data?
-## DONE mz()<-
-## DONE intensity()<-
 ## TODO applyProcessing(): replace the full data? is that needed? should
 ##      internally call peaksData()<-
 ## DONE all other replacement methods.
+## DONE $<- to replace only part of the data (not the full).
+## DONE more efficient peaksData()<-: don't replace the full data.
+## DONE more efficient mz()<-
+## DONE more efficient intensity()<-
+## TODO more efficient lengths() function
 ## TODO support the Spectra unit test suite
-## TODO $<- to replace only part of the data (not the full).
+## TODO selectSpectraVariables
+## TODO add copy-on-replace: backendInitialize, if variable exists, create a
+##      new one and save to that: maybe a `SpetriPyDeepCopy(TRUE/FALSE)`
+##      to enable deep copy, and then, each set operation will trigger renaming
+##      the variable/.

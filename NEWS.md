@@ -1,7 +1,22 @@
 # SpectriPy 1.1
 
+## Changes in 1.1.7
+
+- Improved `$<-` operation: only replace the values for the selected spectra
+  variable.
+- Improved `peaksData<-`, `mz<-` and `intensity<-` implementations: only
+  replace the respective data, but not the full spectra data (including
+  metadata).
+- Improved `lengths()` implementation: retrieves the number of peaks directly in
+  Python.
+- Documentation updates.
+
 ## Changes in 1.1.6
 
+- Automatic renaming and remapping of upper case or *camelCase* spectra
+  variables to *snake_case* metadata fields in `backendInitialize()`,
+  `spectraData<-` and `$<-`.
+- Full support of the *Spectra* test suite.
 - Add `spectraNames<-` method for `MsBackendPy` and support getting/setting
   spectrum names. They are stored in a metadata field (spectra variable)
   *spectrum_name*.

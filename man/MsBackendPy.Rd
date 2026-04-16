@@ -169,13 +169,7 @@ Python and the backend only references to this data through the name of
 the variable in Python. Thus, each time MS data is requested from the
 backend, it is retrieved in its \strong{current} state.
 If for example data was transformed or metadata added or removed in the
-Python object, it immediately affects the \code{Spectra}/backend.
-
-Any replacement operation uses internally the \verb{spectraData()<-} method,
-thus replacing/updating values for individual spectra variables or peaks
-variables will first load the current data from Python to R, update or
-replace the values and then store the full MS data again to the
-referenced Python attribute.
+Python object, it immediately affects the \code{Spectra} object in R.
 }
 \section{Python metadata names \emph{vs} spectra variables}{
 
@@ -185,11 +179,12 @@ a spectrum, similar to \emph{Spectra}'s spectra variables concept. However,
 \emph{matchms} and \emph{Spectra} use different names for the same metadata/variables.
 To support this, \emph{MsBackendPy} implements \code{spectraVariableMapping} which
 allows to link spectra variable names to \emph{matchms} metadata names. This
-mapping can be provided with the \code{spectraVariableMapping} to the
-\code{backendInitialize()} function. Also, be aware that \emph{matchms} automatically
-\strong{renames} certain metadata fields: a metadata \code{"NAME"} will be
-automatically renamed to \code{"compound_name"}. Also, \emph{matchms} generally
-supports only lower-case metadata names.
+mapping can be provided with the \code{spectraVariableMapping} parameter to the
+\code{backendInitialize()} function. Note that \emph{matchms} only supports metadata
+names in lower case or \emph{snake_case}. Spectra variables are thus
+automatically renamed and mapped to the lower case variants if needed. Also,
+be aware that \emph{matchms} automatically \strong{renames} certain metadata fields:
+a metadata \code{"NAME"} will be automatically renamed to \code{"compound_name"}.
 See also \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} for more information.
 }
 
@@ -242,19 +237,15 @@ mass peaks per spectrum. \verb{intensity()<-} takes the same list-like
 structure as input parameter. Both the number of spectra and the number of
 peaks must match the length of the spectra and the number of existing mass
 peaks. To change the number of peaks use the \verb{peaksData()<-} method
-instead that replaces the \emph{m/z} and intensity values at the same time.
-Calling \verb{intensity()<-} will replace the full MS data (spectra variables
-as well as peaks variables) of the associated Python variable.
+instead that replaces the \emph{m/z} \strong{and} intensity values at the same time.
 \item \code{mz()}, \verb{mz()<-}: get or replace the \emph{m/z} values. \code{mz()} returns a
 \code{NumericList} of length equal to the number of spectra with each element
 being the \emph{m/z} values of the individual mass peaks per spectrum.
 \verb{mz()<-} takes the same list-like structure as input parameter. Both the
 number of spectra and the number of peaks must match the length of the
 spectra and the number of existing mass peaks. To change the number of
-peaks use the \verb{peaksData()<-} method instead that replaces the \emph{m/z} and
-intensity values at the same time.
-Calling \verb{mz()<-} will replace the full MS data (spectra variables
-as well as peaks variables) of the associated Python variable.
+peaks use the \verb{peaksData()<-} method instead that replaces the \emph{m/z}
+\strong{and} intensity values at the same time.
 \item \code{peaksData()}: extracts the peaks data matrices from the backend. Python
 code is applied to the data structure in Python to
 extract the \emph{m/z} and intensity values as a list of (numpy) arrays. These
@@ -265,22 +256,23 @@ loop in R is required to set the column names to \code{"mz"} and \code{"intensit
 values) for all spectra. Parameter \code{value} has to be a \code{list}-like
 structure with each element being a \code{numeric} matrix with one column
 (named \code{"mz"}) containing the spectrum's \emph{m/z} and one column (named
-\code{"intensity"}) with the intensity values. This method will replace the
-full data of the associated Python variable (i.e., both the spectra as
-well as the peaks data).
+\code{"intensity"}) with the intensity values.
 \item \code{spectraData()}: extracts the spectra data from the backend. Which spectra
 variables are translated and retrieved from the Python objects depends on
 the backend's \code{spectraVariableMapping()}. All metadata names defined are
 retrieved and added to the returned \code{DataFrame} (with eventually missing
 \emph{core} spectra variables filled with \code{NA}).
-\item \verb{spectraData()<-}: replaces the full spectra (+ peaks) data of the backend
-with the values provided with the submitted \code{DataFrame}. The number of
-rows of this \code{DataFrame} has to match the number of spectra of \code{object}
-(i.e., being equal to \code{length(object)}) and the \code{DataFrame} must also
-contain the spectras' \emph{m/z} and intensity values.
+\item \verb{spectraData()<-}: replaces the \strong{full} spectra (+ peaks) data of the
+backend with the values provided with the submitted \code{DataFrame}. The
+number of rows of this \code{DataFrame} has to match the number of spectra of
+\code{object} (i.e., being equal to \code{length(object)}) and the \code{DataFrame} must
+also contain the spectras' \emph{m/z} and intensity values (in columns named
+\code{"mz"} and \code{"intensity"}).
 \item \code{spectraNames()}, \verb{spectraNames()<-}: extracts, respectively, adds
 (replaces) names for the individual spectra. These are stored as spectra
-variable/metadata field \code{"spectra_name"} in the Python representation.
+variable/metadata field \code{"spectrum_name"} in the Python representation.
+This is only supported if the Python \emph{matchms} library is used, the
+\emph{spectrum_utils} library does not support arbitrary spectra names.
 \item \code{spectraVariables()}: retrieves available spectra variables, which include
 the names of all metadata attributes in the \code{matchms.Spectrum} objects
 and the \emph{core} spectra variables \code{\link[Spectra:spectraData]{Spectra::coreSpectraVariables()}}.
@@ -290,10 +282,9 @@ and the \emph{core} spectra variables \code{\link[Spectra:spectraData]{Spectra::
 backend (see \code{\link[=setSpectraVariableMapping]{setSpectraVariableMapping()}} for details and description
 of the expected format).
 \item \code{$}, \verb{$<-}: extract or add/replace values for a spectra variable from/in
-the backend. Replacing or adding values for a spectra variable cause the
-full data to be replaced. In detail, first the full data is retrieved from
-Python, then the values are added/replaced and then the data is again
-transferred to Python.
+the backend. If the \emph{spectrum_utils} Python library is used, only a
+restricted set of spectra variables are supported, i.e., \code{precursorMz},
+\code{precursorCharge}, \code{rtime} and \code{scanIndex}.
 }
 }
 

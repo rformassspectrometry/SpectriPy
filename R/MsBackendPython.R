@@ -36,11 +36,12 @@
 #' *matchms* and *Spectra* use different names for the same metadata/variables.
 #' To support this, *MsBackendPy* implements `spectraVariableMapping` which
 #' allows to link spectra variable names to *matchms* metadata names. This
-#' mapping can be provided with the `spectraVariableMapping` to the
-#' `backendInitialize()` function. Also, be aware that *matchms* automatically
-#' **renames** certain metadata fields: a metadata `"NAME"` will be
-#' automatically renamed to `"compound_name"`. Also, *matchms* generally
-#' supports only lower-case metadata names.
+#' mapping can be provided with the `spectraVariableMapping` parameter to the
+#' `backendInitialize()` function. Note that *matchms* only supports metadata
+#' names in lower case or *snake_case*. Spectra variables are thus
+#' automatically renamed and mapped to the lower case variants if needed. Also,
+#' be aware that *matchms* automatically **renames** certain metadata fields:
+#' a metadata `"NAME"` will be automatically renamed to `"compound_name"`.
 #' See also [setSpectraVariableMapping()] for more information.
 #'
 #' @details
@@ -67,13 +68,7 @@
 #' the variable in Python. Thus, each time MS data is requested from the
 #' backend, it is retrieved in its **current** state.
 #' If for example data was transformed or metadata added or removed in the
-#' Python object, it immediately affects the `Spectra`/backend.
-#'
-#' Any replacement operation uses internally the `spectraData()<-` method,
-#' thus replacing/updating values for individual spectra variables or peaks
-#' variables will first load the current data from Python to R, update or
-#' replace the values and then store the full MS data again to the
-#' referenced Python attribute.
+#' Python object, it immediately affects the `Spectra` object in R.
 #'
 #' @section `MsBackendPy` methods:
 #'
@@ -125,9 +120,7 @@
 #'   structure as input parameter. Both the number of spectra and the number of
 #'   peaks must match the length of the spectra and the number of existing mass
 #'   peaks. To change the number of peaks use the `peaksData()<-` method
-#'   instead that replaces the *m/z* and intensity values at the same time.
-#'   Calling `intensity()<-` will replace the full MS data (spectra variables
-#'   as well as peaks variables) of the associated Python variable.
+#'   instead that replaces the *m/z* **and** intensity values at the same time.
 #'
 #' - `mz()`, `mz()<-`: get or replace the *m/z* values. `mz()` returns a
 #'   `NumericList` of length equal to the number of spectra with each element
@@ -135,10 +128,8 @@
 #'   `mz()<-` takes the same list-like structure as input parameter. Both the
 #'   number of spectra and the number of peaks must match the length of the
 #'   spectra and the number of existing mass peaks. To change the number of
-#'   peaks use the `peaksData()<-` method instead that replaces the *m/z* and
-#'   intensity values at the same time.
-#'   Calling `mz()<-` will replace the full MS data (spectra variables
-#'   as well as peaks variables) of the associated Python variable.
+#'   peaks use the `peaksData()<-` method instead that replaces the *m/z*
+#'   **and** intensity values at the same time.
 #'
 #' - `peaksData()`: extracts the peaks data matrices from the backend. Python
 #'   code is applied to the data structure in Python to
@@ -151,9 +142,7 @@
 #'   values) for all spectra. Parameter `value` has to be a `list`-like
 #'   structure with each element being a `numeric` matrix with one column
 #'   (named `"mz"`) containing the spectrum's *m/z* and one column (named
-#'   `"intensity"`) with the intensity values. This method will replace the
-#'   full data of the associated Python variable (i.e., both the spectra as
-#'   well as the peaks data).
+#'   `"intensity"`) with the intensity values.
 #'
 #' - `spectraData()`: extracts the spectra data from the backend. Which spectra
 #'   variables are translated and retrieved from the Python objects depends on
@@ -161,15 +150,18 @@
 #'   retrieved and added to the returned `DataFrame` (with eventually missing
 #'   *core* spectra variables filled with `NA`).
 #'
-#' - `spectraData()<-`: replaces the full spectra (+ peaks) data of the backend
-#'   with the values provided with the submitted `DataFrame`. The number of
-#'   rows of this `DataFrame` has to match the number of spectra of `object`
-#'   (i.e., being equal to `length(object)`) and the `DataFrame` must also
-#'   contain the spectras' *m/z* and intensity values.
+#' - `spectraData()<-`: replaces the **full** spectra (+ peaks) data of the
+#'   backend with the values provided with the submitted `DataFrame`. The
+#'   number of rows of this `DataFrame` has to match the number of spectra of
+#'   `object` (i.e., being equal to `length(object)`) and the `DataFrame` must
+#'   also contain the spectras' *m/z* and intensity values (in columns named
+#'   `"mz"` and `"intensity"`).
 #'
 #' - `spectraNames()`, `spectraNames()<-`: extracts, respectively, adds
 #'   (replaces) names for the individual spectra. These are stored as spectra
 #'   variable/metadata field `"spectrum_name"` in the Python representation.
+#'   This is only supported if the Python *matchms* library is used, the
+#'   *spectrum_utils* library does not support arbitrary spectra names.
 #'
 #' - `spectraVariables()`: retrieves available spectra variables, which include
 #'   the names of all metadata attributes in the `matchms.Spectrum` objects
@@ -183,10 +175,9 @@
 #'   of the expected format).
 #'
 #' - `$`, `$<-`: extract or add/replace values for a spectra variable from/in
-#'   the backend. Replacing or adding values for a spectra variable cause the
-#'   full data to be replaced. In detail, first the full data is retrieved from
-#'   Python, then the values are added/replaced and then the data is again
-#'   transferred to Python.
+#'   the backend. If the *spectrum_utils* Python library is used, only a
+#'   restricted set of spectra variables are supported, i.e., `precursorMz`,
+#'   `precursorCharge`, `rtime` and `scanIndex`.
 #'
 #' @section Additional helper and utility functions:
 #'
@@ -446,16 +437,24 @@ setMethod("backendInitialize", "MsBackendPy",
                   data <- .drop_na_core_spectra_variables(data)
                   spectraVariableMapping <- spectraVariableMapping[
                       names(spectraVariableMapping) %in% colnames(data)]
+                  snake_svm <- to_snake_case(spectraVariableMapping)
+                  if (length(idx <- which(snake_svm != spectraVariableMapping)))
+                      warning(
+                          "Spectra variables ",
+                          paste0("\"", spectraVariableMapping[idx], "\"",
+                                 collapse = ", "),
+                          " have been remapped to metadata fields ",
+                          paste0("\"", snake_svm[idx], "\"", collapse = ", "))
                   py_set_attr(
                       py, pythonVariableName,
                       switch(pythonLibrary,
                              matchms = .rspec_to_matchms_pyspec(
-                                 data, mapping = spectraVariableMapping),
+                                 data, mapping = snake_svm),
                              spectrum_utils = .rspec_to_spectrum_utils_pyspec(
                                  data, mapping = spectraVariableMapping)))
                   backendInitialize(
                       object, pythonVariableName = pythonVariableName,
-                      spectraVariableMapping = spectraVariableMapping,
+                      spectraVariableMapping = snake_svm,
                       pythonLibrary = pythonLibrary)
               }
           })
@@ -567,24 +566,6 @@ setReplaceMethod("spectraData", "MsBackendPy", function(object, value) {
                       data = value)
 })
 
-#' Helper function to choose Python names that match the core ones.
-#'
-#' @param x `character` with spectra variables.
-#'
-#' @return named `character` with names corresponding to the spectra variables
-#'     and values the respective names in Python.
-#'
-#' @noRd
-.py_variable_map <- function(x = character(), library = "matchms") {
-    cm <- spectraVariableMapping(library)
-    names(x) <- x
-    idx <- match(x, names(cm))
-    nna <- !is.na(idx)
-    if (any(nna))
-        x[nna] <- cm[idx[nna]]
-    x
-}
-
 #' @importMethodsFrom ProtGenerics peaksData
 #'
 #' @importFrom reticulate iterate
@@ -621,16 +602,10 @@ setMethod(
 #' @rdname MsBackendPy
 setReplaceMethod("peaksData", "MsBackendPy", function(object, value) {
     Spectra:::.check_peaks_data_value(value, length(object))
-    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
-                                     peaksVariables(object)))
-    cns <- colnames(value[[1L]])
-    for (cn in cns) {
-        vals <- lapply(value, "[", , cn)
-        if (cn %in% c("mz", "intensity"))
-            vals <- NumericList(vals, compress = FALSE)
-        spd[[cn]] <- vals
-    }
-    spectraData(object) <- spd
+    switch(object@py_lib,
+           matchms = .py_matchms_replace(object@py_var, value, "peaks"),
+           spectrum_utils = .py_spectrum_utils_replace(
+               object@py_var, value, "peaks"))
     object
 })
 
@@ -648,17 +623,57 @@ setMethod("$", "MsBackendPy", function(x, name) {
 
 #' @rdname MsBackendPy
 #'
+#' @importFrom snakecase to_snake_case
+#'
 #' @importMethodsFrom Spectra peaksVariables
 setReplaceMethod("$", "MsBackendPy", function(x, name, value) {
-    spd <- spectraData(
-        x, union(spectraVariables(x), peaksVariables(x)))
-    spd[[name]] <- value
-    spectraData(x) <- spd
+    if (!length(x)) return(x)
+    if (x@py_lib == "matchms") {
+        if (name %in% c("mz", "intensity")) {
+            .check_mz_intensity(value, length(x), lengths(x))
+            .py_matchms_replace(x@py_var, value, name)
+            return(x)
+        }
+        if (length(value) == 1L) value <- rep(value, length(x))
+        if (length(value) && length(value) != length(x))
+            stop("'value' has to be of length 0, 1 or ", length(x))
+        snake_name <- to_snake_case(name)
+        names(snake_name) <- name
+        if (length(value)) {
+            .py_matchms_update_metadata(x@py_var, snake_name, value)
+            if (!any(names(x@spectraVariableMapping) == name))
+                x@spectraVariableMapping <-
+                    c(x@spectraVariableMapping, snake_name)
+        } else {
+            .py_matchms_delete_metadata(x@py_var, snake_name)
+            x@spectraVariableMapping <-
+                x@spectraVariableMapping[names(x@spectraVariableMapping)!=name]
+        }
+    } else {
+        if (name %in% c("mz", "intensity")) {
+            .check_mz_intensity(value, length(x), lengths(x))
+            .py_spectrum_utils_replace(x@py_var, value, name)
+            return(x)
+        }
+        su_name <- spectraVariableMapping("spectrum_utils")[name]
+        if (is.na(su_name))
+            stop("no metadata '", name, "'  supported by spectrum_utils. ",
+                 "Allowed are ",
+                 paste0("\"", names(spectraVariableMapping("spectrum_utils")),
+                        "\"", collapse = ", "))
+        if (length(value) == 1L) value <- rep(value, length(x))
+        if (length(value) != length(x))
+            stop("'value' has to be of length 1 or ", length(x))
+        if (!name %in% names(x@spectraVariableMapping))
+            x@spectraVariableMapping <- c(x@spectraVariableMapping, su_name)
+        .py_spectrum_utils_update_metadata(x@py_var, unname(su_name), value)
+    }
     x
 })
 
 setMethod("lengths", "MsBackendPy", function(x, use.names = FALSE) {
-    vapply(peaksData(x), nrow, NA_integer_)
+    if (!length(x)) return(integer(0))
+    .py_lengths(x@py_var)
 })
 
 #' @importMethodsFrom S4Vectors isEmpty
@@ -696,10 +711,11 @@ setMethod("intensity", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("intensity", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
-    spd <- spectraData(object, union(spectraVariables(object),
-                                     peaksVariables(object)))
-    spd[["intensity"]] <- value
-    spectraData(object) <- spd
+    switch(object@py_lib,
+           matchms = .py_matchms_replace(
+               object@py_var, value, "intensity"),
+           spectrum_utils = .py_spectrum_utils_replace(
+               object@py_var, value, "intensity"))
     object
 })
 
@@ -733,10 +749,11 @@ setMethod("mz", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("mz", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
-    spd <- spectraData(object, union(names(spectraVariableMapping(object)),
-                                     peaksVariables(object)))
-    spd[["mz"]] <- value
-    spectraData(object) <- spd
+    switch(object@py_lib,
+           matchms = .py_matchms_replace(
+               object@py_var, value, "mz"),
+           spectrum_utils = .py_spectrum_utils_replace(
+               object@py_var, value, "mz"))
     object
 })
 
@@ -938,6 +955,54 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
     TRUE
 }
 
+#' Subset the Python list of spectrum objects using the index of the
+#' MsBackendPy if needed (i.e., if the backend was in any way subset before).
+#' This function replaces the original attribute/Python variable name with the
+#' data subset.
+#'
+#' @param x `MsBackendPy` to subset
+#'
+#' @return the subset `MsBackendPy`
+#'
+#' @noRd
+.py_realize_subset <- function(x) {
+    if (length(x) && !identical(unname(x@i), seq_along(x))) {
+        py_set_attr(py, "_tmp_i_", (x@i - 1L))
+        py_run_string(paste0(
+            x@py_var, " = list(map(lambda i: ", x@py_var, "[i], _tmp_i_))\n"),
+            local = FALSE, convert = FALSE)
+        x@i <- seq_along(x@i)
+        on.exit(py_del_attr(py, "_tmp_i_"))
+    }
+    x
+}
+
+#' Copy a Python variable to another Python variable - in R using reticulate.
+#' This is faster than using `py_run_string()`
+#'
+#' @noRd
+.r_copy_py_attr <- function(from, to) {
+    py_set_attr(py, to, py_get_attr(py, from))
+}
+
+#' Helper function to choose Python names that match the core ones.
+#'
+#' @param x `character` with spectra variables.
+#'
+#' @return named `character` with names corresponding to the spectra variables
+#'     and values the respective names in Python.
+#'
+#' @noRd
+.py_variable_map <- function(x = character(), library = "matchms") {
+    cm <- spectraVariableMapping(library)
+    names(x) <- x
+    idx <- match(x, names(cm))
+    nna <- !is.na(idx)
+    if (any(nna))
+        x[nna] <- cm[idx[nna]]
+    x
+}
+
 #' Helper function to get the variable with the Python data. Can be either
 #' in R or in Python.
 #'
@@ -1035,3 +1100,152 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
     if (!all(vapply1l(x, is.numeric)))
         stop("elements of 'value' are expected to be numeric vectors.")
 }
+
+#' Replace or add a metadata key/field to a matchms `Spectrum` object.
+#'
+#' @param s `character(1)` with the name of the Python Spectrum list variable
+#'
+#' @param key `character(1)` with the metadata name to replace/add
+#'
+#' @param vname `character(1)` with the name of the variable containing the
+#'     values
+#'
+#' @noRd
+.py_matchms_update_metadata <- function(s, key, value) {
+    py_set_attr(py, "_tmp_var_", value)
+    py_run_string(paste0("for i in range(len(", s, ")):\n",
+                         "  ", s, "[i].set('", key, "', _tmp_var_[i])\n"),
+                  local = TRUE, convert = FALSE)
+    on.exit(py_del_attr(py, "_tmp_var_"))
+}
+
+#' Delete a metadata field from a matchms `Spectrum` object
+#'
+#' @param s `character(1)` with the name of Python Spectrum list variable
+#'
+#' @param key `character(1)` with the name of the metadata to remove
+#'
+#' @noRd
+.py_matchms_delete_metadata <- function(s, key) {
+    py_run_string(paste0("for i in range(len(", s, ")):\n",
+                         "  m = ", s, "[i].metadata\n",
+                         "  del m['", key, "']\n",
+                         "  ", s, "[i].metadata = m\n"),
+                  local = TRUE, convert = FALSE)
+}
+
+#' Replace or add a metadata key/field to a spectrum_utils spectrum object.
+#'
+#' @param s `character(1)` with the name of the Python list variable
+#'
+#' @param key `character(1)` with the metadata name to replace/add. Has to be
+#'     one of `spectraVariableMapping("spectrum_utils")`.
+#'
+#' @param vname `character(1)` with the name of the variable containing the
+#'     values
+#'
+#' @noRd
+.py_spectrum_utils_update_metadata <- function(s, key, value) {
+    py_set_attr(py, "_tmp_var_", value)
+    py_run_string(paste0("for i in range(len(", s, ")):\n",
+                         "  ", s, "[i].", key, " = _tmp_var_[i]\n"),
+                  local = TRUE, convert = FALSE)
+    on.exit(py_del_attr(py, "_tmp_var_"))
+}
+
+#' Replace the full peaks data, mz or intensity values from a list of
+#' matchms Spectrum classes
+#'
+#' @param s `character(1)` with the name of the Python list
+#'
+#' @param value `list` of two-column `numeric` matrices with the m/z and
+#'     intensity values
+#'
+#' @param what `character(1)` what to replace; can be `"peaks"`, `"mz"` or
+#'     `"intensity"`
+#'
+#' @noRd
+.py_matchms_replace <- function(s, value, what) {
+    if (!is.list(value)) value <- as.list(value)
+    py_set_attr(py, "_tmp_var_", value)
+    py_run_string(
+        paste0("import numpy as np\n",
+               "from matchms import Fragments\n",
+               "for i in range(len(", s, ")):\n",
+               "  ", s, "[i].peaks = Fragments(",
+               .py_matchms_replace_cmd(s, what),
+               ")\n"),
+        local = TRUE, convert = FALSE)
+    on.exit(py_del_attr(py, "_tmp_var_"))
+}
+
+.py_matchms_replace_cmd <- function(s, what) {
+    switch(
+        what,
+        peaks = paste0("mz = _tmp_var_[i][:, 0], ",
+                       "intensities = _tmp_var_[i][:, 1]"),
+        mz = paste0("mz = np.array(_tmp_var_[i], dtype = 'float'), ",
+                    "intensities = ", s, "[i].intensities"),
+        intensity = paste0("mz = ", s, "[i].mz, intensities = ",
+                           "np.array(_tmp_var_[i], dtype = 'float')"))
+}
+
+#' Replace the full peaks data from a list of spectrum_utils classes.
+#' `spectrum_utils.MsmsSpectrum` classes don't have setter methods, thus
+#' we need to create new objects and move metadata information from the
+#' original ones over.
+#'
+#' @param s `character(1)` with the name of the Python list
+#'
+#' @param value `list` of two-column `numeric` matrices with the m/z and
+#'     intensity values
+#'
+#' @param what `character(1)` whether to replease `"peaks"`, `"mz"` or
+#'     `"intensity"` values
+#'
+#' @noRd
+.py_spectrum_utils_replace <- function(s, value,
+                                       what = c("peaks", "mz", "intensity")) {
+    if (!is.list(value)) value <- as.list(value)
+    py_set_attr(py, "_tmp_var_", value)
+    py_run_string(
+        paste0("from spectrum_utils.spectrum import MsmsSpectrum\n",
+               "for i in range(len(", s, ")):\n",
+               "  s = ", s, "[i]\n",
+               .py_spectrum_utils_replace_cmd(s, what),
+               "identifier = s.identifier, ",
+               "precursor_mz = s.precursor_mz, ",
+               "precursor_charge = s.precursor_charge, ",
+               "retention_time = s.retention_time)\n"),
+        local = TRUE, convert = FALSE)
+    on.exit(py_del_attr(py, "_tmp_var_"))
+}
+
+.py_spectrum_utils_replace_cmd <- function(s, what) {
+    switch(
+        what,
+        peaks = paste0("  ", s, "[i] = MsmsSpectrum(mz = _tmp_var_[i][:, 0], ",
+                       "intensity = _tmp_var_[i][:, 1], "),
+        mz = paste0("  ", s, "[i] = MsmsSpectrum(mz = _tmp_var_[i], ",
+                    "intensity = s.intensity, "),
+        intensity = paste0("  ", s, "[i] = MsmsSpectrum(mz = s.mz, ",
+                           "intensity = _tmp_var_[i], "))
+}
+
+.py_lengths <- function(s) {
+    py_run_string(
+        paste0("_l_ = []\n",
+               "for i in range(len(", s, ")):\n",
+               "  _l_.append(len(", s,"[i].mz))"),
+        local = TRUE, convert = TRUE)[["_l_"]]
+}
+
+## #' This function gets the **full** data (except empty core variables) from the
+## #' backend.
+## #'
+## #' @param x `MsBackendPy` object
+## #'
+## #' @return `DataFrame` with the full data.
+## .full_data <- function(x) {
+##     spectraData(x, union(names(SpectriPy:::.py_get_metadata_names(x)), peaksVariables(x)))
+## }
