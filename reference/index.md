@@ -13,6 +13,7 @@
   [`` `$<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`` `intensity<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`` `mz<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
+  [`` `spectraNames<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`` `spectraVariableMapping<-`( ``*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`spectraVariableMapping(`*`<MsBackendPy>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)
   [`reindex()`](https://rformassspectrometry.github.io/SpectriPy/reference/MsBackendPy.md)

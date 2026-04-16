@@ -79,6 +79,9 @@ intensity(object) <- value
 mz(object) <- value
 
 # S4 method for class 'MsBackendPy'
+spectraNames(object) <- value
+
+# S4 method for class 'MsBackendPy'
 spectraVariableMapping(object) <- value
 
 # S4 method for class 'MsBackendPy'
@@ -227,13 +230,7 @@ in Python and the backend only references to this data through the name
 of the variable in Python. Thus, each time MS data is requested from the
 backend, it is retrieved in its **current** state. If for example data
 was transformed or metadata added or removed in the Python object, it
-immediately affects the `Spectra`/backend.
-
-Any replacement operation uses internally the `spectraData()<-` method,
-thus replacing/updating values for individual spectra variables or peaks
-variables will first load the current data from Python to R, update or
-replace the values and then store the full MS data again to the
-referenced Python attribute.
+immediately affects the `Spectra` object in R.
 
 ## Python metadata names *vs* spectra variables
 
@@ -243,12 +240,13 @@ a spectrum, similar to *Spectra*'s spectra variables concept. However,
 metadata/variables. To support this, *MsBackendPy* implements
 `spectraVariableMapping` which allows to link spectra variable names to
 *matchms* metadata names. This mapping can be provided with the
-`spectraVariableMapping` to the
+`spectraVariableMapping` parameter to the
 [`backendInitialize()`](https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html)
-function. Also, be aware that *matchms* automatically **renames**
-certain metadata fields: a metadata `"NAME"` will be automatically
-renamed to `"compound_name"`. Also, *matchms* generally supports only
-lower-case metadata names. See also
+function. Note that *matchms* only supports metadata names in lower case
+or *snake_case*. Spectra variables are thus automatically renamed and
+mapped to the lower case variants if needed. Also, be aware that
+*matchms* automatically **renames** certain metadata fields: a metadata
+`"NAME"` will be automatically renamed to `"compound_name"`. See also
 [`setSpectraVariableMapping()`](https://rformassspectrometry.github.io/SpectriPy/reference/conversion.md)
 for more information.
 
@@ -314,10 +312,8 @@ the backend.
   input parameter. Both the number of spectra and the number of peaks
   must match the length of the spectra and the number of existing mass
   peaks. To change the number of peaks use the `peaksData()<-` method
-  instead that replaces the *m/z* and intensity values at the same time.
-  Calling `intensity()<-` will replace the full MS data (spectra
-  variables as well as peaks variables) of the associated Python
-  variable.
+  instead that replaces the *m/z* **and** intensity values at the same
+  time.
 
 - [`mz()`](https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html),
   `mz()<-`: get or replace the *m/z* values.
@@ -328,9 +324,7 @@ the backend.
   parameter. Both the number of spectra and the number of peaks must
   match the length of the spectra and the number of existing mass peaks.
   To change the number of peaks use the `peaksData()<-` method instead
-  that replaces the *m/z* and intensity values at the same time. Calling
-  `mz()<-` will replace the full MS data (spectra variables as well as
-  peaks variables) of the associated Python variable.
+  that replaces the *m/z* **and** intensity values at the same time.
 
 - [`peaksData()`](https://rdrr.io/pkg/ProtGenerics/man/peaksData.html):
   extracts the peaks data matrices from the backend. Python code is
@@ -344,9 +338,7 @@ the backend.
   intensity values) for all spectra. Parameter `value` has to be a
   `list`-like structure with each element being a `numeric` matrix with
   one column (named `"mz"`) containing the spectrum's *m/z* and one
-  column (named `"intensity"`) with the intensity values. This method
-  will replace the full data of the associated Python variable (i.e.,
-  both the spectra as well as the peaks data).
+  column (named `"intensity"`) with the intensity values.
 
 - [`spectraData()`](https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html):
   extracts the spectra data from the backend. Which spectra variables
@@ -357,12 +349,19 @@ the backend.
   `DataFrame` (with eventually missing *core* spectra variables filled
   with `NA`).
 
-- `spectraData()<-`: replaces the full spectra (+ peaks) data of the
+- `spectraData()<-`: replaces the **full** spectra (+ peaks) data of the
   backend with the values provided with the submitted `DataFrame`. The
   number of rows of this `DataFrame` has to match the number of spectra
   of `object` (i.e., being equal to `length(object)`) and the
-  `DataFrame` must also contain the spectras' *m/z* and intensity
-  values.
+  `DataFrame` must also contain the spectras' *m/z* and intensity values
+  (in columns named `"mz"` and `"intensity"`).
+
+- [`spectraNames()`](https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html),
+  `spectraNames()<-`: extracts, respectively, adds (replaces) names for
+  the individual spectra. These are stored as spectra variable/metadata
+  field `"spectrum_name"` in the Python representation. This is only
+  supported if the Python *matchms* library is used, the
+  *spectrum_utils* library does not support arbitrary spectra names.
 
 - [`spectraVariables()`](https://rdrr.io/pkg/ProtGenerics/man/protgenerics.html):
   retrieves available spectra variables, which include the names of all
@@ -381,10 +380,9 @@ the backend.
   for details and description of the expected format).
 
 - `$`, `$<-`: extract or add/replace values for a spectra variable
-  from/in the backend. Replacing or adding values for a spectra variable
-  cause the full data to be replaced. In detail, first the full data is
-  retrieved from Python, then the values are added/replaced and then the
-  data is again transferred to Python.
+  from/in the backend. If the *spectrum_utils* Python library is used,
+  only a restricted set of spectra variables are supported, i.e.,
+  `precursorMz`, `precursorCharge`, `rtime` and `scanIndex`.
 
 ## Additional helper and utility functions
 
@@ -499,7 +497,7 @@ s_2
 #> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 #> Data stored in the "s_p2" variable in Python
 #> Processing:
-#>  Switch backend from MsBackendMgf to MsBackendPy [Fri Apr 10 06:13:17 2026] 
+#>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr 16 08:19:32 2026] 
 
 ## This moved the data from R to Python, storing it in a Python variable
 ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object

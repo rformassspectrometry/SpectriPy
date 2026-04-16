@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,19 +39,32 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1" id="spectripy-11">SpectriPy 1.1<a class="anchor" aria-label="anchor" href="#spectripy-11"></a></h2>
 <div class="section level3">
-<h3 id="changes-in-1-1">Changes in 1.1.5<a class="anchor" aria-label="anchor" href="#changes-in-1-1"></a></h3>
+<h3 id="changes-in-1-1">Changes in 1.1.7<a class="anchor" aria-label="anchor" href="#changes-in-1-1"></a></h3>
+<ul><li>Improved <code>$&lt;-</code> operation: only replace the values for the selected spectra variable.</li>
+<li>Improved <code>peaksData&lt;-</code>, <code>mz&lt;-</code> and <code>intensity&lt;-</code> implementations: only replace the respective data, but not the full spectra data (including metadata).</li>
+<li>Improved <code><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths()</a></code> implementation: retrieves the number of peaks directly in Python.</li>
+<li>Documentation updates.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-in-1-1-1">Changes in 1.1.6<a class="anchor" aria-label="anchor" href="#changes-in-1-1-1"></a></h3>
+<ul><li>Automatic renaming and remapping of upper case or <em>camelCase</em> spectra variables to <em>snake_case</em> metadata fields in <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">backendInitialize()</a></code>, <code>spectraData&lt;-</code> and <code>$&lt;-</code>.</li>
+<li>Full support of the <em>Spectra</em> test suite.</li>
+<li>Add <code>spectraNames&lt;-</code> method for <code>MsBackendPy</code> and support getting/setting spectrum names. They are stored in a metadata field (spectra variable) <em>spectrum_name</em>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-in-1-1-2">Changes in 1.1.5<a class="anchor" aria-label="anchor" href="#changes-in-1-1-2"></a></h3>
 <ul><li>Fix <code>$&lt;-</code>, <code>spectraData()&lt;-</code> and related replacement methods for <code>Spectra</code>/<code>MsBackendPy</code> of length 1.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-1-1-1">Changes in 1.1.4<a class="anchor" aria-label="anchor" href="#changes-in-1-1-1"></a></h3>
+<h3 id="changes-in-1-1-3">Changes in 1.1.4<a class="anchor" aria-label="anchor" href="#changes-in-1-1-3"></a></h3>
 <ul><li>Implement a <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> method for <code>MsBackendPy</code> with a parameter <code>applyProcessing</code> to allow applying the processing queue and storing the modified peaks data to Python.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-1-1-2">Changes in 1.1.3<a class="anchor" aria-label="anchor" href="#changes-in-1-1-2"></a></h3>
+<h3 id="changes-in-1-1-4">Changes in 1.1.3<a class="anchor" aria-label="anchor" href="#changes-in-1-1-4"></a></h3>
 <ul><li>Introduce new <code><a href="../reference/compareSpectriPy.html">ModifiedCosineHungarian()</a></code> and <code><a href="../reference/compareSpectriPy.html">ModifiedCosineGreedy()</a></code> parameters to match changes in <em>matchms</em> version 0.32.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-1-1-3">Changes in 1.1.2<a class="anchor" aria-label="anchor" href="#changes-in-1-1-3"></a></h3>
+<h3 id="changes-in-1-1-5">Changes in 1.1.2<a class="anchor" aria-label="anchor" href="#changes-in-1-1-5"></a></h3>
 <ul><li>Use <em>matchms</em> 0.31.</li>
 </ul></div>
 </div>
