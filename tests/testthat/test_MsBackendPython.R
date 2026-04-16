@@ -1055,6 +1055,98 @@ test_that(".py_realize_subset works", {
     expect_equal(intensity(a), intensity(ref))
 })
 
+test_that("pyspec_copy_on_replace and .do_copy_on_replace work", {
+    expect_false(.do_copy_on_replace())
+    expect_false(pyspec_copy_on_replace())
+    pyspec_copy_on_replace(TRUE)
+    expect_true(.do_copy_on_replace())
+    expect_true(pyspec_copy_on_replace())
+    pyspec_copy_on_replace(FALSE)
+    expect_false(.do_copy_on_replace())
+    expect_false(pyspec_copy_on_replace())
+
+    expect_error(pyspec_copy_on_replace(c(FALSE, TRUE)), "logical")
+    expect_error(pyspec_copy_on_replace("4"), "logical")
+})
+
+test_that(".backend_copy_on_replace works", {
+    ## matchms
+    pyspec_copy_on_replace(TRUE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    b <- .backend_copy_on_replace(a)
+    expect_equal(rtime(a), rtime(b))
+    expect_equal(precursorMz(a), precursorMz(b))
+    expect_equal(precursorMz(a), precursorMz(s))
+    expect_equal(b@py_var, "tmp_1")
+    d <- .backend_copy_on_replace(a)
+    expect_equal(rtime(a), rtime(d))
+    expect_equal(precursorMz(a), precursorMz(d))
+    expect_equal(d@py_var, "tmp_2")
+    d$precursorMz <- d$precursorMz + 10
+    expect_equal(precursorMz(a), precursorMz(s))
+    expect_equal(precursorMz(a) + 10, precursorMz(d))
+    pyspec_copy_on_replace(FALSE)
+    py_del_attr(py, "tmp")
+    py_del_attr(py, "tmp_1")
+    py_del_attr(py, "tmp_2")
+
+    ## spectrum_utils
+    pyspec_copy_on_replace(TRUE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    b <- .backend_copy_on_replace(a)
+    expect_equal(rtime(a), rtime(b))
+    expect_equal(precursorMz(a), precursorMz(b))
+    expect_equal(precursorMz(a), precursorMz(s))
+    expect_equal(b@py_var, "tmp_1")
+    d <- .backend_copy_on_replace(a)
+    expect_equal(rtime(a), rtime(d))
+    expect_equal(precursorMz(a), precursorMz(d))
+    expect_equal(d@py_var, "tmp_2")
+    d$precursorMz <- d$precursorMz + 10
+    expect_equal(precursorMz(a), precursorMz(s))
+    expect_equal(precursorMz(a) + 10, precursorMz(d))
+    pyspec_copy_on_replace(FALSE)
+    py_del_attr(py, "tmp")
+    py_del_attr(py, "tmp_1")
+    py_del_attr(py, "tmp_2")
+})
+
+test_that("deep copies work in real use cases", {
+    ## matchms
+    ## First errors and problems without deepcopy.
+    pyspec_copy_on_replace(FALSE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    b <- a[1:10]
+    b$rtime <- 1:10 + 0.1
+    expect_error(show(a), "Indices are out of bound")
+    expect_equal(length(b), .py_var_length(b))
+    expect_equal(rtime(b), 1:10 + 0.1)
+    expect_equal(b@py_var, "tmp")
+
+    pyspec_copy_on_replace(TRUE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    b <- a[1:10]
+    b$rtime <- 1:10 + 0.1
+    expect_equal(length(b), .py_var_length(b))
+    expect_equal(rtime(b), 1:10 + 0.1)
+    expect_equal(b@py_var, "tmp_1")
+
+    pyspec_copy_on_replace(FALSE)
+})
+
+test_that(".make_unique_name works", {
+    n <- c("a", "b_b", "c_3", "d_3_1", "a_2", "a_1")
+    expect_equal(.make_unique_name("a", n), "a_3")
+    expect_equal(.make_unique_name("z", n), "z")
+    expect_equal(.make_unique_name("a_2", n), "a_3")
+    expect_equal(.make_unique_name("b", n), "b")
+    expect_equal(.make_unique_name("b_b", n), "b_b_1")
+    expect_equal(.make_unique_name("d_3", n), "d_3")
+    expect_equal(.make_unique_name("d_3_1", n), "d_3_2")
+    expect_equal(.make_unique_name("c_3", n), "c_4")
+    expect_equal(.make_unique_name("c_3.1", n), "c_3.1")
+})
 
 ## Comments, thoughts TODO
 ## DONE spectraData()<-: replaces the full data and allows adding/removing
@@ -1063,17 +1155,17 @@ test_that(".py_realize_subset works", {
 ##      spectraVariableMapping: we can use spectraDataMapping now to add
 ##      additional columns - missing data will be dropped - and not registered
 ##      in @spectraVariableMapping
-## TODO applyProcessing(): replace the full data? is that needed? should
-##      internally call peaksData()<-
 ## DONE all other replacement methods.
 ## DONE $<- to replace only part of the data (not the full).
 ## DONE more efficient peaksData()<-: don't replace the full data.
 ## DONE more efficient mz()<-
 ## DONE more efficient intensity()<-
-## TODO more efficient lengths() function
+## DONE more efficient lengths() function
 ## TODO support the Spectra unit test suite
 ## TODO selectSpectraVariables
 ## TODO add copy-on-replace: backendInitialize, if variable exists, create a
 ##      new one and save to that: maybe a `SpetriPyDeepCopy(TRUE/FALSE)`
 ##      to enable deep copy, and then, each set operation will trigger renaming
 ##      the variable/.
+## TODO applyProcessing(): replace the full data? is that needed? should
+##      internally call peaksData()<-

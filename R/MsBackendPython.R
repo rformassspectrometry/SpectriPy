@@ -981,7 +981,8 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
 #'
 #' @noRd
 .py_realize_subset <- function(x) {
-    if (length(x) && !identical(unname(x@i), seq_along(x))) {
+    if (length(x) && (.py_var_length(x) != length(x) ||
+                      !identical(unname(x@i), seq_along(x)))) {
         py_set_attr(py, "_tmp_i_", as.list(x@i - 1L))
         py_run_string(paste0(
             x@py_var, " = list(map(lambda i: ", x@py_var, "[i], _tmp_i_))\n"),
@@ -990,14 +991,6 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
         on.exit(py_del_attr(py, "_tmp_i_"))
     }
     x
-}
-
-#' Copy a Python variable to another Python variable - in R using reticulate.
-#' This is faster than using `py_run_string()`
-#'
-#' @noRd
-.r_copy_py_attr <- function(from, to) {
-    py_set_attr(py, to, py_get_attr(py, from))
 }
 
 #' Helper function to choose Python names that match the core ones.
@@ -1247,6 +1240,10 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
                            "intensity = _tmp_var_[i], "))
 }
 
+#' Gets the number of peaks per spectrum iterating through the individual
+#' spectra
+#'
+#' @noRd
 .py_lengths <- function(s) {
     py_run_string(
         paste0("_l_ = []\n",
@@ -1255,12 +1252,77 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
         local = TRUE, convert = TRUE)[["_l_"]]
 }
 
-## #' This function gets the **full** data (except empty core variables) from the
-## #' backend.
-## #'
-## #' @param x `MsBackendPy` object
-## #'
-## #' @return `DataFrame` with the full data.
-## .full_data <- function(x) {
-##     spectraData(x, union(names(SpectriPy:::.py_get_metadata_names(x)), peaksVariables(x)))
-## }
+################################################################################
+##    Functionality related to COPY ON REPLACE
+################################################################################
+
+#' @title Copy Python MS data structure on data replacement operations
+#'
+#' @description
+#'
+#' INTRODUCTION
+#'
+#' `pyspec_copy_on_replace()` allows to enable or disable . The advantage: no
+#' accidental modification of MS data referred by another `Spectra` object in R.
+#' The disadvantage: slightly lower performance and potentially multiple copies
+#' of the MS data in Python.
+#'
+#' @author Johannes Rainer
+#'
+#' @export
+pyspec_copy_on_replace <- function(x = logical()) {
+    if (!length(x))
+        return(.do_copy_on_replace())
+    if (!is.logical(x) || length(x) != 1L)
+        stop("'x' must be a logical of length 1")
+    options(pyspec_copy_on_replace = x)
+}
+
+#' Whether copy-on-replace should be done or not.
+#'
+#' @noRd
+.do_copy_on_replace <- function() {
+    getOption("pyspec_copy_on_replace", default = FALSE)
+}
+
+#' If *copy-on-replace* is enabled, `.backend_copy_on_replace()` copies the
+#' MS data structure of the Python attribyte `x@py_var` to a new Python
+#' attribute and assigns its name to `x@py_var`.
+#'
+#' @details
+#'
+#' The function uses `copy.deepcopy()` since with a simple assignment only
+#' a new list with references to the original values are created.
+#'
+#' @param x `MsBackendPy`
+#'
+#' @return `MsBackendPy` with the `@py_var` updated to the new copy of the
+#'     MS data in Python (if `.do_copy_on_replace()` returns `TRUE`)
+#'
+#' @noRd
+.backend_copy_on_replace <- function(x) {
+    if (.do_copy_on_replace()) {
+        nname <- .make_unique_name(x@py_var, py_list_attributes(py))
+        py_run_string(
+            paste0("import copy\n",
+                   nname, " = copy.deepcopy(", x@py_var, ")"),
+            local = FALSE, convert = FALSE)
+        x@py_var <- nname
+    }
+    x
+}
+
+#' Checks `x` against `names` and, if it already exists in `names`, tries to
+#' rename it appending a number to make a unique/distinct name.
+#'
+#' @noRd
+.make_unique_name <- function(x, names = character()) {
+    if (x %in% names) {
+        xl <- strsplit(x, split = "_", fixed = TRUE)[[1L]]
+        if (suppressWarnings(!is.na(i <- as.integer(xl[length(xl)])))) {
+            xl[length(xl)] <- i + 1
+        } else xl <- c(xl, 1)
+        x <- paste0(xl, collapse = "_")
+        .make_unique_name(x, names)
+    } else x
+}
