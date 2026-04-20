@@ -1112,7 +1112,15 @@ test_that(".backend_copy_on_replace works", {
     py_del_attr(py, "tmp_2")
 })
 
-test_that("deep copies work in real use cases", {
+test_that("deep copies work in real use cases with matchms", {
+    if (py_has_attr(py, "tmp")) py_del_attr(py, "tmp")
+    if (py_has_attr(py, "tmp_1")) py_del_attr(py, "tmp_1")
+    if (py_has_attr(py, "tmp_2")) py_del_attr(py, "tmp_2")
+    if (py_has_attr(py, "tmp_3")) py_del_attr(py, "tmp_3")
+    if (py_has_attr(py, "tmp_4")) py_del_attr(py, "tmp_4")
+    if (py_has_attr(py, "tmp_5")) py_del_attr(py, "tmp_5")
+    if (py_has_attr(py, "tmp_6")) py_del_attr(py, "tmp_6")
+
     ## matchms
     ## First errors and problems without deepcopy.
     pyspec_copy_on_replace(FALSE)
@@ -1124,15 +1132,126 @@ test_that("deep copies work in real use cases", {
     expect_equal(rtime(b), 1:10 + 0.1)
     expect_equal(b@py_var, "tmp")
 
+    ## These have to work. Changing any values should not affect other *copies*
+    ## of the data.
     pyspec_copy_on_replace(TRUE)
     a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp")@backend
+    expect_equal(a@py_var, "tmp")
     b <- a[1:10]
+    expect_equal(b@py_var, "tmp")
+    ## $<-
     b$rtime <- 1:10 + 0.1
+    expect_equal(a@py_var, "tmp")
+    expect_equal(b@py_var, "tmp_1")
     expect_equal(length(b), .py_var_length(b))
     expect_equal(rtime(b), 1:10 + 0.1)
-    expect_equal(b@py_var, "tmp_1")
+    expect_equal(rtime(a), rtime(s))
+    ## intensity<-
+    intensity(b) <- intensity(b) / 2
+    expect_equal(b@py_var, "tmp_2")
+    expect_equal(intensity(b), intensity(a)[1:10] / 2)
+    ## mz<-
+    mz(b) <- mz(b) + 100
+    expect_equal(b@py_var, "tmp_3")
+    expect_equal(mz(b), mz(a)[1:10] + 100)
+    ## peaksData<-
+    peaksData(b) <- peaksData(a)[1:10]
+    expect_equal(b@py_var, "tmp_4")
+    expect_equal(peaksData(b), peaksData(a)[1:10])
+    ## spectraData<-
+    sd <- spectraData(b)
+    sd$msLevel <- 3L
+    spectraData(b) <- sd
+    expect_equal(b@py_var, "tmp_5")
+    expect_equal(msLevel(b), rep(3L, 10))
+
+    ## Works also if backend is in a Spectra object
+    s_b <- Spectra(b)
+    rtime(s_b) <- 1:10 + 0.5
+    expect_equal(s_b@backend@py_var, "tmp_6")
+    expect_equal(rtime(s_b), 1:10 + 0.5)
 
     pyspec_copy_on_replace(FALSE)
+
+    if (py_has_attr(py, "tmp")) py_del_attr(py, "tmp")
+    py_del_attr(py, "tmp_1")
+    py_del_attr(py, "tmp_2")
+    py_del_attr(py, "tmp_3")
+    py_del_attr(py, "tmp_4")
+    py_del_attr(py, "tmp_5")
+    py_del_attr(py, "tmp_6")
+})
+
+test_that("deep copies work in real use cases with spectrum_utils", {
+    if (py_has_attr(py, "tmp")) py_del_attr(py, "tmp")
+    if (py_has_attr(py, "tmp_1")) py_del_attr(py, "tmp_1")
+    if (py_has_attr(py, "tmp_2")) py_del_attr(py, "tmp_2")
+    if (py_has_attr(py, "tmp_3")) py_del_attr(py, "tmp_3")
+    if (py_has_attr(py, "tmp_4")) py_del_attr(py, "tmp_4")
+    if (py_has_attr(py, "tmp_5")) py_del_attr(py, "tmp_5")
+    if (py_has_attr(py, "tmp_6")) py_del_attr(py, "tmp_6")
+
+    ## spectrum_utils
+    ## First errors and problems without deepcopy.
+    pyspec_copy_on_replace(FALSE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    b <- a[1:10]
+    b$rtime <- 1:10 + 0.1
+    expect_error(show(a), "Indices are out of bound")
+    expect_equal(length(b), .py_var_length(b))
+    expect_equal(rtime(b), 1:10 + 0.1, tolerance = SPECTRUM_UTILS_TOLERANCE)
+    expect_equal(b@py_var, "tmp")
+
+    ## These have to work. Changing any values should not affect other *copies*
+    ## of the data.
+    pyspec_copy_on_replace(TRUE)
+    a <- setBackend(s, MsBackendPy(), pythonVariableName = "tmp",
+                    pythonLibrary = "spectrum_utils")@backend
+    expect_equal(a@py_var, "tmp")
+    b <- a[1:10]
+    expect_equal(b@py_var, "tmp")
+    ## $<-
+    b$rtime <- 1:10 + 0.1
+    expect_equal(a@py_var, "tmp")
+    expect_equal(b@py_var, "tmp_1")
+    expect_equal(length(b), .py_var_length(b))
+    expect_equal(rtime(b), 1:10 + 0.1, tolerance = SPECTRUM_UTILS_TOLERANCE)
+    expect_equal(rtime(a), rtime(s))
+    ## intensity<-
+    intensity(b) <- intensity(b) / 2
+    expect_equal(b@py_var, "tmp_2")
+    expect_equal(intensity(b), intensity(a)[1:10] / 2)
+    ## mz<-
+    mz(b) <- mz(b) + 100
+    expect_equal(b@py_var, "tmp_3")
+    expect_equal(mz(b), mz(a)[1:10] + 100)
+    ## peaksData<-
+    peaksData(b) <- peaksData(a)[1:10]
+    expect_equal(b@py_var, "tmp_4")
+    expect_equal(peaksData(b), peaksData(a)[1:10])
+    ## spectraData<-
+    sd <- spectraData(b)
+    sd$rtime <- 1:10 + 0.7
+    spectraData(b) <- sd
+    expect_equal(b@py_var, "tmp_5")
+    expect_equal(rtime(b), 1:10 + 0.7, tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    ## Works also if backend is in a Spectra object
+    s_b <- Spectra(b)
+    rtime(s_b) <- 1:10 + 0.5
+    expect_equal(s_b@backend@py_var, "tmp_6")
+    expect_equal(rtime(s_b), 1:10 + 0.5, tolerance = SPECTRUM_UTILS_TOLERANCE)
+
+    pyspec_copy_on_replace(FALSE)
+
+    py_del_attr(py, "tmp")
+    py_del_attr(py, "tmp_1")
+    py_del_attr(py, "tmp_2")
+    py_del_attr(py, "tmp_3")
+    py_del_attr(py, "tmp_4")
+    py_del_attr(py, "tmp_5")
+    py_del_attr(py, "tmp_6")
 })
 
 test_that(".make_unique_name works", {

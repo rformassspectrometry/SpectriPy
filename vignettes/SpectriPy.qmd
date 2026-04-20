@@ -631,16 +631,109 @@ sps$SMILES |> head()
 See also the next section for more information on the mapping between
 `Spectra`'s spectra variables and *matchms* metadata.
 
+### Replacing data and ensuring data consistency
+
 The `MsBackendPy` has full *read/write* support, i.e., it allows to add new
 spectra variables or change existing spectra and/or peaks variables through the
 available replacement methods `spectraData()<-`, `peaksData()<-`,
-`intensity()<-`, `mz()<-` and `$<-`. Currently, this operations change however
-the full MS data of the associated Python variable. Thus, even if for example
-only the retention times are replaced using `$rtime<-`, the (full!) data is
-first loaded from Python to R, the retention time values are then replaced and
-finally the full data (spectra and peaks variables) are again stored to the
-associated Python variable. Replacement operations are thus quite memory
-demanding.
+`intensity()<-`, `mz()<-` and `$<-`. These operations directly change the MS
+data in the associated Python variable/data structure and special care is
+advised if multiple copies of a `Spectra` object pointing to the **same** Python
+variable exist. To avoid inadvertently changing data in other copies of a
+`Spectra` object present in R it is possible to (temporarily) enable a
+*copy-on-replace* strategy that copies (clones) the MS data of the MS data
+structure in Python to another variable before replacing the values.
+
+In the example below we first load an example data from an MGF file and change
+the backend to a `MsBackendPy` object hence translating the full MS data to
+Python.
+
+```{r}
+#' R session:
+
+fl <- system.file("extdata", "mgf", "test.mgf", package = "SpectriPy")
+s_mgf <- Spectra(fl, source = MsBackendMgf())
+s_mgf <- setBackend(s_mgf, MsBackendPy(), pythonVariableName = "mgf_data")
+s_mgf
+```
+
+The data is now stored in a Python variable with the name `"mgf_data"`. We next
+enable the *copy-on-replace* option of *SpectriPy* and make a subset of the
+data, still keeping the original `Spectra` object `s_mgf`.
+
+```{r}
+#' R session:
+
+#' Enable copy-on-replace for MsBackendPy
+pyspec_copy_on_replace(TRUE)
+
+#' Make a subset of the original data and assign that to a different Spectra
+s_mgf_sub <- s_mgf[1:10]
+```
+
+*SpectriPy* uses a *delayed* subset strategy keeping the index to the
+individual spectra in the `MsBackendPy`. Both `Spectra` objects however still
+reference the same original data in Python:
+
+```{r}
+#' R session:
+
+#' Get the name of the asscociated Python variable
+s_mgf@backend@py_var
+s_mgf_sub@backend@py_var
+
+#' The index to the spectrum objects in the Python list
+s_mgf@backend@i
+s_mgf_sub@backend@i
+```
+
+Next we assign/replace the retention times of the `s_mgf_sub` `Spectra` object.
+
+```{r}
+#' R session:
+
+s_mgf_sub$rtime <- 1:10 + 0.1
+```
+
+After this replacement operation, the `s_mgf_sub` `Spectra` object points to a
+**different** Python variable:
+
+```{r}
+#' R session:
+
+s_mgf_sub@backend@py_var
+```
+
+The *copy-on-replace* strategy of *SpectriPy* copies (clones) the MS data
+associated to the `MsBackendPy` to a new variable before replacing or updating
+any of its data. Thus, the *original* `Spectra` object `s_mgf` points to a
+Python variable with the MS data in its original state:
+
+```{r}
+#' R session:
+
+s_mgf@backend@py_var
+```
+
+Note that this strategy is only needed when copies (or subsets) of a `Spectra`
+object are created in R and data replacements are performed on only one of them,
+or if different operations are applied to each. If no longer needed, i.e., if
+each `Spectra` object present in R points to its own Python variable,
+*copy-on-replace* should be disabled again to avoid multiple unnecessary copies
+of the data.
+
+```{r}
+#' R session:
+
+pyspec_copy_on_replace(FALSE)
+```
+
+**To summarize**: use `pyspec_copy_on_replace(TRUE)` if you have multiple
+`Spectra` objects pointing to the same Python variable **before** you apply one
+of the replacement operations `$<-`, `spectraData<-`, `mz<-`, `intensity<-`,
+`peaksData<-`, or `applyProcessing()`. Use `pyspec_copy_on_replace(FALSE)`
+**after** the operation was performed.
+
 
 ## Conversion of spectra variables
 

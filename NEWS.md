@@ -1,5 +1,10 @@
 # SpectriPy 1.1
 
+## Changes in 1.1.8
+
+- Implement `pyspec_copy_on_replace()` to enable copying/cloning the MS data
+  in Python for any data replacement operation performed in R (issue #91).
+
 ## Changes in 1.1.7
 
 - Improved `$<-` operation: only replace the values for the selected spectra
