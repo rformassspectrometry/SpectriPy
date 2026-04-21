@@ -152,10 +152,21 @@ The \code{MsBackendPy} keeps only a reference to the MS data in Python (i.e. the
 name of the variable in Python) as well as an index pointing to the
 individual spectra in Python but no other data. Any data requested from
 the \code{MsBackendPy} is accessed and translated on-the-fly from the Python
-variable. The \code{MsBackendPy} is thus an interface to the MS data, but not
-a data container. All changes to the MS data in the Python variable
-(performed e.g. in Python) immediately affect any \code{MsBackendPy} instances
-pointing to this variable.
+variable. The \code{MsBackendPy} is thus an interface to the Python MS data
+structure, but not a data container. All changes to the MS data in the
+Python variable (performed e.g. in Python) immediately affect any
+\code{MsBackendPy} instances pointing to this variable.
+
+All \strong{Subset} operations on a \code{MsBackendPy} with e.g. \code{[} are \emph{delayed}
+meaning that the data in Python is not immediately changed, but that
+only the index to the individual spectrum objects in Python (which is stored
+within the backend) is updated. Importantly, however, any replacement
+operation such as \verb{$<-} or \verb{rtime<-} will realize the subset also in Python
+(i.e., subset and change the order of the data in Python according to the
+index in R). Be aware that this might cause data corruption if two
+\code{MsBackendPy} instances use to the same data in Python (i.e., refer to the
+same Python variable). See \code{\link[=pyspec_copy_on_replace]{pyspec_copy_on_replace()}} for a strategy to
+avoid such data corruption.
 
 Special care must be taken if the MS data structure in Python is subset or
 its order is changed (e.g. by another process). In that case it might be
@@ -413,6 +424,10 @@ spectraData(be)
 
 ## Extract the precursor m/z
 be$precursorMz
+}
+\seealso{
+\code{\link[=pyspec_copy_on_replace]{pyspec_copy_on_replace()}} to ensure MS data in Python gets copied
+on any data replacement operation.
 }
 \author{
 Johannes Rainer and the EuBIC hackathon team

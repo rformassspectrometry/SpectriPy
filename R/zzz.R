@@ -39,6 +39,14 @@ spectrum_utils <- NULL
     if ((res <- Sys.getenv("RETICULATE_PYTHON_ENV")) != "")
         packageStartupMessage("Using Python environment defined by ",
                               "'RETICULATE_PYTHON_ENV': ", res)
+    ## set pyspec_copy_on_replace
+    cor <- Sys.getenv("pyspec_copy_on_replace")
+    if (cor %in% c("0", "1"))
+        cor <- as.integer(cor)
+    cor <- as.logical(cor)
+    ## Only set if not set in options.
+    if (!is.na(cor) && !length(getOption("pyspec_copy_on_replace")))
+        options(pyspec_copy_on_replace = cor)
 }
 
 .is_spectripy_use_system <- function() {

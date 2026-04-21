@@ -63,7 +63,8 @@
 #' (i.e., subset and change the order of the data in Python according to the
 #' index in R). Be aware that this might cause data corruption if two
 #' `MsBackendPy` instances use to the same data in Python (i.e., refer to the
-#' same Python variable).
+#' same Python variable). See [pyspec_copy_on_replace()] for a strategy to
+#' avoid such data corruption.
 #'
 #' Special care must be taken if the MS data structure in Python is subset or
 #' its order is changed (e.g. by another process). In that case it might be
@@ -248,6 +249,9 @@
 #' @author Johannes Rainer and the EuBIC hackathon team
 #'
 #' @name MsBackendPy
+#'
+#' @seealso [pyspec_copy_on_replace()] to ensure MS data in Python gets copied
+#'     on any data replacement operation.
 #'
 #' @return
 #'
@@ -565,6 +569,7 @@ setReplaceMethod("spectraData", "MsBackendPy", function(object, value) {
     if (nrow(value) != length(object))
         stop("The number of rows of the provided 'DataFrame' has to match ",
              "the number of spectra (=", length(object), ").")
+    object <- .backend_copy_on_replace(object)
     svm <- object@spectraVariableMapping
     ## keep only variable mapping for which we have values in 'value'
     svm <- svm[names(svm) %in% colnames(value)]
@@ -612,6 +617,7 @@ setMethod(
 #' @rdname MsBackendPy
 setReplaceMethod("peaksData", "MsBackendPy", function(object, value) {
     Spectra:::.check_peaks_data_value(value, length(object))
+    object <- .backend_copy_on_replace(object)
     object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(object@py_var, value, "peaks"),
@@ -639,6 +645,7 @@ setMethod("$", "MsBackendPy", function(x, name) {
 #' @importMethodsFrom Spectra peaksVariables
 setReplaceMethod("$", "MsBackendPy", function(x, name, value) {
     if (!length(x)) return(x)
+    x <- .backend_copy_on_replace(x)
     x <- .py_realize_subset(x)
     if (x@py_lib == "matchms") {
         if (name %in% c("mz", "intensity")) {
@@ -723,6 +730,7 @@ setMethod("intensity", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("intensity", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
+    object <- .backend_copy_on_replace(object)
     object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(
@@ -762,6 +770,7 @@ setMethod("mz", "MsBackendPy", function(object) {
 #' @rdname MsBackendPy
 setReplaceMethod("mz", "MsBackendPy", function(object, value) {
     .check_mz_intensity(value, length(object), lengths(object))
+    object <- .backend_copy_on_replace(object)
     object <- .py_realize_subset(object)
     switch(object@py_lib,
            matchms = .py_matchms_replace(
@@ -830,7 +839,6 @@ setMethod("spectraNames", "MsBackendPy", function(object) {
 setReplaceMethod("spectraNames", "MsBackendPy", function(object, value) {
     if (length(value) != length(object))
         stop("'value' has to be of length ", length(object))
-    object <- .py_realize_subset(object)
     object$spectrum_name <- value
     object
 })
@@ -981,7 +989,8 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
 #'
 #' @noRd
 .py_realize_subset <- function(x) {
-    if (length(x) && !identical(unname(x@i), seq_along(x))) {
+    if (length(x) && (.py_var_length(x) != length(x) ||
+                      !identical(unname(x@i), seq_along(x)))) {
         py_set_attr(py, "_tmp_i_", as.list(x@i - 1L))
         py_run_string(paste0(
             x@py_var, " = list(map(lambda i: ", x@py_var, "[i], _tmp_i_))\n"),
@@ -990,14 +999,6 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
         on.exit(py_del_attr(py, "_tmp_i_"))
     }
     x
-}
-
-#' Copy a Python variable to another Python variable - in R using reticulate.
-#' This is faster than using `py_run_string()`
-#'
-#' @noRd
-.r_copy_py_attr <- function(from, to) {
-    py_set_attr(py, to, py_get_attr(py, from))
 }
 
 #' Helper function to choose Python names that match the core ones.
@@ -1247,6 +1248,10 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
                            "intensity = _tmp_var_[i], "))
 }
 
+#' Gets the number of peaks per spectrum iterating through the individual
+#' spectra
+#'
+#' @noRd
 .py_lengths <- function(s) {
     py_run_string(
         paste0("_l_ = []\n",
@@ -1255,12 +1260,198 @@ setMethod("setBackend", c("Spectra", "MsBackendPy"),
         local = TRUE, convert = TRUE)[["_l_"]]
 }
 
-## #' This function gets the **full** data (except empty core variables) from the
-## #' backend.
-## #'
-## #' @param x `MsBackendPy` object
-## #'
-## #' @return `DataFrame` with the full data.
-## .full_data <- function(x) {
-##     spectraData(x, union(names(SpectriPy:::.py_get_metadata_names(x)), peaksVariables(x)))
-## }
+################################################################################
+##    Functionality related to COPY ON REPLACE
+################################################################################
+
+#' @title Copy Python MS data structure on MS data replacement operations
+#'
+#' @description
+#'
+#' Assigning a `MsBackendPy` to another variable name in R with e.g. `a <- b`
+#' with `b` being a `MsBackendPy` object results in two different `MsBackendPy`
+#' instances in R that point however to the **same** MS data structure in
+#' Python. Changing thus one of the two `MsBackendPy` either by subset or data
+#' replacement operations changes the shared MS data in Python and thus
+#' inadvertedly also the data from any other `MsBackendPy` instance in R
+#' pointing to the same variable in Python.
+#'
+#' Setting `pyspec_copy_on_replace(TRUE)` **before** any data replacement
+#' operation on a `MsBackendPy` instance causes the full MS data in Python to
+#' be copied to a **new** Phython variable before replacing any values. Thus,
+#' in situations described above, `a` and `b` would then point to two different
+#' Python variables. After the subset or replacement operation has been
+#' performed, the *copy-on-replace* setting can again be disabled with
+#' `pyspec_copy_on_replace(FALSE)`.
+#'
+#' In general, if there are multiple `MsBackendPy` instances (or `Spectra`
+#' objects) pointing to the same Python variable, then
+#' `pyspec_copy_on_replace(TRUE)` should be called before one of the replacement
+#' methods `$<-`, `intensity<-`, `mz<-`, `peaksData<-`, `spectraData<-` or
+#' `applyProcessing()` is called on one of them. After the operation,
+#' `pyspec_copy_on_replace(FALSE)` should be called.
+#'
+#' See examples below for details.
+#'
+#' Calling `pyspec_copy_on_replace()` without `TRUE` or `FALSE` returns a
+#' `logical(1)` whether *copy-on-replace* is enabled or not.
+#'
+#' The *copy-on-replace* approach avoids data corruptions by accidental
+#' modification of common Python MS data shared by different `Spectra` objects/
+#' `MsBackendPy` instances. On the downside, it comes with a slighlty lower
+#' performance (as the copy has to be cloned) and can result in potentially
+#' multiple copies of the (same) MS data in Python. *Copy-on-replace* should
+#' thus be used with care.
+#'
+#' @details
+#'
+#' For the name of the Python MS data variable a number is appended
+#' to the original variable name, ensuring that no other Python variable with
+#' the same name exists (to avoid replacing any other variable in Python). For
+#' example, if the original Python variable's name is `"my_data"`, `"my_data_1"`
+#' is used if there is no other variable with that name. If there is already
+#' another Python variable `"my_data_1"`, then `"my_data_2"` is used instead.
+#'
+#' *copy-on-replace* can also be enabled using an R option (e.g.
+#' `options(pyspec_copy_on_replace = TRUE)`) or System environment variable
+#' (e.g. `Sys.setenv(pyspec_copy_on_replace = TRUE)`).
+#'
+#' @param x `logical()`
+#'
+#' @return If `pyspec_copy_on_replace()` is called without providing an input
+#'     parameter, a `logical(1)` is returned whether the *copy-on-replace*
+#'     option is enabled or not.
+#'
+#' @author Johannes Rainer
+#'
+#' @export
+#'
+#' @examples
+#'
+#' ## Is copy-on-replace enabled?
+#' pyspec_copy_on_replace()
+#'
+#' ## Setting *copy-on-replace* to FALSE (the default)
+#' pyspec_copy_on_replace(FALSE)
+#'
+#' ## Load an example Spectra object and change to use a `MsBackendPy`
+#' library(Spectra)
+#' library(MsBackendMgf)
+#' fl <- system.file("extdata", "mgf", "test.mgf", package = "SpectriPy")
+#' s <- Spectra(fl, source = MsBackendMgf())
+#' s <- setBackend(s, MsBackendPy(), pythonVariableName = "mgf_data")
+#'
+#' ## `s` is now a `Spectra` object with the data in Python, in a variable
+#' ## `"mgf_data"`.
+#' s
+#'
+#' ## DATA CORRUPTION
+#'
+#' ## To show how data corruption can happen, we next create a subset of
+#' ## `s` and assign that to new variable `s_sub`. Both point to the same
+#' ## data in Python
+#' s_sub <- s[1:10]
+#' s_sub
+#'
+#' ## Without any data manipulation, both variables are valid
+#' intensity(s)
+#' intensity(s_sub)
+#'
+#' ## However, any data manipulation on any of the two variables will affect
+#' ## the shared MS data in Python. Below we assign retention times to the
+#' ## data subset `s_sub`. This will cause the associated Python data in
+#' ## `"mgf_data"` to be subset to the first 10 spectra and the retention times
+#' ## be added.
+#' s_sub$rtime <- 1:10 + 0.1
+#' rtime(s_sub)
+#'
+#' ## Calling `s` throws an error; the data in Python was restricted to the
+#' ## first 10 spectra, so, `s` is no longer *valid*.
+#'
+#' ## AVOID DATA COPRRUPTION WIHT COPY ON REPLACE
+#'
+#' ## If any MS data needs to be updated, replaced or added during an analysis,
+#' ## it is suggested to enable the *copy-on-replace* option to ensure that
+#' ## also the MS data in Python gets copied. We repeat the above analysis
+#' ## after enabling *copy-on-replace*:
+#' s <- Spectra(fl, source = MsBackendMgf())
+#' s <- setBackend(s, MsBackendPy(), pythonVariableName = "mgf_data")
+#'
+#' pyspec_copy_on_replace(TRUE)
+#'
+#' ## Subset `s` and add/replace retention times in the subset
+#' s_sub <- s[1:10]
+#' s_sub
+#'
+#' s_sub$rtime <- 1:10 + 0.5
+#'
+#' ## `s` and `s_sub` are now pointing to two **different** variables in Python
+#' s
+#' s_sub
+#'
+#' ## Thus, the data from `s` was not changed
+#' rtime(s)
+#'
+#' ## While the one from `s_sub` was
+#' rtime(s_sub)
+#'
+#' ## Disable *copy-on-replace* after the data replacement
+#' pyspec_copy_on_replace(FALSE)
+pyspec_copy_on_replace <- function(x = logical()) {
+    if (!length(x))
+        return(.do_copy_on_replace())
+    if (!is.logical(x) || length(x) != 1L)
+        stop("'x' must be a logical of length 1")
+    options(pyspec_copy_on_replace = x)
+}
+
+#' Whether copy-on-replace should be done or not.
+#'
+#' @noRd
+.do_copy_on_replace <- function() {
+    getOption("pyspec_copy_on_replace", default = FALSE)
+}
+
+#' If *copy-on-replace* is enabled, `.backend_copy_on_replace()` copies the
+#' MS data structure of the Python attribyte `x@py_var` to a new Python
+#' attribute and assigns its name to `x@py_var`.
+#'
+#' @details
+#'
+#' The function uses `copy.deepcopy()` since with a simple assignment only
+#' a new list with references to the original values are created.
+#'
+#' @param x `MsBackendPy`
+#'
+#' @return `MsBackendPy` with the `@py_var` updated to the new copy of the
+#'     MS data in Python (if `.do_copy_on_replace()` returns `TRUE`)
+#'
+#' @noRd
+#'
+#' @importFrom reticulate py_list_attributes
+.backend_copy_on_replace <- function(x) {
+    if (.do_copy_on_replace()) {
+        nname <- .make_unique_name(x@py_var, py_list_attributes(py))
+        py_run_string(
+            paste0("import copy\n",
+                   nname, " = copy.deepcopy(", x@py_var, ")"),
+            local = FALSE, convert = FALSE)
+        x@py_var <- nname
+    }
+    x
+}
+
+#' Checks `x` against `names` and, if it already exists in `names`, tries to
+#' rename it appending a number to make a unique/distinct name.
+#'
+#' @noRd
+.make_unique_name <- function(x, names = character()) {
+    if (x %in% names) {
+        xl <- strsplit(x, split = "_", fixed = TRUE)[[1L]]
+        if (suppressWarnings(!is.na(i <- as.integer(xl[length(xl)])))) {
+            xl[length(xl)] <- i + 1
+        } else xl <- c(xl, 1)
+        x <- paste0(xl, collapse = "_")
+        .make_unique_name(x, names)
+    } else x
+}
