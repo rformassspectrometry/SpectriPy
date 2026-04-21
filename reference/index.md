@@ -42,3 +42,5 @@
   [`normalize_intensities()`](https://rformassspectrometry.github.io/SpectriPy/reference/filterSpectriPy.md)
   [`filterSpectriPy(`*`<Spectra>`*`,`*`<filter_param>`*`)`](https://rformassspectrometry.github.io/SpectriPy/reference/filterSpectriPy.md)
   : Filter Spectra using Python's matchms library
+- [`pyspec_copy_on_replace()`](https://rformassspectrometry.github.io/SpectriPy/reference/pyspec_copy_on_replace.md)
+  : Copy Python MS data structure on MS data replacement operations

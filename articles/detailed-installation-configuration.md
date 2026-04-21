@@ -415,7 +415,7 @@ documentation.
 sessionInfo()
 ```
 
-    R Under development (unstable) (2026-04-12 r89873)
+    R Under development (unstable) (2026-04-19 r89916)
     Platform: x86_64-pc-linux-gnu
     Running under: Ubuntu 24.04.4 LTS
 
@@ -438,19 +438,19 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base
 
     other attached packages:
-    [1] SpectriPy_1.1.7   reticulate_1.46.0
+    [1] SpectriPy_1.1.8   reticulate_1.46.0
 
     loaded via a namespace (and not attached):
      [1] Spectra_1.21.7         cli_3.6.6              knitr_1.51
      [4] rlang_1.2.0            xfun_0.57              ProtGenerics_1.43.0
      [7] otel_0.2.0             png_0.1-9              generics_0.1.4
     [10] data.table_1.18.2.1    jsonlite_2.0.0         clue_0.3-68
-    [13] S4Vectors_0.49.1-1     htmltools_0.5.9        stats4_4.7.0
+    [13] S4Vectors_0.49.2       htmltools_0.5.9        stats4_4.7.0
     [16] rmarkdown_2.31         grid_4.7.0             snakecase_0.11.1
     [19] evaluate_1.0.5         MASS_7.3-65            fastmap_1.2.0
     [22] yaml_2.3.12            IRanges_2.45.0         MsCoreUtils_1.23.9
     [25] cluster_2.1.8.2        compiler_4.7.0         codetools_0.2-20
-    [28] fs_2.0.1               Rcpp_1.1.1-1           MetaboCoreUtils_1.19.2
+    [28] fs_2.1.0               Rcpp_1.1.1-1           MetaboCoreUtils_1.19.3
     [31] BiocParallel_1.45.0    lattice_0.22-9         digest_0.6.39
     [34] parallel_4.7.0         Matrix_1.7-5           withr_3.0.2
-    [37] tools_4.7.0            BiocGenerics_0.57.0   
+    [37] tools_4.7.0            BiocGenerics_0.57.1   

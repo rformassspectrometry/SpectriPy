@@ -212,10 +212,22 @@ The `MsBackendPy` keeps only a reference to the MS data in Python (i.e.
 the name of the variable in Python) as well as an index pointing to the
 individual spectra in Python but no other data. Any data requested from
 the `MsBackendPy` is accessed and translated on-the-fly from the Python
-variable. The `MsBackendPy` is thus an interface to the MS data, but not
-a data container. All changes to the MS data in the Python variable
-(performed e.g. in Python) immediately affect any `MsBackendPy`
-instances pointing to this variable.
+variable. The `MsBackendPy` is thus an interface to the Python MS data
+structure, but not a data container. All changes to the MS data in the
+Python variable (performed e.g. in Python) immediately affect any
+`MsBackendPy` instances pointing to this variable.
+
+All **Subset** operations on a `MsBackendPy` with e.g. `[` are *delayed*
+meaning that the data in Python is not immediately changed, but that
+only the index to the individual spectrum objects in Python (which is
+stored within the backend) is updated. Importantly, however, any
+replacement operation such as `$<-` or `rtime<-` will realize the subset
+also in Python (i.e., subset and change the order of the data in Python
+according to the index in R). Be aware that this might cause data
+corruption if two `MsBackendPy` instances use to the same data in Python
+(i.e., refer to the same Python variable). See
+[`pyspec_copy_on_replace()`](https://rformassspectrometry.github.io/SpectriPy/reference/pyspec_copy_on_replace.md)
+for a strategy to avoid such data corruption.
 
 Special care must be taken if the MS data structure in Python is subset
 or its order is changed (e.g. by another process). In that case it might
@@ -391,6 +403,12 @@ the backend.
   was subset or re-ordered by a different process (or a function in
   Python).
 
+## See also
+
+[`pyspec_copy_on_replace()`](https://rformassspectrometry.github.io/SpectriPy/reference/pyspec_copy_on_replace.md)
+to ensure MS data in Python gets copied on any data replacement
+operation.
+
 ## Author
 
 Johannes Rainer and the EuBIC hackathon team
@@ -497,7 +515,7 @@ s_2
 #> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 #> Data stored in the "s_p2" variable in Python
 #> Processing:
-#>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr 16 08:19:32 2026] 
+#>  Switch backend from MsBackendMgf to MsBackendPy [Tue Apr 21 05:42:48 2026] 
 
 ## This moved the data from R to Python, storing it in a Python variable
 ## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object

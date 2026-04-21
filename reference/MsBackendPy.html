@@ -49,7 +49,7 @@ package vignette for details and examples."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -259,10 +259,20 @@ before transferring the data to Python. Defaults to
 name of the variable in Python) as well as an index pointing to the
 individual spectra in Python but no other data. Any data requested from
 the <code>MsBackendPy</code> is accessed and translated on-the-fly from the Python
-variable. The <code>MsBackendPy</code> is thus an interface to the MS data, but not
-a data container. All changes to the MS data in the Python variable
-(performed e.g. in Python) immediately affect any <code>MsBackendPy</code> instances
-pointing to this variable.</p>
+variable. The <code>MsBackendPy</code> is thus an interface to the Python MS data
+structure, but not a data container. All changes to the MS data in the
+Python variable (performed e.g. in Python) immediately affect any
+<code>MsBackendPy</code> instances pointing to this variable.</p>
+<p>All <strong>Subset</strong> operations on a <code>MsBackendPy</code> with e.g. <code>[</code> are <em>delayed</em>
+meaning that the data in Python is not immediately changed, but that
+only the index to the individual spectrum objects in Python (which is stored
+within the backend) is updated. Importantly, however, any replacement
+operation such as <code>$&lt;-</code> or <code>rtime&lt;-</code> will realize the subset also in Python
+(i.e., subset and change the order of the data in Python according to the
+index in R). Be aware that this might cause data corruption if two
+<code>MsBackendPy</code> instances use to the same data in Python (i.e., refer to the
+same Python variable). See <code><a href="pyspec_copy_on_replace.html">pyspec_copy_on_replace()</a></code> for a strategy to
+avoid such data corruption.</p>
 <p>Special care must be taken if the MS data structure in Python is subset or
 its order is changed (e.g. by another process). In that case it might be
 needed to re-index the backend using the <code>reindex()</code> function:
@@ -403,6 +413,11 @@ This function is useful if the original data referenced by the backend was
 subset or re-ordered by a different process (or a function in Python).</p></li>
 </ul></div>
     <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="pyspec_copy_on_replace.html">pyspec_copy_on_replace()</a></code> to ensure MS data in Python gets copied
+on any data replacement operation.</p></div>
+    </div>
+    <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Johannes Rainer and the EuBIC hackathon team</p>
     </div>
@@ -508,7 +523,7 @@ subset or re-ordered by a different process (or a function in Python).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MSn data (Spectra) with 100 spectra in a MsBackendPy backend:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Data stored in the "s_p2" variable in Python</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Thu Apr 16 08:19:32 2026] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Switch backend from MsBackendMgf to MsBackendPy [Tue Apr 21 05:42:48 2026] </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## This moved the data from R to Python, storing it in a Python variable</span></span></span>
 <span class="r-in"><span><span class="co">## with the name `s_p2`. The resulting `s_2` is thus a `Spectra` object</span></span></span>
