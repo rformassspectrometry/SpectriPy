@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpectriPy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
 
 
 
-    <p><strong>Compiled</strong>: Fri Apr 24 07:23:24 2026</p>
+    <p><strong>Compiled</strong>: Tue May 12 06:29:48 2026</p>
 <p><strong>Note</strong>: since version 0.99.6 <em>SpectriPy</em> uses the newer, recommended approach to install and configure required Python libraries (i.e., through <em>reticulate</em>’s <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">py_require()</a></code> functionality). This affects also the way a pre-defined Python environment can be used. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for updated information.</p>
 <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -83,7 +83,7 @@
 </section><section class="section level2"><h2 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
 </h2>
 <p>The <a href="https://rstudio.github.io/reticulate/" class="external-link"><em>reticulate</em></a> package enables a seamless integration of Python with R by translating the core data structures between the two programming languages and sharing a Python (respectively R) runtime environment, including shared variables, that can be accessed from the other programming language. If the <em>reticulate</em> package is not already available, it will be installed during the installation of <em>SpectriPy</em>. Alternatively, it can be installed using <code>install.packages("reticulate")</code>.</p>
-<p>The <em>SpectriPy</em> package builds on <em>reticulate</em> providing in addition the functionality to translate data structures for MS data between the two languages. Specifically, the package translates between R’s <code>Spectra</code> objects (from the <em><a href="https://bioconductor.org/packages/3.23/Spectra" class="external-link">Spectra</a></em> package) and Python’s <code>matchms.Spectrum</code> and <code>spectrum_utils.spectrum.MsmsSpectrum</code> objects from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries, respectively.</p>
+<p>The <em>SpectriPy</em> package builds on <em>reticulate</em> providing in addition the functionality to translate data structures for MS data between the two languages. Specifically, the package translates between R’s <code>Spectra</code> objects (from the <em><a href="https://bioconductor.org/packages/3.24/Spectra" class="external-link">Spectra</a></em> package) and Python’s <code>matchms.Spectrum</code> and <code>spectrum_utils.spectrum.MsmsSpectrum</code> objects from the <a href="https://github.com/matchms/matchms" class="external-link"><em>matchms</em></a> and <a href="https://github.com/bittremieux-lab/spectrum_utils" class="external-link"><em>spectrum_utils</em></a> Python libraries, respectively.</p>
 </section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>If the <em>BiocManager</em> package is not already available, please install it with <code>install.packages("BiocManager")</code>. As a system dependency, the package requires Python (version &gt;= 3.12) to be available. During package installation, <em>SpectriPy</em> will by default install all required Python libraries automatically. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-python">Startup and Python configuration</a> in the <em>Detailed information on installation and configuration</em> vignette for information on manual library installation or usage of a pre-defined or system Python environment. See section <a href="https://rformassspectrometry.github.io/SpectriPy/articles/detailed-installation-configuration.html#sec-fix">Fixing package installation or loading problems</a> in the <em>Detailed information on installation and configuration</em> vignette for some hints how to solve package installation or loading problems.</p>
@@ -154,9 +154,9 @@
  ... 34 more variables/columns.
 
 file(s):
-88d37582aa7_7861
+2a903072237_7861
 Processing:
- Filter: select MS level(s) 2 [Fri Apr 24 07:23:43 2026] </code></pre>
+ Filter: select MS level(s) 2 [Tue May 12 06:30:05 2026] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object can now be converted to equivalent data structures in Python using the <code><a href="../reference/conversion.html">rspec_to_pyspec()</a></code> function:</p>
@@ -266,7 +266,7 @@ Processing:
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' Access the `fl` variable from the R session:</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>r.fl</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code><span><span class="st">'/github/home/.cache/R/ExperimentHub/88d37582aa7_7861'</span></span></code></pre>
+<pre><code><span><span class="st">'/github/home/.cache/R/ExperimentHub/2a903072237_7861'</span></span></code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(r.fl)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -487,9 +487,9 @@ Data stored in the "mgf_py" variable in Python</code></pre>
  ... 34 more variables/columns.
 
 file(s):
-88d37582aa7_7861
+2a903072237_7861
 Processing:
- Filter: select MS level(s) 2 [Fri Apr 24 07:23:43 2026] </code></pre>
+ Filter: select MS level(s) 2 [Tue May 12 06:30:05 2026] </code></pre>
 </div>
 </div>
 <p>This <code>Spectra</code> object uses the <code>MsBackedMzR</code> backend as data representation. We can change the backend of <code>Spectra</code> objects using the <code><a href="https://rdrr.io/pkg/ProtGenerics/man/backendInitialize.html" class="external-link">setBackend()</a></code> function. Thus, below we change the backend to <code>MsBackendPy</code>, specifying also the name of the variable in Python that should be used to store the data.</p>
@@ -504,8 +504,8 @@ Processing:
 <pre><code>MSn data (Spectra) with 2243 spectra in a MsBackendPy backend:
 Data stored in the "mzml_p" variable in Python
 Processing:
- Filter: select MS level(s) 2 [Fri Apr 24 07:23:43 2026]
- Switch backend from MsBackendMzR to MsBackendPy [Fri Apr 24 07:23:52 2026] </code></pre>
+ Filter: select MS level(s) 2 [Tue May 12 06:30:05 2026]
+ Switch backend from MsBackendMzR to MsBackendPy [Tue May 12 06:30:15 2026] </code></pre>
 </div>
 </div>
 <p>This converted all the MS data of the <code>mzml_r</code> <code>Spectra</code> object to Python objects and assigned these to the Python variable with the name <code>"mzml_p"</code>. The resulting <code>Spectra</code> object uses now a <code>MsBackendPy</code> backend which keeps only the reference to the Python variable but no data. The size of the <code>Spectra</code> object is thus very small.</p>
@@ -703,7 +703,7 @@ Processing:
 <pre><code>MSn data (Spectra) with 100 spectra in a MsBackendPy backend:
 Data stored in the "mgf_data" variable in Python
 Processing:
- Switch backend from MsBackendMgf to MsBackendPy [Fri Apr 24 07:23:53 2026] </code></pre>
+ Switch backend from MsBackendMgf to MsBackendPy [Tue May 12 06:30:16 2026] </code></pre>
 </div>
 </div>
 <p>The data is now stored in a Python variable with the name <code>"mgf_data"</code>. We next enable the <em>copy-on-replace</em> option of <em>SpectriPy</em> and make a subset of the data, still keeping the original <code>Spectra</code> object <code>s_mgf</code>.</p>
@@ -1001,98 +1001,126 @@ Processing:
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Calculating similarities:   0%|          | 0/2243 [00:00&lt;?, ?it/s]
-Calculating similarities:   0%|          | 1/2243 [00:00&lt;33:55,  1.10it/s]
-Calculating similarities:   1%|1         | 27/2243 [00:01&lt;01:01, 36.14it/s]
-Calculating similarities:   2%|2         | 52/2243 [00:01&lt;00:31, 70.47it/s]
-Calculating similarities:   4%|3         | 79/2243 [00:01&lt;00:20, 107.79it/s]
-Calculating similarities:   5%|4         | 104/2243 [00:01&lt;00:15, 136.99it/s]
-Calculating similarities:   6%|5         | 131/2243 [00:01&lt;00:12, 166.30it/s]
-Calculating similarities:   7%|6         | 156/2243 [00:01&lt;00:11, 186.29it/s]
-Calculating similarities:   8%|8         | 181/2243 [00:01&lt;00:10, 198.52it/s]
-Calculating similarities:   9%|9         | 205/2243 [00:01&lt;00:09, 205.86it/s]
-Calculating similarities:  10%|#         | 229/2243 [00:01&lt;00:10, 188.94it/s]
-Calculating similarities:  11%|#1        | 251/2243 [00:02&lt;00:11, 167.19it/s]
-Calculating similarities:  12%|#2        | 277/2243 [00:02&lt;00:10, 188.47it/s]
-Calculating similarities:  13%|#3        | 300/2243 [00:02&lt;00:09, 198.15it/s]
-Calculating similarities:  14%|#4        | 322/2243 [00:02&lt;00:09, 203.43it/s]
-Calculating similarities:  15%|#5        | 346/2243 [00:02&lt;00:08, 210.88it/s]
-Calculating similarities:  16%|#6        | 368/2243 [00:02&lt;00:09, 196.45it/s]
-Calculating similarities:  17%|#7        | 389/2243 [00:02&lt;00:09, 199.08it/s]
-Calculating similarities:  19%|#8        | 415/2243 [00:02&lt;00:08, 215.25it/s]
-Calculating similarities:  20%|#9        | 438/2243 [00:02&lt;00:08, 214.52it/s]
-Calculating similarities:  21%|##        | 460/2243 [00:03&lt;00:12, 139.17it/s]
-Calculating similarities:  21%|##1       | 481/2243 [00:03&lt;00:11, 152.76it/s]
-Calculating similarities:  23%|##2       | 506/2243 [00:03&lt;00:10, 173.28it/s]
-Calculating similarities:  24%|##3       | 533/2243 [00:03&lt;00:08, 194.81it/s]
-Calculating similarities:  25%|##5       | 563/2243 [00:03&lt;00:07, 219.70it/s]
-Calculating similarities:  26%|##6       | 589/2243 [00:03&lt;00:07, 228.32it/s]
-Calculating similarities:  27%|##7       | 615/2243 [00:03&lt;00:06, 236.19it/s]
-Calculating similarities:  29%|##8       | 640/2243 [00:03&lt;00:06, 238.77it/s]
-Calculating similarities:  30%|##9       | 668/2243 [00:04&lt;00:06, 249.78it/s]
-Calculating similarities:  31%|###       | 694/2243 [00:04&lt;00:06, 251.74it/s]
-Calculating similarities:  32%|###2      | 720/2243 [00:04&lt;00:06, 243.80it/s]
-Calculating similarities:  33%|###3      | 745/2243 [00:04&lt;00:06, 232.80it/s]
-Calculating similarities:  34%|###4      | 769/2243 [00:04&lt;00:06, 226.50it/s]
-Calculating similarities:  35%|###5      | 792/2243 [00:04&lt;00:06, 218.39it/s]
-Calculating similarities:  36%|###6      | 815/2243 [00:04&lt;00:06, 212.53it/s]
-Calculating similarities:  37%|###7      | 839/2243 [00:04&lt;00:06, 218.55it/s]
-Calculating similarities:  38%|###8      | 861/2243 [00:04&lt;00:06, 218.23it/s]
-Calculating similarities:  39%|###9      | 885/2243 [00:05&lt;00:06, 223.36it/s]
-Calculating similarities:  40%|####      | 908/2243 [00:05&lt;00:06, 219.23it/s]
-Calculating similarities:  42%|####1     | 932/2243 [00:05&lt;00:05, 224.74it/s]
-Calculating similarities:  43%|####2     | 956/2243 [00:05&lt;00:05, 228.59it/s]
-Calculating similarities:  44%|####3     | 984/2243 [00:05&lt;00:05, 241.17it/s]
-Calculating similarities:  45%|####4     | 1009/2243 [00:05&lt;00:05, 239.91it/s]
-Calculating similarities:  46%|####6     | 1034/2243 [00:05&lt;00:05, 232.00it/s]
-Calculating similarities:  47%|####7     | 1058/2243 [00:05&lt;00:05, 230.27it/s]
-Calculating similarities:  48%|####8     | 1082/2243 [00:05&lt;00:05, 229.48it/s]
-Calculating similarities:  49%|####9     | 1105/2243 [00:05&lt;00:05, 215.07it/s]
-Calculating similarities:  50%|#####     | 1127/2243 [00:06&lt;00:05, 209.83it/s]
-Calculating similarities:  51%|#####1    | 1153/2243 [00:06&lt;00:04, 221.74it/s]
-Calculating similarities:  52%|#####2    | 1177/2243 [00:06&lt;00:04, 224.55it/s]
-Calculating similarities:  54%|#####3    | 1204/2243 [00:06&lt;00:04, 234.67it/s]
-Calculating similarities:  55%|#####4    | 1232/2243 [00:06&lt;00:04, 247.41it/s]
-Calculating similarities:  56%|#####6    | 1257/2243 [00:06&lt;00:03, 247.56it/s]
-Calculating similarities:  57%|#####7    | 1283/2243 [00:06&lt;00:03, 250.88it/s]
-Calculating similarities:  58%|#####8    | 1309/2243 [00:06&lt;00:03, 249.88it/s]
-Calculating similarities:  60%|#####9    | 1335/2243 [00:06&lt;00:03, 243.76it/s]
-Calculating similarities:  61%|######    | 1361/2243 [00:07&lt;00:03, 244.68it/s]
-Calculating similarities:  62%|######1   | 1386/2243 [00:07&lt;00:03, 245.20it/s]
-Calculating similarities:  63%|######2   | 1411/2243 [00:07&lt;00:03, 242.07it/s]
-Calculating similarities:  64%|######4   | 1437/2243 [00:07&lt;00:03, 244.86it/s]
-Calculating similarities:  65%|######5   | 1462/2243 [00:07&lt;00:03, 232.75it/s]
-Calculating similarities:  66%|######6   | 1486/2243 [00:07&lt;00:03, 228.89it/s]
-Calculating similarities:  67%|######7   | 1510/2243 [00:07&lt;00:03, 230.41it/s]
-Calculating similarities:  68%|######8   | 1534/2243 [00:07&lt;00:03, 230.16it/s]
-Calculating similarities:  69%|######9   | 1558/2243 [00:07&lt;00:02, 232.38it/s]
-Calculating similarities:  71%|#######   | 1582/2243 [00:07&lt;00:02, 227.81it/s]
-Calculating similarities:  72%|#######1  | 1609/2243 [00:08&lt;00:02, 238.29it/s]
-Calculating similarities:  73%|#######2  | 1633/2243 [00:08&lt;00:02, 235.27it/s]
-Calculating similarities:  74%|#######3  | 1657/2243 [00:08&lt;00:02, 231.69it/s]
-Calculating similarities:  75%|#######4  | 1682/2243 [00:08&lt;00:02, 235.81it/s]
-Calculating similarities:  76%|#######6  | 1708/2243 [00:08&lt;00:02, 241.46it/s]
-Calculating similarities:  77%|#######7  | 1734/2243 [00:08&lt;00:02, 245.79it/s]
-Calculating similarities:  78%|#######8  | 1759/2243 [00:08&lt;00:02, 237.26it/s]
-Calculating similarities:  79%|#######9  | 1783/2243 [00:08&lt;00:01, 232.60it/s]
-Calculating similarities:  81%|########  | 1807/2243 [00:08&lt;00:01, 231.82it/s]
-Calculating similarities:  82%|########1 | 1831/2243 [00:09&lt;00:01, 230.21it/s]
-Calculating similarities:  83%|########2 | 1855/2243 [00:09&lt;00:01, 194.84it/s]
-Calculating similarities:  84%|########3 | 1877/2243 [00:09&lt;00:01, 199.64it/s]
-Calculating similarities:  85%|########4 | 1902/2243 [00:09&lt;00:01, 212.92it/s]
-Calculating similarities:  86%|########5 | 1924/2243 [00:09&lt;00:01, 203.15it/s]
-Calculating similarities:  87%|########6 | 1949/2243 [00:09&lt;00:01, 214.60it/s]
-Calculating similarities:  88%|########8 | 1974/2243 [00:09&lt;00:01, 222.73it/s]
-Calculating similarities:  89%|########9 | 2002/2243 [00:09&lt;00:01, 236.60it/s]
-Calculating similarities:  90%|######### | 2029/2243 [00:09&lt;00:00, 244.29it/s]
-Calculating similarities:  92%|#########1| 2055/2243 [00:10&lt;00:00, 248.41it/s]
-Calculating similarities:  93%|#########2| 2081/2243 [00:10&lt;00:00, 251.77it/s]
-Calculating similarities:  94%|#########3| 2107/2243 [00:10&lt;00:00, 248.14it/s]
-Calculating similarities:  95%|#########5| 2133/2243 [00:10&lt;00:00, 251.00it/s]
-Calculating similarities:  96%|#########6| 2160/2243 [00:10&lt;00:00, 253.68it/s]
-Calculating similarities:  98%|#########7| 2187/2243 [00:10&lt;00:00, 258.29it/s]
-Calculating similarities:  99%|#########8| 2213/2243 [00:10&lt;00:00, 252.53it/s]
-Calculating similarities: 100%|#########9| 2239/2243 [00:10&lt;00:00, 245.90it/s]
-Calculating similarities: 100%|##########| 2243/2243 [00:10&lt;00:00, 207.77it/s]</code></pre>
+Calculating similarities:   0%|          | 1/2243 [00:00&lt;32:16,  1.16it/s]
+Calculating similarities:   1%|          | 20/2243 [00:00&lt;01:20, 27.75it/s]
+Calculating similarities:   2%|1         | 38/2243 [00:01&lt;00:41, 52.93it/s]
+Calculating similarities:   3%|2         | 57/2243 [00:01&lt;00:27, 78.77it/s]
+Calculating similarities:   3%|3         | 78/2243 [00:01&lt;00:20, 106.05it/s]
+Calculating similarities:   4%|4         | 96/2243 [00:01&lt;00:17, 122.83it/s]
+Calculating similarities:   5%|5         | 116/2243 [00:01&lt;00:15, 140.86it/s]
+Calculating similarities:   6%|6         | 135/2243 [00:01&lt;00:13, 152.73it/s]
+Calculating similarities:   7%|6         | 154/2243 [00:01&lt;00:13, 160.36it/s]
+Calculating similarities:   8%|7         | 173/2243 [00:01&lt;00:12, 164.27it/s]
+Calculating similarities:   9%|8         | 191/2243 [00:01&lt;00:12, 166.88it/s]
+Calculating similarities:   9%|9         | 209/2243 [00:02&lt;00:12, 164.61it/s]
+Calculating similarities:  10%|#         | 227/2243 [00:02&lt;00:13, 145.46it/s]
+Calculating similarities:  11%|#         | 243/2243 [00:02&lt;00:16, 123.94it/s]
+Calculating similarities:  12%|#1        | 263/2243 [00:02&lt;00:14, 140.74it/s]
+Calculating similarities:  12%|#2        | 279/2243 [00:02&lt;00:17, 113.36it/s]
+Calculating similarities:  13%|#3        | 296/2243 [00:02&lt;00:15, 124.66it/s]
+Calculating similarities:  14%|#3        | 313/2243 [00:02&lt;00:14, 134.83it/s]
+Calculating similarities:  15%|#4        | 331/2243 [00:02&lt;00:13, 144.55it/s]
+Calculating similarities:  16%|#5        | 348/2243 [00:03&lt;00:12, 149.51it/s]
+Calculating similarities:  16%|#6        | 364/2243 [00:03&lt;00:12, 145.88it/s]
+Calculating similarities:  17%|#6        | 380/2243 [00:03&lt;00:12, 143.61it/s]
+Calculating similarities:  18%|#7        | 397/2243 [00:03&lt;00:12, 149.59it/s]
+Calculating similarities:  19%|#8        | 417/2243 [00:03&lt;00:11, 162.17it/s]
+Calculating similarities:  19%|#9        | 434/2243 [00:03&lt;00:11, 161.35it/s]
+Calculating similarities:  20%|##        | 451/2243 [00:03&lt;00:10, 163.77it/s]
+Calculating similarities:  21%|##        | 468/2243 [00:03&lt;00:11, 156.18it/s]
+Calculating similarities:  22%|##1       | 484/2243 [00:03&lt;00:11, 154.74it/s]
+Calculating similarities:  22%|##2       | 503/2243 [00:04&lt;00:10, 163.64it/s]
+Calculating similarities:  23%|##3       | 522/2243 [00:04&lt;00:10, 170.50it/s]
+Calculating similarities:  24%|##4       | 543/2243 [00:04&lt;00:09, 180.44it/s]
+Calculating similarities:  25%|##5       | 566/2243 [00:04&lt;00:08, 194.17it/s]
+Calculating similarities:  26%|##6       | 586/2243 [00:04&lt;00:08, 193.58it/s]
+Calculating similarities:  27%|##7       | 606/2243 [00:04&lt;00:08, 192.87it/s]
+Calculating similarities:  28%|##7       | 626/2243 [00:04&lt;00:08, 188.74it/s]
+Calculating similarities:  29%|##8       | 647/2243 [00:04&lt;00:08, 194.81it/s]
+Calculating similarities:  30%|##9       | 670/2243 [00:04&lt;00:07, 201.94it/s]
+Calculating similarities:  31%|###       | 691/2243 [00:05&lt;00:07, 198.83it/s]
+Calculating similarities:  32%|###1      | 711/2243 [00:05&lt;00:07, 191.97it/s]
+Calculating similarities:  33%|###2      | 731/2243 [00:05&lt;00:08, 183.14it/s]
+Calculating similarities:  33%|###3      | 750/2243 [00:05&lt;00:08, 172.63it/s]
+Calculating similarities:  34%|###4      | 768/2243 [00:05&lt;00:08, 170.37it/s]
+Calculating similarities:  35%|###5      | 786/2243 [00:05&lt;00:08, 161.99it/s]
+Calculating similarities:  36%|###5      | 803/2243 [00:05&lt;00:08, 162.34it/s]
+Calculating similarities:  37%|###6      | 821/2243 [00:05&lt;00:08, 166.67it/s]
+Calculating similarities:  37%|###7      | 838/2243 [00:05&lt;00:08, 165.97it/s]
+Calculating similarities:  38%|###8      | 855/2243 [00:06&lt;00:08, 166.95it/s]
+Calculating similarities:  39%|###8      | 872/2243 [00:06&lt;00:08, 166.20it/s]
+Calculating similarities:  40%|###9      | 891/2243 [00:06&lt;00:07, 170.99it/s]
+Calculating similarities:  41%|####      | 909/2243 [00:06&lt;00:08, 163.03it/s]
+Calculating similarities:  41%|####1     | 930/2243 [00:06&lt;00:07, 174.62it/s]
+Calculating similarities:  42%|####2     | 948/2243 [00:06&lt;00:07, 173.08it/s]
+Calculating similarities:  43%|####3     | 969/2243 [00:06&lt;00:06, 183.50it/s]
+Calculating similarities:  44%|####4     | 989/2243 [00:06&lt;00:06, 185.02it/s]
+Calculating similarities:  45%|####4     | 1008/2243 [00:06&lt;00:06, 184.28it/s]
+Calculating similarities:  46%|####5     | 1027/2243 [00:06&lt;00:06, 178.26it/s]
+Calculating similarities:  47%|####6     | 1045/2243 [00:07&lt;00:07, 169.67it/s]
+Calculating similarities:  47%|####7     | 1065/2243 [00:07&lt;00:06, 176.71it/s]
+Calculating similarities:  48%|####8     | 1083/2243 [00:07&lt;00:06, 174.83it/s]
+Calculating similarities:  49%|####9     | 1101/2243 [00:07&lt;00:06, 168.29it/s]
+Calculating similarities:  50%|####9     | 1118/2243 [00:07&lt;00:07, 154.95it/s]
+Calculating similarities:  51%|#####     | 1139/2243 [00:07&lt;00:06, 167.52it/s]
+Calculating similarities:  52%|#####1    | 1158/2243 [00:07&lt;00:06, 172.49it/s]
+Calculating similarities:  52%|#####2    | 1176/2243 [00:07&lt;00:06, 171.95it/s]
+Calculating similarities:  53%|#####3    | 1197/2243 [00:07&lt;00:05, 181.35it/s]
+Calculating similarities:  54%|#####4    | 1218/2243 [00:08&lt;00:05, 187.85it/s]
+Calculating similarities:  55%|#####5    | 1239/2243 [00:08&lt;00:05, 191.91it/s]
+Calculating similarities:  56%|#####6    | 1259/2243 [00:08&lt;00:05, 190.05it/s]
+Calculating similarities:  57%|#####7    | 1279/2243 [00:08&lt;00:05, 192.43it/s]
+Calculating similarities:  58%|#####7    | 1299/2243 [00:08&lt;00:04, 193.89it/s]
+Calculating similarities:  59%|#####8    | 1319/2243 [00:08&lt;00:05, 181.57it/s]
+Calculating similarities:  60%|#####9    | 1340/2243 [00:08&lt;00:04, 188.10it/s]
+Calculating similarities:  61%|######    | 1359/2243 [00:08&lt;00:04, 187.93it/s]
+Calculating similarities:  61%|######1   | 1378/2243 [00:08&lt;00:04, 184.49it/s]
+Calculating similarities:  62%|######2   | 1397/2243 [00:09&lt;00:04, 181.62it/s]
+Calculating similarities:  63%|######3   | 1417/2243 [00:09&lt;00:04, 184.80it/s]
+Calculating similarities:  64%|######4   | 1436/2243 [00:09&lt;00:04, 185.20it/s]
+Calculating similarities:  65%|######4   | 1455/2243 [00:09&lt;00:04, 175.46it/s]
+Calculating similarities:  66%|######5   | 1473/2243 [00:09&lt;00:04, 170.02it/s]
+Calculating similarities:  67%|######6   | 1492/2243 [00:09&lt;00:04, 173.40it/s]
+Calculating similarities:  67%|######7   | 1510/2243 [00:09&lt;00:04, 172.34it/s]
+Calculating similarities:  68%|######8   | 1528/2243 [00:09&lt;00:04, 170.83it/s]
+Calculating similarities:  69%|######8   | 1547/2243 [00:09&lt;00:03, 175.14it/s]
+Calculating similarities:  70%|######9   | 1565/2243 [00:09&lt;00:03, 174.72it/s]
+Calculating similarities:  71%|#######   | 1583/2243 [00:10&lt;00:03, 169.46it/s]
+Calculating similarities:  71%|#######1  | 1603/2243 [00:10&lt;00:03, 177.36it/s]
+Calculating similarities:  72%|#######2  | 1622/2243 [00:10&lt;00:03, 178.88it/s]
+Calculating similarities:  73%|#######3  | 1640/2243 [00:10&lt;00:03, 174.08it/s]
+Calculating similarities:  74%|#######4  | 1660/2243 [00:10&lt;00:03, 180.00it/s]
+Calculating similarities:  75%|#######4  | 1679/2243 [00:10&lt;00:03, 180.06it/s]
+Calculating similarities:  76%|#######5  | 1700/2243 [00:10&lt;00:02, 186.00it/s]
+Calculating similarities:  77%|#######6  | 1719/2243 [00:10&lt;00:02, 187.15it/s]
+Calculating similarities:  77%|#######7  | 1738/2243 [00:10&lt;00:02, 185.39it/s]
+Calculating similarities:  78%|#######8  | 1757/2243 [00:11&lt;00:02, 176.95it/s]
+Calculating similarities:  79%|#######9  | 1775/2243 [00:11&lt;00:02, 173.12it/s]
+Calculating similarities:  80%|#######9  | 1793/2243 [00:11&lt;00:02, 172.85it/s]
+Calculating similarities:  81%|########  | 1811/2243 [00:11&lt;00:02, 172.69it/s]
+Calculating similarities:  82%|########1 | 1829/2243 [00:11&lt;00:02, 172.48it/s]
+Calculating similarities:  82%|########2 | 1847/2243 [00:11&lt;00:02, 151.62it/s]
+Calculating similarities:  83%|########3 | 1863/2243 [00:11&lt;00:02, 143.92it/s]
+Calculating similarities:  84%|########3 | 1881/2243 [00:11&lt;00:02, 153.30it/s]
+Calculating similarities:  85%|########4 | 1900/2243 [00:11&lt;00:02, 162.12it/s]
+Calculating similarities:  85%|########5 | 1917/2243 [00:12&lt;00:02, 159.00it/s]
+Calculating similarities:  86%|########6 | 1934/2243 [00:12&lt;00:01, 156.63it/s]
+Calculating similarities:  87%|########7 | 1953/2243 [00:12&lt;00:01, 164.25it/s]
+Calculating similarities:  88%|########7 | 1973/2243 [00:12&lt;00:01, 172.36it/s]
+Calculating similarities:  89%|########8 | 1994/2243 [00:12&lt;00:01, 182.00it/s]
+Calculating similarities:  90%|########9 | 2014/2243 [00:12&lt;00:01, 186.53it/s]
+Calculating similarities:  91%|######### | 2035/2243 [00:12&lt;00:01, 191.29it/s]
+Calculating similarities:  92%|#########1| 2055/2243 [00:12&lt;00:00, 190.94it/s]
+Calculating similarities:  93%|#########2| 2075/2243 [00:12&lt;00:00, 191.79it/s]
+Calculating similarities:  93%|#########3| 2096/2243 [00:13&lt;00:00, 194.45it/s]
+Calculating similarities:  94%|#########4| 2116/2243 [00:13&lt;00:00, 187.21it/s]
+Calculating similarities:  95%|#########5| 2136/2243 [00:13&lt;00:00, 189.82it/s]
+Calculating similarities:  96%|#########6| 2156/2243 [00:13&lt;00:00, 192.22it/s]
+Calculating similarities:  97%|#########7| 2176/2243 [00:13&lt;00:00, 192.34it/s]
+Calculating similarities:  98%|#########7| 2197/2243 [00:13&lt;00:00, 195.68it/s]
+Calculating similarities:  99%|#########8| 2217/2243 [00:13&lt;00:00, 187.49it/s]
+Calculating similarities: 100%|#########9| 2236/2243 [00:13&lt;00:00, 184.74it/s]
+Calculating similarities: 100%|##########| 2243/2243 [00:13&lt;00:00, 162.49it/s]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb128"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' Extract similarity scores</span></span>
@@ -1137,7 +1165,7 @@ Calculating similarities: 100%|##########| 2243/2243 [00:10&lt;00:00, 207.77it/s
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>R Under development (unstable) (2026-04-19 r89916)
+<pre><code>R version 4.6.0 (2026-04-24)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 24.04.4 LTS
 
@@ -1161,36 +1189,36 @@ attached base packages:
 [8] base
 
 other attached packages:
-[1] MsBackendMgf_1.19.1 MsDataHub_1.11.3    SpectriPy_1.1.8
-[4] reticulate_1.46.0   Spectra_1.21.7      BiocParallel_1.45.0
-[7] S4Vectors_0.49.2    BiocGenerics_0.57.1 generics_0.1.4
+[1] MsBackendMgf_1.21.0 MsDataHub_1.13.0    SpectriPy_1.3.0
+[4] reticulate_1.46.0   Spectra_1.23.0      BiocParallel_1.47.0
+[7] S4Vectors_0.51.1    BiocGenerics_0.59.0 generics_0.1.4
 
 loaded via a namespace (and not attached):
- [1] KEGGREST_1.51.1        xfun_0.57              httr2_1.2.2
- [4] Biobase_2.71.0         lattice_0.22-9         vctrs_0.7.3
- [7] tools_4.7.0            curl_7.1.0             parallel_4.7.0
-[10] tibble_3.3.1           AnnotationDbi_1.73.1   RSQLite_2.4.6
+ [1] KEGGREST_1.53.0        xfun_0.57              httr2_1.2.2
+ [4] Biobase_2.73.1         lattice_0.22-9         vctrs_0.7.3
+ [7] tools_4.6.0            curl_7.1.0             parallel_4.6.0
+[10] tibble_3.3.1           AnnotationDbi_1.75.0   RSQLite_3.52.0
 [13] cluster_2.1.8.2        blob_1.3.0             pkgconfig_2.0.3
-[16] Matrix_1.7-5           data.table_1.18.2.1    dbplyr_2.5.2
-[19] lifecycle_1.0.5        stringr_1.6.0          compiler_4.7.0
-[22] Biostrings_2.79.5      BiocStyle_2.39.0       Seqinfo_1.1.0
+[16] Matrix_1.7-5           data.table_1.18.4      dbplyr_2.5.2
+[19] lifecycle_1.0.5        stringr_1.6.0          compiler_4.6.0
+[22] Biostrings_2.81.1      BiocStyle_2.41.0       Seqinfo_1.3.0
 [25] codetools_0.2-20       ncdf4_1.24             clue_0.3-68
 [28] snakecase_0.11.1       htmltools_0.5.9        yaml_2.3.12
 [31] crayon_1.5.3           pillar_1.11.1          MASS_7.3-65
-[34] cachem_1.1.0           MetaboCoreUtils_1.19.3 ExperimentHub_3.1.0
+[34] cachem_1.1.0           MetaboCoreUtils_1.21.1 ExperimentHub_3.3.0
 [37] AnnotationHub_4.1.0    tidyselect_1.2.1       digest_0.6.39
 [40] stringi_1.8.7          purrr_1.2.2            dplyr_1.2.1
-[43] BiocVersion_3.23.1     fastmap_1.2.0          grid_4.7.0
+[43] BiocVersion_3.24.0     fastmap_1.2.0          grid_4.6.0
 [46] cli_3.6.6              magrittr_2.0.5         withr_3.0.2
 [49] filelock_1.0.3         rappdirs_0.3.4         bit64_4.8.0
-[52] XVector_0.51.0         httr_1.4.8             rmarkdown_2.31
+[52] XVector_0.53.0         httr_1.4.8             rmarkdown_2.31
 [55] bit_4.6.0              otel_0.2.0             png_0.1-9
 [58] memoise_2.0.1          evaluate_1.0.5         knitr_1.51
-[61] IRanges_2.45.0         BiocFileCache_3.1.0    rlang_1.2.0
+[61] IRanges_2.47.0         BiocFileCache_3.3.0    rlang_1.2.0
 [64] Rcpp_1.1.1-1.1         glue_1.8.1             DBI_1.3.0
-[67] mzR_2.45.1             BiocManager_1.30.27    jsonlite_2.0.0
-[70] R6_2.6.1               fs_2.1.0               ProtGenerics_1.43.0
-[73] MsCoreUtils_1.23.9    </code></pre>
+[67] mzR_2.47.0             BiocManager_1.30.27    jsonlite_2.0.0
+[70] R6_2.6.1               fs_2.1.0               ProtGenerics_1.45.0
+[73] MsCoreUtils_1.25.3    </code></pre>
 </div>
 </div>
 </section><script id="quarto-html-after-body" type="application/javascript">
