@@ -1,3 +1,9 @@
+# SpectriPy 1.2
+
+## Changes in 1.2.1
+
+- Synchronize code base with devel version.
+
 # SpectriPy 1.1
 
 ## Changes in 1.1.8
